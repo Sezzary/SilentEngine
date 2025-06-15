@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Engine/Renderer/Structures/Line.h"
-#include "Engine/Renderer/Structures/Triangle.h"
-
 namespace Silent::Renderer
 {
     constexpr auto SCREEN_SPACE_RES = Vector2(100.0f);
@@ -17,8 +14,8 @@ namespace Silent::Renderer
         uint        _drawCallCount = 0;
 
         std::vector<std::function<void()>> _debugGuiDrawCalls = {};
-        std::vector<Line>                  _debugLines        = {};
-        std::vector<Triangle>              _debugTriangles    = {};
+        //std::vector<Line>                  _debugLines        = {};
+        //std::vector<Triangle>              _debugTriangles    = {};
 
     public:
         // Constructors

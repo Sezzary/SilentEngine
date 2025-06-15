@@ -7,6 +7,7 @@
 #include "Engine/Renderer/Backends/OpenGl/VertexBuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/View.h"
 #include "Engine/Renderer/Base.h"
+#include "Engine/Renderer/Structures/Primitive2d.h"
 
 namespace Silent::Renderer
 {
@@ -35,6 +36,9 @@ namespace Silent::Renderer
         Texture                                        _texture0             = Texture();
         Texture                                        _texture1             = Texture();
 
+        std::unordered_map<std::string, Texture> _textures     = {}; // Key = texture name, value = texture.
+        std::vector<Primitive2d>                 _primitives2d = {};
+
     public:
         // Constructors
 
@@ -53,7 +57,8 @@ namespace Silent::Renderer
     
         void UpdateViewport();
 
-        void DrawFrame();
+        void Draw2dScene();
+        void Draw3dScene();
         void DrawGui();
         void DrawDebugGui();
 

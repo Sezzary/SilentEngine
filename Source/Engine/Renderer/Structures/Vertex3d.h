@@ -2,7 +2,7 @@
 
 namespace Silent::Renderer
 {
-    struct Vertex
+    struct Vertex3d
     {
         Vector3 Position = Vector3::Zero;
         Vector3 Normal   = Vector3::Zero;

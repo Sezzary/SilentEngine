@@ -151,14 +151,15 @@ namespace Silent::Renderer
         // Enable VSync.
         SDL_GL_SetSwapInterval(1);
 
-        // Get screen resolution.
-        auto res = GetScreenResolution();
-
         // Viewport setup.
+        auto res = GetScreenResolution();
         glViewport(0, 0, res.x, res.y);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Reserve memory.
+        _primitives2d.reserve(512);
 
         CreateShaderProgram();
         CreateDebugGui();
@@ -230,7 +231,8 @@ namespace Silent::Renderer
         UpdateViewport();
 
         // Render.
-        DrawFrame();
+        Draw3dScene();
+        Draw2dScene();
         //DrawGui();
         DrawDebugGui();
 
@@ -376,9 +378,21 @@ namespace Silent::Renderer
         TRI_COLORS[7] = colorStart / 31.0f;
         TRI_COLORS[8] = 1.0f;
     }
-
-    void OpenGlRenderer::DrawFrame()
+    
+    void OpenGlRenderer::Draw2dScene()
     {
+        glDepthMask(GL_FALSE);
+        glDepthFunc(GL_LESS);
+
+        // TODO
+
+        glDepthMask(GL_TRUE);
+    }
+
+    void OpenGlRenderer::Draw3dScene()
+    {
+        glEnable(GL_DEPTH_TEST);
+
         //---------------------------------------
 
         _view.Move();
@@ -573,8 +587,8 @@ namespace Silent::Renderer
         // TODO
 
         // Clear object elements.
-        _debugLines.clear();
-        _debugTriangles.clear();
+        //_debugLines.clear();
+        //_debugTriangles.clear();
     }
 
     void OpenGlRenderer::CreateShaderProgram()

@@ -69,13 +69,13 @@ namespace Silent::Renderer
             return;
         }
 
-        auto line = Line
+        /*auto line = Line
         {
             .From = from,
             .To   = to,
             .Col  = color
         };
-        _debugLines.push_back(line);
+        _debugLines.push_back(line);*/
     }
 
     void RendererBase::SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page)
@@ -86,7 +86,7 @@ namespace Silent::Renderer
             return;
         }
 
-        auto tri = Triangle
+        /*auto tri = Triangle
         {
             .Vertices =
             {
@@ -96,7 +96,7 @@ namespace Silent::Renderer
             },
             .Col = color
         };
-        _debugTriangles.push_back(tri);
+        _debugTriangles.push_back(tri);*/
     }
 
     void RendererBase::SubmitDebugTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, DebugPage page)

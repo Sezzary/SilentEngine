@@ -16,14 +16,14 @@ namespace Silent::Renderer
     {
         const auto& options = g_App.GetOptions();
 
-        // Store texture unit.
+        // Store unit.
         _unit = unit;
 
-        // Generate texture object.
+        // Generate object.
         glGenTextures(1, &_id);
         glBindTexture(GL_TEXTURE_2D, _id);
 
-        // Configure texture repetition type.
+        // Configure repetition type.
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -61,7 +61,6 @@ namespace Silent::Renderer
             // Assign image to texture object.
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data->Resolution.x, data->Resolution.y, 0, format, pixelType, data->Pixels.data());
             glGenerateMipmap(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, 0);
         }
         else
         {
@@ -70,14 +69,35 @@ namespace Silent::Renderer
             int    colorChannelCount = 0;
             uchar* data              = stbi_load(filename.string().c_str(), &res.x, &res.y, &colorChannelCount, 0);
 
-            // Assign image to texture object.
+            // Assign image to object.
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, res.x, res.y, 0, format, pixelType, data);
             glGenerateMipmap(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, 0);
 
             // Cleanup.
             stbi_image_free(data);
         }
+
+        Unbind();
+    }
+
+    Texture::Texture(const Vector2i& res, GLenum format, GLenum pixelType)
+    {
+        // Generate object.
+        glGenTextures(1, &_id);
+        Bind();
+
+        // Set filter type.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        // Configure repetition type.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        // Allocate storage.
+        glTexImage2D(GL_TEXTURE_2D, 0, format, res.x, res.y, 0, format, pixelType, nullptr);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _id, 0);
     }
 
     void Texture::Bind()
@@ -104,6 +124,14 @@ namespace Silent::Renderer
         // Set uniform value.
         shaderProg.Activate();
         glUniform1i(texUniLoc, unit);
+    }
+
+    void Texture::Resize(const Vector2& res, GLenum format, GLenum pixelType)
+    {
+        Bind();
+        glBindTexture(GL_TEXTURE_2D, _id);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, res.x, res.y, 0, format, pixelType, nullptr);
+        Unbind();
     }
 
     void Texture::RefreshFilter()

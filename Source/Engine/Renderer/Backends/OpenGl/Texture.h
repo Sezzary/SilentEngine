@@ -17,6 +17,7 @@ namespace Silent::Renderer
 
         Texture() = default;
         Texture(const std::filesystem::path& filename, GLenum unit, GLenum format, GLenum pixelType);
+        Texture(const Vector2i& res, GLenum format, GLenum pixelType);
 
         // Utilities
 
@@ -25,6 +26,7 @@ namespace Silent::Renderer
         void Delete();
 
         void SetTextureUnit(ShaderProgram& shaderProg, const std::string& uniName, uint unitId);
+        void Resize(const Vector2& res, GLenum format, GLenum pixelType);
         void RefreshFilter();
 
     private:

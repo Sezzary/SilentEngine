@@ -11,10 +11,10 @@ namespace Silent::Renderer
     private:
         // Fields
 
-        uint               _id      = 0;
-        VertexArrayObject  _vao     = VertexArrayObject();
-        VertexBufferObject _vbo     = VertexBufferObject();
-        Texture            _texture = Texture();
+        uint               _frameBufferId = 0;
+        VertexArrayObject  _vao           = VertexArrayObject();
+        VertexBufferObject _vbo           = VertexBufferObject();
+        Texture            _texture       = Texture();
 
     public:
         // Constructors

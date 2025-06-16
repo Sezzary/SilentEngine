@@ -608,7 +608,6 @@ namespace Silent::Renderer
 
         // Link attributes.
         _vertexArray.LinkAttrib(_vertexPositionBuffer, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
-        //_vertexArray.LinkAttrib(_vertexColorBuffer, 1, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
         _vertexArray.LinkAttrib(_vertexTexCoordBuffer, 1, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
 
         _vertexCubeArray.Initialize();
@@ -629,8 +628,8 @@ namespace Silent::Renderer
         _elementBuffer.Unbind();
 
         // Load textures.
-        _texture0 = Texture("Assets/derg.png", GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-        _texture1 = Texture("Assets/SILENT/TIM/BG_ETC.TIM", GL_TEXTURE1, GL_RGBA, GL_UNSIGNED_BYTE);
+        _texture0.Initialize("Assets/derg.png", GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+        _texture1.Initialize("Assets/SILENT/TIM/BG_ETC.TIM", GL_TEXTURE1, GL_RGBA, GL_UNSIGNED_BYTE);
 
         _shaderPrograms.at("Default").Activate();
         _shaderPrograms.at("Default").SetInt("tex0", 0);

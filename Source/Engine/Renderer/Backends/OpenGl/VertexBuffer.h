@@ -7,7 +7,7 @@ namespace Silent::Renderer
     private:
         // Fields
 
-        uint _id = 0;
+        uint _bufferId = 0;
 
     public:
         // Constructors

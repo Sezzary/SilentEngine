@@ -35,25 +35,25 @@ namespace Silent::Renderer
         LogShaderError(vertShaderId, "FRAGMENT");
 
         // Create shader program.
-        _id = glCreateProgram();
-        glAttachShader(_id, vertShaderId);
-        glAttachShader(_id, fragShaderId);
-        glLinkProgram(_id);
-        LogProgramError(_id);
+        _programId = glCreateProgram();
+        glAttachShader(_programId, vertShaderId);
+        glAttachShader(_programId, fragShaderId);
+        glLinkProgram(_programId);
+        LogProgramError(_programId);
 
         // Cleanup.
         glDeleteShader(vertShaderId);
         glDeleteShader(fragShaderId);
     }
 
-    uint ShaderProgram::GetId() const
-    {
-        return _id;
-    }
-
     const std::string& ShaderProgram::GetName() const
     {
         return _name;
+    }
+
+    uint ShaderProgram::GetId() const
+    {
+        return _programId;
     }
 
     void ShaderProgram::SetBool(const std::string& uniName, bool val) const
@@ -76,17 +76,17 @@ namespace Silent::Renderer
         glUniform1f(GetUniformLocation(uniName), val);
     }
 
-    void ShaderProgram::SetVec2(const std::string& uniName, const Vector2& val) const
+    void ShaderProgram::SetVector2(const std::string& uniName, const Vector2& val) const
     {
         glUniform2fv(GetUniformLocation(uniName), 1, &val[0]);
     }
 
-    void ShaderProgram::SetVec3(const std::string& uniName, const Vector3& val) const
+    void ShaderProgram::SetVector3(const std::string& uniName, const Vector3& val) const
     {
         glUniform3fv(GetUniformLocation(uniName), 1, &val[0]);
     }
 
-    void ShaderProgram::SetVec4(const std::string& uniName, const Vector4& val) const
+    void ShaderProgram::SetVector4(const std::string& uniName, const Vector4& val) const
     {
         glUniform4fv(GetUniformLocation(uniName), 1, &val[0]);
     }
@@ -111,17 +111,17 @@ namespace Silent::Renderer
         glUniform1fv(GetUniformLocation(uniName), val.size(), val.data());
     }
 
-    void ShaderProgram::SetVec2Array(const std::string& uniName, const std::span<Vector2>& val) const
+    void ShaderProgram::SetVector2Array(const std::string& uniName, const std::span<Vector2>& val) const
     {
         glUniform2fv(GetUniformLocation(uniName), val.size(), (const float*)val.data());
     }
 
-    void ShaderProgram::SetVec3Array(const std::string& uniName, const std::span<Vector3>& val) const
+    void ShaderProgram::SetVector3Array(const std::string& uniName, const std::span<Vector3>& val) const
     {
         glUniform3fv(GetUniformLocation(uniName), val.size(), (const float*)val.data());
     }
 
-    void ShaderProgram::SetVec4Array(const std::string& uniName, const std::span<Vector4>& val) const
+    void ShaderProgram::SetVector4Array(const std::string& uniName, const std::span<Vector4>& val) const
     {
         glUniform4fv(GetUniformLocation(uniName), val.size(), (const float*)val.data());
     }
@@ -133,12 +133,12 @@ namespace Silent::Renderer
 
     void ShaderProgram::Activate() const
     {
-        glUseProgram(_id);
+        glUseProgram(_programId);
     }
 
     void ShaderProgram::Delete() const
     {
-        glDeleteProgram(_id);
+        glDeleteProgram(_programId);
     }
 
     std::string ShaderProgram::GetFileContents(const std::string& filename) const
@@ -160,7 +160,7 @@ namespace Silent::Renderer
 
     int ShaderProgram::GetUniformLocation(const std::string& uniName) const
     {
-        int uniLoc = glGetUniformLocation(_id, uniName.c_str());
+        int uniLoc = glGetUniformLocation(_programId, uniName.c_str());
         if constexpr (IS_DEBUG_BUILD)
         {
             if (uniLoc == NO_VALUE)

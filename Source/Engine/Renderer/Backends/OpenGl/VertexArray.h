@@ -9,7 +9,7 @@ namespace Silent::Renderer
     private:
         // Fields
 
-        uint _id = 0;
+        uint _vertexArrayId = 0;
 
     public:
         // Constructors

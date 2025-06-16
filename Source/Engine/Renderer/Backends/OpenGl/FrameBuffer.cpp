@@ -23,11 +23,11 @@ namespace Silent::Renderer
         const auto& renderer = g_App.GetRenderer();
 
         // Generate and bind framebuffer.
-        glGenFramebuffers(1, &_id);
+        glGenFramebuffers(1, &_frameBufferId);
         Bind();
 
         // Generate texture.
-        _texture = Texture(renderer.GetScreenResolution(), GL_RGBA, GL_UNSIGNED_BYTE);
+        _texture.Initialize(renderer.GetScreenResolution(), GL_RGBA, GL_UNSIGNED_BYTE);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
@@ -50,7 +50,7 @@ namespace Silent::Renderer
 
     void FrameBufferObject::Bind()
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, _id);
+        glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferId);
     }
 
     void FrameBufferObject::Unbind()
@@ -60,7 +60,7 @@ namespace Silent::Renderer
 
     void FrameBufferObject::Delete()
     {
-        glDeleteFramebuffers(1, &_id);
+        glDeleteFramebuffers(1, &_frameBufferId);
         _vao.Delete();
         _vbo.Delete();
         _texture.Delete();

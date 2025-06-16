@@ -12,16 +12,16 @@ using namespace Silent::Services;
 
 namespace Silent::Renderer
 {
-    Texture::Texture(const std::filesystem::path& filename, GLenum unit, GLenum format, GLenum pixelType)
+    void Texture::Initialize(const std::filesystem::path& filename, GLenum texUnit, GLenum format, GLenum pixelType)
     {
         const auto& options = g_App.GetOptions();
 
-        // Store unit.
-        _unit = unit;
+        // Store texture unit.
+        _textureUnit = texUnit;
 
-        // Generate object.
-        glGenTextures(1, &_id);
-        glBindTexture(GL_TEXTURE_2D, _id);
+        // Generate texture object.
+        glGenTextures(1, &_textureId);
+        glBindTexture(GL_TEXTURE_2D, _textureId);
 
         // Configure repetition type.
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -80,10 +80,10 @@ namespace Silent::Renderer
         Unbind();
     }
 
-    Texture::Texture(const Vector2i& res, GLenum format, GLenum pixelType)
+    void Texture::Initialize(const Vector2i& res, GLenum format, GLenum pixelType)
     {
-        // Generate object.
-        glGenTextures(1, &_id);
+        // Generate texture object.
+        glGenTextures(1, &_textureId);
         Bind();
 
         // Set filter type.
@@ -97,13 +97,13 @@ namespace Silent::Renderer
         // Allocate storage.
         glTexImage2D(GL_TEXTURE_2D, 0, format, res.x, res.y, 0, format, pixelType, nullptr);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _id, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textureId, 0);
     }
 
     void Texture::Bind()
     {
-        glActiveTexture(_unit);
-        glBindTexture(GL_TEXTURE_2D, _id);
+        glActiveTexture(_textureUnit);
+        glBindTexture(GL_TEXTURE_2D, _textureId);
     }
 
     void Texture::Unbind()
@@ -113,23 +113,23 @@ namespace Silent::Renderer
 
     void Texture::Delete()
     {
-        glDeleteTextures(1, &_id);
+        glDeleteTextures(1, &_textureId);
     }
 
-    void Texture::SetTextureUnit(ShaderProgram& shaderProg, const std::string& uniName, uint unit)
+    void Texture::SetUnit(ShaderProgram& shaderProg, const std::string& uniName, GLenum texUnitId)
     {
         // Get uniform location.
         uint texUniLoc = glGetUniformLocation(shaderProg.GetId(), uniName.c_str());
 
         // Set uniform value.
         shaderProg.Activate();
-        glUniform1i(texUniLoc, unit);
+        glUniform1i(texUniLoc, texUnitId);
     }
 
     void Texture::Resize(const Vector2& res, GLenum format, GLenum pixelType)
     {
         Bind();
-        glBindTexture(GL_TEXTURE_2D, _id);
+        glBindTexture(GL_TEXTURE_2D, _textureId);
         glTexImage2D(GL_TEXTURE_2D, 0, format, res.x, res.y, 0, format, pixelType, nullptr);
         Unbind();
     }

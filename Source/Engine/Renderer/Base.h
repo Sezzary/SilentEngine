@@ -14,8 +14,8 @@ namespace Silent::Renderer
         uint        _drawCallCount = 0;
 
         std::vector<std::function<void()>> _debugGuiDrawCalls = {};
-        //std::vector<Line>                  _debugLines        = {};
-        //std::vector<Triangle>              _debugTriangles    = {};
+        //std::vector<Primitive2d>           _debugPrimitives2d = {};
+        //std::vector<Primitive3d>           _debugPrimitives3d = {};
 
     public:
         // Constructors

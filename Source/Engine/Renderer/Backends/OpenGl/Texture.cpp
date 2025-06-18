@@ -80,6 +80,7 @@ namespace Silent::Renderer
         Unbind();
     }
 
+    // For framebuffer.
     void Texture::Initialize(const Vector2i& res, GLenum format, GLenum pixelType)
     {
         // Generate texture object.

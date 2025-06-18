@@ -159,7 +159,7 @@ namespace Silent::Renderer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Reserve memory.
-        _primitives2d.reserve(512);
+        //_debugPrimitives2d.reserve(512);
 
         CreateShaderProgram();
         CreateDebugGui();

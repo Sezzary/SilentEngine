@@ -1,7 +1,7 @@
 #include "Framework.h"
-#include "Engine/Renderer/Structures/Primitive2d.h"
+#include "Engine/Renderer/Objects/Primitive2d.h"
 
-#include "Engine/Renderer/Structures/Vertex2d.h"
+#include "Engine/Renderer/Objects/Vertex2d.h"
 
 namespace Silent::Renderer
 {

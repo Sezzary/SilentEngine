@@ -1,21 +1,14 @@
 #pragma once
 
-#include "Engine/Renderer/Structures/Vertex2d.h"
+#include "Engine/Renderer/Objects/Vertex2d.h"
 
 namespace Silent::Renderer
 {
-    class Primitive2d
+    struct Primitive2d
     {
-    public:
-        // Fields
-
         std::vector<Vertex2d> Vertices  = {};
         float                 Depth     = 0.0f;
-        std::string           TextureId = {};
-
-        // Constructors
-
-        Primitive2d() = default;
+        std::string           TextureId = {}; // idk
 
         static Primitive2d CreateLine2d(const Vector2& pos0, const Vector2& pos1, const Color& color0, const Color& color1, float depth);
         static Primitive2d CreateLine2d(const Vector2& pos0, const Vector2& pos1, const Color& color, float depth);

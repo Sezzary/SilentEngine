@@ -6,6 +6,7 @@ namespace Silent::Renderer
 {
     enum class RendererType
     {
+        SdlGpu,
         OpenGl,
         Vulkan
     };

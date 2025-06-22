@@ -30,9 +30,9 @@ namespace Silent::Hud
 
         // Utilities
 
-        void AddToast(const std::string& msg, const Color& color = Color::White);
         void Update();
         void Render();
+        void Add(const std::string& msg, const Color& color);
 
     private:
         // Helpers

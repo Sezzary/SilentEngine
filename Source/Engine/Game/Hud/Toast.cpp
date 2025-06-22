@@ -11,32 +11,6 @@ using namespace Silent::Utils;
 
 namespace Silent::Hud
 {
-    void ToastManager::AddToast(const std::string& msg, const Color& color)
-    {
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableToasts)
-        {
-            return;
-        }
-
-        // If max count reached, remove oldest toast.
-        if (_toasts.size() >= TOAST_COUNT_MAX)
-        {
-            _toasts.erase(_toasts.begin());
-        }
-
-        // TODO: Set position.
-
-        // Create new toast.
-        auto toast = Toast
-        {
-            .Message  = msg,
-            .Col      = Color(color.R(), color.G(), color.B(), 1.0f),
-            .Life     = SEC_TO_TICK(LIFE_SEC_MAX)
-        };
-        _toasts.push_back(toast);
-    }
-
     void ToastManager::Update()
     {
         for (auto& toast : _toasts)
@@ -68,7 +42,7 @@ namespace Silent::Hud
             return;
         }
 
-        // Render toasts.
+        // Submit toasts for rendering.
         auto pos = _stackPosition;
         for (const auto& toast : _toasts)
         {
@@ -80,6 +54,33 @@ namespace Silent::Hud
             //g_App.GetRenderer().SubmitText(toast.Message, toast.Position, toast.Col);
             // TODO: Update `pos`.
         }
+    }
+
+    void ToastManager::Add(const std::string& msg, const Color& color)
+    {
+        const auto& options = g_App.GetOptions();
+        if (!options->EnableToasts)
+        {
+            _toasts.clear();
+            return;
+        }
+
+        // If max count reached, remove oldest toast.
+        if (_toasts.size() >= TOAST_COUNT_MAX)
+        {
+            _toasts.erase(_toasts.begin());
+        }
+
+        // TODO: Set position.
+
+        // Create new toast.
+        auto toast = Toast
+        {
+            .Message  = msg,
+            .Col      = Color(color.R(), color.G(), color.B(), 1.0f),
+            .Life     = SEC_TO_TICK(LIFE_SEC_MAX)
+        };
+        _toasts.push_back(toast);
     }
 
     void ToastManager::ClearInactiveToasts()

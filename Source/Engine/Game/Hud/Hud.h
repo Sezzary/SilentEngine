@@ -20,5 +20,9 @@ namespace Silent::Hud
 
         void Update();
         void Render();
+
+        void AddToast(const std::string& msg, const Color& color = Color::White);
     };
+
+    extern HudManager g_Hud;
 }

@@ -10,54 +10,53 @@ namespace Silent::Math
      * Edition, Chapter 7.1, An Even Quicker Generator). It produces a pseudo-random
      * 32-bit unsigned integer value.
      *
-     * @return A new pseudo-random 32-bit unsigned integer (`uint`).
+     * @return A new pseudo-random unsigned 32-bit integer.
      */
-    uint Rng_Rand32();
+    uint32 GenerateInt32();
 
     /** @brief Generates a new random 16-bit unsigned integer.
      * 
-     * This function calls `Rng_Rand32` to generate a random number, then
+     * This function calls `GenerateInt32` to generate a random number, then
      * shifts the result right to produce a value within the range
-     * of `[0, 0x7FFF]`.
+     * of `[0, 0x7FFF]` (16-bit).
      *
-     * @return A random positive 16-bit unsigned integer as a 32-bit unsigned
-     * integer (`uint`).
+     * @return A random 16-bit unsigned integer in the range `[0, 0x7FFF]`.
      */
-    uint Rng_Rand16();
+    uint16 GenerateInt16();
+
+    /** @brief Generates a new random 12-bit unsigned integer.
+     *
+     * This function calls `GenerateInt32` to generate a random number, then
+     * shifts the result right to produce a value within the range
+     * of `[0, 0xFFF]` (12-bit).
+     *
+     * @return A random 12-bit unsigned integer in the range `[0, 0xFFF]`
+     */
+    uint16 GenerateInt12();
 
     /** @brief Returns the current random seed value.
      *
      * This function retrieves and returns the current value of the global variable
      * `g_RngSeed`.
      *
-     * @return The current random seed as a 32-bit unsigned integer (`uint`).
+     * @return The current random seed.
      */
-    uint Rng_GetSeed();
+    uint32 GetSeed();
 
     /** @brief Sets the random seed to a specified value.
      *
      * This function updates the global variable `g_RngSeed` with the given
      * seed value.
      *
-     * @param newSeed The new seed value to be set, as a 32-bit unsigned integer
-     * (`uint`).
+     * @param newSeed The new seed value to be set.
      */
-    void Rng_SetSeed(uint newSeed);
-
-    /** @brief Generates a new random 12-bit short integer.
-     *
-     * This function calls `Rng_Rand32` to generate a random number, then
-     * shifts the result right to produce a value within the range
-     * of `0` to `0xFFF` (12-bit).
-     *
-     * @return A random 12-bit short integer in the range `[0, 0xFFF]`.
-     */
-    ushort Rng_Rand12();
+    void SetSeed(uint32 newSeed);
 
     /** @brief Tests if a probability is met.
      *
-     * This function evaluates the probability by performing a bitwise AND
-     * operation with a mask that has the specified number of bits set to 1.
+     * This function calls `GenerateInt16` and evaluates the probability
+     * by performing a bitwise AND operation with a mask that has the specified
+     * number of sequential bits set to 1.
      *
      * Bits | Mask   | Chance  
      * -----|--------|--------

@@ -12,15 +12,15 @@ namespace Silent::Renderer
     {
         switch (type)
         {
-            case RendererType::SdlGpu:
-            {
-                return std::make_unique<SdlGpuRenderer>();
-            }
-
             case RendererType::OpenGl:
             {
                 return std::make_unique<OpenGlRenderer>();
             }
+
+            /*case RendererType::SdlGpu:
+            {
+                return std::make_unique<SdlGpuRenderer>();
+            }*/
 
             case RendererType::Vulkan:
             {

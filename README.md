@@ -17,6 +17,7 @@ Dependencies:
 - GLAD (OpenGL 4.6)
 - GLM
 - ImGui
+- ImGuizmo
 - json
 - SDL3
 - spdlog

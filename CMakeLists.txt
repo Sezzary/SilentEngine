@@ -20,7 +20,8 @@ file(GLOB LIB_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/*.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_opengl3.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_sdl3.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_vulkan.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_vulkan.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo/*.cpp")
 target_sources(Math PRIVATE ${LIB_SOURCES})
 
 # Set `Debug` build definitions.
@@ -69,6 +70,7 @@ target_include_directories(Math SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/glm
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
@@ -88,7 +90,7 @@ target_link_libraries(Math PRIVATE
     spdlog
     Vulkan::Vulkan)
 
-# Copy shaders.
+# Copy shaders to build folder.
 set(SHADER_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Shaders)
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 set(SHADER_BUILD_DIR ${CMAKE_BINARY_DIR}/${BUILD_TYPE}/Shaders)

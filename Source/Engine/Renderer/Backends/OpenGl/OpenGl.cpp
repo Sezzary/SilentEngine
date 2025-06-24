@@ -133,6 +133,7 @@ namespace Silent::Renderer
 
     void OpenGlRenderer::Initialize(SDL_Window& window)
     {
+        _type   = RendererType::OpenGl;
         _window = &window;
 
         // Create OpenGL context.

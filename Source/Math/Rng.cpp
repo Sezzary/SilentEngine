@@ -6,12 +6,12 @@ namespace Silent::Math
     /** @brief Current random seed for the `GenerateInt32` function.
      * The value is updated with each call to the RNG functions.
      */
-    static uint32 RngSeed = 0;
+    static uint32 Seed = 0;
 
     uint32 GenerateInt32()
     {
-        RngSeed = (RngSeed * 1664525) + 1013904223;
-        return RngSeed;
+        Seed = (Seed * 1664525) + 1013904223;
+        return Seed;
     }
 
     uint16 GenerateInt16()
@@ -26,12 +26,12 @@ namespace Silent::Math
 
     uint GetSeed()
     {
-        return RngSeed;
+        return Seed;
     }
 
     void SetSeed(uint32 newSeed)
     {
-        RngSeed = newSeed;
+        Seed = newSeed;
     }
 
     bool TestRng(uint bits)

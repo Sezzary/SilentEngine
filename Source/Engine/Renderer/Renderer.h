@@ -4,12 +4,5 @@
 
 namespace Silent::Renderer
 {
-    enum class RendererType
-    {
-        OpenGl,
-        SdlGpu,
-        Vulkan
-    };
-
     std::unique_ptr<RendererBase> CreateRenderer(RendererType type);
 }

@@ -45,6 +45,11 @@ namespace Silent::Renderer
         return res;
     }
 
+    RendererType RendererBase::GetType() const
+    {
+        return _type;
+    }
+
     void RendererBase::SignalResize()
     {
         _isResized = true;

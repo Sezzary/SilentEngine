@@ -4,14 +4,22 @@ namespace Silent::Renderer
 {
     constexpr auto SCREEN_SPACE_RES = Vector2(100.0f);
 
+    enum class RendererType
+    {
+        OpenGl,
+        SdlGpu,
+        Vulkan
+    };
+
     class RendererBase
     {
     protected:
         // Fields
 
-        SDL_Window* _window        = nullptr;
-        bool        _isResized     = false;
-        uint        _drawCallCount = 0;
+        RendererType _type          = RendererType::OpenGl;
+        SDL_Window*  _window        = nullptr;
+        bool         _isResized     = false;
+        uint         _drawCallCount = 0;
 
         std::vector<std::function<void()>> _debugGuiDrawCalls = {};
         //std::vector<Primitive2d>           _debugPrimitives2d = {};
@@ -24,7 +32,8 @@ namespace Silent::Renderer
 
         // Getters
 
-        Vector2i GetScreenResolution() const;
+        Vector2i     GetScreenResolution() const;
+        RendererType GetType() const;
 
         // Utilities
 

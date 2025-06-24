@@ -64,6 +64,7 @@ namespace Silent::Renderer
     {
         Log("Using Vulkan renderer.", LogLevel::Info, LogMode::Debug);
 
+        _type   = RendererType::Vulkan;
         _window = &window;
 
         CreateInstance();

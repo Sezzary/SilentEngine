@@ -139,6 +139,11 @@ namespace Silent::Renderer
         // TODO
     }
 
+    void VulkanRenderer::LogError(const std::string& msg) const
+    {
+        // TODO
+    }
+
     VkInstance VulkanRenderer::GetInstance()
     {
         return _instance;

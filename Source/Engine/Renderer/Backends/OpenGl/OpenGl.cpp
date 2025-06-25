@@ -289,6 +289,71 @@ namespace Silent::Renderer
         }
     }
 
+    void OpenGlRenderer::LogError(const std::string& msg) const
+    {
+        if constexpr (IS_DEBUG_BUILD)
+        {
+            uint errorCode = glGetError();
+            while (errorCode != GL_NO_ERROR)
+            {
+                auto error = std::string();
+                switch (errorCode)
+                {
+                    default:
+                    case GL_NO_ERROR:
+                    {
+                        return;
+                    }
+
+                    case GL_INVALID_ENUM:
+                    {    
+                        error = "INVALID_ENUM";
+                        break;
+                    }
+
+                    case GL_INVALID_VALUE:
+                    {    
+                        error = "INVALID_VALUE";
+                        break;
+                    }
+
+                    case GL_INVALID_OPERATION:
+                    {    
+                        error = "INVALID_OPERATION";
+                        break;
+                    }
+
+                    case GL_STACK_OVERFLOW:
+                    {    
+                        error = "STACK_OVERFLOW";
+                        break;
+                    }
+
+                    case GL_STACK_UNDERFLOW:
+                    {    
+                        error = "STACK UNDERFLOW";
+                        break;
+                    }
+
+                    case GL_OUT_OF_MEMORY:
+                    {    
+                        error = "OUT OF MEMORY";
+                        break;
+                    }
+
+                    case GL_INVALID_FRAMEBUFFER_OPERATION:
+                    {    
+                        error = "INVALID FRAMEBUFFER OPERATION";
+                        break;
+                    }
+                }
+
+                Log("OpenGL " + std::to_string(errorCode) + ": " + msg + " | " + __FILE__ + "(" + std::to_string(__LINE__) + ")", LogLevel::Error, LogMode::Debug);
+                uint errorCode = glGetError();
+            }
+        }
+    }
+
     void OpenGlRenderer::UpdateViewport()
     {
         // Set wireframe mode.

@@ -37,14 +37,15 @@ namespace Silent::Renderer
 
         // Utilities
 
+        void SignalResize();
+
         virtual void Initialize(SDL_Window& window) = 0;
         virtual void Deinitialize() = 0;
         virtual void Update() = 0;
         virtual void RefreshTextureFilter() = 0;
         virtual void SaveScreenshot() const = 0;
+        virtual void LogError(const std::string& msg) const = 0;
         
-        void SignalResize();
-
         // Debug
 
         void SubmitDebugGui(std::function<void()> drawFunc);

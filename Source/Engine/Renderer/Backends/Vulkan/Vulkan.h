@@ -86,6 +86,7 @@ namespace Silent::Renderer
         void Update() override;
         void RefreshTextureFilter() override;
         void SaveScreenshot() const override;
+        void LogError(const std::string& msg) const override;
 
     private:
         // Getters

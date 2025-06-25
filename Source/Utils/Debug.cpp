@@ -15,7 +15,8 @@ using namespace Silent::Utils;
 
 namespace Silent::Utils::Debug
 {
-    constexpr char LOGGER_NAME[] = "Logger";
+    constexpr char LOGGER_NAME[]     = "Logger";
+    constexpr uint MESSAGE_COUNT_MAX = 128;
 
     DebugData g_DebugData = {};
 
@@ -50,6 +51,9 @@ namespace Silent::Utils::Debug
         ImGui::CreateContext();
         auto imguiPath             = (fs.GetWorkFolder() / IMGUI_FILENAME).string();
         ImGui::GetIO().IniFilename = CopyString(imguiPath.c_str(), imguiPath.size());
+
+        // Reserve `Messages` size.
+        Messages.reserve(MESSAGE_COUNT_MAX);
     }
 
     void DeinitializeDebug()
@@ -87,7 +91,6 @@ namespace Silent::Utils::Debug
             constexpr const char* WEAPON_CONTROL_ITEMS[]    = { "Switch", "Press" };
             constexpr const char* VIEW_MODE_ITEMS[]         = { "Normal", "Self view" };
 
-            auto& options  = g_App.GetOptions();
             auto& renderer = g_App.GetRenderer();
 
             // Main tabs.
@@ -134,7 +137,7 @@ namespace Silent::Utils::Debug
                             ImGui::Text("Gamepad:", 0, 0);
                             ImGui::TableSetColumnIndex(1);
                             input.IsGamepadConnected() ? ImGui::Text("Connected", 0, 1) : ImGui::Text("Not connected", 0, 1);
-                            
+
                             // `Cursor` info.
                             const auto& cursorPos = input.GetCursorPosition();
                             ImGui::TableNextRow();
@@ -539,6 +542,14 @@ namespace Silent::Utils::Debug
     {
         constexpr uint BUFFER_SIZE = 255;
 
+        // Check if `Messages` is full.
+        if (Messages.size() >= MESSAGE_COUNT_MAX)
+        {
+            Log("Attempted to add too many messages.", LogLevel::Warning, LogMode::Debug);
+            return;
+        }
+
+        // Check if debug GUI is enabled.
         const auto& options = g_App.GetOptions();
         if (!options->EnableDebugGui)
         {

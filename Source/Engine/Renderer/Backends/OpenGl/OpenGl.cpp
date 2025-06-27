@@ -357,6 +357,11 @@ namespace Silent::Renderer
         }
     }
 
+    void OpenGlRenderer::SubmitPrimitive2d(const Primitive2d& prim)
+    {
+        // TODO
+    }
+
     void OpenGlRenderer::UpdateViewport()
     {
         // Set wireframe mode.

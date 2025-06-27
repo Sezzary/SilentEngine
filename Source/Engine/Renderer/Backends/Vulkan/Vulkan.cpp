@@ -144,6 +144,11 @@ namespace Silent::Renderer
         // TODO
     }
 
+    void VulkanRenderer::SubmitPrimitive2d(const Primitive2d& prim)
+    {
+        // TODO
+    }
+
     VkInstance VulkanRenderer::GetInstance()
     {
         return _instance;

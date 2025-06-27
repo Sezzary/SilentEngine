@@ -88,6 +88,8 @@ namespace Silent::Renderer
         void SaveScreenshot() const override;
         void LogError(const std::string& msg) const override;
 
+        void SubmitPrimitive2d(const Primitive2d& prim) override;
+
     private:
         // Getters
 

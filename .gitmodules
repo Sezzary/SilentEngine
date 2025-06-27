@@ -11,8 +11,8 @@
     path = Libraries/imgui
     url = https://github.com/ocornut/imgui.git
 [submodule "Libraries/ImGuizmo"]
-	path = Libraries/ImGuizmo
-	url = https://github.com/CedricGuillemet/ImGuizmo.git
+    path = Libraries/ImGuizmo
+    url = https://github.com/CedricGuillemet/ImGuizmo.git
 [submodule "Libraries/flatbuffers"]
     path = Libraries/flatbuffers
     url = https://github.com/google/flatbuffers.git
@@ -20,8 +20,8 @@
     path = Libraries/json
     url = https://github.com/nlohmann/json.git
 [submodule "Libraries/PsyCross"]
-	path = Libraries/PsyCross
-	url = https://github.com/OpenDriver2/PsyCross.git
+    path = Libraries/PsyCross
+    url = https://github.com/OpenDriver2/PsyCross.git
 [submodule "Libraries/SDL"]
     path = Libraries/SDL
     url = https://github.com/libsdl-org/SDL.git

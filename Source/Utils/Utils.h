@@ -2,8 +2,8 @@
 
 namespace Silent::Utils
 {
-    std::string	ToUpper(std::string str);
-	std::string	ToLower(std::string str);
+    std::string ToUpper(std::string str);
+    std::string ToLower(std::string str);
     char*       CopyString(const char src[], uint size);
 
     template <typename T>

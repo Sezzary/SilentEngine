@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Renderer/Objects/Primitive2d.h"
+
 namespace Silent::Renderer
 {
     constexpr auto SCREEN_SPACE_RES = Vector2(100.0f);
@@ -17,12 +19,13 @@ namespace Silent::Renderer
         // Fields
 
         RendererType _type          = RendererType::OpenGl;
+        uint         _drawCallCount = 0;
         SDL_Window*  _window        = nullptr;
         bool         _isResized     = false;
-        uint         _drawCallCount = 0;
 
         std::vector<std::function<void()>> _debugGuiDrawCalls = {};
-        //std::vector<Primitive2d>           _debugPrimitives2d = {};
+
+        std::vector<Primitive2d> _primitives2d = {};
         //std::vector<Primitive3d>           _debugPrimitives3d = {};
 
     public:
@@ -32,12 +35,11 @@ namespace Silent::Renderer
 
         // Getters
 
-        Vector2i     GetScreenResolution() const;
         RendererType GetType() const;
+        Vector2i     GetScreenResolution() const;
+        uint         GetDrawCallCount() const;
 
         // Utilities
-
-        void SignalResize();
 
         virtual void Initialize(SDL_Window& window) = 0;
         virtual void Deinitialize() = 0;
@@ -45,7 +47,11 @@ namespace Silent::Renderer
         virtual void RefreshTextureFilter() = 0;
         virtual void SaveScreenshot() const = 0;
         virtual void LogError(const std::string& msg) const = 0;
+
+        virtual void SubmitPrimitive2d(const Primitive2d& prim) = 0;
         
+        void SignalResize();
+
         // Debug
 
         void SubmitDebugGui(std::function<void()> drawFunc);

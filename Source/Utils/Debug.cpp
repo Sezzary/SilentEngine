@@ -47,7 +47,7 @@ namespace Silent::Utils::Debug
         logger->flush_on(spdlog::level::info);
         logger->set_pattern("[%Y-%b-%d %T] [%^%l%$] %v");
 
-        // Initialize ImGui.
+        // Initialize `ImGui`.
         ImGui::CreateContext();
         auto imguiPath             = (fs.GetWorkFolder() / IMGUI_FILENAME).string();
         ImGui::GetIO().IniFilename = CopyString(imguiPath.c_str(), imguiPath.size());
@@ -91,6 +91,7 @@ namespace Silent::Utils::Debug
             constexpr const char* WEAPON_CONTROL_ITEMS[]    = { "Switch", "Press" };
             constexpr const char* VIEW_MODE_ITEMS[]         = { "Normal", "Self view" };
 
+            auto& options  = g_App.GetOptions();
             auto& renderer = g_App.GetRenderer();
 
             // Main tabs.
@@ -112,6 +113,13 @@ namespace Silent::Utils::Debug
                 if (ImGui::BeginTabItem("Renderer"))
                 {
                     g_DebugData.Page = DebugPage::Renderer;
+
+                    // `Draw calls` info.
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("Draw calls:", 1, 0);
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::Text("%d", renderer.GetDrawCallCount(), 1, 1);
 
                     // `Wireframe mode` checkbox.
                     ImGui::Checkbox("Wireframe mode", &g_DebugData.EnableWireframeMode);

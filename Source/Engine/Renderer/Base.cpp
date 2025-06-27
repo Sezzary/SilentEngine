@@ -2,9 +2,20 @@
 #include "Engine/Renderer/Base.h"
 
 #include "Engine/Application.h"
+#include "Engine/Renderer/Objects/Primitive2d.h"
 
 namespace Silent::Renderer
 {
+    RendererType RendererBase::GetType() const
+    {
+        return _type;
+    }
+
+    uint RendererBase::GetDrawCallCount() const
+    {
+        return _drawCallCount;
+    }
+
     Vector2i RendererBase::GetScreenResolution() const
     {
         constexpr auto RETRO_RES = Vector2i(320, 240);
@@ -43,11 +54,6 @@ namespace Silent::Renderer
         }
 
         return res;
-    }
-
-    RendererType RendererBase::GetType() const
-    {
-        return _type;
     }
 
     void RendererBase::SignalResize()

@@ -160,7 +160,7 @@ namespace Silent::Renderer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Reserve memory.
-        //_debugPrimitives2d.reserve(512);
+        _primitives2d.reserve(1024);
 
         CreateShaderProgram();
         CreateDebugGui();
@@ -244,6 +244,9 @@ namespace Silent::Renderer
         }
 
         // Clear scene. TODO
+
+        // Clear primitives
+        _primitives2d.clear();
     }
 
     void OpenGlRenderer::RefreshTextureFilter()
@@ -436,7 +439,7 @@ namespace Silent::Renderer
         TRI_COLORS[1] = colorEnd / 31.0f;
         TRI_COLORS[2] = 1.0f;
 
-        TRI_COLORS[3]  = 0.0f;
+        TRI_COLORS[3] = 0.0f;
         TRI_COLORS[4] = colorStart / 31.0f;
         TRI_COLORS[5] = 1.0f;
 
@@ -676,11 +679,12 @@ namespace Silent::Renderer
         _vertexArray.LinkAttrib(_vertexPositionBuffer, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
         _vertexArray.LinkAttrib(_vertexTexCoordBuffer, 1, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
 
+        // Cube.
+
         _vertexCubeArray.Initialize();
         _vertexCubeArray.Bind();
 
         _vertexCubeBuffer.Initialize(ToSpan(CUBE_VERICES));
-
         _vertexCubeArray.LinkAttrib(_vertexCubeBuffer, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0);
         _vertexCubeArray.LinkAttrib(_vertexCubeBuffer, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 

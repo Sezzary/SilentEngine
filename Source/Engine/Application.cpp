@@ -40,7 +40,7 @@ namespace Silent
     {
         return *_work.Renderer;
     }
-    
+
     SavegameManager& ApplicationManager::GetSavegame()
     {
         return _work.Savegame;

@@ -409,14 +409,15 @@ namespace Silent::Input
                 // Erase back to previous space.
                 else if (ctrlAction.IsHeld())
                 {
-                    uint spaceCount = 0;
-                    bool isCurChar  = buffer.Text.at(buffer.Cursor - 1) != ' ';
-                    bool isPrevChar = isCurChar;
+                    uint spaceCount  = 0;
+                    bool isCurSpace  = buffer.Text.at(buffer.Cursor - 1) == ' ';
+                    bool isPrevSpace = isCurSpace;
                     while (buffer.Cursor > 0 &&
-                            (isCurChar == isPrevChar ||                        // Word or trailing spaces.
-                             ((isCurChar && !isPrevChar) && spaceCount == 1))) // Word with 1 trailing space.
+                            (isCurSpace == isPrevSpace ||                        // Word or trailing spaces.
+                             ((!isCurSpace && isPrevSpace) && spaceCount == 1))) // Word with 1 trailing space after.
                     {
-                        if (!isCurChar)
+                        // Count trailing spaces.
+                        if (isCurSpace)
                         {
                             spaceCount++;
                         }
@@ -426,8 +427,8 @@ namespace Silent::Input
                         buffer.Cursor--;
                         if (buffer.Cursor > 0)
                         {
-                            isPrevChar = isCurChar;
-                            isCurChar  = buffer.Text.at(buffer.Cursor - 1) != ' ';
+                            isPrevSpace = isCurSpace;
+                            isCurSpace  = buffer.Text.at(buffer.Cursor - 1) == ' ';
                         }
                     }
                 }
@@ -468,14 +469,25 @@ namespace Silent::Input
                 // Erase forward to next space.
                 else if (ctrlAction.IsHeld())
                 {
-                    char curChar = 0;
-                    while (buffer.Cursor < buffer.Text.size() && curChar != ' ')
+                    uint spaceCount  = 0;
+                    bool isCurSpace  = buffer.Text.at(buffer.Cursor) == ' ';
+                    bool isPrevSpace = isCurSpace;
+                    while (buffer.Cursor < buffer.Text.size() &&
+                            (isCurSpace == isPrevSpace ||                        // Word or trailing spaces.
+                             ((!isCurSpace && isPrevSpace) && spaceCount == 1))) // Word with 1 trailing space behind.
                     {
+                        // Count trailing spaces.
+                        if (isCurSpace)
+                        {
+                            spaceCount++;
+                        }
+
                         buffer.Text.erase(buffer.Text.begin() + buffer.Cursor);
 
                         if (buffer.Cursor < buffer.Text.size())
                         {
-                            curChar = buffer.Text.at(buffer.Cursor);
+                            isPrevSpace = isCurSpace;
+                            isCurSpace  = buffer.Text.at(buffer.Cursor) == ' ';
                         }
                     }
                 }

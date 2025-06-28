@@ -384,9 +384,16 @@ namespace Silent::Input
         const auto& bsAction    = input.GetAction(In::Backspace);
         const auto& delAction   = input.GetAction(In::Delete);
 
+        // No text.
+        if (buffer.Text.empty())
+        {
+            return false;
+        }
+
+        // Backspace.
         if (bsAction.IsHeld())
         {
-            if (!buffer.Text.empty() && bsAction.IsPulsed(PULSE_DELAY_SEC, PULSE_INITIAL_DELAY_SEC))
+            if (bsAction.IsPulsed(PULSE_DELAY_SEC, PULSE_INITIAL_DELAY_SEC))
             {
                 PushUndo(buffer);
 
@@ -414,7 +421,7 @@ namespace Silent::Input
                     bool isPrevSpace = isCurSpace;
                     while (buffer.Cursor > 0 &&
                             (isCurSpace == isPrevSpace ||                        // Word or trailing spaces.
-                             ((!isCurSpace && isPrevSpace) && spaceCount == 1))) // Word with 1 trailing space after.
+                             ((!isCurSpace && isPrevSpace) && spaceCount == 1))) // Word with 1 trailing space in front.
                     {
                         // Count trailing spaces.
                         if (isCurSpace)
@@ -445,9 +452,10 @@ namespace Silent::Input
 
             return true;
         }
-        else if (!buffer.Text.empty() && delAction.IsHeld())
+        // Delete.
+        else if (delAction.IsHeld())
         {
-            if (!buffer.Text.empty() && delAction.IsPulsed(PULSE_DELAY_SEC, PULSE_INITIAL_DELAY_SEC))
+            if (delAction.IsPulsed(PULSE_DELAY_SEC, PULSE_INITIAL_DELAY_SEC))
             {
                 PushUndo(buffer);
 
@@ -520,6 +528,7 @@ namespace Silent::Input
         const auto& rightAction = input.GetAction(In::ArrowRight);
         const auto& aAction     = input.GetAction(In::A);
 
+        // No text.
         if (buffer.Text.empty())
         {
             return false;

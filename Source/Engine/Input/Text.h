@@ -4,6 +4,11 @@
 
 namespace Silent::Input
 {
+    struct TextSnapshot
+    {
+
+    };
+
     struct TextBuffer
     {
         std::string                          Text      = {};
@@ -22,7 +27,7 @@ namespace Silent::Input
     private:
         // Constants
 
-        static constexpr float PULSE_DELAY_SEC         = 0.05f;
+        static constexpr float PULSE_DELAY_SEC         = 0.025f;
         static constexpr float PULSE_INITIAL_DELAY_SEC = 0.3f;
         static constexpr uint  HISTORY_SIZE_MAX        = 128;
 

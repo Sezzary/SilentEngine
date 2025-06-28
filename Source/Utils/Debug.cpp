@@ -25,7 +25,17 @@ namespace Silent::Utils::Debug
 
     void Scratchpad()
     {
-        
+        auto& input = g_App.GetInput();
+
+        bool isInit = true;
+        if (isInit)
+        {
+            input.InsertText("Test");
+            isInit = false;
+        }
+
+        input.UpdateText("Test");
+        //Message(input.GetText("Test")); // TODO: Doesn't work.
     }
 
     void InitializeDebug()
@@ -73,7 +83,7 @@ namespace Silent::Utils::Debug
         const auto& options = g_App.GetOptions();
         if (!options->EnableDebugGui)
         {
-            Messages.clear();
+            //Messages.clear();
             return;
         }
 
@@ -534,6 +544,12 @@ namespace Silent::Utils::Debug
                         ImGui::Bullet();
                         ImGui::TextWrapped(msg.c_str());
                     }
+
+                    // TEMP
+                    ImGui::Bullet();
+                    ImGui::TextWrapped(g_App.GetInput().GetText("Test").c_str());
+                    ImGui::Bullet();
+                    ImGui::TextWrapped(std::to_string(g_App.GetInput().GetTextCursorPosition("Test")).c_str());
                 }
                 ImGui::PopStyleColor();
                 ImGui::EndChild();

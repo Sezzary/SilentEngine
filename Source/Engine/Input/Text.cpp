@@ -1,6 +1,7 @@
 #include "Framework.h"
 #include "Engine/Input/Text.h"
 
+#include "Engine/Application.h"
 #include "Engine/Input/Action.h"
 #include "Utils/Utils.h"
 
@@ -145,7 +146,7 @@ namespace Silent::Input
         buffer.CharCountMax = charCountMax;
     }
 
-    void TextManager::UpdateBuffer(const std::string& bufferId, const std::unordered_map<ActionId, Action>& actions)
+    void TextManager::UpdateBuffer(const std::string& bufferId)
     {
         auto it = _buffers.find(bufferId);
         if (it == _buffers.end())
@@ -157,35 +158,35 @@ namespace Silent::Input
         auto& [keyId, buffer] = *it;
 
         // Undo, redo.
-        if (HandleHistory(buffer, actions))
+        if (HandleHistory(buffer))
         {
             UpdateLineStarts(buffer);
             return;
         }
 
         // Cut, copy, paste.
-        if (HandleClipboard(buffer, actions))
+        if (HandleClipboard(buffer))
         {
             UpdateLineStarts(buffer);
             return;
         }
 
         // Add character.
-        if (HandleCharacterAdd(buffer, actions))
+        if (HandleCharacterAdd(buffer))
         {
             UpdateLineStarts(buffer);
             return;
         }
 
         // Clear characters.
-        if (HandleCharacterClear(buffer, actions))
+        if (HandleCharacterClear(buffer))
         {
             UpdateLineStarts(buffer);
             return;
         }
 
         // Move cursor, make selection.
-        if (HandleCursorSelection(buffer, actions))
+        if (HandleCursorSelection(buffer))
         {
             return;
         }
@@ -203,11 +204,13 @@ namespace Silent::Input
         _buffers.erase(bufferId);
     }
 
-    bool TextManager::HandleHistory(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions)
+    bool TextManager::HandleHistory(TextBuffer& buffer)
     {
-        const auto& shiftAction = actions.at(In::Shift);
-        const auto& ctrlAction  = actions.at(In::Ctrl);
-        const auto& zAction     = actions.at(In::Z);
+        const auto& input = g_App.GetInput();
+
+        const auto& shiftAction = input.GetAction(In::Shift);
+        const auto& ctrlAction  = input.GetAction(In::Ctrl);
+        const auto& zAction     = input.GetAction(In::Z);
 
         // Undo/redo.
         if (ctrlAction.IsHeld() && zAction.IsHeld())
@@ -236,17 +239,19 @@ namespace Silent::Input
         return false;
     }
 
-    bool TextManager::HandleClipboard(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions)
+    bool TextManager::HandleClipboard(TextBuffer& buffer)
     {
         if (_clipboard.empty() && !buffer.Selection.has_value())
         {
             return false;
         }
 
-        const auto& ctrlAction = actions.at(In::Ctrl);
-        const auto& xAction    = actions.at(In::X);
-        const auto& cAction    = actions.at(In::C);
-        const auto& vAction    = actions.at(In::V);
+        const auto& input = g_App.GetInput();
+
+        const auto& ctrlAction = input.GetAction(In::Ctrl);
+        const auto& xAction    = input.GetAction(In::X);
+        const auto& cAction    = input.GetAction(In::C);
+        const auto& vAction    = input.GetAction(In::V);
 
         if (ctrlAction.IsHeld())
         {
@@ -311,19 +316,21 @@ namespace Silent::Input
         return false;
     }
 
-    bool TextManager::HandleCharacterAdd(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions)
+    bool TextManager::HandleCharacterAdd(TextBuffer& buffer)
     {
-        const auto& shiftAction = actions.at(In::Shift);
-
         if (buffer.Text.size() >= buffer.CharCountMax)
         {
             return false;
         }
 
+        const auto& input = g_App.GetInput();
+
+        const auto& shiftAction = input.GetAction(In::Shift);
+
         bool hasNewChar = false;
         for (auto actionId : ACTION_ID_GROUPS.at(ActionGroupId::Printable))
         {
-            const auto& action = actions.at(actionId);
+            const auto& action = input.GetAction(actionId);
             const auto& chars  = PRINTABLE_ACTION_CHARS.at(actionId);
 
             if (!hasNewChar && action.IsHeld())
@@ -368,12 +375,14 @@ namespace Silent::Input
         return hasNewChar;
     }
 
-    bool TextManager::HandleCharacterClear(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions)
+    bool TextManager::HandleCharacterClear(TextBuffer& buffer)
     {
-        const auto& shiftAction = actions.at(In::Shift);
-        const auto& ctrlAction  = actions.at(In::Ctrl);
-        const auto& bsAction    = actions.at(In::Backspace);
-        const auto& delAction   = actions.at(In::Delete);
+        const auto& input = g_App.GetInput();
+
+        const auto& shiftAction = input.GetAction(In::Shift);
+        const auto& ctrlAction  = input.GetAction(In::Ctrl);
+        const auto& bsAction    = input.GetAction(In::Backspace);
+        const auto& delAction   = input.GetAction(In::Delete);
 
         if (bsAction.IsHeld())
         {
@@ -400,15 +409,25 @@ namespace Silent::Input
                 // Erase back to previous space.
                 else if (ctrlAction.IsHeld())
                 {
-                    char curChar = 0;
-                    while (buffer.Cursor > 0 && curChar != ' ')
+                    uint spaceCount = 0;
+                    bool isCurChar  = buffer.Text.at(buffer.Cursor - 1) != ' ';
+                    bool isPrevChar = isCurChar;
+                    while (buffer.Cursor > 0 &&
+                            (isCurChar == isPrevChar ||                        // Word or trailing spaces.
+                             ((isCurChar && !isPrevChar) && spaceCount == 1))) // Word with 1 trailing space.
                     {
+                        if (!isCurChar)
+                        {
+                            spaceCount++;
+                        }
+
                         buffer.Text.erase(buffer.Text.begin() + (buffer.Cursor - 1));
 
                         buffer.Cursor--;
                         if (buffer.Cursor > 0)
                         {
-                            curChar = buffer.Text.at(buffer.Cursor - 1);
+                            isPrevChar = isCurChar;
+                            isCurChar  = buffer.Text.at(buffer.Cursor - 1) != ' ';
                         }
                     }
                 }
@@ -476,16 +495,18 @@ namespace Silent::Input
         return false;
     }
 
-    bool TextManager::HandleCursorSelection(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions)
+    bool TextManager::HandleCursorSelection(TextBuffer& buffer)
     {
-        const auto& escAction   = actions.at(In::Escape);
-        const auto& homeAction  = actions.at(In::Home);
-        const auto& endAction   = actions.at(In::End);
-        const auto& shiftAction = actions.at(In::Shift);
-        const auto& ctrlAction  = actions.at(In::Ctrl);
-        const auto& leftAction  = actions.at(In::ArrowLeft);
-        const auto& rightAction = actions.at(In::ArrowRight);
-        const auto& aAction     = actions.at(In::A);
+        const auto& input = g_App.GetInput();
+
+        const auto& escAction   = input.GetAction(In::Escape);
+        const auto& homeAction  = input.GetAction(In::Home);
+        const auto& endAction   = input.GetAction(In::End);
+        const auto& shiftAction = input.GetAction(In::Shift);
+        const auto& ctrlAction  = input.GetAction(In::Ctrl);
+        const auto& leftAction  = input.GetAction(In::ArrowLeft);
+        const auto& rightAction = input.GetAction(In::ArrowRight);
+        const auto& aAction     = input.GetAction(In::A);
 
         if (buffer.Text.empty())
         {

@@ -22,7 +22,7 @@ namespace Silent::Input
     private:
         // Constants
 
-        static constexpr float PULSE_DELAY_SEC         = 0.1f;
+        static constexpr float PULSE_DELAY_SEC         = 0.05f;
         static constexpr float PULSE_INITIAL_DELAY_SEC = 0.3f;
         static constexpr uint  HISTORY_SIZE_MAX        = 128;
 
@@ -46,17 +46,17 @@ namespace Silent::Input
         // Utilities
 
         void InsertBuffer(const std::string& bufferId, uint lineWidthMax, uint charCountMax);
-        void UpdateBuffer(const std::string& bufferId, const std::unordered_map<ActionId, Action>& actions);
+        void UpdateBuffer(const std::string& bufferId);
         void RemoveBuffer(const std::string& bufferId);
 
     private:
         // Helpers
 
-        bool HandleHistory(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions);
-        bool HandleClipboard(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions);
-        bool HandleCharacterAdd(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions);
-        bool HandleCharacterClear(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions);
-        bool HandleCursorSelection(TextBuffer& buffer, const std::unordered_map<ActionId, Action>& actions);
+        bool HandleHistory(TextBuffer& buffer);
+        bool HandleClipboard(TextBuffer& buffer);
+        bool HandleCharacterAdd(TextBuffer& buffer);
+        bool HandleCharacterClear(TextBuffer& buffer);
+        bool HandleCursorSelection(TextBuffer& buffer);
 
         void PushUndo(TextBuffer& buffer);
         void UpdateLineStarts(TextBuffer& buffer);

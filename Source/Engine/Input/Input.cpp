@@ -130,7 +130,7 @@ namespace Silent::Input
     
     void InputManager::UpdateText(const std::string& textId)
     {
-        _text.UpdateBuffer(textId, _actions);
+        _text.UpdateBuffer(textId);
     }
 
     void InputManager::RemoveText(const std::string& textId)

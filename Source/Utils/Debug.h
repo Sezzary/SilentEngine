@@ -35,10 +35,17 @@ namespace Silent::Utils::Debug
     {
         DebugPage Page = DebugPage::Renderer;
 
+        // Temp
+
+        float BlendAlpha = 0.0f;
+
         // Renderer
 
         bool EnableWireframeMode = false;
-        float BlendAlpha = 0.0f;
+
+        // Cheats
+
+        bool EnableFreezeMode = false;
     };
 
     extern DebugData g_DebugData;

@@ -4,8 +4,10 @@
 #include "Engine/Input/Action.h"
 #include "Engine/Input/Event.h"
 #include "Engine/Services/Time.h"
+#include "Utils/Utils.h"
 
 using namespace Silent::Services;
+using namespace Silent::Utils;
 
 namespace Silent::Input
 {
@@ -319,23 +321,6 @@ namespace Silent::Input
         return profile;
     }
 
-    void BindingManager::SetEventBinding(BindingProfileId profileId, ActionId actionId, EventId eventId)
-    {
-        // Overwrite or add new action-event binding.
-        // TODO: For now, only single event ID can be bound at one time.
-        _bindings[profileId][actionId] = { eventId };
-    }
-
-    void BindingManager::SetConflict(ActionId actionId, bool hasConflict)
-    {
-        _conflicts[actionId] = hasConflict;
-    }
-
-    bool BindingManager::TestConflict(ActionId actionId) const
-    {
-        return _conflicts.at(actionId);
-    }
-
     void BindingManager::Initialize(const BindingProfile& customKeyboardMouseBinds, const BindingProfile& customGamepadBinds)
     {
         _bindings =
@@ -345,23 +330,28 @@ namespace Silent::Input
             { BindingProfileId::KeyboardMouseType3,  USER_KEYBOARD_MOUSE_BINDING_PROFILE_TYPE_3 },
             { BindingProfileId::KeyboardMouseCustom, customKeyboardMouseBinds },
 
-            { BindingProfileId::GamepadType1,        USER_GAMEPAD_BINDING_PROFILE_TYPE_1 },
-            { BindingProfileId::GamepadType2,        USER_GAMEPAD_BINDING_PROFILE_TYPE_2 },
-            { BindingProfileId::GamepadType3,        USER_GAMEPAD_BINDING_PROFILE_TYPE_3 },
-            { BindingProfileId::GamepadCustom,       customGamepadBinds },
+            { BindingProfileId::GamepadType1,  USER_GAMEPAD_BINDING_PROFILE_TYPE_1 },
+            { BindingProfileId::GamepadType2,  USER_GAMEPAD_BINDING_PROFILE_TYPE_2 },
+            { BindingProfileId::GamepadType3,  USER_GAMEPAD_BINDING_PROFILE_TYPE_3 },
+            { BindingProfileId::GamepadCustom, customGamepadBinds },
 
-            { BindingProfileId::RawKeyboard,         RAW_KEYBOARD_BINDING_PROFILE },
-            { BindingProfileId::RawMouse,            RAW_MOUSE_BINDING_PROFILE },
-            { BindingProfileId::RawGamepad,          RAW_GAMEPAD_BINDING_PROFILE }
+            { BindingProfileId::RawKeyboard, RAW_KEYBOARD_BINDING_PROFILE },
+            { BindingProfileId::RawMouse,    RAW_MOUSE_BINDING_PROFILE },
+            { BindingProfileId::RawGamepad,  RAW_GAMEPAD_BINDING_PROFILE }
         };
+    }
 
-        // TODO: Probably not needed for this project. Conflicts are used to resolve overlapping
-        // profiles, but this port doesn't inherit such quirks.
-        _conflicts.reserve((int)ActionId::Count);
-        for (int i = 0; i < (int)ActionId::Count; i++)
+    void BindingManager::BindEventId(BindingProfileId profileId, ActionId actionId, EventId eventId)
+    {
+        // Bind new event.
+        if (!Contains(_bindings[profileId][actionId], eventId))
         {
-            auto actionId = (ActionId)i;
-            _conflicts.insert({ actionId, false });
+            _bindings[profileId][actionId].push_back(eventId);
         }
+    }
+
+    void BindingManager::UnbindEventIds(BindingProfileId profileId, ActionId actionId)
+    {
+        _bindings[profileId][actionId].clear();
     }
 }

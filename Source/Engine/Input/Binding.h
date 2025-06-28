@@ -53,8 +53,7 @@ namespace Silent::Input
     private:
         // Fields
 
-        std::unordered_map<BindingProfileId, BindingProfile> _bindings  = {}; // Key = binding profile ID, value = binding profile.
-        std::unordered_map<ActionId, bool>                   _conflicts = {}; // Key = action ID, value = has conflict.
+        std::unordered_map<BindingProfileId, BindingProfile> _bindings = {}; // Key = binding profile ID, value = binding profile.
 
     public:
         // Constructors
@@ -66,17 +65,10 @@ namespace Silent::Input
         const std::vector<EventId>& GetBoundEventIds(BindingProfileId profileId, ActionId actionId) const;
         const BindingProfile&       GetBindingProfile(BindingProfileId profileId) const;
 
-        // Setters
-
-        void SetEventBinding(BindingProfileId profileId, ActionId actionId, EventId eventId);
-        void SetConflict(ActionId actionId, bool hasConflict);
-
-        // Inquirers
-
-        bool TestConflict(ActionId actionId) const;
-
         // Utilities
 
         void Initialize(const BindingProfile& customKeyboardMouseBinds, const BindingProfile& customGamepadBinds);
+        void BindEventId(BindingProfileId profileId, ActionId actionId, EventId eventId);
+        void UnbindEventIds(BindingProfileId profileId, ActionId actionId);
     };
 }

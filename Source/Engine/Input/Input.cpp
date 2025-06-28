@@ -28,7 +28,7 @@ namespace Silent::Input
 
     const Vector2& InputManager::GetCursorPosition() const
     {
-        return _events.CursorPosition;
+        return _states.CursorPosition;
     }
 
     const std::string& InputManager::GetText(const std::string& textId) const
@@ -62,7 +62,7 @@ namespace Silent::Input
 
     bool InputManager::IsUsingGamepad() const
     {
-        return _events.IsUsingGamepad;
+        return _states.IsUsingGamepad;
     }
 
     void InputManager::Initialize()
@@ -84,7 +84,7 @@ namespace Silent::Input
         }
 
         // Initialize event states and control axes.
-        _events.States.resize((int)EventId::Count);
+        _states.Events.resize((int)EventId::Count);
         _analogAxes.resize((int)AnalogAxisId::Count);
 
         // Initialize actions.
@@ -152,10 +152,10 @@ namespace Silent::Input
                 bool state = keyboardState[scanCode];
                 if (state)
                 {
-                    _events.IsUsingGamepad = false;
+                    _states.IsUsingGamepad = false;
                 }
 
-                _events.States[eventStateIdx] = state ? 1.0f : 0.0f;
+                _states.Events[eventStateIdx] = state ? 1.0f : 0.0f;
             }
 
             eventStateIdx++;
@@ -167,10 +167,10 @@ namespace Silent::Input
             bool state = modState & modCode;
             if (state)
             {
-                _events.IsUsingGamepad = false;
+                _states.IsUsingGamepad = false;
             }
 
-            _events.States[eventStateIdx] = state ? 1.0f : 0.0f;
+            _states.Events[eventStateIdx] = state ? 1.0f : 0.0f;
             eventStateIdx++;
         }
     }
@@ -190,28 +190,28 @@ namespace Silent::Input
             bool state = butState & SDL_BUTTON_MASK(butCode);
             if (state)
             {
-                _events.IsUsingGamepad = false;
+                _states.IsUsingGamepad = false;
             }
 
-            _events.States[eventStateIdx] = state ? 1.0f : 0.0f;
+            _states.Events[eventStateIdx] = state ? 1.0f : 0.0f;
             eventStateIdx++;
         }
 
         if (wheelAxis != Vector2::Zero)
         {
-            _events.IsUsingGamepad = false;
+            _states.IsUsingGamepad = false;
         }
 
         // Set mouse scroll event states.
-        _events.States[eventStateIdx]     = (wheelAxis.x < 0.0f) ? std::clamp(abs(wheelAxis.x), 0.0f, 1.0f) : 0.0f;
-        _events.States[eventStateIdx + 1] = (wheelAxis.x > 0.0f) ? std::clamp(abs(wheelAxis.x), 0.0f, 1.0f) : 0.0f;
-        _events.States[eventStateIdx + 2] = (wheelAxis.y < 0.0f) ? std::clamp(abs(wheelAxis.y), 0.0f, 1.0f) : 0.0f;
-        _events.States[eventStateIdx + 3] = (wheelAxis.y > 0.0f) ? std::clamp(abs(wheelAxis.y), 0.0f, 1.0f) : 0.0f;
+        _states.Events[eventStateIdx]     = (wheelAxis.x < 0.0f) ? std::clamp(abs(wheelAxis.x), 0.0f, 1.0f) : 0.0f;
+        _states.Events[eventStateIdx + 1] = (wheelAxis.x > 0.0f) ? std::clamp(abs(wheelAxis.x), 0.0f, 1.0f) : 0.0f;
+        _states.Events[eventStateIdx + 2] = (wheelAxis.y < 0.0f) ? std::clamp(abs(wheelAxis.y), 0.0f, 1.0f) : 0.0f;
+        _states.Events[eventStateIdx + 3] = (wheelAxis.y > 0.0f) ? std::clamp(abs(wheelAxis.y), 0.0f, 1.0f) : 0.0f;
         eventStateIdx                    += SQUARE(Vector2::AXIS_COUNT);
 
         // Set mouse position state.
-        _events.PrevCursorPosition = _events.CursorPosition;
-        _events.CursorPosition     = pos;
+        _states.PrevCursorPosition = _states.CursorPosition;
+        _states.CursorPosition     = pos;
 
         auto res = Vector2i::Zero;
         if (!SDL_GetWindowSize(&window, &res.x, &res.y))
@@ -220,17 +220,17 @@ namespace Silent::Input
         }
         
         float sensitivity = (options->MouseSensitivity * 0.1f) + 0.4f;
-        auto  moveAxis    = ((_events.CursorPosition - _events.PrevCursorPosition) / res.ToVector2()) * sensitivity; // TODO
+        auto  moveAxis    = ((_states.CursorPosition - _states.PrevCursorPosition) / res.ToVector2()) * sensitivity; // TODO
         if (moveAxis != Vector2::Zero)
         {
-            _events.IsUsingGamepad = false;
+            _states.IsUsingGamepad = false;
         }
 
         // Set mouse movement event states.
-        _events.States[eventStateIdx]     = (moveAxis.x < 0.0f) ? abs(moveAxis.x) : 0.0f;
-        _events.States[eventStateIdx + 1] = (moveAxis.x > 0.0f) ? abs(moveAxis.x) : 0.0f;
-        _events.States[eventStateIdx + 2] = (moveAxis.y < 0.0f) ? abs(moveAxis.y) : 0.0f;
-        _events.States[eventStateIdx + 3] = (moveAxis.y > 0.0f) ? abs(moveAxis.y) : 0.0f;
+        _states.Events[eventStateIdx]     = (moveAxis.x < 0.0f) ? abs(moveAxis.x) : 0.0f;
+        _states.Events[eventStateIdx + 1] = (moveAxis.x > 0.0f) ? abs(moveAxis.x) : 0.0f;
+        _states.Events[eventStateIdx + 2] = (moveAxis.y < 0.0f) ? abs(moveAxis.y) : 0.0f;
+        _states.Events[eventStateIdx + 3] = (moveAxis.y > 0.0f) ? abs(moveAxis.y) : 0.0f;
         eventStateIdx                    += SQUARE(Vector2::AXIS_COUNT);
 
         // Set camera axis. NOTE: Right gamepad stick takes priority over mouse.
@@ -254,10 +254,10 @@ namespace Silent::Input
             }
             if (state)
             {
-                _events.IsUsingGamepad = true;
+                _states.IsUsingGamepad = true;
             }
 
-            _events.States[eventStateIdx] = state ? 1.0f : 0.0f;
+            _states.Events[eventStateIdx] = state ? 1.0f : 0.0f;
             eventStateIdx++;
         }
 
@@ -303,13 +303,13 @@ namespace Silent::Input
             const auto& axis = stickAxes[i];
             if (axis != Vector2::Zero)
             {
-                _events.IsUsingGamepad = true;
+                _states.IsUsingGamepad = true;
             }
 
-            _events.States[eventStateIdx + i]       = (axis.x < 0.0f) ? abs(axis.x) : 0.0f;
-            _events.States[eventStateIdx + (i + 1)] = (axis.x > 0.0f) ? abs(axis.x) : 0.0f;
-            _events.States[eventStateIdx + (i + 2)] = (axis.y < 0.0f) ? abs(axis.y) : 0.0f;
-            _events.States[eventStateIdx + (i + 3)] = (axis.y > 0.0f) ? abs(axis.y) : 0.0f;
+            _states.Events[eventStateIdx + i]       = (axis.x < 0.0f) ? abs(axis.x) : 0.0f;
+            _states.Events[eventStateIdx + (i + 1)] = (axis.x > 0.0f) ? abs(axis.x) : 0.0f;
+            _states.Events[eventStateIdx + (i + 2)] = (axis.y < 0.0f) ? abs(axis.y) : 0.0f;
+            _states.Events[eventStateIdx + (i + 3)] = (axis.y > 0.0f) ? abs(axis.y) : 0.0f;
             _analogAxes[i]                          = axis;
             eventStateIdx                          += Vector2::AXIS_COUNT * 2;
         }
@@ -339,10 +339,10 @@ namespace Silent::Input
             }
             if (state > 0.0f)
             {
-                _events.IsUsingGamepad = true;
+                _states.IsUsingGamepad = true;
             }
 
-            _events.States[eventStateIdx] = state;
+            _states.Events[eventStateIdx] = state;
             eventStateIdx++;
         }
     }
@@ -398,7 +398,7 @@ namespace Silent::Input
                         auto gamepadEventIds = gamepadProfile.at(actionId);
                         for (const auto& eventId : gamepadEventIds)
                         {
-                            state = std::max(state, _events.States[(int)eventId]);
+                            state = std::max(state, _states.Events[(int)eventId]);
                         }
                     }
 
@@ -408,7 +408,7 @@ namespace Silent::Input
                         auto kmEventIds = kmProfile.at(actionId);
                         for (const auto& eventId : kmEventIds)
                         {
-                            state = std::max(state, _events.States[(int)eventId]);
+                            state = std::max(state, _states.Events[(int)eventId]);
                         }
                     }
 
@@ -431,7 +431,7 @@ namespace Silent::Input
 
                     for (auto eventId : eventIds)
                     {
-                        state = std::max(state, _events.States[(int)eventId]);
+                        state = std::max(state, _states.Events[(int)eventId]);
                     }
 
                     // Use max bound event state.
@@ -453,39 +453,39 @@ namespace Silent::Input
     {
         // Capture screenshot.
         static bool dbScreenshot = true;
-        if ((_events.States[(int)EventId::PrintScreen] || _events.States[(int)EventId::F12]) && dbScreenshot)
+        if ((_states.Events[(int)EventId::PrintScreen] || _states.Events[(int)EventId::F12]) && dbScreenshot)
         {
             const auto& renderer = g_App.GetRenderer();
             renderer.SaveScreenshot();
 
             Log("Captured screenshot.", LogLevel::Info, LogMode::DebugRelease, true);
         }
-        dbScreenshot = !(_events.States[(int)EventId::PrintScreen] || _events.States[(int)EventId::F12]);
+        dbScreenshot = !(_states.Events[(int)EventId::PrintScreen] || _states.Events[(int)EventId::F12]);
 
         // Toggle fullscreen.
         static bool dbFullscreen = true;
-        if (((_events.States[(int)EventId::Alt] && _events.States[(int)EventId::Return]) || _events.States[(int)EventId::F11]) && dbFullscreen)
+        if (((_states.Events[(int)EventId::Alt] && _states.Events[(int)EventId::Return]) || _states.Events[(int)EventId::F11]) && dbFullscreen)
         {
             g_App.ToggleFullscreen();
 
             Log("Toggled fullscreen.", LogLevel::Info, LogMode::DebugRelease, true);
         }
-        dbFullscreen = !((_events.States[(int)EventId::Alt] && _events.States[(int)EventId::Return]) || _events.States[(int)EventId::F11]);
+        dbFullscreen = !((_states.Events[(int)EventId::Alt] && _states.Events[(int)EventId::Return]) || _states.Events[(int)EventId::F11]);
 
         auto& options = g_App.GetOptions();
         if (options->EnableDebugMode)
         {
             // Toggle debug GUI.
             static bool dbDebugGui = true;
-            if (_events.States[(int)EventId::Grave] && dbDebugGui)
+            if (_states.Events[(int)EventId::Grave] && dbDebugGui)
             {
                 options->EnableDebugGui = !options->EnableDebugGui;
                 g_App.ToggleCursor();
-                g_DebugData.Page = DebugPage::None;
+                g_DebugData.Page = options->EnableDebugGui ? DebugPage::Renderer : DebugPage::None;
 
                 Log("Toggled debug mode.", LogLevel::Info, LogMode::DebugRelease, true);
             }
-            dbDebugGui = !_events.States[(int)EventId::Grave];
+            dbDebugGui = !_states.Events[(int)EventId::Grave];
         }
     }
 

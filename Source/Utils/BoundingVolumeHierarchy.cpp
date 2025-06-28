@@ -1,9 +1,6 @@
 #include "Framework.h"
 #include "Utils/BoundingVolumeHierarchy.h"
 
-#include "Math/Math.h"
-using namespace Silent::Math;
-
 namespace Silent::Utils
 {
     bool BoundingVolumeHierarchy::Node::IsLeaf() const

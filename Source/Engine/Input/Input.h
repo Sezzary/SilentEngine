@@ -25,11 +25,10 @@ namespace Silent::Input
         LowAndHigh
     };
 
-    // TODO: Rename.
-    struct Event
+    struct States
     {
         bool               IsUsingGamepad     = false;
-        std::vector<float> States             = {}; // Index = `EventId`.
+        std::vector<float> Events             = {}; // Index = `EventId`.
         Vector2            CursorPosition     = {};
         Vector2            PrevCursorPosition = {};
     };
@@ -55,9 +54,9 @@ namespace Silent::Input
 
         SDL_Gamepad* _gamepad = nullptr;
 
-        TextManager                          _text       = TextManager();
         BindingManager                       _bindings   = BindingManager();
-        Event                                _events     = {};
+        TextManager                          _text       = TextManager();
+        States                               _states     = {};
         Rumble                               _rumble     = {};
         std::unordered_map<ActionId, Action> _actions    = {};
         std::vector<Vector2>                 _analogAxes = {}; // Index = `AnalogAxisId`.

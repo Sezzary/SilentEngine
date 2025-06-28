@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Math/Math.h"
-
-using namespace Silent::Math;
-
 // References:
 // https://github.com/erincatto/box2d/blob/28adacf82377d4113f2ed00586141463244b9d10/src/dynamic_tree.c
 // https://www.gdcvault.com/play/1025909/Math-for-Game-Developers-Dynamic

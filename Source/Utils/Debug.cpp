@@ -268,6 +268,9 @@ namespace Silent::Utils::Debug
                 {
                     g_DebugData.Page = DebugPage::Cheats;
 
+                    // `Freeze mode` checkbox.
+                    ImGui::Checkbox("Freeze mode", &g_DebugData.EnableFreezeMode);
+
                     ImGui::EndTabItem();
                 }
 

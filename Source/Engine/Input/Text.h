@@ -7,15 +7,16 @@ namespace Silent::Input
     struct TextSnapshot
     {
 
+        std::string                          Text      = {};
+        std::optional<std::pair<uint, uint>> Selection = {}; // First = selection start, second = selection end.
+        uint                                 Cursor    = 0;
     };
 
     struct TextBuffer
     {
-        std::string                          Text      = {};
-        std::optional<std::pair<uint, uint>> Selection = {}; // First = selection start, second = selection end.
-        std::deque<std::string>              Undo      = {};
-        std::deque<std::string>              Redo      = {};
-        uint                                 Cursor    = 0;
+        TextSnapshot             Snapshot = {};
+        std::deque<TextSnapshot> Undo     = {};
+        std::deque<TextSnapshot> Redo     = {};
 
         std::vector<uint> LineStarts   = {};
         uint              LineWidthMax = 0;

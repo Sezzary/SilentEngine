@@ -168,15 +168,15 @@ namespace Silent::Renderer
         // Log renderer specs.
         Log("Using OpenGL renderer:");
 
+        auto gpu    = std::string((const char*)glGetString(GL_RENDERER));
+        auto vendor = std::string((const char*)glGetString(GL_VENDOR));
+        Log("    GPU: " + gpu + ", " + vendor + ".");
+
         auto version = std::string((const char*)glGetString(GL_VERSION));
         Log("    Version: " + version + ".");
 
         auto shadingLangVersion = std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
         Log("    Shading language version: " + shadingLangVersion + ".");
-
-        auto gpu    = std::string((const char*)glGetString(GL_RENDERER));
-        auto vendor = std::string((const char*)glGetString(GL_VENDOR));
-        Log("    GPU: " + gpu + ", " + vendor + ".");
 
         int attribCountMax = 0;
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attribCountMax);

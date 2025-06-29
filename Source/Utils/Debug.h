@@ -12,7 +12,8 @@ namespace Silent::Utils::Debug
     {
         Info,
         Warning,
-        Error
+        Error,
+        Critical
     };
 
     enum class LogMode

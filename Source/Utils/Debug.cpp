@@ -654,6 +654,12 @@ namespace Silent::Utils::Debug
                     logger->error(msg);
                     break;
                 }
+
+                case LogLevel::Critical:
+                {
+                    logger->critical(msg);
+                    break;
+                }
             }
             logger->flush();
         }

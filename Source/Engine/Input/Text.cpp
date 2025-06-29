@@ -73,7 +73,7 @@ namespace Silent::Input
         }
 
         const auto& [keyId, buffer] = *it;
-        return buffer.Text;
+        return buffer.Snapshot.Text;
     }
 
     std::vector<std::string> TextManager::GetTextLines(const std::string& bufferId, uint low, uint high) const
@@ -86,7 +86,7 @@ namespace Silent::Input
         }
 
         const auto& [keyId, buffer] = *it;
-        if (buffer.Text.empty())
+        if (buffer.Snapshot.Text.empty())
         {
             return {};
         }
@@ -105,10 +105,10 @@ namespace Silent::Input
         for (int i = lineLow; i < lineHigh; i++)
         {
             uint lineStart = buffer.LineStarts[i];
-            uint lineEnd   = (i < (buffer.LineStarts.size() - 1)) ? buffer.LineStarts[i + 1] : buffer.Text.size();
+            uint lineEnd   = (i < (buffer.LineStarts.size() - 1)) ? buffer.LineStarts[i + 1] : buffer.Snapshot.Text.size();
 
-            auto start = buffer.Text.begin() + lineStart;
-            auto end   = buffer.Text.begin() + lineEnd;
+            auto start = buffer.Snapshot.Text.begin() + lineStart;
+            auto end   = buffer.Snapshot.Text.begin() + lineEnd;
             auto line  = std::string(start, end);
             lines.push_back(line);
         }
@@ -126,7 +126,7 @@ namespace Silent::Input
         }
 
         const auto& [keyId, buffer] = *it;
-        return buffer.Cursor;
+        return buffer.Snapshot.Cursor;
     }
 
     void TextManager::InsertBuffer(const std::string& bufferId, uint lineWidthMax, uint charCountMax)
@@ -222,13 +222,13 @@ namespace Silent::Input
 
                 if (!fromStack.empty())
                 {
-                    toStack.push_back(buffer.Text);
+                    toStack.push_back(buffer.Snapshot);
                     if (toStack.size() > HISTORY_SIZE_MAX)
                     {
                         toStack.pop_front();
                     }
 
-                    buffer.Text = fromStack.back();
+                    buffer.Snapshot = fromStack.back();
                     fromStack.pop_back();
                 }
             }
@@ -241,7 +241,7 @@ namespace Silent::Input
 
     bool TextManager::HandleClipboard(TextBuffer& buffer)
     {
-        if (_clipboard.empty() && !buffer.Selection.has_value())
+        if (_clipboard.empty() && !buffer.Snapshot.Selection.has_value())
         {
             return false;
         }
@@ -258,25 +258,25 @@ namespace Silent::Input
             // Cut selection.
             if (xAction.IsClicked())
             {
-                if (buffer.Selection.has_value())
+                if (buffer.Snapshot.Selection.has_value())
                 {
-                    auto start = buffer.Text.begin() + buffer.Selection->first;
-                    auto end   = buffer.Text.begin() + buffer.Selection->second;
+                    auto start = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->first;
+                    auto end   = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->second;
                     _clipboard = std::string(start, end);
-                    buffer.Text.erase(start, end);
+                    buffer.Snapshot.Text.erase(start, end);
 
-                    buffer.Cursor    = buffer.Selection->first;
-                    buffer.Selection = std::nullopt;
+                    buffer.Snapshot.Cursor    = buffer.Snapshot.Selection->first;
+                    buffer.Snapshot.Selection = std::nullopt;
                     return true;
                 }
             }
             // Copy selection.
             else if (cAction.IsClicked())
             {
-                if (buffer.Selection.has_value())
+                if (buffer.Snapshot.Selection.has_value())
                 {
-                    auto start = buffer.Text.begin() + buffer.Selection->first;
-                    auto end   = buffer.Text.begin() + buffer.Selection->second;
+                    auto start = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->first;
+                    auto end   = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->second;
                     _clipboard = std::string(start, end);
                     return true;
                 }
@@ -284,29 +284,29 @@ namespace Silent::Input
             // Paste copy.
             else if (vAction.IsClicked())
             {
-                if (!_clipboard.empty() && (buffer.Text.size() + _clipboard.size()) <= buffer.CharCountMax)
+                if (!_clipboard.empty() && (buffer.Snapshot.Text.size() + _clipboard.size()) <= buffer.CharCountMax)
                 {
                     // Replace selection.
-                    if (buffer.Selection.has_value())
+                    if (buffer.Snapshot.Selection.has_value())
                     {
-                        uint selectLength = buffer.Selection->second - buffer.Selection->first;
-                        if (((buffer.Text.size() + _clipboard.size()) - selectLength) <= buffer.CharCountMax)
+                        uint selectLength = buffer.Snapshot.Selection->second - buffer.Snapshot.Selection->first;
+                        if (((buffer.Snapshot.Text.size() + _clipboard.size()) - selectLength) <= buffer.CharCountMax)
                         {
-                            auto start = buffer.Text.begin() + buffer.Selection->first;
-                            auto end   = buffer.Text.begin() + buffer.Selection->second;
-                            buffer.Text.erase(start, end);
-                            buffer.Text.insert(buffer.Selection->first, _clipboard);
+                            auto start = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->first;
+                            auto end   = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->second;
+                            buffer.Snapshot.Text.erase(start, end);
+                            buffer.Snapshot.Text.insert(buffer.Snapshot.Selection->first, _clipboard);
 
-                            buffer.Cursor    = buffer.Selection->first + _clipboard.size();
-                            buffer.Selection = std::nullopt;
+                            buffer.Snapshot.Cursor    = buffer.Snapshot.Selection->first + _clipboard.size();
+                            buffer.Snapshot.Selection = std::nullopt;
                             return true;
                         }
                     }
                     // Insert at cursor.
                     else
                     {
-                        buffer.Text.insert(buffer.Cursor, _clipboard);
-                        buffer.Cursor += _clipboard.size();
+                        buffer.Snapshot.Text.insert(buffer.Snapshot.Cursor, _clipboard);
+                        buffer.Snapshot.Cursor += _clipboard.size();
                         return true;
                     }
                 }
@@ -318,7 +318,7 @@ namespace Silent::Input
 
     bool TextManager::HandleCharacterAdd(TextBuffer& buffer)
     {
-        if (buffer.Text.size() >= buffer.CharCountMax)
+        if (buffer.Snapshot.Text.size() >= buffer.CharCountMax)
         {
             return false;
         }
@@ -345,8 +345,8 @@ namespace Silent::Input
                     {
                         PushUndo(buffer);
 
-                        buffer.Text.insert(buffer.Text.begin() + buffer.Cursor, shiftAction.IsHeld() ? chars.second : chars.first);
-                        buffer.Cursor++;
+                        buffer.Snapshot.Text.insert(buffer.Snapshot.Text.begin() + buffer.Snapshot.Cursor, shiftAction.IsHeld() ? chars.second : chars.first);
+                        buffer.Snapshot.Cursor++;
                     }
 
                     _prevActionIds.push_back(actionId);
@@ -360,8 +360,8 @@ namespace Silent::Input
                     {
                         PushUndo(buffer);
 
-                        buffer.Text.insert(buffer.Text.begin() + buffer.Cursor, shiftAction.IsHeld() ? chars.second : chars.first);
-                        buffer.Cursor++;
+                        buffer.Snapshot.Text.insert(buffer.Snapshot.Text.begin() + buffer.Snapshot.Cursor, shiftAction.IsHeld() ? chars.second : chars.first);
+                        buffer.Snapshot.Cursor++;
                         hasNewChar = true;
                     }
                 }
@@ -385,7 +385,7 @@ namespace Silent::Input
         const auto& delAction   = input.GetAction(In::Delete);
 
         // No text.
-        if (buffer.Text.empty())
+        if (buffer.Snapshot.Text.empty())
         {
             return false;
         }
@@ -398,54 +398,54 @@ namespace Silent::Input
                 PushUndo(buffer);
 
                 // Erase selection.
-                if (buffer.Selection.has_value() && ctrlAction.IsHeld())
+                if (buffer.Snapshot.Selection.has_value() && ctrlAction.IsHeld())
                 {
-                    auto start = buffer.Text.begin() + buffer.Selection->first;
-                    auto end   = buffer.Text.begin() + buffer.Selection->second;
-                    buffer.Text.erase(start, end);
+                    auto start = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->first;
+                    auto end   = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->second;
+                    buffer.Snapshot.Text.erase(start, end);
 
-                    buffer.Cursor    = buffer.Selection->first;
-                    buffer.Selection = std::nullopt;
+                    buffer.Snapshot.Cursor    = buffer.Snapshot.Selection->first;
+                    buffer.Snapshot.Selection = std::nullopt;
                 }
                 // Erase back to start.
                 else if (shiftAction.IsHeld() && ctrlAction.IsHeld())
                 {
-                    buffer.Text.erase(0, buffer.Cursor);
-                    buffer.Cursor = 0;
+                    buffer.Snapshot.Text.erase(0, buffer.Snapshot.Cursor);
+                    buffer.Snapshot.Cursor = 0;
                 }
                 // Erase back to previous space.
                 else if (ctrlAction.IsHeld())
                 {
-                    uint spaceCount  = 0;
-                    bool isCurSpace  = buffer.Text.at(buffer.Cursor - 1) == ' ';
-                    bool isPrevSpace = isCurSpace;
-                    while (buffer.Cursor > 0 &&
-                            (isCurSpace == isPrevSpace ||                        // Word or trailing spaces.
-                             ((!isCurSpace && isPrevSpace) && spaceCount == 1))) // Word with 1 trailing space in front.
+                    bool hasSpaces   = false;
+                    bool isSpace     = buffer.Snapshot.Text.at(buffer.Snapshot.Cursor - 1) == ' ';
+                    bool isPrevSpace = isSpace;
+                    while (buffer.Snapshot.Cursor > 0 &&
+                            (isSpace == isPrevSpace ||                  // Word or trailing spaces.
+                             ((!isSpace && isPrevSpace) && hasSpaces))) // Word with trailing spaces.
                     {
                         // Count trailing spaces.
-                        if (isCurSpace)
+                        if (isSpace)
                         {
-                            spaceCount++;
+                            hasSpaces = true;
                         }
 
-                        buffer.Text.erase(buffer.Text.begin() + (buffer.Cursor - 1));
+                        buffer.Snapshot.Text.erase(buffer.Snapshot.Text.begin() + (buffer.Snapshot.Cursor - 1));
 
-                        buffer.Cursor--;
-                        if (buffer.Cursor > 0)
+                        buffer.Snapshot.Cursor--;
+                        if (buffer.Snapshot.Cursor > 0)
                         {
-                            isPrevSpace = isCurSpace;
-                            isCurSpace  = buffer.Text.at(buffer.Cursor - 1) == ' ';
+                            isPrevSpace = isSpace;
+                            isSpace  = buffer.Snapshot.Text.at(buffer.Snapshot.Cursor - 1) == ' ';
                         }
                     }
                 }
                 // Erase back single character.
                 else
                 {
-                    if (buffer.Cursor > 0)
+                    if (buffer.Snapshot.Cursor > 0)
                     {
-                        buffer.Text.erase(buffer.Text.begin() + (buffer.Cursor - 1));
-                        buffer.Cursor--;
+                        buffer.Snapshot.Text.erase(buffer.Snapshot.Text.begin() + (buffer.Snapshot.Cursor - 1));
+                        buffer.Snapshot.Cursor--;
                     }
                 }
             }
@@ -460,51 +460,43 @@ namespace Silent::Input
                 PushUndo(buffer);
 
                 // Erase selection.
-                if (buffer.Selection.has_value() && ctrlAction.IsHeld())
+                if (buffer.Snapshot.Selection.has_value() && ctrlAction.IsHeld())
                 {
-                    auto start = buffer.Text.begin() + buffer.Selection->first;
-                    auto end   = buffer.Text.begin() + buffer.Selection->second;
-                    buffer.Text.erase(start, end);
+                    auto start = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->first;
+                    auto end   = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->second;
+                    buffer.Snapshot.Text.erase(start, end);
 
-                    buffer.Cursor    = buffer.Selection->first;
-                    buffer.Selection = std::nullopt;
+                    buffer.Snapshot.Cursor    = buffer.Snapshot.Selection->first;
+                    buffer.Snapshot.Selection = std::nullopt;
                 }
                 // Erase forward to end.
                 else if (shiftAction.IsHeld() && ctrlAction.IsHeld())
                 {
-                    buffer.Text.erase(buffer.Cursor, buffer.Text.size() - buffer.Cursor);
+                    buffer.Snapshot.Text.erase(buffer.Snapshot.Cursor, buffer.Snapshot.Text.size() - buffer.Snapshot.Cursor);
                 }
                 // Erase forward to next space.
                 else if (ctrlAction.IsHeld())
                 {
-                    uint spaceCount  = 0;
-                    bool isCurSpace  = buffer.Text.at(buffer.Cursor) == ' ';
-                    bool isPrevSpace = isCurSpace;
-                    while (buffer.Cursor < buffer.Text.size() &&
-                            (isCurSpace == isPrevSpace ||                        // Word or trailing spaces.
-                             ((!isCurSpace && isPrevSpace) && spaceCount == 1))) // Word with 1 trailing space behind.
+                    bool isSpace     = buffer.Snapshot.Text.at(buffer.Snapshot.Cursor) == ' ';
+                    bool isPrevSpace = isSpace;
+                    while (buffer.Snapshot.Cursor < buffer.Snapshot.Text.size() &&
+                           isSpace == isPrevSpace)
                     {
-                        // Count trailing spaces.
-                        if (isCurSpace)
-                        {
-                            spaceCount++;
-                        }
+                        buffer.Snapshot.Text.erase(buffer.Snapshot.Text.begin() + buffer.Snapshot.Cursor);
 
-                        buffer.Text.erase(buffer.Text.begin() + buffer.Cursor);
-
-                        if (buffer.Cursor < buffer.Text.size())
+                        if (buffer.Snapshot.Cursor < buffer.Snapshot.Text.size())
                         {
-                            isPrevSpace = isCurSpace;
-                            isCurSpace  = buffer.Text.at(buffer.Cursor) == ' ';
+                            isPrevSpace = isSpace;
+                            isSpace     = buffer.Snapshot.Text.at(buffer.Snapshot.Cursor) == ' ';
                         }
                     }
                 }
                 // Erase forward single character.
                 else
                 {
-                    if (buffer.Cursor < buffer.Text.size())
+                    if (buffer.Snapshot.Cursor < buffer.Snapshot.Text.size())
                     {
-                        buffer.Text.erase(buffer.Text.begin() + buffer.Cursor);
+                        buffer.Snapshot.Text.erase(buffer.Snapshot.Text.begin() + buffer.Snapshot.Cursor);
                     }
                 }
             }
@@ -529,7 +521,7 @@ namespace Silent::Input
         const auto& aAction     = input.GetAction(In::A);
 
         // No text.
-        if (buffer.Text.empty())
+        if (buffer.Snapshot.Text.empty())
         {
             return false;
         }
@@ -537,14 +529,14 @@ namespace Silent::Input
         // Select all.
         if (ctrlAction.IsHeld() && aAction.IsClicked())
         {
-            buffer.Selection = std::pair(0, buffer.Text.size());
-            buffer.Cursor    = buffer.Text.size();
+            buffer.Snapshot.Selection = std::pair(0, buffer.Snapshot.Text.size());
+            buffer.Snapshot.Cursor    = buffer.Snapshot.Text.size();
             return true;
         }
         // Deselect all.
         else if (escAction.IsClicked())
         {
-            buffer.Selection = std::nullopt;
+            buffer.Snapshot.Selection = std::nullopt;
             return true;
         }
 
@@ -558,20 +550,20 @@ namespace Silent::Input
             {
                 if (shiftAction.IsHeld())
                 {
-                    buffer.Selection = std::pair(0, buffer.Cursor);
+                    buffer.Snapshot.Selection = std::pair(0, buffer.Snapshot.Cursor);
                 }
 
-                buffer.Cursor = 0;
+                buffer.Snapshot.Cursor = 0;
             }
             // To end.
             else if (endAction.IsClicked())
             {
                 if (shiftAction.IsHeld())
                 {
-                    buffer.Selection = std::pair(buffer.Cursor, buffer.Text.size());
+                    buffer.Snapshot.Selection = std::pair(buffer.Snapshot.Cursor, buffer.Snapshot.Text.size());
                 }
 
-                buffer.Cursor = buffer.Text.size();
+                buffer.Snapshot.Cursor = buffer.Snapshot.Text.size();
             }
 
             return true;
@@ -580,81 +572,81 @@ namespace Silent::Input
         // Move left/right.
         if (leftAction.IsHeld() || rightAction.IsHeld())
         {
-            if (buffer.Cursor > 0 && leftAction.IsPulsed(PULSE_DELAY_SEC, PULSE_INITIAL_DELAY_SEC))
+            if (buffer.Snapshot.Cursor > 0 && leftAction.IsPulsed(PULSE_DELAY_SEC, PULSE_INITIAL_DELAY_SEC))
             {
-                uint prevCursor = buffer.Cursor;
+                uint prevCursor = buffer.Snapshot.Cursor;
 
                 // Move back to previous word.
                 if (ctrlAction.IsHeld())
                 {
-                    uint prevCursor = buffer.Cursor;
+                    uint prevCursor = buffer.Snapshot.Cursor;
 
                     // Skip spaces before word.
-                    while (buffer.Cursor > 0 && buffer.Text[buffer.Cursor - 1] == ' ')
+                    while (buffer.Snapshot.Cursor > 0 && buffer.Snapshot.Text[buffer.Snapshot.Cursor - 1] == ' ')
                     {
-                        buffer.Cursor--;
+                        buffer.Snapshot.Cursor--;
                     }
 
                     // Skip word.
-                    while (buffer.Cursor > 0 && buffer.Text[buffer.Cursor - 1] != ' ')
+                    while (buffer.Snapshot.Cursor > 0 && buffer.Snapshot.Text[buffer.Snapshot.Cursor - 1] != ' ')
                     {
-                        buffer.Cursor--;
+                        buffer.Snapshot.Cursor--;
                     }
                 }
                 // Move back to previous character.
                 else
                 {
-                    buffer.Cursor--;
+                    buffer.Snapshot.Cursor--;
                 }
 
                 // Expand selection back.
                 if (shiftAction.IsHeld())
                 {
-                    if (buffer.Selection.has_value())
+                    if (buffer.Snapshot.Selection.has_value())
                     {
-                        buffer.Selection->first = buffer.Cursor;
+                        buffer.Snapshot.Selection->first = buffer.Snapshot.Cursor;
                     }
                     else
                     {
-                        buffer.Selection = std::pair(buffer.Cursor, prevCursor);
+                        buffer.Snapshot.Selection = std::pair(buffer.Snapshot.Cursor, prevCursor);
                     }
                 }
             }
-            else if (buffer.Cursor < buffer.Text.size() && rightAction.IsPulsed(PULSE_DELAY_SEC, PULSE_INITIAL_DELAY_SEC))
+            else if (buffer.Snapshot.Cursor < buffer.Snapshot.Text.size() && rightAction.IsPulsed(PULSE_DELAY_SEC, PULSE_INITIAL_DELAY_SEC))
             {
-                uint prevCursor = buffer.Cursor;
+                uint prevCursor = buffer.Snapshot.Cursor;
 
                 // Move forward to next word.
                 if (ctrlAction.IsHeld())
                 {
                     // Skip current word.
-                    while (buffer.Cursor < buffer.Text.size() && buffer.Text[buffer.Cursor] != ' ')
+                    while (buffer.Snapshot.Cursor < buffer.Snapshot.Text.size() && buffer.Snapshot.Text[buffer.Snapshot.Cursor] != ' ')
                     {
-                        buffer.Cursor++;
+                        buffer.Snapshot.Cursor++;
                     }
 
                     // Skip spaces after word.
-                    while (buffer.Cursor < buffer.Text.size() && buffer.Text[buffer.Cursor] == ' ')
+                    while (buffer.Snapshot.Cursor < buffer.Snapshot.Text.size() && buffer.Snapshot.Text[buffer.Snapshot.Cursor] == ' ')
                     {
-                        buffer.Cursor++;
+                        buffer.Snapshot.Cursor++;
                     }
                 }
                 // More forward to next character.
                 else
                 {
-                    buffer.Cursor++;
+                    buffer.Snapshot.Cursor++;
                 }
 
                 // Expand selection forward.
                 if (shiftAction.IsHeld())
                 {
-                    if (buffer.Selection.has_value())
+                    if (buffer.Snapshot.Selection.has_value())
                     {
-                        buffer.Selection->second = buffer.Cursor;
+                        buffer.Snapshot.Selection->second = buffer.Snapshot.Cursor;
                     }
                     else
                     {
-                        buffer.Selection = std::pair(prevCursor, buffer.Cursor);
+                        buffer.Snapshot.Selection = std::pair(prevCursor, buffer.Snapshot.Cursor);
                     }
                 }
             }
@@ -671,7 +663,7 @@ namespace Silent::Input
         {
             buffer.Undo.pop_front();
         }
-        buffer.Undo.push_back(buffer.Text);
+        buffer.Undo.push_back(buffer.Snapshot);
 
         buffer.Redo.clear();
     }
@@ -685,10 +677,10 @@ namespace Silent::Input
         uint wordStart = 0;
 
         uint i = 0;
-        while (i < buffer.Text.size())
+        while (i < buffer.Snapshot.Text.size())
         {
             // Track word boundaries.
-            if (buffer.Text[i] == ' ' || buffer.Text[i] == '\n')
+            if (buffer.Snapshot.Text[i] == ' ' || buffer.Snapshot.Text[i] == '\n')
             {
                 // Wrap before word.
                 uint wordEnd = i;
@@ -699,7 +691,7 @@ namespace Silent::Input
                 }
 
                 // Handle newline explicitly.
-                if (buffer.Text[i] == '\n')
+                if (buffer.Snapshot.Text[i] == '\n')
                 {
                     buffer.LineStarts.push_back(i + 1);
                     lineStart = i + 1;
@@ -712,7 +704,7 @@ namespace Silent::Input
         }
 
         // Final wrap if needed.
-        if ((buffer.Text.size() - lineStart) > buffer.LineWidthMax)
+        if ((buffer.Snapshot.Text.size() - lineStart) > buffer.LineWidthMax)
         {
             buffer.LineStarts.push_back(wordStart);
         }

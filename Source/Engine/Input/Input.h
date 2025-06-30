@@ -112,6 +112,8 @@ namespace Silent::Input
     private:
         // Helpers
 
+        std::string GetGamepadVendorName(GamepadVendorType vendor) const;
+
         void ReadKeyboard(int& eventStateIdx);
         void ReadMouse(int& eventStateIdx, SDL_Window& window, const Vector2& wheelAxis);
         void ReadGamepad(int& eventStateIdx);

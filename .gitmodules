@@ -1,6 +1,9 @@
 [submodule "Libraries/assimp"]
     path = Libraries/assimp
     url = https://github.com/assimp/assimp.git
+[submodule "Libraries/flatbuffers"]
+    path = Libraries/flatbuffers
+    url = https://github.com/google/flatbuffers.git
 [submodule "Libraries/glad"]
     path = Libraries/glad
     url = https://github.com/Dav1dde/glad.git
@@ -13,9 +16,6 @@
 [submodule "Libraries/ImGuizmo"]
     path = Libraries/ImGuizmo
     url = https://github.com/CedricGuillemet/ImGuizmo.git
-[submodule "Libraries/flatbuffers"]
-    path = Libraries/flatbuffers
-    url = https://github.com/google/flatbuffers.git
 [submodule "Libraries/json"]
     path = Libraries/json
     url = https://github.com/nlohmann/json.git

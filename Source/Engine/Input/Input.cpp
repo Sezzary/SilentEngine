@@ -161,8 +161,7 @@ namespace Silent::Input
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
             // TODO: Add toast notification.
 
-            Log("Gamepad connected.");
-            Log("Gamepad vendor : " + std::to_string((int)_gamepad.Vendor) + ".", LogLevel::Info, LogMode::Debug);
+            Log(GetGamepadVendorName(_gamepad.Vendor) + " gamepad connected.");
         }
     }
 
@@ -194,6 +193,40 @@ namespace Silent::Input
     void InputManager::RemoveText(const std::string& textId)
     {
         _text.RemoveBuffer(textId);
+    }
+
+    std::string InputManager::GetGamepadVendorName(GamepadVendorType vendor) const
+    {
+        constexpr char GENERIC_VENDOR_NAME[]  = "Generic";
+        constexpr char XBOX_VENDOR_NAME[]     = "Xbox";
+        constexpr char NINTENDO_VENDOR_NAME[] = "Nintendo";
+        constexpr char SONY_VENDOR_NAME[]     = "Sony";
+
+        switch (vendor)
+        {
+            default:
+            case GamepadVendorType::Generic:
+            {
+                break;
+            }
+
+            case GamepadVendorType::Xbox:
+            {
+                return XBOX_VENDOR_NAME;
+            }
+
+            case GamepadVendorType::Nintendo:
+            {
+                return NINTENDO_VENDOR_NAME;
+            }
+
+            case GamepadVendorType::Sony:
+            {
+                return SONY_VENDOR_NAME;
+            }
+        }
+
+        return GENERIC_VENDOR_NAME;
     }
 
     void InputManager::ReadKeyboard(int& eventStateIdx)

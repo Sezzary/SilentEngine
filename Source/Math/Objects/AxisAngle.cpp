@@ -26,7 +26,7 @@ namespace Silent::Math
 
         // Set axis angle.
         Axis  = axis;
-        Angle = FP_ANGLE_FROM_RAD(rad);
+        Angle = FP_DEGREE_FROM_RAD(rad);
     }
 
     AxisAngle AxisAngle::Lerp(const AxisAngle& from, const AxisAngle& to, float alpha)
@@ -59,7 +59,7 @@ namespace Silent::Math
 
     Vector3 AxisAngle::ToDirection() const
     {
-        float rad = FP_ANGLE_TO_RAD(Angle);
+        float rad = FP_DEGREE_TO_RAD(Angle);
         return (Axis * glm::cos(rad)) + (Axis * (1.0f - glm::cos(rad)));
     }
 
@@ -71,7 +71,7 @@ namespace Silent::Math
 
     Quaternion AxisAngle::ToQuaternion() const
     {
-        float rad          = FP_ANGLE_TO_RAD(Angle);
+        float rad          = FP_DEGREE_TO_RAD(Angle);
         float halfAngle    = rad / 2.0f;
         float sinHalfAngle = glm::sin(halfAngle);
         float cosHalfAngle = glm::cos(halfAngle);
@@ -84,7 +84,7 @@ namespace Silent::Math
 
     Matrix AxisAngle::ToRotationMatrix() const
     {
-        float rad         = FP_ANGLE_TO_RAD(Angle);
+        float rad         = FP_DEGREE_TO_RAD(Angle);
         float sinAngle    = glm::sin(rad);
         float cosAngle    = glm::cos(rad);
         float invCosAngle = 1.0f - cosAngle;

@@ -506,11 +506,14 @@ namespace Silent::Input
         {
             return DEFAULT_NAME;
         }
-
         const auto& [keyEventId, names] = *it;
 
         // Pick vendor-appropriate name.
-        if (names.size() > 1)
+        if (names.size() == 1)
+        {
+            return names.front();
+        }
+        else if (names.size() > 1)
         {
             int nameIdx = (int)GetGamepadVendorType();
             if (nameIdx < names.size())
@@ -518,6 +521,7 @@ namespace Silent::Input
                 return names[nameIdx];
             }
         }
-        return names.front();
+
+        return DEFAULT_NAME;
     }
 }

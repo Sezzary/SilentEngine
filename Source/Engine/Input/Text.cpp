@@ -379,8 +379,8 @@ namespace Silent::Input
     {
         const auto& input = g_App.GetInput();
 
-        const auto& shiftAction = input.GetAction(In::Shift);
         const auto& ctrlAction  = input.GetAction(In::Ctrl);
+        const auto& shiftAction = input.GetAction(In::Shift);
         const auto& bsAction    = input.GetAction(In::Backspace);
         const auto& delAction   = input.GetAction(In::Delete);
 
@@ -398,7 +398,7 @@ namespace Silent::Input
                 PushUndo(buffer);
 
                 // Erase selection.
-                if (buffer.Snapshot.Selection.has_value() && ctrlAction.IsHeld())
+                if (ctrlAction.IsHeld() && buffer.Snapshot.Selection.has_value())
                 {
                     auto start = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->first;
                     auto end   = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->second;
@@ -460,7 +460,7 @@ namespace Silent::Input
                 PushUndo(buffer);
 
                 // Erase selection.
-                if (buffer.Snapshot.Selection.has_value() && ctrlAction.IsHeld())
+                if (ctrlAction.IsHeld() && buffer.Snapshot.Selection.has_value())
                 {
                     auto start = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->first;
                     auto end   = buffer.Snapshot.Text.begin() + buffer.Snapshot.Selection->second;
@@ -472,7 +472,10 @@ namespace Silent::Input
                 // Erase forward to end.
                 else if (shiftAction.IsHeld() && ctrlAction.IsHeld())
                 {
-                    buffer.Snapshot.Text.erase(buffer.Snapshot.Cursor, buffer.Snapshot.Text.size() - buffer.Snapshot.Cursor);
+                    buffer.Snapshot.Text.erase(buffer.Snapshot.Cursor, buffer.Snapshot.Text.size() - (buffer.Snapshot.Cursor - 1));
+                    Log(std::to_string(buffer.Snapshot.Text.size()) +
+                        ". " + std::to_string(buffer.Snapshot.Cursor) + ", " +
+                        std::to_string(buffer.Snapshot.Text.size() - (buffer.Snapshot.Cursor - 1)));
                 }
                 // Erase forward to next space.
                 else if (ctrlAction.IsHeld())

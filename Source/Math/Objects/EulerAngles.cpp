@@ -18,9 +18,9 @@ namespace Silent::Math
     {
         auto dirNorm = Vector3::Normalize(dir);
 
-        x = FP_ANGLE_FROM_RAD(-glm::asin(dirNorm.y));
-        y = FP_ANGLE_FROM_RAD(glm::atan2(dirNorm.x, dirNorm.z));
-        z = FP_ANGLE_FROM_RAD(0.0f);
+        x = FP_DEGREE_FROM_RAD(-glm::asin(dirNorm.y));
+        y = FP_DEGREE_FROM_RAD(glm::atan2(dirNorm.x, dirNorm.z));
+        z = FP_DEGREE_FROM_RAD(0.0f);
     }
 
     EulerAngles EulerAngles::InterpConstant(const EulerAngles& from, const EulerAngles& to, short angularVel)
@@ -75,7 +75,7 @@ namespace Silent::Math
 
     Quaternion EulerAngles::ToQuaternion() const
     {
-        return Quaternion(glm::quat(glm::vec3(FP_ANGLE_TO_RAD(x), FP_ANGLE_TO_RAD(y), FP_ANGLE_TO_RAD(z))));
+        return Quaternion(glm::quat(glm::vec3(FP_DEGREE_TO_RAD(x), FP_DEGREE_TO_RAD(y), FP_DEGREE_TO_RAD(z))));
     }
 
     AxisAngle EulerAngles::ToAxisAngle() const
@@ -86,12 +86,12 @@ namespace Silent::Math
 
     Matrix EulerAngles::ToRotationMatrix() const
     {
-        return Matrix(glm::yawPitchRoll(FP_ANGLE_TO_RAD(y), FP_ANGLE_TO_RAD(x), FP_ANGLE_TO_RAD(z)));
+        return Matrix(glm::yawPitchRoll(FP_DEGREE_TO_RAD(y), FP_DEGREE_TO_RAD(x), FP_DEGREE_TO_RAD(z)));
     }
 
     glm::vec3 EulerAngles::ToGlmEulerAngles() const
     {
-        return glm::vec3(FP_ANGLE_TO_RAD(y), FP_ANGLE_TO_RAD(x), FP_ANGLE_TO_RAD(z));
+        return glm::vec3(FP_DEGREE_TO_RAD(y), FP_DEGREE_TO_RAD(x), FP_DEGREE_TO_RAD(z));
     }
 
     bool EulerAngles::operator==(const EulerAngles& eulerAngles) const

@@ -343,11 +343,16 @@ namespace Silent::Input
 
     void BindingManager::BindEventId(BindingProfileId profileId, ActionId actionId, EventId eventId)
     {
-        // Bind new event.
-        if (!Contains(_bindings[profileId][actionId], eventId))
+        if (Contains(_bindings[profileId][actionId], eventId))
         {
-            _bindings[profileId][actionId].push_back(eventId);
+            Log("Attempted to bind existing event " + std::to_string((int)eventId) +
+                " to action " + std::to_string((int)actionId) +
+                " in binding profile " + std::to_string((int)profileId) + ".",
+                LogLevel::Warning);
+            return;
         }
+
+        _bindings[profileId][actionId].push_back(eventId);
     }
 
     void BindingManager::UnbindEventIds(BindingProfileId profileId, ActionId actionId)

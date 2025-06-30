@@ -4,10 +4,10 @@
 
 namespace Silent::Math
 {
-    constexpr uint Q4_SHIFT       = 4;              /** Used for: Q27.4 positions. */
-    constexpr uint Q8_SHIFT       = 8;              /** Used for: Q8.8 range limits. Q24.8 meters. */
-    constexpr uint Q12_SHIFT      = 12;             /** Used for: Q3.12 alphas. Q19.12 timers, trigonometry. */
-    constexpr uint FP_ANGLE_COUNT = 1 << Q12_SHIFT; /** Number of fixed-point angles in Q1.15 format. */
+    constexpr uint Q4_SHIFT        = 4;              /** Used for: Q27.4 positions. */
+    constexpr uint Q8_SHIFT        = 8;              /** Used for: Q8.8 range limits. Q24.8 meters. */
+    constexpr uint Q12_SHIFT       = 12;             /** Used for: Q3.12 alphas. Q19.12 timers, trigonometry. */
+    constexpr uint FP_DEGREE_COUNT = 1 << Q12_SHIFT; /** Number of fixed-point degrees in Q1.15 format. */
 
     constexpr float PI       = glm::pi<float>();
     constexpr float PI_MUL_2 = PI * 2.0f;
@@ -65,6 +65,18 @@ namespace Silent::Math
     {
         return (float)((x > 0.0f) ? (int)(x + 0.5f) : (int)(x - 0.5f));
     }
+
+    /** @brief Floors a floating-point value. */
+    constexpr float FLOOR(float x)
+    {
+        return (float)((int)x - ((x < 0.0f) && x != (int)x));
+    }
+
+    /** @brief Ceils a floating-point value. */
+    constexpr float CEIL(float x)
+    {
+        return (float)((int)x + ((x > 0.0f) && x != (int)x));
+    }
     
     /** @brief Converts an integer to a fixed-point Q format. */
     constexpr int FP_TO(int x, uint shift)
@@ -114,22 +126,22 @@ namespace Silent::Math
         return (uchar)(val * (FP_TO(1, Q8_SHIFT) - 1));
     }
 
-    /** @brief Converts floating-point degrees to fixed-point angles in Q1.15 format. */
-    constexpr short FP_ANGLE(float deg)
+    /** @brief Converts floating-point degrees to fixed-point degrees in Q1.15 format. */
+    constexpr short FP_DEGREE(float deg)
     {
-        return (short)ROUND(deg * (360.0f / (float)FP_ANGLE_COUNT));
+        return (short)ROUND(deg * (360.0f / (float)FP_DEGREE_COUNT));
     }
 
-    /** @brief Converts floating-point radians to fixed-point angles in Q1.15 format. */
-    constexpr short FP_ANGLE_FROM_RAD(float rad)
+    /** @brief Converts floating-point radians to fixed-point degrees in Q1.15 format. */
+    constexpr short FP_DEGREE_FROM_RAD(float rad)
     {
-        return FP_ANGLE(rad / (PI / 180.0f));
+        return FP_DEGREE(rad / (PI / 180.0f));
     }
 
-    /** @brief Converts fixed-point angles in Q1.15 format to floating-point radians. */
-    constexpr float FP_ANGLE_TO_RAD(short angle)
+    /** @brief Converts fixed-point degrees in Q1.15 format to floating-point radians. */
+    constexpr float FP_DEGREE_TO_RAD(short angle)
     {
-        return (angle * (360.0f / (float)FP_ANGLE_COUNT)) * (PI / 180.0f);
+        return (angle * (360.0f / (float)FP_DEGREE_COUNT)) * (PI / 180.0f);
     }
 
     /** @brief Converts floating-point meters to fixed-point world units in Q12.8 format. */

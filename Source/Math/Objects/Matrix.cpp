@@ -151,7 +151,7 @@ namespace Silent::Math
         }
 
         // Set axis and angle.
-        return AxisAngle(axis, FP_ANGLE_FROM_RAD(rad));
+        return AxisAngle(axis, FP_DEGREE_FROM_RAD(rad));
     }
 
     Vector3 Matrix::ToScale() const

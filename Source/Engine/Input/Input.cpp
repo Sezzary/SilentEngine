@@ -219,8 +219,9 @@ namespace Silent::Input
             Log("Failed to get window size: " + std::string(SDL_GetError()), LogLevel::Error);
         }
         
+        // TODO: Move axis calc is incorrect.
         float sensitivity = (options->MouseSensitivity * 0.1f) + 0.4f;
-        auto  moveAxis    = ((_states.CursorPosition - _states.PrevCursorPosition) / res.ToVector2()) * sensitivity; // TODO
+        auto  moveAxis    = ((_states.CursorPosition - _states.PrevCursorPosition) / res.ToVector2()) * sensitivity;
         if (moveAxis != Vector2::Zero)
         {
             _states.IsUsingGamepad = false;

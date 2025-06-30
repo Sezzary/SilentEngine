@@ -47,7 +47,7 @@ namespace Silent::Services
 
     constexpr uint SEC_TO_TICK(float sec)
     {
-        return (sec == 0.0f) ? 0 : std::max((uint)ROUND(sec * (float)TimeManager::TPS), 1u);
+        return (sec > 0.0f) ? std::max<uint>((uint)ROUND(sec * (float)TimeManager::TPS), 1) : 0;
     }
 
     constexpr float TICK_TO_SEC(uint ticks)

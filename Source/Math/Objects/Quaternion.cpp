@@ -38,7 +38,7 @@ namespace Silent::Math
         dot       = glm::clamp(dot, -1.0f, 1.0f);
 
         float rad = glm::acos(dot) * 2.0f;
-        return FP_ANGLE_FROM_RAD(rad);
+        return FP_DEGREE_FROM_RAD(rad);
     }
 
     Quaternion Quaternion::Invert(const Quaternion& quat)
@@ -79,7 +79,7 @@ namespace Silent::Math
     EulerAngles Quaternion::ToEulerAngles() const
     {
         auto eulerAnglesRad = glm::eulerAngles(ToGlmQuat());
-        return EulerAngles(FP_ANGLE_FROM_RAD(eulerAnglesRad.x), FP_ANGLE_FROM_RAD(eulerAnglesRad.y), FP_ANGLE_FROM_RAD(eulerAnglesRad.z));
+        return EulerAngles(FP_DEGREE_FROM_RAD(eulerAnglesRad.x), FP_DEGREE_FROM_RAD(eulerAnglesRad.y), FP_DEGREE_FROM_RAD(eulerAnglesRad.z));
     }
 
     AxisAngle Quaternion::ToAxisAngle() const
@@ -100,7 +100,7 @@ namespace Silent::Math
         // Compute angle.
         float rad = glm::acos(w) * 2.0f;
 
-        return AxisAngle(axis, FP_ANGLE_FROM_RAD(rad));
+        return AxisAngle(axis, FP_DEGREE_FROM_RAD(rad));
     }
 
     Matrix Quaternion::ToRotationMatrix() const

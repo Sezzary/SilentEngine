@@ -35,7 +35,7 @@ namespace Silent::Utils::Debug
         }
 
         input.UpdateText("Test");
-        //Message(input.GetText("Test")); // TODO: Doesn't work.
+        Message(input.GetText("Test").c_str());
     }
 
     void InitializeDebug()
@@ -565,14 +565,15 @@ namespace Silent::Utils::Debug
         Messages.clear();
     }
 
-    void Message(const std::string& msg, ...)
+    // TODO: Not working.
+    void Message(const char* msg, ...)
     {
         constexpr uint BUFFER_SIZE = 255;
 
         // Check if `Messages` is full.
         if (Messages.size() >= MESSAGE_COUNT_MAX)
         {
-            Log("Attempted to add too many messages.", LogLevel::Warning, LogMode::Debug);
+            Log("Attempted to create too many debug messages.", LogLevel::Warning, LogMode::Debug);
             return;
         }
 
@@ -588,9 +589,9 @@ namespace Silent::Utils::Debug
         std::memset(buffer, 0, BUFFER_SIZE);
 
         // Format string.
-        va_list args = nullptr;
-        va_start(args, msg.c_str());
-        vsnprintf(buffer, BUFFER_SIZE, msg.c_str(), args);
+        va_list args;
+        va_start(args, msg);
+        vsnprintf(buffer, BUFFER_SIZE, msg, args);
         va_end(args);
 
         // LOCK: Restrict `Messages` access.
@@ -605,7 +606,7 @@ namespace Silent::Utils::Debug
 
     void Log(const std::string& msg, LogLevel level, LogMode mode, bool repeat)
     {
-        // Ignore debug mode messages in release build.
+        // Ignore debug mode logs in release build.
         if constexpr (!IS_DEBUG_BUILD)
         {
             if (mode == LogMode::Debug)

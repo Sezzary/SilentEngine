@@ -31,6 +31,11 @@ namespace Silent::Input
         return _states.CursorPosition;
     }
 
+    GamepadVendorType InputManager::GetGamepadVendor() const
+    {
+        return _gamepad.Vendor;
+    }
+
     const std::string& InputManager::GetText(const std::string& textId) const
     {
         return _text.GetText(textId);
@@ -111,6 +116,10 @@ namespace Silent::Input
     
     void InputManager::ConnectGamepad(int deviceId)
     {
+        constexpr ushort XBOX_VENDOR_ID     = 0x045E;
+        constexpr ushort NINTENDO_VENDOR_ID = 0x057E;
+        constexpr ushort SONY_VENDOR_ID     = 0x054C;
+
         // Check if a gamepad is already connected.
         if (IsGamepadConnected())
         {
@@ -122,27 +131,54 @@ namespace Silent::Input
         _gamepad.Device = SDL_OpenGamepad(deviceId);
         if (_gamepad.Device != nullptr)
         {
-            Log("Gamepad connected.");
-            Log("Gamepad vendor ID: " + std::to_string(SDL_GetGamepadVendor(_gamepad.Device)) + ".", LogLevel::Info, LogMode::Debug);
-            // TODO: Add toast notification.
+            switch (SDL_GetGamepadVendor(_gamepad.Device))
+            {
+                case XBOX_VENDOR_ID:
+                {
+                    _gamepad.Vendor = GamepadVendorType::Xbox;
+                    break;
+                }
+
+                case NINTENDO_VENDOR_ID:
+                {
+                    _gamepad.Vendor = GamepadVendorType::Nintendo;
+                    break;
+                }
+
+                case SONY_VENDOR_ID:
+                {
+                    _gamepad.Vendor = GamepadVendorType::Sony;
+                    break;
+                }
+
+                default:
+                {
+                    _gamepad.Vendor = GamepadVendorType::Generic;
+                    break;
+                }
+            }
 
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
+            // TODO: Add toast notification.
+
+            Log("Gamepad connected.");
+            Log("Gamepad vendor : " + std::to_string((int)_gamepad.Vendor) + ".", LogLevel::Info, LogMode::Debug);
         }
     }
 
     void InputManager::DisconnectGamepad(int deviceId)
     {
-        // Check if a gamepad is connected and IDs match.
+        // Check if a gamepad is connected and device IDs match.
         if (!IsGamepadConnected() || _gamepad.Id != deviceId)
         {
             return;
         }
 
-        Log("Gamepad disconnected.");
-        // TODO: Add toast notification.
-
         SDL_CloseGamepad(_gamepad.Device);
         _gamepad = {};
+        // TODO: Add toast notification.
+
+        Log("Gamepad disconnected.");
     }
 
     void InputManager::InsertText(const std::string& textId, uint lineWidthMax, uint charCountMax)

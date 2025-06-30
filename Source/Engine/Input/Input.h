@@ -6,6 +6,14 @@
 
 namespace Silent::Input
 {
+    enum class GamepadVendorType
+    {
+        Generic,
+        Xbox,
+        Nintendo,
+        Sony
+    };
+
     enum class AnalogAxisId
     {
         Move,
@@ -35,8 +43,9 @@ namespace Silent::Input
 
     struct Gamepad
     {
-        int          Id     = NO_VALUE;
-        SDL_Gamepad* Device = nullptr;
+        int               Id     = NO_VALUE;
+        SDL_Gamepad*      Device = nullptr;
+        GamepadVendorType Vendor = GamepadVendorType::Generic;
     };
 
     struct Rumble
@@ -50,11 +59,6 @@ namespace Silent::Input
 
     class InputManager
     {
-    public:
-        // Constants
-
-        static constexpr int GAMEPAD_ID = 0;
-
     private:
         // Fields
 
@@ -73,9 +77,12 @@ namespace Silent::Input
 
         // Getters
 
-        const Action&            GetAction(ActionId actionId) const;
-        const Vector2&           GetAnalogAxis(AnalogAxisId axisId) const;
-        const Vector2&           GetCursorPosition() const;
+        const Action&  GetAction(ActionId actionId) const;
+        const Vector2& GetAnalogAxis(AnalogAxisId axisId) const;
+        const Vector2& GetCursorPosition() const;
+
+        GamepadVendorType GetGamepadVendor() const;
+
         const std::string&       GetText(const std::string& textId) const;
         std::vector<std::string> GetTextLines(const std::string& bufferId, uint low = (uint)NO_VALUE, uint high = (uint)NO_VALUE) const;
         uint                     GetTextCursorPosition(const std::string& textId) const;

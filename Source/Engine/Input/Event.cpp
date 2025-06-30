@@ -1,18 +1,11 @@
 #include "Framework.h"
 #include "Engine/Input/Event.h"
 
+#include "Engine/Application.h"
 #include "Engine/Input/Input.h"
 
 namespace Silent::Input
 {
-    enum class VendorType
-    {
-        Generic,
-        Xbox,
-        Nintendo,
-        Sony
-    };
-
     const std::unordered_map<EventGroupId, std::vector<EventId>> EVENT_ID_GROUPS =
     {
         {
@@ -456,47 +449,6 @@ namespace Silent::Input
         { EventId::GamepadTriggerRight,    { "Right Trigger", "RT", "ZR", "R2" } }
     };
 
-    static VendorType GetGamepadVendorType()
-    {
-        constexpr ushort XBOX_VENDOR_ID     = 0x045E;
-        constexpr ushort NINTENDO_VENDOR_ID = 0x057E;
-        constexpr ushort SONY_VENDOR_ID     = 0x054C;
-
-        auto* gamepad = SDL_OpenGamepad(InputManager::GAMEPAD_ID);
-
-        // Determine vendor type.
-        auto type = VendorType::Generic;
-        switch (SDL_GetGamepadVendor(gamepad))
-        {
-            case XBOX_VENDOR_ID:
-            {
-                type = VendorType::Xbox;
-                break;
-            }
-
-            case NINTENDO_VENDOR_ID:
-            {
-                type = VendorType::Nintendo;
-                break;
-            }
-
-            case SONY_VENDOR_ID:
-            {
-                type = VendorType::Sony;
-                break;
-            }
-
-            default:
-            {
-                type = VendorType::Generic;
-                break;
-            }
-        }
-
-        SDL_CloseGamepad(gamepad);
-        return type;
-    }
-
     const std::string& GetEventName(EventId eventId)
     {
         static const auto DEFAULT_NAME = std::string("None");
@@ -515,7 +467,9 @@ namespace Silent::Input
         }
         else if (names.size() > 1)
         {
-            int nameIdx = (int)GetGamepadVendorType();
+            const auto& input = g_App.GetInput();
+
+            int nameIdx = (int)input.GetGamepadVendor();
             if (nameIdx < names.size())
             {
                 return names[nameIdx];

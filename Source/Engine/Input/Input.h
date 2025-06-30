@@ -33,6 +33,12 @@ namespace Silent::Input
         Vector2            PrevCursorPosition = {};
     };
 
+    struct Gamepad
+    {
+        int          Id     = NO_VALUE;
+        SDL_Gamepad* Device = nullptr;
+    };
+
     struct Rumble
     {
         RumbleMode Mode          = RumbleMode::Low;
@@ -52,8 +58,7 @@ namespace Silent::Input
     private:
         // Fields
 
-        SDL_Gamepad* _gamepad = nullptr;
-
+        Gamepad                              _gamepad    = {};
         BindingManager                       _bindings   = BindingManager();
         TextManager                          _text       = TextManager();
         States                               _states     = {};
@@ -90,6 +95,9 @@ namespace Silent::Input
         void Deinitialize();
         void Update(SDL_Window& window, const Vector2& mouseWheelAxis);
 
+        void ConnectGamepad(int deviceId);
+        void DisconnectGamepad(int deviceId);
+
         void InsertText(const std::string& textId, uint lineWidthMax = 50, uint charCountMax = UINT_MAX);
         void UpdateText(const std::string& textId);
         void RemoveText(const std::string& textId);
@@ -105,6 +113,5 @@ namespace Silent::Input
         void UpdateActions();
 
         void HandleHotkeyActions();
-        void HandleGamepadDisconnect();
     };
 }

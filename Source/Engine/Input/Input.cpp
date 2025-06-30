@@ -57,7 +57,7 @@ namespace Silent::Input
 
     bool InputManager::IsGamepadConnected() const
     {
-        return _gamepad != nullptr;
+        return _gamepad.Id != NO_VALUE && _gamepad.Device != nullptr;
     }
 
     bool InputManager::IsUsingGamepad() const
@@ -72,15 +72,6 @@ namespace Silent::Input
         if (!SDL_Init(SDL_INIT_GAMEPAD))
         {
             Log("Failed to initialize gamepad subsystem: " + std::string(SDL_GetError()), LogLevel::Error);
-        }
-
-        // Initialize gamepad.
-        _gamepad = SDL_OpenGamepad(GAMEPAD_ID);
-        if (_gamepad != nullptr)
-        {
-            Log("Connected gamepad with vendor ID " + std::to_string(SDL_GetGamepadVendor(_gamepad)) + ".");
-
-            SetRumble(RumbleMode::LowAndHigh, 1.0f, 0.0f, 0.5f);
         }
 
         // Initialize event states and control axes.
@@ -101,16 +92,11 @@ namespace Silent::Input
 
     void InputManager::Deinitialize()
     {
-        SDL_CloseGamepad(_gamepad);
+        DisconnectGamepad(_gamepad.Id);
     }
 
     void InputManager::Update(SDL_Window& window, const Vector2& mouseWheelAxis)
     {
-        if (!SDL_GamepadConnected(_gamepad))
-        {
-            HandleGamepadDisconnect();
-        }
-
         // Capture event states.
         int eventStateIdx = 0;
         ReadKeyboard(eventStateIdx);
@@ -121,6 +107,42 @@ namespace Silent::Input
         UpdateRumble();
         UpdateActions();
         HandleHotkeyActions();
+    }
+    
+    void InputManager::ConnectGamepad(int deviceId)
+    {
+        // Check if a gamepad is already connected.
+        if (IsGamepadConnected())
+        {
+            return;
+        }
+
+        // Set connection.
+        _gamepad.Id     = deviceId;
+        _gamepad.Device = SDL_OpenGamepad(deviceId);
+        if (_gamepad.Device != nullptr)
+        {
+            Log("Gamepad connected.");
+            Log("Gamepad vendor ID: " + std::to_string(SDL_GetGamepadVendor(_gamepad.Device)) + ".", LogLevel::Info, LogMode::Debug);
+            // TODO: Add toast notification.
+
+            SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
+        }
+    }
+
+    void InputManager::DisconnectGamepad(int deviceId)
+    {
+        // Check if a gamepad is connected and IDs match.
+        if (!IsGamepadConnected() || _gamepad.Id != deviceId)
+        {
+            return;
+        }
+
+        Log("Gamepad disconnected.");
+        // TODO: Add toast notification.
+
+        SDL_CloseGamepad(_gamepad.Device);
+        _gamepad = {};
     }
 
     void InputManager::InsertText(const std::string& textId, uint lineWidthMax, uint charCountMax)
@@ -249,9 +271,9 @@ namespace Silent::Input
         for (auto butCode : VALID_GAMEPAD_BUTTON_CODES)
         {
             float state = 0.0f;
-            if (_gamepad != nullptr)
+            if (IsGamepadConnected())
             {
-                state = SDL_GetGamepadButton(_gamepad, butCode);
+                state = SDL_GetGamepadButton(_gamepad.Device, butCode);
             }
             if (state)
             {
@@ -267,13 +289,13 @@ namespace Silent::Input
         int  j         = 0;
         for (int i = 0; i < VALID_GAMEPAD_STICK_AXIS_CODES.size(); i++)
         {
-            if (_gamepad == nullptr)
+            if (!IsGamepadConnected())
             {
                 break;
             }
 
             auto  axisCode = VALID_GAMEPAD_STICK_AXIS_CODES[i];
-            float state    = (float)SDL_GetGamepadAxis(_gamepad, axisCode) / (float)SHRT_MAX;
+            float state    = (float)SDL_GetGamepadAxis(_gamepad.Device, axisCode) / (float)SHRT_MAX;
 
             auto& axis = stickAxes[j];
             if ((i % Vector2::AXIS_COUNT) == 0)
@@ -329,10 +351,10 @@ namespace Silent::Input
         for (auto axisCode : VALID_GAMEPAD_TRIGGER_AXIS_CODES)
         {
             float state = 0.0f;
-            if (_gamepad != nullptr)
+            if (IsGamepadConnected())
             {
                 // Remap state to active range.
-                state = (float)SDL_GetGamepadAxis(_gamepad, axisCode) / (float)SHRT_MAX;
+                state = (float)SDL_GetGamepadAxis(_gamepad.Device, axisCode) / (float)SHRT_MAX;
                 if (state >= AXIS_DEADZONE)
                 {
                     state = Remap(state, AXIS_DEADZONE, 1.0f, 0.0f, 1.0f);
@@ -350,7 +372,7 @@ namespace Silent::Input
 
     void InputManager::UpdateRumble()
     {
-        if (_rumble.Ticks == 0 || _gamepad == nullptr)
+        if (_rumble.Ticks == 0 || !IsGamepadConnected())
         {
             _rumble = {};
             return;
@@ -368,10 +390,12 @@ namespace Silent::Input
         uint durationMs = (uint)round(TICK_TO_SEC(_rumble.DurationTicks) * 1000);
 
         // Rumble gamepad.
-        if (!SDL_RumbleGamepad(_gamepad, freqLow, freqHigh, durationMs))
+        if (!SDL_RumbleGamepad(_gamepad.Device, freqLow, freqHigh, durationMs))
         {
             Log("Failed to rumble gamepad: " + std::string(SDL_GetError()), LogLevel::Error);
         }
+
+        _rumble.Ticks--;
     }
 
     void InputManager::UpdateActions()
@@ -394,7 +418,7 @@ namespace Silent::Input
                     float state  = 0.0f;
 
                     // Get max gamepad event state.
-                    if (_gamepad != nullptr)
+                    if (IsGamepadConnected())
                     {
                         auto gamepadEventIds = gamepadProfile.at(actionId);
                         for (const auto& eventId : gamepadEventIds)
@@ -487,37 +511,6 @@ namespace Silent::Input
                 Log("Toggled debug mode.", LogLevel::Info, LogMode::DebugRelease, true);
             }
             dbDebugGui = !_states.Events[(int)EventId::Grave];
-        }
-    }
-
-    void InputManager::HandleGamepadDisconnect()
-    {
-        constexpr auto GAMEPAD_RECONNECT_INTERVAL_SEC = 2.0f;
-
-        // Deinitialize disconnected gamepad.
-        if (_gamepad != nullptr)
-        {
-            Log("Gamepad disconnected.");
-            // TODO: Add toast notification.
-
-            SDL_CloseGamepad(_gamepad);
-            _gamepad = nullptr;
-        }
-        // Intermittently attempt reconnecting gamepad.
-        else
-        {
-            const auto& time = g_App.GetTime();
-            if (time.TestInterval(SEC_TO_TICK(GAMEPAD_RECONNECT_INTERVAL_SEC)))
-            {
-                _gamepad = SDL_OpenGamepad(GAMEPAD_ID);
-                if (_gamepad != nullptr)
-                {
-                    Log("Gamepad connected.");
-                    // TODO: Add toast notification.
-
-                    SetRumble(RumbleMode::LowAndHigh, 0.0f, 1.0f, 0.5f);
-                }
-            }
         }
     }
 }

@@ -274,9 +274,22 @@ namespace Silent
                     break;
                 }
 
+                // TODO: Handle this a better way.
                 case SDL_EVENT_MOUSE_WHEEL:
                 {
                     _mouseWheelAxis = Vector2(event.wheel.x, event.wheel.y);
+                    break;
+                }
+
+                case SDL_EVENT_GAMEPAD_ADDED:
+                {
+                    _work.Input.ConnectGamepad(event.cdevice.which);
+                    break;
+                }
+
+                case SDL_EVENT_GAMEPAD_REMOVED:
+                {
+                    _work.Input.DisconnectGamepad(event.cdevice.which);
                     break;
                 }
 

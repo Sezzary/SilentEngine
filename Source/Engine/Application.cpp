@@ -232,7 +232,7 @@ namespace Silent
 
                 case SDL_EVENT_WINDOW_RESIZED:
                 {
-                    // Ignore if maximized or fullscreen.
+                    // Ignore if fullscreen or maximized.
                     auto windowFlags = SDL_GetWindowFlags(_window);
                     if (windowFlags & SDL_WINDOW_FULLSCREEN ||
                         windowFlags & SDL_WINDOW_MAXIMIZED)
@@ -252,7 +252,7 @@ namespace Silent
                     _work.Options->WindowedSize = res;
                     _work.Options.Save();
 
-                    // Update window state.
+                    // Update render size.
                     _work.Renderer->SignalResize();
                     break;
                 }
@@ -265,7 +265,7 @@ namespace Silent
                     _work.Options->EnableMaximized = windowFlags & SDL_WINDOW_MAXIMIZED;
                     _work.Options.Save();
 
-                    // Update window state.
+                    // Update render size.
                     _work.Renderer->SignalResize();
                     break;
                 }
@@ -280,7 +280,7 @@ namespace Silent
                     // Show/hide cursor.
                     ToggleCursor();
                     
-                    // Update window state.
+                    // Update render size.
                     _work.Renderer->SignalResize();
                     break;
                 }

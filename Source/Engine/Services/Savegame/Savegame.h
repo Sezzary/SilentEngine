@@ -58,9 +58,9 @@ namespace Silent::Services
         // Helpers
 
         std::filesystem::path GetSavegamePath(int slotIdx, int fileIdx, int saveIdx) const;
-        void                  PopulateSlotMetadata();
-
-        SavegameMetadata                                GetMetadata(const std::filesystem::path& saveFile) const;
+        SavegameMetadata      GetMetadata(const std::filesystem::path& saveFile) const;
+        
+        void                                            PopulateSlotMetadata();
         std::unique_ptr<Savegame>                       FromSavegameBuffer(const Silent::Buffers::Savegame& saveBuffer) const;
         std::unique_ptr<flatbuffers::FlatBufferBuilder> ToSavegameBuffer(const Savegame& save) const;
     };

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Silent::Hud
+namespace Silent::Services
 {
     struct Toast
     {
@@ -14,14 +14,13 @@ namespace Silent::Hud
     private:
         // Constants
 
-        static constexpr uint  TOAST_COUNT_MAX       = 4;
+        static constexpr uint  TOAST_COUNT_MAX       = 8;
         static constexpr float LIFE_SEC_MAX          = 4.0f;
-        static constexpr float LIFE_SEC_START_FADING = LIFE_SEC_MAX * 0.25f;
+        static constexpr float LIFE_SEC_START_FADING = LIFE_SEC_MAX * 0.75f;
 
-        // Fileds
+        // Fields
 
-        std::vector<Toast> _toasts        = {};
-        Vector2            _stackPosition = Vector2::Zero;
+        std::vector<Toast> _toasts = {};
 
     public:
         // Constructors
@@ -31,12 +30,12 @@ namespace Silent::Hud
         // Utilities
 
         void Update();
-        void Render();
         void Add(const std::string& msg, const Color& color);
 
     private:
         // Helpers
 
+        void Render();
         void ClearInactiveToasts();
     };
 }

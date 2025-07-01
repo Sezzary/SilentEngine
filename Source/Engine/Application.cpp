@@ -3,8 +3,12 @@
 
 #include "Engine/Input/Input.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Services/Assets/Assets.h"
 #include "Engine/Services/Filesystem.h"
+#include "Engine/Services/Hud/Hud.h"
+#include "Engine/Services/Options.h"
 #include "Engine/Services/Time.h"
+#include "Engine/Services/Savegame/Savegame.h"
 #include "Utils/Parallel.h"
 
 using namespace Silent::Input;
@@ -24,6 +28,11 @@ namespace Silent
     FilesystemManager& ApplicationManager::GetFilesystem()
     {
         return _work.Filesystem;
+    }
+
+    HudManager& ApplicationManager::GetHud()
+    {
+        return _work.Hud;
     }
 
     InputManager& ApplicationManager::GetInput()
@@ -163,7 +172,7 @@ namespace Silent
         {
             if (!SDL_ShowCursor())
             {
-                Log("Failed to show cursor: " + std::string(SDL_GetError()));
+                Log("Failed to show cursor: " + std::string(SDL_GetError()), LogLevel::Warning);
             }
 
             // Move cursor to window center.
@@ -175,7 +184,7 @@ namespace Silent
         {
             if (!SDL_HideCursor())
             {
-                Log("Failed to hide cursor: " + std::string(SDL_GetError()));
+                Log("Failed to hide cursor: " + std::string(SDL_GetError()), LogLevel::Warning);
             }
         }
     }
@@ -187,6 +196,7 @@ namespace Silent
 
         // TODO: Update game state here.
 
+        _work.Hud.Update();
         UpdateDebug();
     }
 

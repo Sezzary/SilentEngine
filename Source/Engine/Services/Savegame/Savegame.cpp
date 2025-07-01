@@ -124,6 +124,42 @@ namespace Silent::Services
         return fs.GetWorkFolder() / SAVEGAME_FOLDER_NAME / slotFolderName / fileFolderName / saveFilename;
     }
 
+    SavegameMetadata SavegameManager::GetMetadata(const std::filesystem::path& saveFile) const
+    {
+        // Open savegame buffer file.
+        auto inputFile = std::ifstream(saveFile, std::ios::binary);
+        if (!inputFile.is_open())
+        {
+            Log("Attempted to get metadata for missing savegame file `" + saveFile.string() + "'.", LogLevel::Warning, LogMode::Debug);
+            return SavegameMetadata
+            {
+                .SlotIdx        = NO_VALUE,
+                .FileIdx        = NO_VALUE,
+                .DataIdx        = NO_VALUE,
+                .LocationId     = NO_VALUE,
+                .SaveCount      = NO_VALUE,
+                .GameplayTimer  = 0,
+                .IsNextFearMode = false,
+                .Flags          = NO_VALUE
+            };
+        }
+
+        // Get file size.
+        inputFile.seekg(0, std::ios::end);
+        auto fileSize = inputFile.tellg();
+        inputFile.seekg(0, std::ios::beg);
+
+        // Read file into buffer object.
+        auto fileBuffer = std::vector<char>(fileSize);
+        inputFile.read(fileBuffer.data(), fileSize);
+        auto* saveBuffer = flatbuffers::GetRoot<Silent::Buffers::Savegame>(fileBuffer.data());
+        
+        // TODO: Read metadata from savegame buffer.
+        auto metadata = SavegameMetadata{};
+
+        return metadata;
+    }
+
     void SavegameManager::PopulateSlotMetadata()
     {
         const auto& fs = g_App.GetFilesystem();
@@ -209,42 +245,6 @@ namespace Silent::Services
                 slotMetadata.push_back(metadata);
             }
         }
-    }
-
-    SavegameMetadata SavegameManager::GetMetadata(const std::filesystem::path& saveFile) const
-    {
-        // Open savegame buffer file.
-        auto inputFile = std::ifstream(saveFile, std::ios::binary);
-        if (!inputFile.is_open())
-        {
-            Log("Attempted to get metadata for missing savegame file `" + saveFile.string() + "'.", LogLevel::Warning, LogMode::Debug);
-            return SavegameMetadata
-            {
-                .SlotIdx        = NO_VALUE,
-                .FileIdx        = NO_VALUE,
-                .DataIdx        = NO_VALUE,
-                .LocationId     = NO_VALUE,
-                .SaveCount      = NO_VALUE,
-                .GameplayTimer  = 0,
-                .IsNextFearMode = false,
-                .Flags          = NO_VALUE
-            };
-        }
-
-        // Get file size.
-        inputFile.seekg(0, std::ios::end);
-        auto fileSize = inputFile.tellg();
-        inputFile.seekg(0, std::ios::beg);
-
-        // Read file into buffer object.
-        auto fileBuffer = std::vector<char>(fileSize);
-        inputFile.read(fileBuffer.data(), fileSize);
-        auto* saveBuffer = flatbuffers::GetRoot<Silent::Buffers::Savegame>(fileBuffer.data());
-        
-        // TODO: Read metadata from savegame buffer.
-        auto metadata = SavegameMetadata{};
-
-        return metadata;
     }
 
     std::unique_ptr<Savegame> SavegameManager::FromSavegameBuffer(const Silent::Buffers::Savegame& saveBuffer) const

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Engine/Game/Hud/Toast.h"
+#include "Engine/Services/Hud/Toast.h"
 
-namespace Silent::Hud
+namespace Silent::Services
 {
     class HudManager
     {
@@ -19,8 +19,6 @@ namespace Silent::Hud
         // Utilities
 
         void Update();
-        void Render();
-
         void AddToast(const std::string& msg, const Color& color = Color::White);
     };
 

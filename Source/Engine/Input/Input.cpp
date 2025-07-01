@@ -6,6 +6,7 @@
 #include "Engine/Input/Binding.h"
 #include "Engine/Input/Event.h"
 #include "Engine/Input/Text.h"
+#include "Engine/Services/Hud/Hud.h"
 #include "Engine/Services/Options.h"
 #include "Engine/Services/Time.h"
 #include "Utils/Parallel.h"
@@ -160,7 +161,7 @@ namespace Silent::Input
             }
 
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
-            // TODO: Add toast notification.
+            hud.AddToast("Gamepad Connected.");
 
             Log(GetGamepadVendorName(_gamepad.VendorId) + " gamepad connected.");
         }
@@ -174,9 +175,11 @@ namespace Silent::Input
             return;
         }
 
-        SDL_CloseGamepad(_gamepad.Device);
+        auto& hud = g_App.GetHud();
+
         _gamepad = {};
-        // TODO: Add toast notification.
+        SDL_CloseGamepad(_gamepad.Device);
+        hud.AddToast("Gamepad disconnected.");
 
         Log("Gamepad disconnected.");
     }

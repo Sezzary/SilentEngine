@@ -100,7 +100,8 @@ namespace Silent::Math
         // Compute angle.
         float rad = glm::acos(w) * 2.0f;
 
-        return AxisAngle(axis, FP_DEGREE_FROM_RAD(rad));
+        // Create axis-angle.
+        return AxisAngle(axis, rad);
     }
 
     Matrix Quaternion::ToRotationMatrix() const

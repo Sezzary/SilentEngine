@@ -23,8 +23,8 @@ namespace Silent::Math
         // Constructors
 
         constexpr Vector2()                     = default;
-        constexpr Vector2(const glm::vec2& vec) : glm::vec2(vec)  {}
-        constexpr Vector2(float x)              : glm::vec2(x)    {}
+        constexpr Vector2(const glm::vec2& vec) : glm::vec2(vec) {}
+        constexpr Vector2(float x)              : glm::vec2(x) {}
         constexpr Vector2(float x, float y)     : glm::vec2(x, y) {}
 
         // Utilities

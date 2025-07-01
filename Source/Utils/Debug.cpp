@@ -570,13 +570,6 @@ namespace Silent::Utils::Debug
     {
         constexpr uint BUFFER_SIZE = 255;
 
-        // Check if `Messages` is full.
-        if (Messages.size() >= MESSAGE_COUNT_MAX)
-        {
-            Log("Attempted to create too many debug messages.", LogLevel::Warning, LogMode::Debug);
-            return;
-        }
-
         // Check if debug GUI is enabled.
         const auto& options = g_App.GetOptions();
         if (!options->EnableDebugGui)
@@ -584,7 +577,14 @@ namespace Silent::Utils::Debug
             return;
         }
 
-        // Initialize buffer.
+        // Check if `Messages` is full.
+        if (Messages.size() >= MESSAGE_COUNT_MAX)
+        {
+            Log("Attempted to create too many debug messages.", LogLevel::Warning, LogMode::Debug);
+            return;
+        }
+
+        // Initialize string buffer.
         char buffer[BUFFER_SIZE];
         std::memset(buffer, 0, BUFFER_SIZE);
 

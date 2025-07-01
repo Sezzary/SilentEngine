@@ -14,8 +14,8 @@ namespace Silent::Math
     public:
         // Fields
 
-        Vector3 Axis  = Vector3::UnitZ;
-        short   Angle = 0;
+        Vector3 Axis  = Vector3::UnitZ; // Normalized.
+        float   Angle = 0.0f;           // Radians.
 
         // Presets
 
@@ -24,7 +24,7 @@ namespace Silent::Math
         // Constructors
 
         constexpr AxisAngle()                                 = default;
-        constexpr AxisAngle(const Vector3& axis, short angle) : Axis(axis), Angle(angle) {};
+        constexpr AxisAngle(const Vector3& axis, float angle) : Axis(axis), Angle(angle) {};
 
         AxisAngle(const Vector3& dir);
 

@@ -24,9 +24,9 @@ namespace Silent::Math
         float dot = Vector3::Dot(dir, Vector3::UnitZ);
         float rad = glm::acos(dot);
 
-        // Set axis angle.
+        // Set axis-angle.
         Axis  = axis;
-        Angle = FP_DEGREE_FROM_RAD(rad);
+        Angle = rad;
     }
 
     AxisAngle AxisAngle::Lerp(const AxisAngle& from, const AxisAngle& to, float alpha)
@@ -59,8 +59,7 @@ namespace Silent::Math
 
     Vector3 AxisAngle::ToDirection() const
     {
-        float rad = FP_DEGREE_TO_RAD(Angle);
-        return (Axis * glm::cos(rad)) + (Axis * (1.0f - glm::cos(rad)));
+        return (Axis * glm::cos(Angle)) + (Axis * (1.0f - glm::cos(Angle)));
     }
 
     EulerAngles AxisAngle::ToEulerAngles() const
@@ -71,8 +70,7 @@ namespace Silent::Math
 
     Quaternion AxisAngle::ToQuaternion() const
     {
-        float rad          = FP_DEGREE_TO_RAD(Angle);
-        float halfAngle    = rad / 2.0f;
+        float halfAngle    = Angle / 2.0f;
         float sinHalfAngle = glm::sin(halfAngle);
         float cosHalfAngle = glm::cos(halfAngle);
 
@@ -84,9 +82,8 @@ namespace Silent::Math
 
     Matrix AxisAngle::ToRotationMatrix() const
     {
-        float rad         = FP_DEGREE_TO_RAD(Angle);
-        float sinAngle    = glm::sin(rad);
-        float cosAngle    = glm::cos(rad);
+        float sinAngle    = glm::sin(Angle);
+        float cosAngle    = glm::cos(Angle);
         float invCosAngle = 1.0f - cosAngle;
     
         return Matrix(cosAngle + SQUARE(Axis.x) * invCosAngle,

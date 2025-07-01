@@ -150,8 +150,8 @@ namespace Silent::Math
                            (*this)[1][0] - (*this)[0][1]) / (glm::sin(rad) * 2.0f);
         }
 
-        // Set axis and angle.
-        return AxisAngle(axis, FP_DEGREE_FROM_RAD(rad));
+        // Create axis-angle.
+        return AxisAngle(axis, rad);
     }
 
     Vector3 Matrix::ToScale() const

@@ -31,9 +31,9 @@ namespace Silent::Input
         return _states.CursorPosition;
     }
 
-    GamepadVendorType InputManager::GetGamepadVendor() const
+    GamepadVendorId InputManager::GetGamepadVendorId() const
     {
-        return _gamepad.Vendor;
+        return _gamepad.VendorId;
     }
 
     const std::string& InputManager::GetText(const std::string& textId) const
@@ -113,12 +113,12 @@ namespace Silent::Input
         UpdateActions();
         HandleHotkeyActions();
     }
-    
+
     void InputManager::ConnectGamepad(int deviceId)
     {
-        constexpr ushort XBOX_VENDOR_ID     = 0x045E;
-        constexpr ushort NINTENDO_VENDOR_ID = 0x057E;
-        constexpr ushort SONY_VENDOR_ID     = 0x054C;
+        constexpr ushort XBOX_VENDOR_CODE     = 0x045E;
+        constexpr ushort NINTENDO_VENDOR_CODE = 0x057E;
+        constexpr ushort SONY_VENDOR_CODE     = 0x054C;
 
         // Check if a gamepad is already connected.
         if (IsGamepadConnected())
@@ -127,33 +127,34 @@ namespace Silent::Input
         }
 
         // Set connection.
-        _gamepad.Id     = deviceId;
         _gamepad.Device = SDL_OpenGamepad(deviceId);
         if (_gamepad.Device != nullptr)
         {
+            _gamepad.Id = deviceId;
+
             switch (SDL_GetGamepadVendor(_gamepad.Device))
             {
-                case XBOX_VENDOR_ID:
+                case XBOX_VENDOR_CODE:
                 {
-                    _gamepad.Vendor = GamepadVendorType::Xbox;
+                    _gamepad.VendorId = GamepadVendorId::Xbox;
                     break;
                 }
 
-                case NINTENDO_VENDOR_ID:
+                case NINTENDO_VENDOR_CODE:
                 {
-                    _gamepad.Vendor = GamepadVendorType::Nintendo;
+                    _gamepad.VendorId = GamepadVendorId::Nintendo;
                     break;
                 }
 
-                case SONY_VENDOR_ID:
+                case SONY_VENDOR_CODE:
                 {
-                    _gamepad.Vendor = GamepadVendorType::Sony;
+                    _gamepad.VendorId = GamepadVendorId::Sony;
                     break;
                 }
 
                 default:
                 {
-                    _gamepad.Vendor = GamepadVendorType::Generic;
+                    _gamepad.VendorId = GamepadVendorId::Generic;
                     break;
                 }
             }
@@ -161,7 +162,7 @@ namespace Silent::Input
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
             // TODO: Add toast notification.
 
-            Log(GetGamepadVendorName(_gamepad.Vendor) + " gamepad connected.");
+            Log(GetGamepadVendorName(_gamepad.VendorId) + " gamepad connected.");
         }
     }
 
@@ -195,32 +196,32 @@ namespace Silent::Input
         _text.RemoveBuffer(textId);
     }
 
-    std::string InputManager::GetGamepadVendorName(GamepadVendorType vendor) const
+    std::string InputManager::GetGamepadVendorName(GamepadVendorId vendorId) const
     {
         constexpr char GENERIC_VENDOR_NAME[]  = "Generic";
         constexpr char XBOX_VENDOR_NAME[]     = "Xbox";
         constexpr char NINTENDO_VENDOR_NAME[] = "Nintendo";
         constexpr char SONY_VENDOR_NAME[]     = "Sony";
 
-        switch (vendor)
+        switch (vendorId)
         {
             default:
-            case GamepadVendorType::Generic:
+            case GamepadVendorId::Generic:
             {
                 break;
             }
 
-            case GamepadVendorType::Xbox:
+            case GamepadVendorId::Xbox:
             {
                 return XBOX_VENDOR_NAME;
             }
 
-            case GamepadVendorType::Nintendo:
+            case GamepadVendorId::Nintendo:
             {
                 return NINTENDO_VENDOR_NAME;
             }
 
-            case GamepadVendorType::Sony:
+            case GamepadVendorId::Sony:
             {
                 return SONY_VENDOR_NAME;
             }

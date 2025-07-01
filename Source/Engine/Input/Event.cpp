@@ -469,7 +469,7 @@ namespace Silent::Input
         {
             const auto& input = g_App.GetInput();
 
-            int nameIdx = (int)input.GetGamepadVendor();
+            int nameIdx = (int)input.GetGamepadVendorId();
             if (nameIdx < names.size())
             {
                 return names[nameIdx];

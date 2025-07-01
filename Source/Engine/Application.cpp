@@ -215,12 +215,14 @@ namespace Silent
             {
                 case SDL_EVENT_QUIT:
                 {
+                    // Unset run state.
                     _isRunning = false;
                     break;
                 }
 
                 case SDL_EVENT_WINDOW_RESIZED:
                 {
+                    // Ignore if maximized or fullscreen.
                     auto windowFlags = SDL_GetWindowFlags(_window);
                     if (windowFlags & SDL_WINDOW_FULLSCREEN ||
                         windowFlags & SDL_WINDOW_MAXIMIZED)
@@ -228,6 +230,7 @@ namespace Silent
                         break;
                     }
 
+                    // Get new resolution.
                     auto res = Vector2i::Zero;
                     SDL_GetWindowSizeInPixels(_window, &res.x, &res.y);
                     if (_work.Options->WindowedSize == res)
@@ -260,10 +263,8 @@ namespace Silent
                 case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
                 case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
                 {
-                    bool isFullscreen = event.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN;
-
                     // Update options.
-                    _work.Options->EnableFullscreen = isFullscreen;
+                    _work.Options->EnableFullscreen = event.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN;
                     _work.Options.Save();
 
                     // Show/hide cursor.
@@ -274,21 +275,23 @@ namespace Silent
                     break;
                 }
 
-                // TODO: Handle this a better way.
                 case SDL_EVENT_MOUSE_WHEEL:
                 {
+                    // TODO: Handle this a better way.
                     _mouseWheelAxis = Vector2(event.wheel.x, event.wheel.y);
                     break;
                 }
 
                 case SDL_EVENT_GAMEPAD_ADDED:
                 {
+                    // Attempt connecting gamepad.
                     _work.Input.ConnectGamepad(event.cdevice.which);
                     break;
                 }
 
                 case SDL_EVENT_GAMEPAD_REMOVED:
                 {
+                    // Attempt disconnecting gamepad.
                     _work.Input.DisconnectGamepad(event.cdevice.which);
                     break;
                 }

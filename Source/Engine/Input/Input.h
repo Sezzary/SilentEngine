@@ -6,7 +6,7 @@
 
 namespace Silent::Input
 {
-    enum class GamepadVendorType
+    enum class GamepadVendorId
     {
         Generic,
         Xbox,
@@ -43,9 +43,9 @@ namespace Silent::Input
 
     struct Gamepad
     {
-        int               Id     = NO_VALUE;
-        SDL_Gamepad*      Device = nullptr;
-        GamepadVendorType Vendor = GamepadVendorType::Generic;
+        int             Id       = NO_VALUE;
+        SDL_Gamepad*    Device   = nullptr;
+        GamepadVendorId VendorId = GamepadVendorId::Generic;
     };
 
     struct Rumble
@@ -81,7 +81,7 @@ namespace Silent::Input
         const Vector2& GetAnalogAxis(AnalogAxisId axisId) const;
         const Vector2& GetCursorPosition() const;
 
-        GamepadVendorType GetGamepadVendor() const;
+        GamepadVendorId GetGamepadVendorId() const;
 
         const std::string&       GetText(const std::string& textId) const;
         std::vector<std::string> GetTextLines(const std::string& bufferId, uint low = (uint)NO_VALUE, uint high = (uint)NO_VALUE) const;
@@ -112,7 +112,7 @@ namespace Silent::Input
     private:
         // Helpers
 
-        std::string GetGamepadVendorName(GamepadVendorType vendor) const;
+        std::string GetGamepadVendorName(GamepadVendorId vendorId) const;
 
         void ReadKeyboard(int& eventStateIdx);
         void ReadMouse(int& eventStateIdx, SDL_Window& window, const Vector2& wheelAxis);

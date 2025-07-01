@@ -30,7 +30,7 @@ namespace Silent::Services
         // Utilities
 
         void Update();
-        void Add(const std::string& msg, const Color& color);
+        void Add(const std::string& msg, const Color& color = Color::White);
 
     private:
         // Helpers

@@ -4,9 +4,9 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Assets/Assets.h"
 #include "Engine/Services/Filesystem.h"
-#include "Engine/Services/Hud/Hud.h"
 #include "Engine/Services/Options.h"
 #include "Engine/Services/Time.h"
+#include "Engine/Services/Toasts.h"
 #include "Engine/Services/Savegame/Savegame.h"
 
 namespace Silent
@@ -22,12 +22,12 @@ namespace Silent
 
         AssetManager                  Assets     = AssetManager();
         FilesystemManager             Filesystem = FilesystemManager();
-        HudManager                    Hud        = HudManager();
         InputManager                  Input      = InputManager();
         OptionsManager                Options    = OptionsManager();
         std::unique_ptr<RendererBase> Renderer   = nullptr;
         SavegameManager               Savegame   = SavegameManager();
         TimeManager                   Time       = TimeManager();
+        ToastManager                  Toasts     = ToastManager();
     };
 
     class ApplicationManager
@@ -50,7 +50,7 @@ namespace Silent
 
         AssetManager&      GetAssets();
         FilesystemManager& GetFilesystem();
-        HudManager&        GetHud();
+        ToastManager&      GetToasts();
         InputManager&      GetInput();
         OptionsManager&    GetOptions();
         RendererBase&      GetRenderer();

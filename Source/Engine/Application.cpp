@@ -5,9 +5,9 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Assets/Assets.h"
 #include "Engine/Services/Filesystem.h"
-#include "Engine/Services/Hud/Hud.h"
 #include "Engine/Services/Options.h"
 #include "Engine/Services/Time.h"
+#include "Engine/Services/Toasts.h"
 #include "Engine/Services/Savegame/Savegame.h"
 #include "Utils/Parallel.h"
 
@@ -28,11 +28,6 @@ namespace Silent
     FilesystemManager& ApplicationManager::GetFilesystem()
     {
         return _work.Filesystem;
-    }
-
-    HudManager& ApplicationManager::GetHud()
-    {
-        return _work.Hud;
     }
 
     InputManager& ApplicationManager::GetInput()
@@ -58,6 +53,11 @@ namespace Silent
     TimeManager& ApplicationManager::GetTime()
     {
         return _work.Time;
+    }
+
+    ToastManager& ApplicationManager::GetToasts()
+    {
+        return _work.Toasts;
     }
 
     Vector2i ApplicationManager::GetWindowResolution() const
@@ -196,7 +196,7 @@ namespace Silent
 
         // TODO: Update game state here.
 
-        _work.Hud.Update();
+        _work.Toasts.Update();
         UpdateDebug();
     }
 

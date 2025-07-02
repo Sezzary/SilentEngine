@@ -139,6 +139,22 @@ namespace Silent::Assets
             .Pixels     = std::vector<uchar>((res.x * res.y) * 4)
         };
 
+        auto setPixelColor = [&](int x, int y, uint16 color)
+        {
+            // Collect extracted RGBA components.
+            uchar* out = &asset.Pixels[((y * res.x) + x) * 4];
+            out[0]     = (color & 0x1F)         << 3; // B.
+            out[1]     = ((color >> 5) & 0x1F)  << 3; // G.
+            out[2]     = ((color >> 10) & 0x1F) << 3; // R.
+            out[3]     = (color & 0x8000) ? 0 : 255;  // A.
+
+            // Key out black as transparent.
+            if (out[0] == 0 && out[1] == 0 && out[2] == 0)
+            {
+                out[3] = 0;
+            }
+        };
+
         // Read pixels.
         for (int y = 0; y < res.y; y++)
         {
@@ -159,15 +175,9 @@ namespace Silent::Assets
 
                         for (int i = 0; i < 2 && x < res.x; i++, x++)
                         {
-                            // Get color from CLUT.
+                            // Set pixel.
                             uint16 color = clut[(i == 0) ? idx0 : idx1];
-
-                            // Collect extracted RGBA components.
-                            uchar* out = &asset.Pixels[((y * res.x) + x) * 4];
-                            out[0]     = (color & 0x1F)         << 3;          // B.
-                            out[1]     = ((color >> 5) & 0x1F)  << 3;          // G.
-                            out[2]     = ((color >> 10) & 0x1F) << 3;          // R.
-                            out[3]     = (color & 0x8000) ? 0 : 255;           // A.
+                            setPixelColor(x, y, color);
                         }
                         break;
                     }
@@ -178,15 +188,9 @@ namespace Silent::Assets
                         uint idx = 0;
                         file.read((char*)&idx, 1);
                         
-                        // Get color from CLUT.
+                        // Set pixel.
                         uint16 color = clut[idx];
-
-                        // Collect extracted RGBA components.
-                        uchar* out = &asset.Pixels[((y * res.x) + x) * 4];
-                        out[0]     = (color & 0x1F)         << 3;          // B.
-                        out[1]     = ((color >> 5) & 0x1F)  << 3;          // G.
-                        out[2]     = ((color >> 10) & 0x1F) << 3;          // R.
-                        out[3]     = (color & 0x8000) ? 0 : 255;           // A.
+                        setPixelColor(x, y, color);
 
                         x++;
                         break;
@@ -198,12 +202,8 @@ namespace Silent::Assets
                         uint16 color = 0;
                         file.read((char*)&color, 2);
 
-                        // Collect extracted RGBA components.
-                        uchar* out = &asset.Pixels[((y * res.x) + x) * 4];
-                        out[0]     = (color & 0x1F)         << 3;          // B.
-                        out[1]     = ((color >> 5) & 0x1F)  << 3;          // G.
-                        out[2]     = ((color >> 10) & 0x1F) << 3;          // R.
-                        out[3]     = (color & 0x8000) ? 0 : 255;           // A.
+                        // Set pixel.
+                        setPixelColor(x, y, color);
 
                         x++;
                         break;

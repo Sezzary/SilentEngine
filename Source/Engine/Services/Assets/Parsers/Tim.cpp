@@ -143,10 +143,10 @@ namespace Silent::Assets
         {
             // Collect extracted RGBA components.
             uchar* out = &asset.Pixels[((y * res.x) + x) * 4];
-            out[0]     = (color & 0x1F)         << 3; // B.
-            out[1]     = ((color >> 5) & 0x1F)  << 3; // G.
-            out[2]     = ((color >> 10) & 0x1F) << 3; // R.
-            out[3]     = (color & 0x8000) ? 0 : 255;  // A.
+            out[0]     = (color & 0x1F)         << 3;          // B.
+            out[1]     = ((color >> 5) & 0x1F)  << 3;          // G.
+            out[2]     = ((color >> 10) & 0x1F) << 3;          // R.
+            out[3]     = (color & 0x8000) ? 0 : 255;           // A.
 
             // Key out black as transparent.
             if (out[0] == 0 && out[1] == 0 && out[2] == 0)

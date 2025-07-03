@@ -7,7 +7,7 @@
 
 namespace Silent::Services
 {
-    static const std::unordered_map<char, Vector2i> FONT_8_GLYPH_COORDS // Key = `char`, value = coordinate in `TIM/FONT8.TIM` 8x8 glyph atlas.
+    static const std::unordered_map<char, Vector2i> FONT_8_GLYPH_COORDS // Key = character code, value = coordinate in `TIM/FONT8.TIM` 8x8 glyph atlas.
     {
         { '*', Vector2i(0, 0) },
         { '+', Vector2i(1, 0) },
@@ -62,7 +62,7 @@ namespace Silent::Services
         { '_', Vector2i(18, 1) }
     };
 
-    static const std::unordered_map<char, Vector2i> FONT_16_GLYPH_COORDS // Key = `char`, value = coordinate in `1ST/FONT16.TIM` 12x16 glyph atlas.
+    static const std::unordered_map<char, Vector2i> FONT_16_GLYPH_COORDS // Key = character code, value = coordinate in `1ST/FONT16.TIM` 12x16 glyph atlas.
     {
         { '\'', Vector2i(0, 0) },
         { '(',  Vector2i(0, 1) },
@@ -150,7 +150,7 @@ namespace Silent::Services
         { 'z',  Vector2i(0, 83) }
     };
 
-    static const std::unordered_map<char, int> FONT_16_GLYPH_PIXEL_WIDTHS
+    static const std::unordered_map<char, int> FONT_16_GLYPH_PIXEL_WIDTHS // Key = character code, value = glyph pixel width.
     {
         { '\'', 3 },
         { '(',  7 },
@@ -241,7 +241,7 @@ namespace Silent::Services
     FontGlyphUvs GetFont8GlyphUvs(char charCode)
     {
         constexpr char FONT_ASSET_NAME[] = "TIM/FONT8.TIM";
-        constexpr auto GLYPH_PIXEL_SIZE  = Vector2i(8, 8);
+        constexpr auto GLYPH_RES         = Vector2i(8, 8);
         constexpr int  GLYPH_ROW_COUNT   = 32;
 
         auto& assets = g_App.GetAssets();
@@ -265,16 +265,16 @@ namespace Silent::Services
         const auto& coords = coordsIt->second;
 
         // Compute base glyph pixel position.
-        auto pixelPos = (coords * GLYPH_PIXEL_SIZE).ToVector2();
+        auto pixelPos = (coords * GLYPH_RES).ToVector2();
 
         // Compute glyph UVs.
         auto atlasRes = data->Resolution.ToVector2();
         auto uvs      = FontGlyphUvs
         {
-            .Uv0 = pixelPos                                                     / atlasRes,
-            .Uv1 = (pixelPos + Vector2(0.0f, GLYPH_PIXEL_SIZE.y))               / atlasRes,
-            .Uv2 = (pixelPos + Vector2(GLYPH_PIXEL_SIZE.x, GLYPH_PIXEL_SIZE.y)) / atlasRes,
-            .Uv3 = (pixelPos + Vector2(GLYPH_PIXEL_SIZE.x, 0.0f))               / atlasRes,
+            .Uv0 = pixelPos                                       / atlasRes,
+            .Uv1 = (pixelPos + Vector2(0.0f, GLYPH_RES.y))        / atlasRes,
+            .Uv2 = (pixelPos + Vector2(GLYPH_RES.x, GLYPH_RES.y)) / atlasRes,
+            .Uv3 = (pixelPos + Vector2(GLYPH_RES.x, 0.0f))        / atlasRes,
         };
         return uvs;
     }
@@ -282,7 +282,7 @@ namespace Silent::Services
     FontGlyphUvs GetFont16GlyphUvs(char charCode)
     {
         constexpr char FONT_ASSET_NAME[]        = "1ST/FONT16.TIM";
-        constexpr auto GLYPH_PIXEL_SIZE         = Vector2i(12, 16);
+        constexpr auto GLYPH_RES                = Vector2i(12, 16);
         constexpr int  GLYPH_ROW_PIXEL_OFFSET_X = 4;
         constexpr int  GLYPH_ROW_COUNT          = 21;
 
@@ -307,18 +307,34 @@ namespace Silent::Services
         const auto& coords = coordsIt->second;
 
         // Compute base glyph pixel position.
-        int  pixelOffsetX = (coords.x / GLYPH_ROW_COUNT) * GLYPH_ROW_PIXEL_OFFSET_X;                 // HACK: Required due to odd glyph layout in atlas.
-        auto pixelPos     = Vector2i((coords.x * GLYPH_PIXEL_SIZE.x) + pixelOffsetX, 0).ToVector2();
+        int  pixelOffsetX = (coords.x / GLYPH_ROW_COUNT) * GLYPH_ROW_PIXEL_OFFSET_X;          // HACK: Required due to odd glyph layout in atlas.
+        auto pixelPos     = Vector2i((coords.x * GLYPH_RES.x) + pixelOffsetX, 0).ToVector2();
 
         // Compute glyph UVs.
         auto atlasRes = data->Resolution.ToVector2();
         auto uvs      = FontGlyphUvs
         {
-            .Uv0 = pixelPos                                                     / atlasRes,
-            .Uv1 = (pixelPos + Vector2(0.0f, GLYPH_PIXEL_SIZE.y))               / atlasRes,
-            .Uv2 = (pixelPos + Vector2(GLYPH_PIXEL_SIZE.x, GLYPH_PIXEL_SIZE.y)) / atlasRes,
-            .Uv3 = (pixelPos + Vector2(GLYPH_PIXEL_SIZE.x, 0.0f))               / atlasRes,
+            .Uv0 = pixelPos                                       / atlasRes,
+            .Uv1 = (pixelPos + Vector2(0.0f, GLYPH_RES.y))        / atlasRes,
+            .Uv2 = (pixelPos + Vector2(GLYPH_RES.x, GLYPH_RES.y)) / atlasRes,
+            .Uv3 = (pixelPos + Vector2(GLYPH_RES.x, 0.0f))        / atlasRes,
         };
         return uvs;
+    }
+
+    int GetFont16GlyphPixelWidth(char charCode)
+    {
+        constexpr char FONT_ASSET_NAME[] = "1ST/FONT16.TIM";
+
+        // Get glyph pixel width.
+        auto widthIt = FONT_16_GLYPH_PIXEL_WIDTHS.find(charCode);
+        if (widthIt == FONT_16_GLYPH_PIXEL_WIDTHS.end())
+        {
+            Log("Failed to get glyph pixel width for char `" + std::string(1, charCode) + "` from asset + `" + FONT_ASSET_NAME + "`.", LogLevel::Warning);
+            return 0;
+        }
+        int width = widthIt->second;
+
+        return width;
     }
 }

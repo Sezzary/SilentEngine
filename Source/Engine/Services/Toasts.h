@@ -36,6 +36,5 @@ namespace Silent::Services
         // Helpers
 
         void Render();
-        void ClearInactiveToasts();
     };
 }

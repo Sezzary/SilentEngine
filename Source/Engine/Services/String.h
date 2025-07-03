@@ -12,4 +12,6 @@ namespace Silent::Services
 
     FontGlyphUvs GetFont8GlyphUvs(char charCode);
     FontGlyphUvs GetFont16GlyphUvs(char charCode);
+
+    int GetFont16GlyphPixelWidth(char charCode);
 }

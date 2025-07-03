@@ -12,6 +12,7 @@ namespace Silent::Services
 {
     void ToastManager::Update()
     {
+        // Update toasts.
         for (auto& toast : _toasts)
         {
             if (toast.Life <= 0)
@@ -22,14 +23,19 @@ namespace Silent::Services
             // Update opacity.
             if (toast.Life <= SEC_TO_TICK(LIFE_SEC_START_FADING))
             {
-                toast.Col.A() = toast.Life / (float)SEC_TO_TICK(LIFE_SEC_START_FADING);
+                toast.Col.A() = std::clamp(toast.Life / (float)SEC_TO_TICK(LIFE_SEC_START_FADING), 0.0f, 1.0f);
             }
 
             // Update life.
             toast.Life--;
         }
 
-        ClearInactiveToasts();
+        // Erase inactive toasts.
+        EraseIf(_toasts, [](const Toast& toast)
+        {
+            return toast.Life <= 0;
+        });
+
         Render();
     }
 
@@ -44,7 +50,7 @@ namespace Silent::Services
         // If max count reached, remove oldest toast.
         if (_toasts.size() >= TOAST_COUNT_MAX)
         {
-            _toasts.pop_back();
+            _toasts.erase(_toasts.begin());
         }
 
         // Create new toast.
@@ -75,13 +81,5 @@ namespace Silent::Services
             //g_App.GetRenderer().SubmitText(toast.Message, toast.Position, toast.Col);
             pos.y -= ROW_OFFSET;
         }
-    }
-
-    void ToastManager::ClearInactiveToasts()
-    {
-        EraseIf(_toasts, [](const Toast& toast)
-        {
-            return toast.Life <= 0;
-        });
     }
 }

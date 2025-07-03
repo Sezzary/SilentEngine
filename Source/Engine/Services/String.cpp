@@ -247,8 +247,8 @@ namespace Silent::Services
         auto& assets = g_App.GetAssets();
 
         // Get asset.
-        const auto& asset = assets.GetAsset("1ST/FONT16.TIM");
-        if (asset->State != AssetState::Loaded)
+        const auto asset = assets.GetAsset(FONT_ASSET_NAME);
+        if (asset == nullptr || asset->State != AssetState::Loaded)
         {
             Log(std::string("Failed to get glyph UVs from unloaded asset `") + FONT_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
@@ -265,32 +265,32 @@ namespace Silent::Services
         const auto& coords = coordsIt->second;
 
         // Compute base glyph pixel position.
-        auto pos = (coords * GLYPH_PIXEL_SIZE).ToVector2();
+        auto pixelPos = (coords * GLYPH_PIXEL_SIZE).ToVector2();
 
         // Compute glyph UVs.
         auto atlasRes = data->Resolution.ToVector2();
         auto uvs      = FontGlyphUvs
         {
-            .Uv0 = pos                                                     / atlasRes,
-            .Uv1 = (pos + Vector2(0.0f, GLYPH_PIXEL_SIZE.y))               / atlasRes,
-            .Uv2 = (pos + Vector2(GLYPH_PIXEL_SIZE.x, GLYPH_PIXEL_SIZE.y)) / atlasRes,
-            .Uv3 = (pos + Vector2(GLYPH_PIXEL_SIZE.x, 0.0f))               / atlasRes,
+            .Uv0 = pixelPos                                                     / atlasRes,
+            .Uv1 = (pixelPos + Vector2(0.0f, GLYPH_PIXEL_SIZE.y))               / atlasRes,
+            .Uv2 = (pixelPos + Vector2(GLYPH_PIXEL_SIZE.x, GLYPH_PIXEL_SIZE.y)) / atlasRes,
+            .Uv3 = (pixelPos + Vector2(GLYPH_PIXEL_SIZE.x, 0.0f))               / atlasRes,
         };
         return uvs;
     }
 
     FontGlyphUvs GetFont16GlyphUvs(char charCode)
     {
-        constexpr char FONT_ASSET_NAME[]      = "1ST/FONT16.TIM";
-        constexpr auto GLYPH_PIXEL_SIZE       = Vector2i(12, 16);
-        constexpr int  GLYPH_ROW_PIXEL_OFFSET = 4;
-        constexpr int  GLYPH_ROW_COUNT        = 21;
+        constexpr char FONT_ASSET_NAME[]        = "1ST/FONT16.TIM";
+        constexpr auto GLYPH_PIXEL_SIZE         = Vector2i(12, 16);
+        constexpr int  GLYPH_ROW_PIXEL_OFFSET_X = 4;
+        constexpr int  GLYPH_ROW_COUNT          = 21;
 
         auto& assets = g_App.GetAssets();
 
         // Get asset.
-        const auto& asset = assets.GetAsset("1ST/FONT16.TIM");
-        if (asset->State != AssetState::Loaded)
+        const auto asset = assets.GetAsset(FONT_ASSET_NAME);
+        if (asset == nullptr || asset->State != AssetState::Loaded)
         {
             Log(std::string("Failed to get glyph UVs from unloaded asset `") + FONT_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
@@ -307,17 +307,17 @@ namespace Silent::Services
         const auto& coords = coordsIt->second;
 
         // Compute base glyph pixel position.
-        int  pixelOffset = (coords.x / GLYPH_ROW_COUNT) * GLYPH_ROW_PIXEL_OFFSET;                  // HACK: Required due to odd glyph layout in atlas.
-        auto pos         = Vector2i((coords.x * GLYPH_PIXEL_SIZE.x) + pixelOffset, 0).ToVector2();
+        int  pixelOffsetX = (coords.x / GLYPH_ROW_COUNT) * GLYPH_ROW_PIXEL_OFFSET_X;                 // HACK: Required due to odd glyph layout in atlas.
+        auto pixelPos     = Vector2i((coords.x * GLYPH_PIXEL_SIZE.x) + pixelOffsetX, 0).ToVector2();
 
         // Compute glyph UVs.
         auto atlasRes = data->Resolution.ToVector2();
         auto uvs      = FontGlyphUvs
         {
-            .Uv0 = pos                                                     / atlasRes,
-            .Uv1 = (pos + Vector2(0.0f, GLYPH_PIXEL_SIZE.y))               / atlasRes,
-            .Uv2 = (pos + Vector2(GLYPH_PIXEL_SIZE.x, GLYPH_PIXEL_SIZE.y)) / atlasRes,
-            .Uv3 = (pos + Vector2(GLYPH_PIXEL_SIZE.x, 0.0f))               / atlasRes,
+            .Uv0 = pixelPos                                                     / atlasRes,
+            .Uv1 = (pixelPos + Vector2(0.0f, GLYPH_PIXEL_SIZE.y))               / atlasRes,
+            .Uv2 = (pixelPos + Vector2(GLYPH_PIXEL_SIZE.x, GLYPH_PIXEL_SIZE.y)) / atlasRes,
+            .Uv3 = (pixelPos + Vector2(GLYPH_PIXEL_SIZE.x, 0.0f))               / atlasRes,
         };
         return uvs;
     }

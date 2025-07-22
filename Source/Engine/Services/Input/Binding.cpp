@@ -1,8 +1,8 @@
 #include "Framework.h"
-#include "Engine/Input/Binding.h"
+#include "Engine/Services/Input/Binding.h"
 
-#include "Engine/Input/Action.h"
-#include "Engine/Input/Event.h"
+#include "Engine/Services/Input/Action.h"
+#include "Engine/Services/Input/Event.h"
 #include "Engine/Services/Time.h"
 #include "Utils/Utils.h"
 

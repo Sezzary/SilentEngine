@@ -1,11 +1,11 @@
 #include "Framework.h"
-#include "Engine/Input/Input.h"
+#include "Engine/Services/Input/Input.h"
 
 #include "Engine/Application.h"
-#include "Engine/Input/Action.h"
-#include "Engine/Input/Binding.h"
-#include "Engine/Input/Event.h"
-#include "Engine/Input/Text.h"
+#include "Engine/Services/Input/Action.h"
+#include "Engine/Services/Input/Binding.h"
+#include "Engine/Services/Input/Event.h"
+#include "Engine/Services/Input/Text.h"
 #include "Engine/Services/Options.h"
 #include "Engine/Services/Time.h"
 #include "Engine/Services/Toasts.h"
@@ -318,10 +318,9 @@ namespace Silent::Input
         {
             Log("Failed to get window size: " + std::string(SDL_GetError()), LogLevel::Error);
         }
-        
-        // TODO: Move axis calc is incorrect.
+
         float sensitivity = (options->MouseSensitivity * 0.1f) + 0.4f;
-        auto  moveAxis    = ((_states.CursorPosition - _states.PrevCursorPosition) / res.ToVector2()) * sensitivity;
+        auto  moveAxis    = (((_states.CursorPosition - _states.PrevCursorPosition) / SCREEN_SPACE_RES) * (res.ToVector2() / SCREEN_SPACE_RES)) * sensitivity;
         if (moveAxis != Vector2::Zero)
         {
             _states.IsUsingGamepad = false;

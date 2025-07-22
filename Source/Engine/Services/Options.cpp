@@ -2,9 +2,9 @@
 #include "Engine/Services/Options.h"
 
 #include "Engine/Application.h"
-#include "Engine/Input/Action.h"
-#include "Engine/Input/Binding.h"
 #include "Engine/Services/Filesystem.h"
+#include "Engine/Services/Input/Action.h"
+#include "Engine/Services/Input/Binding.h"
 #include "Utils/Parallel.h"
 
 using namespace Silent::Input;

@@ -109,7 +109,7 @@ namespace Silent::Services
         BloodColorType BloodColor      = BloodColorType::Normal;
         int            BulletAdjust    = 0;
 
-        // TODO: Enhancements options section? Would contain settings for things like bugfixes.
+        // TODO: Enhancements section?
 
         // Input (keyboard/mouse bindings)
 
@@ -134,12 +134,12 @@ namespace Silent::Services
 
         // System (internal)
 
-        bool EnableDebugMode = true; // TODO: Can't depend on `IS_BUILD_MODE` in init func, have to set this here for some reason.
+        bool EnableDebugMode = true;
         bool EnableDebugGui  = false;
 
         // System (user)
 
-        bool EnableToasts      = false; // Popup messages, e.g. "Gamepad connected", "Gamepad disconnected", etc.
+        bool EnableToasts      = false;
         bool EnableParallelism = false;
     };
 

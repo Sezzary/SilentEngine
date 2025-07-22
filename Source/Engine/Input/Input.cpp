@@ -179,6 +179,7 @@ namespace Silent::Input
 
         auto& toasts = g_App.GetToasts();
 
+        // Disconnect with toast.
         _gamepad = {};
         SDL_CloseGamepad(_gamepad.Device);
         toasts.Add("Gamepad disconnected.");
@@ -277,9 +278,11 @@ namespace Silent::Input
         const auto& options  = g_App.GetOptions();
         const auto& renderer = g_App.GetRenderer();
 
+        // Compute cursor position.
         auto pos      = Vector2::Zero;
         auto butState = SDL_GetMouseState(&pos.x, &pos.y);
         pos           = (pos / renderer.GetScreenResolution().ToVector2()) * SCREEN_SPACE_RES;
+        pos.y         = SCREEN_SPACE_RES.y - pos.y;
 
         // Set mouse button event states.
         for (int butCode : VALID_MOUSE_BUTTON_CODES)
@@ -306,7 +309,7 @@ namespace Silent::Input
         _states.Events[eventStateIdx + 3] = (wheelAxis.y > 0.0f) ? std::clamp(abs(wheelAxis.y), 0.0f, 1.0f) : 0.0f;
         eventStateIdx                    += SQUARE(Vector2::AXIS_COUNT);
 
-        // Set mouse position state.
+        // Set cursor position state.
         _states.PrevCursorPosition = _states.CursorPosition;
         _states.CursorPosition     = pos;
 

@@ -7,7 +7,7 @@ namespace Silent::Services
     public:
         // Constants
 
-        static constexpr uint TPS = 60;
+        static constexpr uint TPS = 60; // Ticks per second.
 
     private:
         static constexpr uint TICK_INTERVAL_MICROSEC = 1000000 / TPS;

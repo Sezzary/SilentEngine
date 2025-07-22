@@ -256,8 +256,8 @@ namespace Silent::Services
         auto data = GetAssetData<TimAsset>(asset);
 
         // Get glyph coords in atlas.
-        auto coordsIt = FONT_16_GLYPH_COORDS.find(charCode);
-        if (coordsIt == FONT_16_GLYPH_COORDS.end())
+        auto coordsIt = FONT_8_GLYPH_COORDS.find(charCode);
+        if (coordsIt == FONT_8_GLYPH_COORDS.end())
         {
             Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from asset + `" + FONT_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
@@ -292,7 +292,7 @@ namespace Silent::Services
         const auto asset = assets.GetAsset(FONT_ASSET_NAME);
         if (asset == nullptr || asset->State != AssetState::Loaded)
         {
-            Log(std::string("Failed to get glyph UVs from unloaded asset `") + FONT_ASSET_NAME + "`.", LogLevel::Warning);
+            Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from unloaded asset + `" + FONT_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
         }
         auto data = GetAssetData<TimAsset>(asset);

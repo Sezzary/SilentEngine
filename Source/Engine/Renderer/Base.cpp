@@ -16,6 +16,11 @@ namespace Silent::Renderer
         return _drawCallCount;
     }
 
+    void RendererBase::SetClearColor(const Color& color)
+    {
+        _clearColor = color;
+    }
+
     Vector2i RendererBase::GetScreenResolution() const
     {
         constexpr auto RETRO_RES = Vector2i(320, 240);

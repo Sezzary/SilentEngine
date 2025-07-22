@@ -2,6 +2,7 @@
 #include "Engine/Application.h"
 
 #include "Engine/Input/Input.h"
+#include "Engine/Game/Test.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Assets/Assets.h"
 #include "Engine/Services/Filesystem.h"
@@ -78,6 +79,7 @@ namespace Silent
         Log("Starting Silent Engine...");
 
         // Options.
+        _work.Options.Initialize();
         _work.Options.Load();
 
         // Parallelism.
@@ -148,11 +150,14 @@ namespace Silent
 
         while (_isRunning)
         {
+            // Update time after blocking.
             _work.Time.Update();
 
+            // Step game state and render.
             Update();
             Render();
 
+            // Block until next tick.
             _work.Time.WaitForNextTick();
         }
     }
@@ -191,13 +196,16 @@ namespace Silent
 
     void ApplicationManager::Update()
     {
+        // Poll events and input.
         PollEvents();
         _work.Input.Update(*_window, _mouseWheelAxis);
 
-        // TODO: Update game state here.
+        // Update game state.
+        //Entry();
 
-        _work.Toasts.Update();
+        // Update toasts and debug.
         UpdateDebug();
+        _work.Toasts.Update();
     }
 
     void ApplicationManager::Render()

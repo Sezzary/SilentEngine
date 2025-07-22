@@ -19,9 +19,11 @@ namespace Silent::Renderer
         // Fields
 
         RendererType _type          = RendererType::OpenGl;
-        uint         _drawCallCount = 0;
         SDL_Window*  _window        = nullptr;
         bool         _isResized     = false;
+        uint         _drawCallCount = 0;
+
+        Color _clearColor = Color::Black;
 
         std::vector<std::function<void()>> _debugGuiDrawCalls = {};
 
@@ -39,7 +41,13 @@ namespace Silent::Renderer
         Vector2i     GetScreenResolution() const;
         uint         GetDrawCallCount() const;
 
+        // Setters
+
+        void SetClearColor(const Color& color);
+
         // Utilities
+
+        void SignalResize();
 
         virtual void Initialize(SDL_Window& window) = 0;
         virtual void Deinitialize() = 0;
@@ -50,8 +58,6 @@ namespace Silent::Renderer
 
         virtual void SubmitPrimitive2d(const Primitive2d& prim) = 0;
         
-        void SignalResize();
-
         // Debug
 
         void SubmitDebugGui(std::function<void()> drawFunc);

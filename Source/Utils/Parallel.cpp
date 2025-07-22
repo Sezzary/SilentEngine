@@ -150,7 +150,7 @@ namespace Silent::Utils
 
     uint GetCoreCount()
     {
-        return std::max(std::jthread::hardware_concurrency(), 1u);
+        return std::max<uint>(std::jthread::hardware_concurrency(), 1);
     }
 
     std::future<void> GenerateReadyFuture()

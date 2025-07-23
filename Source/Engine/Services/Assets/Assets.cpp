@@ -61,6 +61,20 @@ namespace Silent::Assets
         return GetAsset(assetIdx);
     }
 
+    std::vector<std::string> AssetManager::GetLoadedAssetNames() const
+    {
+        auto names = std::vector<std::string>{};
+        for (const auto asset : _assets)
+        {
+            if (asset->State == AssetState::Loaded)
+            {
+                names.push_back(asset->Name);
+            }
+        }
+
+        return names;
+    }
+
     bool AssetManager::IsBusy() const
     {
         return _loadingCount > 0;

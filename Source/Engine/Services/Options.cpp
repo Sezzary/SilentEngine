@@ -70,7 +70,7 @@ namespace Silent::Services
     constexpr int  DEFAULT_BGM_VOLUME                               = 16;
     constexpr int  DEFAULT_SE_VOLUME                                = 16;
     constexpr auto DEFAULT_BLOOD_COLOR                              = BloodColorType::Normal;
-    constexpr int  DEFAULT_BULLET_ADJUST                            = 0;
+    constexpr int  DEFAULT_BULLET_ADJUST                            = 1;
     constexpr auto DEFAULT_ACTIVE_KEYBOARD_MOUSE_BINDING_PROFILE_ID = BindingProfileId::KeyboardMouseType1;
     constexpr auto DEFAULT_ACTIVE_GAMEPAD_BINDING_PROFILE_ID        = BindingProfileId::GamepadType1;
     constexpr bool DEFAULT_ENABLE_VIBRATION                         = true;

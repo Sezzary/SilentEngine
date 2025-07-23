@@ -201,7 +201,7 @@ namespace Silent
         _work.Input.Update(*_window, _mouseWheelAxis);
 
         // Update game state.
-        Entry();
+        //Entry();
 
         // Update toasts and debug.
         UpdateDebug();

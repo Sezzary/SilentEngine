@@ -5,13 +5,18 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Input/Input.h"
 #include "Engine/Services/Time.h"
-#include "Utils/Parallel.h"
 #include "Utils/BitField.h"
+#include "Utils/Parallel.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Renderer;
 using namespace Silent::Services;
 using namespace Silent::Utils;
+
+// Includes for `Scratchpad` go here.
+#ifdef _DEBUG
+
+#endif
 
 namespace Silent::Utils::Debug
 {
@@ -25,17 +30,22 @@ namespace Silent::Utils::Debug
 
     void Scratchpad()
     {
-        auto& input = g_App.GetInput();
-
-        bool isInit = true;
-        if (isInit)
+        // Dedicated testing space.
+        if constexpr (IS_DEBUG_BUILD)
         {
-            input.InsertText("Test");
-            isInit = false;
-        }
 
-        input.UpdateText("Test");
-        Message(input.GetText("Test").c_str());
+            auto& input = g_App.GetInput();
+
+            bool isInit = true;
+            if (isInit)
+            {
+                input.InsertText("Test");
+                isInit = false;
+            }
+
+            input.UpdateText("Test");
+            Message(input.GetText("Test").c_str());
+        }
     }
 
     void InitializeDebug()
@@ -73,11 +83,7 @@ namespace Silent::Utils::Debug
 
     void UpdateDebug()
     {
-        if constexpr (IS_DEBUG_BUILD)
-        {
-            // Handle scratchpad.
-            Scratchpad();
-        }
+        Scratchpad();
 
         // If debug GUI is disabled, return early.
         const auto& options = g_App.GetOptions();
@@ -101,8 +107,9 @@ namespace Silent::Utils::Debug
             constexpr const char* WEAPON_CONTROL_ITEMS[]    = { "Switch", "Press" };
             constexpr const char* VIEW_MODE_ITEMS[]         = { "Normal", "Self view" };
 
-            auto& options  = g_App.GetOptions();
-            auto& renderer = g_App.GetRenderer();
+            const auto& assets   = g_App.GetAssets();
+            auto&       options  = g_App.GetOptions();
+            auto&       renderer = g_App.GetRenderer();
 
             // Main tabs.
             if (ImGui::BeginTabBar("MainTabs", ImGuiTabBarFlags_FittingPolicyScroll))
@@ -117,6 +124,30 @@ namespace Silent::Utils::Debug
     
                         ImGui::EndTabItem();
                     }
+                }
+
+                // `Resources` tab.
+                if (ImGui::BeginTabItem("Resources"))
+                {
+                    // `Loaded Assets` section.
+                    ImGui::SeparatorText("Loaded Assets");
+                    {
+                        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
+                        if (ImGui::BeginChild("LoadedAssetBox", ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 8),
+                            ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
+                        {
+                            auto assetNames = assets.GetLoadedAssetNames();
+                            for (const auto& assetName : assetNames)
+                            {
+                                ImGui::Bullet();
+                                ImGui::TextWrapped(assetName.c_str());
+                            }
+                        }
+                        ImGui::PopStyleColor();
+                        ImGui::EndChild();
+                    }
+
+                    ImGui::EndTabItem();
                 }
 
                 // `Renderer` tab.

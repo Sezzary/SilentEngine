@@ -58,6 +58,7 @@ namespace Silent::Assets
 
         const std::shared_ptr<Asset> GetAsset(int assetIdx) const;
         const std::shared_ptr<Asset> GetAsset(const std::string& assetName) const;
+        std::vector<std::string>     GetLoadedAssetNames() const;
 
         // Inquirers
 

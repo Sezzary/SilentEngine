@@ -18,6 +18,8 @@ namespace Silent
         }
         else
         {
+            static bool loadAssets = true;
+
             auto& time     = g_App.GetTime();
             auto& assets   = g_App.GetAssets();
             auto& renderer = g_App.GetRenderer();
@@ -26,7 +28,10 @@ namespace Silent
             renderer.SetClearColor(Color::Black);
 
             // Load `1ST\2ZANKO_E.TIM` ("There are violent and disturbing images...").
-            assets.LoadAsset(e_FsFile::FILE_1ST_2ZANKO_E_TIM).wait();
+            if (loadAssets)
+            {
+                assets.LoadAsset(e_FsFile::FILE_1ST_2ZANKO_E_TIM).wait();
+            }
 
             // Fade in `1ST\2ZANKO_E.TIM` with subtractive blending.
             static s32 fade = FP_COLOR(1.0f);
@@ -36,18 +41,22 @@ namespace Silent
             }
             else
             {
-                // TODO
-                // Submit fullscreen sprite with subtractive blending.
+                // TODO: Submit fullscreen sprite with subtractive blending.
 
-                fade -= 4;
                 g_FullscreenAlphaBlend = (float)fade / FP_COLOR(1.0f);
+                fade -= 4;
             }
 
             // Load `1ST\FONT8NOC.TIM` (8x8 font).
-            assets.LoadAsset(e_FsFile::FILE_1ST_FONT8NOC_TIM).wait();
+            if (loadAssets)
+            {
+                assets.LoadAsset(e_FsFile::FILE_1ST_FONT8NOC_TIM).wait();
+            }
 
             // Fade image back out?
             //Gfx_BackgroundSpriteDraw(&g_MainImg0);
+
+            loadAssets = false;
         }
     }
 }

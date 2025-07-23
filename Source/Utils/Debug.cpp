@@ -33,7 +33,6 @@ namespace Silent::Utils::Debug
         // Dedicated testing space.
         if constexpr (IS_DEBUG_BUILD)
         {
-
             auto& input = g_App.GetInput();
 
             bool isInit = true;
@@ -133,8 +132,9 @@ namespace Silent::Utils::Debug
                     ImGui::SeparatorText("Loaded Assets");
                     {
                         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
-                        if (ImGui::BeginChild("LoadedAssetBox", ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 8),
-                            ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
+                        if (ImGui::BeginChild("LoadedAssetsBox",
+                                              ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 8),
+                                              ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
                         {
                             auto assetNames = assets.GetLoadedAssetNames();
                             for (const auto& assetName : assetNames)
@@ -567,8 +567,9 @@ namespace Silent::Utils::Debug
             ImGui::SeparatorText("Messages");
             {
                 ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
-                if (ImGui::BeginChild("MessageBox", ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 8),
-                    ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
+                if (ImGui::BeginChild("MessageBox",
+                                      ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 8),
+                                      ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
                 {
                     for (const auto& msg : Messages)
                     {

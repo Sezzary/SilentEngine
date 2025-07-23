@@ -29,36 +29,18 @@ namespace Silent
             assets.LoadAsset(e_FsFile::FILE_1ST_2ZANKO_E_TIM).wait();
 
             // Fade in `1ST\2ZANKO_E.TIM` with subtractive blending.
-            s32 fade = FP_COLOR(1.0f);
-            while (true)
+            static s32 fade = FP_COLOR(1.0f);
+            if (fade < 0)
             {
-                // Update time after blocking.
-                time.Update();
-
-                // Finished fading.
-                if (fade < 0)
-                {
-                    break;
-                }
-
-                // Draw fullscreen sprite with subtractive blending.
+                isInitComplete = true;
+            }
+            else
+            {
                 // TODO
+                // Submit fullscreen sprite with subtractive blending.
 
                 fade -= 4;
-                g_FullscreenAlphaBlend = (float)fade / 255.0f;
-
-                // Render.
-                renderer.Update();
-
-                // Block until next tick.
-                time.WaitForNextTick();
-            }
-
-            // If files haven't loaded yet, wait until they do.
-            while (assets.IsBusy()) // TODO: Create better wait mechanism.
-            {
-                time.Update();
-                time.WaitForNextTick();
+                g_FullscreenAlphaBlend = (float)fade / FP_COLOR(1.0f);
             }
 
             // Load `1ST\FONT8NOC.TIM` (8x8 font).
@@ -66,9 +48,6 @@ namespace Silent
 
             // Fade image back out?
             //Gfx_BackgroundSpriteDraw(&g_MainImg0);
-
-            // Cleanup.
-            isInitComplete = true;
         }
     }
 }

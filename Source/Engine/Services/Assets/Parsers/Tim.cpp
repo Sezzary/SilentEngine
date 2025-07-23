@@ -169,15 +169,25 @@ namespace Silent::Assets
                         uint8 byte = 0;
                         file.read((char*)&byte, 1);
 
-                        // Decode CLUT indices from byte.
-                        uint idx0 = byte & 0xF;
-                        uint idx1 = byte >> 4;
+                        // Decode values from byte.
+                        uint val0 = byte & 0xF;
+                        uint val1 = byte >> 4;
 
                         for (int i = 0; i < 2 && x < res.x; i++, x++)
                         {
                             // Set pixel.
-                            uint16 color = clut[(i == 0) ? idx0 : idx1];
-                            setPixelColor(x, y, color);
+                            if (clut.empty())
+                            {
+                                // Grayscale color [0, 15].
+                                uint16 color = ((i == 0) ? val0 : val1) * (0xFFFF / 0xF);
+                                setPixelColor(x, y, color);
+                            }
+                            else
+                            {
+                                // CLUT color.
+                                uint16 color = clut[(i == 0) ? val0 : val1];
+                                setPixelColor(x, y, color);
+                            }
                         }
                         break;
                     }
@@ -189,8 +199,18 @@ namespace Silent::Assets
                         file.read((char*)&idx, 1);
                         
                         // Set pixel.
-                        uint16 color = clut[idx];
-                        setPixelColor(x, y, color);
+                        if (clut.empty())
+                        {
+                            // Grayscale color [0, 255].
+                            uint16 color = idx * (0xFFFF / 0xFF);
+                            setPixelColor(x, y, 0xFFFF);
+                        }
+                        else
+                        {
+                            // CLUT color.
+                            uint16 color = clut[idx];
+                            setPixelColor(x, y, color);
+                        }
 
                         x++;
                         break;

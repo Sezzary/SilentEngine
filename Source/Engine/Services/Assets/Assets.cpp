@@ -139,7 +139,7 @@ namespace Silent::Assets
         // Check if already loading or loaded.
         if (asset->State == AssetState::Loading || asset->State == AssetState::Loaded)
         {
-            Log("Attempted to load already loading/loaded asset " + std::to_string(assetIdx) + ".", LogLevel::Warning, LogMode::Debug);
+            Log("Attempted to load already loaded asset " + std::to_string(assetIdx) + ".", LogLevel::Warning, LogMode::Debug);
             return GenerateReadyFuture();
         }
 

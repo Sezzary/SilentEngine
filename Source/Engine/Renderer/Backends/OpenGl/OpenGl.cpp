@@ -171,13 +171,13 @@ namespace Silent::Renderer
 
         auto gpu    = std::string((const char*)glGetString(GL_RENDERER));
         auto vendor = std::string((const char*)glGetString(GL_VENDOR));
-        Log("    GPU: " + gpu + ", " + vendor + ".");
+        Log("    GPU: " + gpu + ", " + vendor);
 
         auto version = std::string((const char*)glGetString(GL_VERSION));
-        Log("    Version: " + version + ".");
+        Log("    Version: " + version);
 
         auto shadingLangVersion = std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-        Log("    Shading language version: " + shadingLangVersion + ".");
+        Log("    Shading language version: " + shadingLangVersion);
 
         int attribCountMax = 0;
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attribCountMax);

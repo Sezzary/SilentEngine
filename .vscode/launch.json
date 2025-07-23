@@ -9,9 +9,10 @@
             "program": "${workspaceFolder}/Build/Debug/Debug/Math_d.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/Build/Debug/Debug/",
             "environment": [],
-            "console": "externalTerminal"
+            "console": "externalTerminal",
+            "exceptionBreakpoints": ["all"]
         }
     ]
 }

@@ -43,7 +43,7 @@ namespace Silent
             {
                 // TODO: Submit fullscreen sprite with subtractive blending.
 
-                g_FullscreenAlphaBlend = (float)fade / FP_COLOR(1.0f);
+                g_FullscreenAlphaBlend = ((float)fade / FP_COLOR(1.0f));
                 fade -= 4;
             }
 
@@ -52,9 +52,6 @@ namespace Silent
             {
                 assets.LoadAsset(e_FsFile::FILE_1ST_FONT8NOC_TIM).wait();
             }
-
-            // Fade image back out?
-            //Gfx_BackgroundSpriteDraw(&g_MainImg0);
 
             loadAssets = false;
         }

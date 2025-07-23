@@ -62,20 +62,20 @@ namespace Silent::Assets
         }
 
         // Read image data header (unused).
-        uint32 imageSize = 0;
-        file.read((char*)&imageSize, 4);
+        uint32 imgSize = 0;
+        file.read((char*)&imgSize, 4);
 
         // Read frame buffer coordinates (unused).
-        uint16 imageX = 0;
-        uint16 imageY = 0;
-        file.read((char*)&imageX, 2);
-        file.read((char*)&imageY, 2);
+        uint16 imgX = 0;
+        uint16 imgY = 0;
+        file.read((char*)&imgX, 2);
+        file.read((char*)&imgY, 2);
 
         // Read image dimensions.
-        uint16 imageW = 0;
-        uint16 imageH = 0;
-        file.read((char*)&imageW, 2);
-        file.read((char*)&imageH, 2);
+        uint16 imgW = 0;
+        uint16 imgH = 0;
+        file.read((char*)&imgW, 2);
+        file.read((char*)&imgH, 2);
 
         // Define BPP.
         auto bpp = BitsPerPixel::Bpp4;
@@ -129,7 +129,7 @@ namespace Silent::Assets
         }
 
         // Define image resolution.
-        auto res = Vector2i(imageW * widthCoeff, imageH);
+        auto res = Vector2i(imgW * widthCoeff, imgH);
 
         // Create asset.
         auto asset = TimAsset
@@ -143,10 +143,10 @@ namespace Silent::Assets
         {
             // Collect extracted RGBA components.
             uchar* out = &asset.Pixels[((y * res.x) + x) * 4];
-            out[0]     = (color & 0x1F)         << 3;          // B.
-            out[1]     = ((color >> 5) & 0x1F)  << 3;          // G.
-            out[2]     = ((color >> 10) & 0x1F) << 3;          // R.
-            out[3]     = (color & 0x8000) ? 0 : 255;           // A.
+            out[0]     = (color & 0x1F)         << 3; // B.
+            out[1]     = ((color >> 5) & 0x1F)  << 3; // G.
+            out[2]     = ((color >> 10) & 0x1F) << 3; // R.
+            out[3]     = (color & 0x8000) ? 0 : 255;  // A.
 
             // Key out black as transparent.
             if (out[0] == 0 && out[1] == 0 && out[2] == 0)

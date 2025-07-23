@@ -386,7 +386,7 @@ namespace Silent::Renderer
         }
 
         // Clear screen.
-        //glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         //glClearColor(0.3f, 0.5f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -471,7 +471,7 @@ namespace Silent::Renderer
     {
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         /*glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
@@ -521,7 +521,7 @@ namespace Silent::Renderer
         {
             rot -= 360.0f;
         }
-        for(unsigned int i = 0; i < 10; i++)
+        for (unsigned int i = 0; i < 10; i++)
         {
             auto modelMat = Matrix::CreateTranslation(cubePositions[i]);
             modelMat.Rotate(glm::radians((20.0f * i) + rot), Vector3(1.0f, 0.3f, 0.5f));
@@ -543,19 +543,14 @@ namespace Silent::Renderer
     void OpenGlRenderer::DrawFullscreenQuad()
     {
         glDisable(GL_DEPTH_TEST);
-        /*glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-        glBlendEquation(GL_FUNC_ADD);*/
-
-        /*glDisable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Default alpha blending
-*/
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_COLOR, GL_ONE);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glBlendEquation(GL_FUNC_SUBTRACT);
 
         auto& shaderProg = _shaderPrograms.at("FullscreenQuad");
         shaderProg.Activate();
-        shaderProg.SetFloat("blendAlpha", g_FullscreenAlphaBlend);
+        shaderProg.SetFloat("blendAlpha", 1.0f - g_FullscreenAlphaBlend);
 
         _fsqTexture.Bind();
         _fsqVao.Bind();

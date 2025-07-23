@@ -2,6 +2,7 @@
 #include "Engine/Renderer/Backends/OpenGl/OpenGl.h"
 
 #include "Engine/Application.h"
+#include "Engine/Game/Test.h"
 #include "Engine/Renderer/Backends/OpenGl/ElementBuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
@@ -233,7 +234,8 @@ namespace Silent::Renderer
 
         // Render.
         Draw3dScene();
-        Draw2dScene();
+        //Draw2dScene();
+        DrawFullscreenQuad();
         //DrawGui();
         DrawDebugGui();
 
@@ -384,7 +386,9 @@ namespace Silent::Renderer
         }
 
         // Clear screen.
-        glClearColor(0.3f, 0.5f, 0.2f, 1.0f);
+        //glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+        //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        //glClearColor(0.3f, 0.5f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
@@ -466,6 +470,13 @@ namespace Silent::Renderer
     void OpenGlRenderer::Draw3dScene()
     {
         glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        /*glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        glBlendEquation(GL_FUNC_SUBTRACT);*/
 
         //---------------------------------------
 
@@ -499,6 +510,8 @@ namespace Silent::Renderer
         glDrawElements(GL_TRIANGLES, sizeof(TRI_INDICES) / sizeof(uint), GL_UNSIGNED_INT, 0);
         _drawCallCount++;
 
+        // Cubes
+
         _vertexCubeBuffer.Bind();
         _vertexCubeArray.Bind();
 
@@ -516,6 +529,38 @@ namespace Silent::Renderer
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+    }
+
+    float FullscreenQuadVertices[] =
+    {
+        // Positions // UVs
+        -1, -1,      0, 1,
+         1, -1,      1, 1,
+        -1,  1,      0, 0,
+         1,  1,      1, 0
+    };
+    uint FullscreenQuadIdxs[] = { 0, 1, 2, 1, 3, 2 };
+    void OpenGlRenderer::DrawFullscreenQuad()
+    {
+        glDisable(GL_DEPTH_TEST);
+        /*glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        glBlendEquation(GL_FUNC_ADD);*/
+
+        /*glDisable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // Default alpha blending
+*/
+
+        auto& shaderProg = _shaderPrograms.at("FullscreenQuad");
+        shaderProg.Activate();
+        shaderProg.SetFloat("blendAlpha", g_FullscreenAlphaBlend);
+
+        _fsqTexture.Bind();
+        _fsqVao.Bind();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        _drawCallCount++;
     }
 
     float quadVertices[] =
@@ -669,6 +714,7 @@ namespace Silent::Renderer
     {
         // Generate shader program.
         _shaderPrograms.emplace("Default", ShaderProgram("Default"));
+        _shaderPrograms.emplace("FullscreenQuad", ShaderProgram("FullscreenQuad"));
 
         // Generate and bind vertex array object.
         _vertexArray.Initialize();
@@ -693,6 +739,16 @@ namespace Silent::Renderer
         _vertexCubeArray.LinkAttrib(_vertexCubeBuffer, 0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0);
         _vertexCubeArray.LinkAttrib(_vertexCubeBuffer, 1, 2, GL_FLOAT, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
+        // Fullscreen quad.
+
+        _fsqVao.Initialize();
+        _fsqVao.Bind();
+
+        _fsqVbo.Initialize(ToSpan(FullscreenQuadVertices));
+        _fsqEbo.Initialize(ToSpan(FullscreenQuadIdxs));
+        _fsqVao.LinkAttrib(_fsqVbo, 0, 2, GL_FLOAT, 4 * sizeof(float), (void*)0);
+        _fsqVao.LinkAttrib(_fsqVbo, 1, 2, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
         // Unbind to prevent accidental modification.
         _vertexArray.Unbind();
         _vertexCubeArray.Unbind();
@@ -701,14 +757,23 @@ namespace Silent::Renderer
         _vertexTexCoordBuffer.Unbind();
         _vertexCubeBuffer.Unbind();
         _elementBuffer.Unbind();
+        
+        _fsqVao.Unbind();
+        _fsqVbo.Unbind();
+        _fsqEbo.Unbind();
 
         // Load textures.
         _texture0.Initialize("Assets/derg.png", GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
         _texture1.Initialize("Assets/SILENT/TIM/BG_ETC.TIM", GL_TEXTURE1, GL_RGBA, GL_UNSIGNED_BYTE);
 
+        _fsqTexture.Initialize("Assets/SILENT/1ST/2ZANKO_E.TIM", GL_TEXTURE2, GL_RGBA, GL_UNSIGNED_BYTE);
+
         _shaderPrograms.at("Default").Activate();
         _shaderPrograms.at("Default").SetInt("tex0", 0);
         _shaderPrograms.at("Default").SetInt("tex1", 1);
+
+        _shaderPrograms.at("FullscreenQuad").Activate();
+        _shaderPrograms.at("FullscreenQuad").SetInt("tex", 2);
     }
 
     void OpenGlRenderer::CreateDebugGui()

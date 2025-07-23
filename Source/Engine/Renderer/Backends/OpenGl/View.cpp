@@ -73,13 +73,13 @@ namespace Silent::Renderer
         }
 
         // Rotate.
-        const auto& mouseAxis = input.GetAnalogAxis(AnalogAxisId::Mouse);
+        /*const auto& mouseAxis = input.GetAnalogAxis(AnalogAxisId::Mouse);
         if (mouseAxis != Vector2::Zero)
         {
             static auto rot = EulerAngles::Identity;
             rot            += EulerAngles(FP_DEGREE(mouseAxis.x), FP_DEGREE(mouseAxis.y), 0);
             Direction       = rot.ToDirection();
-        }
+        }*/
 
         // Change FOV.
         if (input.GetAction(In::MouseScrollDown).IsClicked())

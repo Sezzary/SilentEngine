@@ -51,8 +51,17 @@ namespace Silent::Renderer
             auto& assets = g_App.GetAssets();
 
             // Load asset.
-            auto name = "TIM\\" + filename.filename().string();
-            assets.LoadAsset(name).wait();
+            auto name = std::string();
+            if (filename == "Assets/SILENT/TIM/BG_ETC.TIM")
+            {
+                name = "TIM\\" + filename.filename().string();
+                assets.LoadAsset(name).wait();
+            }
+            else
+            {
+                name = "1ST\\" + filename.filename().string();
+                assets.LoadAsset(name).wait();
+            }
 
             // Get asset data.
             const auto& asset = assets.GetAsset(name);

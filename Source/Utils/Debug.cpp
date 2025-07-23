@@ -125,11 +125,11 @@ namespace Silent::Utils::Debug
                     g_DebugData.Page = DebugPage::Renderer;
 
                     // `Draw calls` info.
-                    ImGui::TableNextRow();
+                    /*ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("Draw calls:", 1, 0);
                     ImGui::TableSetColumnIndex(1);
-                    ImGui::Text("%d", renderer.GetDrawCallCount(), 1, 1);
+                    ImGui::Text("%d", renderer.GetDrawCallCount(), 1, 1);*/
 
                     // `Wireframe mode` checkbox.
                     ImGui::Checkbox("Wireframe mode", &g_DebugData.EnableWireframeMode);

@@ -38,6 +38,11 @@ namespace Silent::Renderer
 
         std::unordered_map<std::string, Texture> _textures     = {}; // Key = texture name, value = texture.
 
+        VertexArrayObject   _fsqVao     = VertexArrayObject();
+        VertexBufferObject  _fsqVbo     = VertexBufferObject();
+        ElementBufferObject _fsqEbo     = ElementBufferObject();
+        Texture             _fsqTexture = Texture();
+
     public:
         // Constructors
 
@@ -61,6 +66,7 @@ namespace Silent::Renderer
 
         void Draw2dScene();
         void Draw3dScene();
+        void DrawFullscreenQuad();
         void DrawGui();
         void DrawDebugGui();
 

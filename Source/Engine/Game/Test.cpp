@@ -6,6 +6,8 @@
 
 namespace Silent
 {
+    float g_FullscreenAlphaBlend = 0.0f;
+
     void Entry()
     {
         static bool isInitComplete = false;
@@ -43,6 +45,7 @@ namespace Silent
                 // TODO
 
                 fade -= 4;
+                g_FullscreenAlphaBlend = (float)fade / 255.0f;
 
                 // Render.
                 renderer.Update();

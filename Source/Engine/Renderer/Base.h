@@ -13,6 +13,36 @@ namespace Silent::Renderer
         Vulkan
     };
 
+    enum class BlendMode
+    {
+        Opaque,
+        Alpha,
+        Add,
+        Subtract,
+        Multiply,
+        LumaMultiply
+    };
+
+    enum class ScreenSpriteAlignMode
+    {
+        Center,
+        CenterTop,
+        CenterBottom,
+        CenterLeft,
+        CenterRight,
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
+    };
+
+    enum class ScreenSpriteScaleMode
+    {
+        Fit,
+        Fill,
+        Stretch
+    };
+
     class RendererBase
     {
     protected:
@@ -57,6 +87,8 @@ namespace Silent::Renderer
         virtual void LogError(const std::string& msg) const = 0;
 
         virtual void SubmitPrimitive2d(const Primitive2d& prim) = 0;
+        virtual void SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
+                                        int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode) = 0;
         
         // Debug
 

@@ -52,7 +52,7 @@ namespace Silent::Renderer
 
             // Load asset.
             auto name = std::string();
-            if (filename == "Assets/SILENT/TIM/BG_ETC.TIM")
+            if (filename == "Assets/TIM/BG_ETC.TIM")
             {
                 name = "TIM\\" + filename.filename().string();
                 assets.LoadAsset(name).wait();

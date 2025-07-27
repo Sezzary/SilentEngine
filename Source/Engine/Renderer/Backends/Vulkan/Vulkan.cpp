@@ -149,6 +149,12 @@ namespace Silent::Renderer
         // TODO
     }
 
+    void VulkanRenderer::SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
+                                            int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
+    {
+        // TODO
+    }
+
     VkInstance VulkanRenderer::GetInstance()
     {
         return _instance;

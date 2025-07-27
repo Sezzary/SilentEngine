@@ -89,7 +89,8 @@ namespace Silent::Renderer
         void LogError(const std::string& msg) const override;
 
         void SubmitPrimitive2d(const Primitive2d& prim) override;
-
+        void SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
+                                int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode) override;
     private:
         // Getters
 

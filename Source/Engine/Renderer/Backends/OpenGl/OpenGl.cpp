@@ -2,7 +2,7 @@
 #include "Engine/Renderer/Backends/OpenGl/OpenGl.h"
 
 #include "Engine/Application.h"
-#include "Engine/Game/Test.h"
+#include "Engine/Game/main.h"
 #include "Engine/Renderer/Backends/OpenGl/ElementBuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
@@ -153,11 +153,11 @@ namespace Silent::Renderer
         // Enable VSync.
         SDL_GL_SetSwapInterval(1);
 
-        // Viewport setup.
+        // Set up viewport.
         auto res = GetScreenResolution();
         glViewport(0, 0, res.x, res.y);
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Reserve memory.
@@ -364,6 +364,12 @@ namespace Silent::Renderer
         // TODO
     }
 
+    void OpenGlRenderer::SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
+                                            int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
+    {
+        // TODO
+    }
+
     void OpenGlRenderer::UpdateViewport()
     {
         // Set wireframe mode.
@@ -386,9 +392,7 @@ namespace Silent::Renderer
         }
 
         // Clear screen.
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        //glClearColor(0.3f, 0.5f, 0.2f, 1.0f);
+        glClearColor(_clearColor.R(), _clearColor.G(), _clearColor.B(), _clearColor.A());
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
@@ -759,9 +763,9 @@ namespace Silent::Renderer
 
         // Load textures.
         _texture0.Initialize("Assets/derg.png", GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
-        _texture1.Initialize("Assets/SILENT/TIM/BG_ETC.TIM", GL_TEXTURE1, GL_RGBA, GL_UNSIGNED_BYTE);
+        _texture1.Initialize("Assets/TIM/BG_ETC.TIM", GL_TEXTURE1, GL_RGBA, GL_UNSIGNED_BYTE);
 
-        _fsqTexture.Initialize("Assets/SILENT/1ST/2ZANKO_E.TIM", GL_TEXTURE2, GL_RGBA, GL_UNSIGNED_BYTE);
+        _fsqTexture.Initialize("Assets/1ST/2ZANKO_E.TIM", GL_TEXTURE2, GL_RGBA, GL_UNSIGNED_BYTE);
 
         _shaderPrograms.at("Default").Activate();
         _shaderPrograms.at("Default").SetInt("tex0", 0);

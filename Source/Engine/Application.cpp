@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Engine/Application.h"
 
-#include "Engine/Game/Test.h"
+#include "Engine/Game/main.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Assets/Assets.h"
 #include "Engine/Services/Filesystem.h"
@@ -86,7 +86,7 @@ namespace Silent
         g_Parallel.Initialize();
 
         // Assets.
-        _work.Assets.Initialize(_work.Filesystem.GetAssetsFolder() / "SILENT");
+        _work.Assets.Initialize(_work.Filesystem.GetAssetsFolder());
 
         // SDL.
         if (!SDL_Init(SDL_INIT_VIDEO))

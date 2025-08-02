@@ -101,9 +101,9 @@ namespace std
             for (auto chunk : bitField.GetChunks())
             {
                 hashVal ^= hash<Silent::Utils::BitField::ChunkType>{}(chunk) +
-                             0x9E3779B9 +
-                             (hashVal << 6) +
-                             (hashVal >> 2);
+                           0x9E3779B9 +
+                           (hashVal << 6) +
+                           (hashVal >> 2);
             }
 
             return hashVal;

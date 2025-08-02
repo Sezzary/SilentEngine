@@ -554,7 +554,7 @@ namespace Silent::Renderer
 
         auto& shaderProg = _shaderPrograms.at("FullscreenQuad");
         shaderProg.Activate();
-        shaderProg.SetFloat("blendAlpha", 1.0f - g_FullscreenAlphaBlend);
+        shaderProg.SetFloat("blendAlpha", g_FullscreenAlphaBlend);
 
         _fsqTexture.Bind();
         _fsqVao.Bind();

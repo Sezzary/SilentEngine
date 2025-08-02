@@ -4,10 +4,11 @@
 
 namespace Silent::Math
 {
-    constexpr uint Q4_SHIFT        = 4;              /** Used for: Q27.4 positions. */
-    constexpr uint Q8_SHIFT        = 8;              /** Used for: Q8.8 range limits. Q24.8 meters. */
-    constexpr uint Q12_SHIFT       = 12;             /** Used for: Q3.12 alphas. Q19.12 timers, trigonometry. */
-    constexpr uint FP_DEGREE_COUNT = 1 << Q12_SHIFT; /** Number of fixed-point degrees in Q1.15 format. */
+    constexpr uint Q4_SHIFT       = 4;
+    constexpr uint Q8_SHIFT       = 8;
+    constexpr uint Q12_SHIFT      = 12;
+    constexpr uint FP_ANGLE_COUNT = 1 << Q12_SHIFT;
+    constexpr int  FP_PI          = 0x5000 / 2;
 
     constexpr float PI       = glm::pi<float>();
     constexpr float PI_MUL_2 = PI * 2.0f;
@@ -54,6 +55,18 @@ namespace Silent::Math
         return (x < min) ? min : ((x > max) ? max : x);
     };
 
+    /** @brief Computes the absolute value. */
+    constexpr auto ABS = [](auto x)
+    {
+        return (x < 0) ? -x : x;
+    };
+
+    /** @brief Computes the absolute sum of two values. */
+    constexpr auto ABS_ADD = [](auto a, auto b)
+    {
+        return (a >= 0) ? (b + a) : (b - a);
+    };
+
     /** @brief Computes the absolute difference between two values. */
     constexpr auto ABS_DIFF = [](auto a, auto b)
     {
@@ -65,6 +78,16 @@ namespace Silent::Math
     {
         return (float)((x > 0.0f) ? (int)(x + 0.5f) : (int)(x - 0.5f));
     }
+
+    /** @brief Converts an integer from a scaled fixed-point Q format rounded to the nearest value. */
+    /*constexpr int FP_ROUND_SCALED(int x, int scale, uint shift)
+    {
+        return (x + ((FP_TO(1, shift) * scale) - 1)) / (FP_TO(1, shift) * scale);
+    }*/
+
+    /** @brief Converts an integer from a fixed-point Q format rounded toward 0. */
+    /*#define FP_ROUND_TO_ZERO(x, shift) \
+        ((s32)(FP_FROM(x, (shift)) + ((u32)x >> 31)) >> 1)*/
 
     /** @brief Floors a floating-point value. */
     constexpr float FLOOR(float x)
@@ -108,7 +131,7 @@ namespace Silent::Math
         return FP_MULTIPLY(a, FP_FLOAT_TO(b, shift), shift);
     }
 
-    /** @brief Multiplies an integer by a float converted to fixed-point Q format, using 64-bit intermediate for higher precision. */
+    /** @brief Multiplies an integer by a float converted to fixed-point Q format, using a 64-bit intermediate for higher precision. */
     constexpr int FP_MULTIPLY_PRECISE(int a, float b, uint shift)
     {
         return FP_MULTIPLY((int64)a, FP_FLOAT_TO(b, shift), shift);
@@ -127,21 +150,28 @@ namespace Silent::Math
     }
 
     /** @brief Converts floating-point degrees to fixed-point degrees in Q1.15 format. */
-    constexpr short FP_DEGREE(float deg)
+    constexpr short FP_ANGLE(float deg)
     {
-        return (short)ROUND(deg * (360.0f / (float)FP_DEGREE_COUNT));
+        return (short)ROUND(deg * (360.0f / (float)FP_ANGLE_COUNT));
     }
 
     /** @brief Converts floating-point radians to fixed-point degrees in Q1.15 format. */
-    constexpr short FP_DEGREE_FROM_RAD(float rad)
+    constexpr short FP_ANGLE_FROM_RAD(float rad)
     {
-        return FP_DEGREE(rad / (PI / 180.0f));
+        return FP_ANGLE(rad / (PI / 180.0f));
     }
 
     /** @brief Converts fixed-point degrees in Q1.15 format to floating-point radians. */
-    constexpr float FP_DEGREE_TO_RAD(short angle)
+    constexpr float FP_ANGLE_TO_RAD(short deg)
     {
-        return (angle * (360.0f / (float)FP_DEGREE_COUNT)) * (PI / 180.0f);
+        return (deg * (360.0f / (float)FP_ANGLE_COUNT)) * (PI / 180.0f);
+    }
+
+    /** @brief Converts floating-point radians in the range `[-PI, PI]` to fixed-point radians in the range `[0, 0x5000]`. */
+    constexpr int FP_RADIAN(float rad)
+    {
+        return (((rad < 0.0f) ? (PI + (PI - ABS(rad))) : rad) * ((float)FP_PI / PI)) *
+               ((rad < 0.0f || rad >= PI) ? 1.0f : 2.0f);
     }
 
     /** @brief Converts floating-point meters to fixed-point world units in Q12.8 format. */

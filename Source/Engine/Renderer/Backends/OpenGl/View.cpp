@@ -77,7 +77,7 @@ namespace Silent::Renderer
         if (mouseAxis != Vector2::Zero)
         {
             static auto rot = EulerAngles::Identity;
-            rot            += EulerAngles(FP_DEGREE(mouseAxis.x), FP_DEGREE(mouseAxis.y), 0);
+            rot            += EulerAngles(FP_ANGLE(mouseAxis.x), FP_ANGLE(mouseAxis.y), 0);
             Direction       = rot.ToDirection();
         }*/
 

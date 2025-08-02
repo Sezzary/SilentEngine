@@ -40,7 +40,7 @@ namespace Silent::Math
         }
 
         float rad = glm::acos(Vector3::Dot(normal, -axis));
-        return FP_DEGREE_FROM_RAD(rad);
+        return FP_ANGLE_FROM_RAD(rad);
     }
 
     short GetSurfaceAspectAngle(const Vector3& normal, const Vector3& axis)
@@ -62,7 +62,7 @@ namespace Silent::Math
             rad += PI;
         }
 
-        return FP_DEGREE_FROM_RAD(rad);
+        return FP_ANGLE_FROM_RAD(rad);
     }
 
     float GetDistanceToLine(const Vector3& from, const Vector3& lineStart, const Vector3& lineEnd)

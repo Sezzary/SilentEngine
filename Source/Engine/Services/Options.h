@@ -47,6 +47,11 @@ namespace Silent::Services
         PerPixel
     };
 
+    enum class LanguageType
+    {
+        English
+    };
+
     enum class SoundType
     {
         Stereo,
@@ -79,6 +84,12 @@ namespace Silent::Services
         SelfView
     };
 
+    enum class DialogPauseType
+    {
+        Classic,
+        Short
+    };
+
     struct Options
     {
         // Graphics (internal)
@@ -103,13 +114,12 @@ namespace Silent::Services
 
         bool           EnableAutoLoad  = false;
         bool           EnableSubtitles = false;
+        LanguageType   Language        = LanguageType::English;
         SoundType      Sound           = SoundType::Stereo;
         int            BgmVolume       = 0;
         int            SeVolume        = 0;
         BloodColorType BloodColor      = BloodColorType::Normal;
         int            BulletAdjust    = 0;
-
-        // TODO: Enhancements section?
 
         // Input (keyboard/mouse bindings)
 
@@ -131,6 +141,10 @@ namespace Silent::Services
         ControlInversionType WalkRunControl     = ControlInversionType::Normal;
         bool                 DisableAutoAiming  = false;
         ViewMode             ViewMode           = ViewMode::Normal;
+
+        // Enhancements
+
+        DialogPauseType DialogPause = DialogPauseType::Classic;
 
         // System (internal)
 
@@ -162,6 +176,7 @@ namespace Silent::Services
         void SetDefaultInputKmBindingsOptions();
         void SetDefaultInputGamepadCustomBindingOptions();
         void SetDefaultInputControlsOptions();
+        void SetDefaultEnhancementsOptions();
         void SetDefaultSystemOptions();
 
         // Utilities

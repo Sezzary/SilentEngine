@@ -12,10 +12,11 @@ using namespace Silent::Utils;
 
 namespace Silent::Services
 {
-    constexpr char KEY_GRAPHICS[] = "Graphics";
-    constexpr char KEY_INPUT[]    = "Input";
-    constexpr char KEY_GAMEPLAY[] = "Gameplay";
-    constexpr char KEY_SYSTEM[]   = "System";
+    constexpr char KEY_GRAPHICS[]     = "Graphics";
+    constexpr char KEY_GAMEPLAY[]     = "Gameplay";
+    constexpr char KEY_INPUT[]        = "Input";
+    constexpr char KEY_ENHANCEMENTS[] = "Enhancements";
+    constexpr char KEY_SYSTEM[]       = "System";
 
     constexpr char KEY_WINDOWED_SIZE_X[]                          = "WindowedSizeX";
     constexpr char KEY_WINDOWED_SIZE_Y[]                          = "WindowedSizeY";
@@ -32,6 +33,7 @@ namespace Silent::Services
     constexpr char KEY_ENABLE_VERTEX_JITTER[]                     = "EnableVertexJitter";
     constexpr char KEY_ENABLE_AUTO_LOAD[]                         = "EnableAutoLoad";
     constexpr char KEY_ENABLE_SUBTITLES[]                         = "EnableSubtitles";
+    constexpr char KEY_LANGUAGE[]                                 = "Language";
     constexpr char KEY_SOUND[]                                    = "Sound";
     constexpr char KEY_BGM_VOLUME[]                               = "BgmVolume";
     constexpr char KEY_SE_VOLUME[]                                = "SeVolume";
@@ -49,6 +51,7 @@ namespace Silent::Services
     constexpr char KEY_WALK_RUN_CONTROL[]                         = "WalkRunControl";
     constexpr char KEY_DISABLE_AUTO_AIMING[]                      = "DisableAutoAiming";
     constexpr char KEY_VIEW_MODE[]                                = "ViewMode";
+    constexpr char KEY_DIALOG_PAUSE[]                             = "DialogPause";
     constexpr char KEY_ENABLE_TOASTS[]                            = "EnableToasts";
     constexpr char KEY_ENABLE_PARALLELISM[]                       = "EnableParallelism";
 
@@ -66,6 +69,7 @@ namespace Silent::Services
     constexpr bool DEFAULT_ENABLE_VERTEX_JITTER                     = false;
     constexpr bool DEFAULT_ENABLE_AUTO_LOAD                         = false;
     constexpr bool DEFAULT_ENABLE_SUBTITLES                         = true;
+    constexpr auto DEFAULT_LANGUAGE                                 = LanguageType::English;
     constexpr auto DEFAULT_SOUND                                    = SoundType::Stereo;
     constexpr int  DEFAULT_BGM_VOLUME                               = 16;
     constexpr int  DEFAULT_SE_VOLUME                                = 16;
@@ -80,6 +84,7 @@ namespace Silent::Services
     constexpr auto DEFAULT_RETREAT_TURN_CONTROL                     = ControlInversionType::Normal;
     constexpr auto DEFAULT_WALK_RUN_CONTROL                         = ControlInversionType::Normal;
     constexpr bool DEFAULT_DISABLE_AUTO_AIMING                      = false;
+    constexpr auto DEFAULT_DIALOG_PAUSE                             = DialogPauseType::Classic;
     constexpr auto DEFAULT_VIEW_MODE                                = ViewMode::Normal;
     constexpr bool DEFAULT_ENABLE_TOASTS                            = true;
 
@@ -103,6 +108,7 @@ namespace Silent::Services
     {
         _options.EnableAutoLoad  = DEFAULT_ENABLE_AUTO_LOAD;
         _options.EnableSubtitles = DEFAULT_ENABLE_SUBTITLES;
+        _options.Language        = DEFAULT_LANGUAGE;
         _options.Sound           = DEFAULT_SOUND;
         _options.BgmVolume       = DEFAULT_BGM_VOLUME;
         _options.SeVolume        = DEFAULT_SE_VOLUME;
@@ -130,6 +136,11 @@ namespace Silent::Services
         _options.WalkRunControl     = DEFAULT_WALK_RUN_CONTROL;
         _options.DisableAutoAiming  = DEFAULT_DISABLE_AUTO_AIMING;
         _options.ViewMode           = DEFAULT_VIEW_MODE;
+    }
+
+    void OptionsManager::SetDefaultEnhancementsOptions()
+    {
+        _options.DialogPause = DEFAULT_DIALOG_PAUSE;
     }
 
     void OptionsManager::SetDefaultSystemOptions()
@@ -201,6 +212,7 @@ namespace Silent::Services
         _options.ActiveGamepadProfileId = DEFAULT_ACTIVE_GAMEPAD_BINDING_PROFILE_ID;
 
         SetDefaultInputControlsOptions();
+        SetDefaultEnhancementsOptions();
         SetDefaultSystemOptions();
     }
 
@@ -228,6 +240,7 @@ namespace Silent::Services
         const auto& gameplayJson = optionsJson[KEY_GAMEPLAY];
         options.EnableAutoLoad   = gameplayJson.value(KEY_ENABLE_AUTO_LOAD, DEFAULT_ENABLE_AUTO_LOAD);
         options.EnableSubtitles  = gameplayJson.value(KEY_ENABLE_SUBTITLES, DEFAULT_ENABLE_SUBTITLES);
+        options.Language         = gameplayJson.value(KEY_LANGUAGE,         DEFAULT_LANGUAGE);
         options.Sound            = gameplayJson.value(KEY_SOUND,            DEFAULT_SOUND);
         options.BgmVolume        = gameplayJson.value(KEY_BGM_VOLUME,       DEFAULT_BGM_VOLUME);
         options.SeVolume         = gameplayJson.value(KEY_SE_VOLUME,        DEFAULT_SE_VOLUME);
@@ -296,6 +309,11 @@ namespace Silent::Services
                 }
             }
         }
+
+        // TODO: Crashes.
+        // Load enhancements options.
+        /*const auto& enhancementsJson = optionsJson[KEY_ENHANCEMENTS];
+        options.DialogPause          = enhancementsJson.value(KEY_DIALOG_PAUSE, DEFAULT_DIALOG_PAUSE);*/
 
         // Load system options.
         const auto& systemJson    = optionsJson[KEY_SYSTEM];
@@ -369,6 +387,7 @@ namespace Silent::Services
                 {
                     { KEY_ENABLE_AUTO_LOAD, options.EnableAutoLoad },
                     { KEY_ENABLE_SUBTITLES, options.EnableSubtitles },
+                    { KEY_LANGUAGE,         options.Language },
                     { KEY_SOUND,            options.Sound },
                     { KEY_BGM_VOLUME,       options.BgmVolume },
                     { KEY_SE_VOLUME,        options.SeVolume },
@@ -391,6 +410,12 @@ namespace Silent::Services
                     { KEY_WALK_RUN_CONTROL,                         options.WalkRunControl },
                     { KEY_DISABLE_AUTO_AIMING,                      options.DisableAutoAiming },
                     { KEY_VIEW_MODE,                                options.ViewMode }
+                }
+            },
+            {
+                KEY_ENHANCEMENTS,
+                {
+                    { KEY_DIALOG_PAUSE, options.DialogPause }
                 }
             },
             {

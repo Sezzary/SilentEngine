@@ -100,11 +100,13 @@ namespace Silent::Utils::Debug
             constexpr const char* ASPECT_RATIO_ITEMS[]      = { "Native", "Widescreen", "Retro" };
             constexpr const char* TEX_FILTER_ITEMS[]        = { "Nearest", "Bilinear" };
             constexpr const char* LIGHTING_ITEMS[]          = { "Per vertex", "Per pixel" };
+            constexpr const char* LANG_ITEMS[]              = { "English" };
             constexpr const char* SOUND_ITEMS[]             = { "Stereo", "Monaural" };
             constexpr const char* BLOOD_COLOR_ITEMS[]       = { "Normal", "Green", "Violet", "Black" };
             constexpr const char* CONTROL_INVERSION_ITEMS[] = { "Normal", "Reverse" };
             constexpr const char* WEAPON_CONTROL_ITEMS[]    = { "Switch", "Press" };
             constexpr const char* VIEW_MODE_ITEMS[]         = { "Normal", "Self view" };
+            constexpr const char* DIALOG_PAUSE_ITEMS[]      = { "Classic", "Short" };
 
             const auto& assets   = g_App.GetAssets();
             auto&       options  = g_App.GetOptions();
@@ -425,6 +427,14 @@ namespace Silent::Utils::Debug
                             isOptChanged = true;
                         }
 
+                        // `Language` combo.
+                        int lang = (int)options->Language;
+                        if (ImGui::Combo("Language", &lang, LANG_ITEMS, IM_ARRAYSIZE(LANG_ITEMS)))
+                        {
+                            options->Language = (LanguageType)lang;
+                            isOptChanged      = true;
+                        }
+
                         // `Sound type` combo.
                         int sound = (int)options->Sound;
                         if (ImGui::Combo("Sound", &sound, SOUND_ITEMS, IM_ARRAYSIZE(SOUND_ITEMS)))
@@ -529,11 +539,30 @@ namespace Silent::Utils::Debug
                         }
                     }
 
+                    // `Enhancements` section.
+                    ImGui::SeparatorText("Enhancements");
+                    {
+                        // `Reset` button.
+                        if (ImGui::Button("Reset##3"))
+                        {
+                            options.SetDefaultEnhancementsOptions();
+                            isOptChanged = true;
+                        }
+
+                        // `Dialog pause` combo.
+                        int dialogPause = (int)options->DialogPause;
+                        if (ImGui::Combo("Dialog pause", &dialogPause, DIALOG_PAUSE_ITEMS, IM_ARRAYSIZE(DIALOG_PAUSE_ITEMS)))
+                        {
+                            options->DialogPause = (DialogPauseType)dialogPause;
+                            isOptChanged         = true;
+                        }
+                    }
+
                     // `System` section.
                     ImGui::SeparatorText("System");
                     {
                         // `Reset` button.
-                        if (ImGui::Button("Reset##3"))
+                        if (ImGui::Button("Reset##4"))
                         {
                             options.SetDefaultSystemOptions();
                             isOptChanged = true;

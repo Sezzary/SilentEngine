@@ -97,10 +97,12 @@ using json = nlohmann::json;
 // =========
 
 #include "Types.h"
+#include "Compatibility.h"
 #include "Math/Math.h"
 
 using namespace Silent;
 using namespace Silent::Math;
+using namespace Silent::Compatibility;
 
 #include "Utils/Debug.h"
 

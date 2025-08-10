@@ -367,6 +367,15 @@ namespace Silent::Renderer
     void OpenGlRenderer::SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
                                             int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
     {
+        auto& assets = g_App.GetAssets();
+
+        const auto asset = assets.GetAsset(assetIdx);
+        if (asset->Type != AssetType::Tim)
+        {
+            Log("Attempted to draw non-image asset as screen sprite.", LogLevel::Warning, LogMode::Debug);
+            return;
+        }
+
         // TODO
     }
 

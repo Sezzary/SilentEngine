@@ -16,7 +16,7 @@ namespace Silent
 
         static bool isInitComplete = false;
 
-        // Run game.
+        // Run game loop.
         if (isInitComplete)
         {
             const auto& time     = g_App.GetTime();
@@ -148,7 +148,7 @@ namespace Silent
 
             // Update delta time.
             /*g_DeltaTime0 =
-            g_DeltaTime1 = FP_FLOAT_TO((1.0f / (float)TimeManager::TPS) * time.GetTicks(), Q12_SHIFT);*/
+            g_DeltaTime1 = FP_FLOAT_TO((1.0f / (float)TICKS_PER_SECOND) * time.GetTicks(), Q12_SHIFT);*/
 
             /*g_DeltaTime0 = FP_MULTIPLY(vCount, H_BLANKS_FP_TO_SEC_SCALE, Q12_SHIFT);
             g_DeltaTime1 = FP_MULTIPLY(vCountCopy, H_BLANKS_FP_TO_SEC_SCALE, Q12_SHIFT);
@@ -183,7 +183,7 @@ namespace Silent
 
         static bool isInitComplete = false;
 
-        // Run engine.
+        // Run game.
         if (isInitComplete)
         {
             // Run main loop.
@@ -205,19 +205,19 @@ namespace Silent
             }
 
             // Fade in `1ST/2ZANKO_E.TIM` with luma-multiply blending.
-            static s32 fade = 0;
+            static int fade = 0;
             if (fade > FP_COLOR(1.0f))
             {
                 isInitComplete = true;
             }
             else
             {
-                // TODO: Submit fullscreen sprite with luma-multiply blending.
-                auto color = Color(1.0f, 1.0f, 1.0f, (float)fade / FP_COLOR(1.0f));
+                // TODO: Non-functioning call. Submit fullscreen sprite with luma-multiply blending.
+                auto color = Color(1.0f, 1.0f, 1.0f, (float)fade / (float)FP_COLOR(1.0f));
                 renderer.SubmitScreenSprite(e_FsFile::FILE_1ST_2ZANKO_E_TIM, SCREEN_SPACE_RES / 2.0f, FP_ANGLE(0.0f), Vector2::One, color,
                                             0, ScreenSpriteAlignMode::Center, ScreenSpriteScaleMode::Fit, BlendMode::LumaMultiply);
 
-                g_FullscreenAlphaBlend = (float)fade / FP_COLOR(1.0f); // TEMP.
+                g_FullscreenAlphaBlend = (float)fade / (float)FP_COLOR(1.0f); // TEMP.
 
                 fade += FADE_STEP;
             }

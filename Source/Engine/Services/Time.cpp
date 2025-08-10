@@ -16,7 +16,7 @@ namespace Silent::Services
 
     uint TimeManager::GetTicks() const
     {
-        return std::min(_ticks, TPS / 2);
+        return std::min(_ticks, TICKS_PER_SECOND / 2);
     }
 
     bool TimeManager::TestInterval(uint intervalTicks, uint offsetTicks) const

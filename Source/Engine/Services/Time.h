@@ -2,15 +2,12 @@
 
 namespace Silent::Services
 {
+    constexpr uint TICKS_PER_SECOND = 60;
+
     class TimeManager
     {
-    public:
-        // Constants
-
-        static constexpr uint TPS = 60; // Ticks per second.
-
     private:
-        static constexpr uint TICK_INTERVAL_MICROSEC = 1000000 / TPS;
+        static constexpr uint TICK_INTERVAL_MICROSEC = 1000000 / TICKS_PER_SECOND;
 
         // Fields
 
@@ -47,12 +44,12 @@ namespace Silent::Services
 
     constexpr uint SEC_TO_TICK(float sec)
     {
-        return (sec > 0.0f) ? std::max<uint>((uint)ROUND(sec * (float)TimeManager::TPS), 1) : 0;
+        return (sec > 0.0f) ? std::max<uint>((uint)ROUND(sec * (float)TICKS_PER_SECOND), 1) : 0;
     }
 
     constexpr float TICK_TO_SEC(uint ticks)
     {
-        return (float)ticks / (float)TimeManager::TPS;
+        return (float)ticks / (float)TICKS_PER_SECOND;
     }
 
     std::string GetCurrentDateString();

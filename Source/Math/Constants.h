@@ -175,8 +175,8 @@ namespace Silent::Math
     }
 
     /** @brief Converts floating-point meters to fixed-point world units in Q12.8 format. */
-    constexpr int FP_METER(float meters)
+    constexpr int FP_METER(float met)
     {
-        return FP_FLOAT_TO(meters, Q8_SHIFT);
+        return FP_FLOAT_TO(met, Q8_SHIFT);
     }
 }

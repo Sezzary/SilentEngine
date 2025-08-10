@@ -26,11 +26,6 @@ namespace Silent::Renderer
             {
                 return std::make_unique<VulkanRenderer>();
             }
-
-            default:
-            {
-                break;
-            }
         }
 
         return nullptr;

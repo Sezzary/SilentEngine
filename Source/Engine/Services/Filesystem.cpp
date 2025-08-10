@@ -90,11 +90,6 @@ namespace Silent::Services
                 }
                 break;
             }
-
-            default:
-            {
-                break;
-            }
         }
 
         // Check app folder.

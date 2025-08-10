@@ -313,11 +313,6 @@ namespace Silent
                     _work.Input.DisconnectGamepad(event.cdevice.which);
                     break;
                 }
-
-                default:
-                {
-                    break;
-                }
             }
         }
     }

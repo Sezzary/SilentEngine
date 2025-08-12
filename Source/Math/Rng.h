@@ -2,6 +2,39 @@
 
 namespace Silent::Math
 {
+    /** @brief Generates an integer in the range `[low, high]` from a random input. */
+    constexpr auto GENERATE_INT = [](auto rand, auto low, auto high)
+    {
+        return (rand % ((high - low) + 1)) + low;
+    };
+
+    /** @brief Tests if a probability is met.
+     *
+     * This macro evaluates the probability by performing a bitwise AND
+     * operation with a mask that has the specified number of consecutive
+     * low bits set to 1.
+     *
+     * Bits | Mask   | Chance     | Percent
+     * -----|--------|------------|---------
+     * 1    | 0x1    | 1 in 2     | 50%
+     * 2    | 0x3    | 1 in 4     | 25%
+     * 3    | 0x7    | 1 in 8     | 12.5%
+     * 4    | 0xF    | 1 in 16    | 6.25%
+     * 5    | 0x1F   | 1 in 32    | 3.125%
+     * 6    | 0x3F   | 1 in 64    | 1.563%
+     * 7    | 0x7F   | 1 in 128   | 0.781%
+     * 8    | 0xFF   | 1 in 256   | 0.391%
+     * 9    | 0x1FF  | 1 in 512   | 0.195%
+     * 10   | 0x3FF  | 1 in 1024  | 0.098%
+     * 11   | 0x7FF  | 1 in 2048  | 0.049%
+     * 12   | 0xFFF  | 1 in 4096  | 0.024%
+     * 13   | 0x1FFF | 1 in 8192  | 0.012%
+     * 14   | 0x3FFF | 1 in 16384 | 0.006%
+     * 15   | 0x7FFF | 1 in 32768 | 0.003%
+     * 16   | 0xFFFF | 1 in 65536 | 0.002%
+     */
+    bool TestRng(uint bits);
+
     /** @brief Generates a new random 32-bit unsigned integer and updates
      * `g_RngSeed`.
      *
@@ -51,31 +84,4 @@ namespace Silent::Math
      * @param newSeed The new seed value to be set.
      */
     void SetSeed(uint32 newSeed);
-
-    /** @brief Tests if a probability is met.
-     *
-     * This function calls `GenerateInt16` and evaluates the probability
-     * by performing a bitwise AND operation with a mask that has the specified
-     * number of sequential bits set to 1.
-     *
-     * Bits | Mask   | Chance  
-     * -----|--------|--------
-     * 1    | 0x1    | 50%
-     * 2    | 0x3    | 25%
-     * 3    | 0x7    | 12.5%
-     * 4    | 0xF    | 6.25%
-     * 5    | 0x1F   | 3.125%
-     * 6    | 0x3F   | 1.563%
-     * 7    | 0x7F   | 0.781%
-     * 8    | 0xFF   | 0.391%
-     * 9    | 0x1FF  | 0.195%
-     * 10   | 0x3FF  | 0.098%
-     * 11   | 0x7FF  | 0.049%
-     * 12   | 0xFFF  | 0.024%
-     * 13   | 0x1FFF | 0.012%
-     * 14   | 0x3FFF | 0.006%
-     * 15   | 0x7FFF | 0.003%
-     * 16   | 0xFFFF | 0.002%
-     */
-    bool TestRng(uint bits);
 }

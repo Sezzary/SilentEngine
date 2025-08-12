@@ -63,7 +63,7 @@ namespace Silent::Services
         Normal = 0,
         Green  = 2,
         Violet = 5,
-        Black  = 13
+        Black  = 11
     };
 
     enum class ControlInversionType

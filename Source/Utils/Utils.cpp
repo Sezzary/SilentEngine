@@ -5,7 +5,7 @@ namespace Silent::Utils
 {
     std::string ToUpper(std::string str)
     {
-        std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c)
+        std::transform(str.begin(), str.end(), str.begin(), [](uchar c)
         {
             return std::toupper(c);
         });
@@ -15,7 +15,7 @@ namespace Silent::Utils
 
     std::string ToLower(std::string str)
     {
-        std::transform(str.begin(), str.end(), str.begin(), [](unsigned char c)
+        std::transform(str.begin(), str.end(), str.begin(), [](uchar c)
         {
             return std::tolower(c);
         });
@@ -25,7 +25,7 @@ namespace Silent::Utils
 
     char* CopyString(const char src[], uint size)
     {
-        char* dest = (char*)malloc(((size + 1) * sizeof(char)));
+        char* dest = (char*)malloc((size + 1) * sizeof(char));
         if (dest != nullptr)
         {
             strcpy(dest, src);

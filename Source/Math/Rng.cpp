@@ -8,6 +8,11 @@ namespace Silent::Math
      */
     static uint32 Seed = 0;
 
+    bool TestRng(uint bits)
+    {
+        return GenerateInt16() & ((1 << bits) - 1);
+    }
+
     uint32 GenerateInt32()
     {
         Seed = (Seed * 1664525) + 1013904223;
@@ -32,10 +37,5 @@ namespace Silent::Math
     void SetSeed(uint32 newSeed)
     {
         Seed = newSeed;
-    }
-
-    bool TestRng(uint bits)
-    {
-        return GenerateInt16() & ((1 << bits) - 1);
     }
 }

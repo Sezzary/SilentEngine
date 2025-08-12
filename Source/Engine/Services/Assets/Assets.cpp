@@ -109,8 +109,10 @@ namespace Silent::Assets
                 continue;
             }
 
-            // Add asset.
+            // HEAP ALLOC: Create asset entry.
             _assets.emplace_back(std::make_shared<Asset>());
+
+            // Define asset entry.
             auto asset   = _assets.back();
             asset->Name  = std::filesystem::relative(file, assetsPath).string();
             asset->Type  = ASSET_TYPES.at(ext);
@@ -177,6 +179,8 @@ namespace Silent::Assets
             {
                 asset->Data  = parserFunc(asset->File);
                 asset->State = AssetState::Loaded;
+
+                Log("Loaded asset " + std::to_string(assetIdx) + ".", LogLevel::Info, LogMode::Debug);
             }
             catch (const std::exception& ex)
             {
@@ -222,7 +226,7 @@ namespace Silent::Assets
 
         // Unload.
         asset->State = AssetState::Unloaded;
-        asset->Data.reset();
+        asset->Data  = nullptr;
 
         Log("Unloaded asset " + std::to_string(assetIdx) + ".", LogLevel::Info, LogMode::Debug);
     }

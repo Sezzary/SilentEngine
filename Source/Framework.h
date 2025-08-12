@@ -1,8 +1,8 @@
 #pragma once
 
-// =========
+// ==========
 // LIBRARIES
-// =========
+// ==========
 
 // Standard
 #include <algorithm>
@@ -92,9 +92,9 @@ using json = nlohmann::json;
 // Vulkan
 #include <vulkan/vulkan.hpp>
 
-// =========
+// ==========
 // RESOURCES
-// =========
+// ==========
 
 #include "Types.h"
 #include "Math/Math.h"
@@ -102,10 +102,8 @@ using json = nlohmann::json;
 using namespace Silent;
 using namespace Silent::Math;
 
+#include "Utils/Compatibility.h"
 #include "Utils/Debug.h"
 
+using namespace Silent::Utils::Compatibility;
 using namespace Silent::Utils::Debug;
-
-#include "Compatibility.h"
-
-using namespace Silent::Compatibility;

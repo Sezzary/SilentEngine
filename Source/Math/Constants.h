@@ -70,7 +70,13 @@ namespace Silent::Math
     /** @brief Computes the absolute difference between two values. */
     constexpr auto ABS_DIFF = [](auto a, auto b)
     {
-        return ((a - b) < 0) ? (b - a) : (a - b);
+        return ABS(a - b);
+    };
+
+    /** @brief Checks if two values have different signs. */
+    constexpr auto DIFF_SIGN = [](auto a, auto b)
+    {
+        return (a >= 0 && b < 0) || (a < 0 && b >= 0);
     };
 
     /** @brief Rounds a floating-point value. */
@@ -78,16 +84,6 @@ namespace Silent::Math
     {
         return (float)((x > 0.0f) ? (int)(x + 0.5f) : (int)(x - 0.5f));
     }
-
-    /** @brief Converts an integer from a scaled fixed-point Q format rounded to the nearest value. */
-    /*constexpr int FP_ROUND_SCALED(int x, int scale, uint shift)
-    {
-        return (x + ((FP_TO(1, shift) * scale) - 1)) / (FP_TO(1, shift) * scale);
-    }*/
-
-    /** @brief Converts an integer from a fixed-point Q format rounded toward 0. */
-    /*#define FP_ROUND_TO_ZERO(x, shift) \
-        ((s32)(FP_FROM(x, (shift)) + ((u32)x >> 31)) >> 1)*/
 
     /** @brief Floors a floating-point value. */
     constexpr float FLOOR(float x)
@@ -119,10 +115,29 @@ namespace Silent::Math
         return x >> shift;
     }
 
+    /** @brief Converts an integer from a scaled fixed-point Q format rounded to the nearest value. */
+    /*constexpr int FP_ROUND_SCALED(int x, int scale, uint shift)
+    {
+        return (x + ((FP_TO(1, shift) * scale) - 1)) / (FP_TO(1, shift) * scale);
+    }*/
+
+    /** @brief Converts an integer from a fixed-point Q format rounded toward 0. */
+    /*#define FP_ROUND_TO_ZERO(x, shift) \
+        ((s32)(FP_FROM(x, (shift)) + ((u32)x >> 31)) >> 1)*/
+
+
     /** @brief Multiplies two integers in a fixed-point Q format and converts the result from the fixed-point Q format. */
     constexpr int FP_MULTIPLY(int a, int b, uint shift)
     {
         return (a * b) >> shift;
+    }
+
+    /** @brief Multiplies two integers in a fixed-point Q format, using 64-bit intermediates for higher precision,
+     * and converts the result from the fixed-point Q format.
+     */
+    constexpr int FP_MULTIPLY_PRECISE(int a, int b, uint shift)
+    {
+        return ((int64)a * (int64)b) >> shift;
     }
 
     /** @brief Multiplies an integer by a float converted to fixed-point Q format and converts the result from the fixed-point Q format. */
@@ -132,7 +147,7 @@ namespace Silent::Math
     }
 
     /** @brief Multiplies an integer by a float converted to fixed-point Q format, using a 64-bit intermediate for higher precision. */
-    constexpr int FP_MULTIPLY_PRECISE(int a, float b, uint shift)
+    constexpr int FP_MULTIPLY_FLOAT_PRECISE(int a, float b, uint shift)
     {
         return FP_MULTIPLY((int64)a, FP_FLOAT_TO(b, shift), shift);
     }
@@ -167,6 +182,18 @@ namespace Silent::Math
         return (deg * (360.0f / (float)FP_ANGLE_COUNT)) * (PI / 180.0f);
     }
 
+    /** @brief Wraps fixed-point degrees in Q3.12 format to the range of a single turn. */
+    constexpr int FP_ANGLE_TRUNCATE(int angle)
+    {
+        return (angle << 20) >> 20;
+    }
+
+    /** @brief Wraps fixed-point degrees in Q3.12 format to the range of a single turn and computes the absolute value. */
+    constexpr int FP_ANGLE_TRUNCATE_ABS(int angle)
+    {
+        return (FP_ANGLE_TRUNCATE(angle) ^ (angle >> 31)) - (angle >> 31);
+    }
+
     /** @brief Converts floating-point radians in the range `[-PI, PI]` to fixed-point radians in the range `[0, 0x5000]`. */
     constexpr int FP_RADIAN(float rad)
     {
@@ -177,6 +204,12 @@ namespace Silent::Math
     /** @brief Converts floating-point meters to fixed-point world units in Q12.8 format. */
     constexpr int FP_METER(float met)
     {
-        return FP_FLOAT_TO(met, Q8_SHIFT);
+        return FP_FLOAT_TO(met, Q12_SHIFT);
+    }
+
+    /** @brief Converts floating-point seconds to fixed-point seconds in Q12.19 format. */
+    constexpr int FP_TIME(float sec)
+    {
+        return FP_FLOAT_TO(sec, Q12_SHIFT);
     }
 }

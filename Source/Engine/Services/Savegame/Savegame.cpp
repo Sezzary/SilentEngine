@@ -50,11 +50,6 @@ namespace Silent::Services
 
     void SavegameManager::Save(int slotIdx, int fileIdx, int saveIdx)
     {
-        Log("Saving game to slot " + std::to_string(slotIdx + 1) +
-            ", file " + std::to_string(fileIdx + 1) +
-            ", savegame " + std::to_string(saveIdx + 1) + ".",
-            LogLevel::Info);
-
         // Create savegame buffer.
         auto saveBuffer = ToSavegameBuffer(_savegame);
 
@@ -71,6 +66,11 @@ namespace Silent::Services
             outputFile.write((const char*)saveBuffer->GetBufferPointer(), saveBuffer->GetSize());
             outputFile.close();
         }
+
+        Log("Saved game to slot " + std::to_string(slotIdx + 1) +
+            ", file " + std::to_string(fileIdx + 1) +
+            ", savegame " + std::to_string(saveIdx + 1) + ".",
+            LogLevel::Info);
     }
 
     void SavegameManager::Load(int slotIdx, int fileIdx, int saveIdx)
@@ -100,6 +100,11 @@ namespace Silent::Services
 
         // Read savegame buffer.
         _savegame = std::move(*FromSavegameBuffer(*saveBuffer));
+
+        Log("Loaded game from slot " + std::to_string(slotIdx + 1) +
+            ", file " + std::to_string(fileIdx + 1) +
+            ", savegame " + std::to_string(saveIdx + 1) + ".",
+            LogLevel::Info);
     }
 
     const Savegame* SavegameManager::operator->() const

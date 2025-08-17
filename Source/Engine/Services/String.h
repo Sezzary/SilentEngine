@@ -10,8 +10,9 @@ namespace Silent::Services
         Vector2 Uv3 = Vector2::Zero;
     };
 
-    FontGlyphUvs GetFont8GlyphUvs(char charCode);
-    FontGlyphUvs GetFont16GlyphUvs(char charCode);
+    FontGlyphUvs Get8x8FontGlyphUvs(char charCode);
+    FontGlyphUvs Get12x16FontGlyphUvs(char charCode);
 
-    int GetFont16GlyphPixelWidth(char charCode);
+    int Get12x16FontGlyphPixelWidth(char charCode);
+    int Get12x16FontStringPixelWidth(const std::string& str);
 }

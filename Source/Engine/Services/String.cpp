@@ -7,7 +7,10 @@
 
 namespace Silent::Services
 {
-    static const std::unordered_map<char, Vector2i> FONT_8_GLYPH_COORDS // Key = character code, value = coordinate in `TIM/FONT8.TIM` 8x8 glyph atlas.
+    constexpr char FONT_8_X_8_ASSET_NAME[]   = "1ST/FONT8.TIM";
+    constexpr char FONT_12_X_16_ASSET_NAME[] = "1ST/FONT16.TIM";
+
+    static const std::unordered_map<char, Vector2i> FONT_8_X_8_GLYPH_COORDS // Key = character code, value = coordinate in `TIM/FONT8.TIM` 8x8 glyph atlas.
     {
         { '*', Vector2i(0, 0) },
         { '+', Vector2i(1, 0) },
@@ -62,7 +65,7 @@ namespace Silent::Services
         { '_', Vector2i(18, 1) }
     };
 
-    static const std::unordered_map<char, Vector2i> FONT_16_GLYPH_COORDS // Key = character code, value = coordinate in `1ST/FONT16.TIM` 12x16 glyph atlas.
+    static const std::unordered_map<char, Vector2i> FONT_12_X_16_GLYPH_COORDS // Key = character code, value = coordinate in `1ST/FONT16.TIM` 12x16 glyph atlas.
     {
         { '\'', Vector2i(0, 0) },
         { '(',  Vector2i(0, 1) },
@@ -150,7 +153,7 @@ namespace Silent::Services
         { 'z',  Vector2i(0, 83) }
     };
 
-    static const std::unordered_map<char, int> FONT_16_GLYPH_PIXEL_WIDTHS // Key = character code, value = glyph pixel width.
+    static const std::unordered_map<char, int> FONT_12_X_16_GLYPH_PIXEL_WIDTHS // Key = character code, value = glyph pixel width.
     {
         { '\'', 3 },
         { '(',  7 },
@@ -238,28 +241,27 @@ namespace Silent::Services
         { 'z',  9 }
     };
 
-    FontGlyphUvs GetFont8GlyphUvs(char charCode)
+    FontGlyphUvs Get8x8FontGlyphUvs(char charCode)
     {
-        constexpr char FONT_ASSET_NAME[] = "TIM/FONT8.TIM";
-        constexpr auto GLYPH_RES         = Vector2i(8, 8);
-        constexpr int  GLYPH_ROW_COUNT   = 32;
+        constexpr auto GLYPH_RES       = Vector2i(8, 8);
+        constexpr int  GLYPH_ROW_COUNT = 32;
 
         auto& assets = g_App.GetAssets();
 
         // Get asset.
-        const auto asset = assets.GetAsset(FONT_ASSET_NAME);
+        const auto asset = assets.GetAsset(FONT_8_X_8_ASSET_NAME);
         if (asset == nullptr || asset->State != AssetState::Loaded)
         {
-            Log(std::string("Failed to get glyph UVs from unloaded asset `") + FONT_ASSET_NAME + "`.", LogLevel::Warning);
+            Log(std::string("Failed to get glyph UVs from unloaded asset `") + FONT_8_X_8_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
         }
         auto data = GetAssetData<TimAsset>(asset);
 
         // Get glyph coords in atlas.
-        auto coordsIt = FONT_8_GLYPH_COORDS.find(charCode);
-        if (coordsIt == FONT_8_GLYPH_COORDS.end())
+        auto coordsIt = FONT_8_X_8_GLYPH_COORDS.find(charCode);
+        if (coordsIt == FONT_8_X_8_GLYPH_COORDS.end())
         {
-            Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from asset + `" + FONT_ASSET_NAME + "`.", LogLevel::Warning);
+            Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from asset + `" + FONT_8_X_8_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
         }
         const auto& coords = coordsIt->second;
@@ -279,9 +281,8 @@ namespace Silent::Services
         return uvs;
     }
 
-    FontGlyphUvs GetFont16GlyphUvs(char charCode)
+    FontGlyphUvs Get12x16FontGlyphUvs(char charCode)
     {
-        constexpr char FONT_ASSET_NAME[]        = "1ST/FONT16.TIM";
         constexpr auto GLYPH_RES                = Vector2i(12, 16);
         constexpr int  GLYPH_ROW_PIXEL_OFFSET_X = 4;
         constexpr int  GLYPH_ROW_COUNT          = 21;
@@ -289,25 +290,25 @@ namespace Silent::Services
         auto& assets = g_App.GetAssets();
 
         // Get asset.
-        const auto asset = assets.GetAsset(FONT_ASSET_NAME);
+        const auto asset = assets.GetAsset(FONT_12_X_16_ASSET_NAME);
         if (asset == nullptr || asset->State != AssetState::Loaded)
         {
-            Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from unloaded asset + `" + FONT_ASSET_NAME + "`.", LogLevel::Warning);
+            Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from unloaded asset + `" + FONT_12_X_16_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
         }
         auto data = GetAssetData<TimAsset>(asset);
 
         // Get glyph coords in atlas.
-        auto coordsIt = FONT_16_GLYPH_COORDS.find(charCode);
-        if (coordsIt == FONT_16_GLYPH_COORDS.end())
+        auto coordsIt = FONT_12_X_16_GLYPH_COORDS.find(charCode);
+        if (coordsIt == FONT_12_X_16_GLYPH_COORDS.end())
         {
-            Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from asset + `" + FONT_ASSET_NAME + "`.", LogLevel::Warning);
+            Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from asset + `" + FONT_12_X_16_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
         }
         const auto& coords = coordsIt->second;
 
         // Compute base glyph pixel position.
-        int  pixelOffsetX = (coords.x / GLYPH_ROW_COUNT) * GLYPH_ROW_PIXEL_OFFSET_X;          // HACK: Required due to odd glyph layout in atlas.
+        int  pixelOffsetX = (coords.x / GLYPH_ROW_COUNT) * GLYPH_ROW_PIXEL_OFFSET_X; // HACK: Required due to odd glyph layout in atlas.
         auto pixelPos     = Vector2i((coords.x * GLYPH_RES.x) + pixelOffsetX, 0).ToVector2();
 
         // Compute glyph UVs.
@@ -322,18 +323,38 @@ namespace Silent::Services
         return uvs;
     }
 
-    int GetFont16GlyphPixelWidth(char charCode)
+    int Get12x16FontGlyphPixelWidth(char charCode)
     {
-        constexpr char FONT_ASSET_NAME[] = "1ST/FONT16.TIM";
-
         // Get glyph pixel width.
-        auto widthIt = FONT_16_GLYPH_PIXEL_WIDTHS.find(charCode);
-        if (widthIt == FONT_16_GLYPH_PIXEL_WIDTHS.end())
+        auto widthIt = FONT_12_X_16_GLYPH_PIXEL_WIDTHS.find(charCode);
+        if (widthIt == FONT_12_X_16_GLYPH_PIXEL_WIDTHS.end())
         {
-            Log("Failed to get glyph pixel width for char `" + std::string(1, charCode) + "` from asset + `" + FONT_ASSET_NAME + "`.", LogLevel::Warning);
+            Log("Failed to get glyph pixel width for char `" + std::string(1, charCode) + "` from asset + `" + FONT_12_X_16_ASSET_NAME + "`.", LogLevel::Warning);
             return 0;
         }
         int width = widthIt->second;
+
+        return width;
+    }
+
+    int Get12x16FontStringPixelWidth(const std::string& str)
+    {
+        // Compute string pixel width.
+        int width = 0;
+        for (char charCode : str)
+        {
+            // Get glyph pixel width.
+            auto widthIt = FONT_12_X_16_GLYPH_PIXEL_WIDTHS.find(charCode);
+            if (widthIt == FONT_12_X_16_GLYPH_PIXEL_WIDTHS.end())
+            {
+                Log("Failed to get glyph pixel width for char `" + std::string(1, charCode) + "` from asset + `" + FONT_12_X_16_ASSET_NAME + "`.", LogLevel::Warning);
+                continue;
+            }
+            int glyphWidth = widthIt->second;
+
+            // Accumulate string wixel width.
+            width += glyphWidth;
+        }
 
         return width;
     }

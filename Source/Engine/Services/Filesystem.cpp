@@ -90,6 +90,11 @@ namespace Silent::Services
                 }
                 break;
             }
+
+            default:
+            {
+                throw std::runtime_error("Unsupported OS.");
+            }
         }
 
         // Check app folder.

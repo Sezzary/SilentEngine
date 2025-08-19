@@ -10,10 +10,10 @@ FLATC_PATH   = BASE_PATH / FLATC_NAME
 SCHEMAS_PATH = BASE_PATH / "../Source/Engine/Services/Savegame/Schemas"
 OUTPUT_PATH  = BASE_PATH / "../Source/Engine/Services/Savegame/Generated"
 
-"""
-Run `flatc` to generate FlatBuffers headers.
-"""
 def generate_savegame_headers():
+    """
+    Run `flatc` to generate FlatBuffers headers.
+    """
     try:
         print("Generating savegame FlatBuffers headers...")
 
@@ -41,10 +41,10 @@ def generate_savegame_headers():
         print(f"Error: {ex}")
         sys.exit(1)
 
-"""
-Get the path to the appropriate `flatc` executable based on the system OS.
-"""
 def get_flatc_executable():
+    """
+    Get the path to the appropriate `flatc` executable based on the system OS.
+    """
     system_os = platform.system()
 
     # Define OS-specific executable path.

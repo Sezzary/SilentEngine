@@ -4,9 +4,8 @@ namespace Silent::Buffers { struct Savegame; }
 
 namespace Silent::Services
 {
-    constexpr uint SAVEGAME_SLOT_COUNT      = 2;
-    constexpr uint SAVEGAME_COUNT_MAX       = 165;
-    constexpr uint INVENTORY_ITEM_COUNT_MAX = 40;
+    constexpr uint SAVEGAME_SLOT_COUNT = 2;   // Number of savegame slots, simulating original design around PSX memory cards.
+    constexpr uint SAVEGAME_COUNT_MAX  = 165; // Max savegames per file.
 
     struct Savegame
     {
@@ -18,8 +17,8 @@ namespace Silent::Services
         int  SlotIdx       = 0;
         int  FileIdx       = 0;
         int  DataIdx       = 0;
-        int  LocationId    = 0;
         int  SaveCount     = 0;
+        int  LocationId    = 0;
         uint GameplayTimer = 0;
 
         bool IsNextFearMode = false;

@@ -352,7 +352,7 @@ namespace Silent::Services
             }
             int glyphWidth = widthIt->second;
 
-            // Accumulate string wixel width.
+            // Accumulate string pixel width.
             width += glyphWidth;
         }
 

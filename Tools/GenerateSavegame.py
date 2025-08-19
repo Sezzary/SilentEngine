@@ -5,10 +5,41 @@ import sys
 from pathlib import Path
 
 FLATC_NAME   = "flatc"
-BASE_PATH    = Path(__file__).resolve().parent
+BASE_PATH    = Path(__file__).parent
 FLATC_PATH   = BASE_PATH / FLATC_NAME
 SCHEMAS_PATH = BASE_PATH / "../Source/Engine/Services/Savegame/Schemas"
 OUTPUT_PATH  = BASE_PATH / "../Source/Engine/Services/Savegame/Generated"
+
+"""
+Run `flatc` to generate FlatBuffers headers.
+"""
+def generate_savegame_headers():
+    try:
+        print("Generating savegame FlatBuffers headers...")
+
+        flatc_exe = get_flatc_executable()
+        os.makedirs(OUTPUT_PATH, exist_ok=True)
+
+        # Collect all schema files at `SCHEMAS_PATH`.
+        schema_files = [
+            os.path.join(SCHEMAS_PATH, file) 
+            for file in os.listdir(SCHEMAS_PATH) 
+            if file.endswith(".fbs")
+        ]
+
+        # Build generation command.
+        command = [flatc_exe, "--cpp", "-o", OUTPUT_PATH, "-I", SCHEMAS_PATH] + schema_files
+
+        # Run generation command.
+        result = subprocess.run(command, capture_output=True)
+        if result.returncode != 0:
+            print(f"Error running `flatc`: {result.stderr.decode()}")
+            sys.exit(result.returncode)
+
+        print("Savegame FlatBuffers header generation complete.")
+    except Exception as ex:
+        print(f"Error: {ex}")
+        sys.exit(1)
 
 """
 Get the path to the appropriate `flatc` executable based on the system OS.
@@ -31,37 +62,6 @@ def get_flatc_executable():
         raise Exception(f"`flatc` executable not found at '{flatc_exe}'.")
 
     return flatc_exe
-
-"""
-Run `flatc` to generate FlatBuffers headers.
-"""
-def generate_savegame_headers():
-    try:
-        print("Generating savegame FlatBuffers headers...")
-
-        flatc_exe = get_flatc_executable()
-
-        # Process schemas.
-        schemas = ["savegame.fbs"]
-        for schema in schemas:
-            print(f"Processing `{schema}`...")
-            os.makedirs(OUTPUT_PATH, exist_ok=True)
-
-            # TODO: Setting output path doesn't work. For now, headers generate in project root and must be moved manually.
-            # Build command.
-            schema_path = os.path.join(SCHEMAS_PATH, schema)
-            command     = [ flatc_exe, "--cpp", schema_path ]#, "--output", str(OUTPUT_PATH) ]
-
-            # Run generation command.
-            result = subprocess.run(command, capture_output=True)
-            if result.returncode != 0:
-                print(f"Error running `flatc`: {result.stderr.decode()}")
-                sys.exit(result.returncode)
-
-        print("Savegame FlatBuffers header generation complete.")
-    except Exception as ex:
-        print(f"Error: {ex}")
-        sys.exit(1)
 
 if __name__ == "__main__":
     generate_savegame_headers()

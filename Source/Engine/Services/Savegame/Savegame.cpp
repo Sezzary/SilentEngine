@@ -141,8 +141,8 @@ namespace Silent::Services
                 .SlotIdx        = NO_VALUE,
                 .FileIdx        = NO_VALUE,
                 .DataIdx        = NO_VALUE,
-                .LocationId     = NO_VALUE,
                 .SaveCount      = NO_VALUE,
+                .LocationId     = NO_VALUE,
                 .GameplayTimer  = 0,
                 .IsNextFearMode = false,
                 .Flags          = NO_VALUE
@@ -169,8 +169,10 @@ namespace Silent::Services
     {
         const auto& fs = g_App.GetFilesystem();
 
+        // Run through slots.
         for (int slotIdx = 0; slotIdx < _slotMetadata.size(); slotIdx++)
         {
+            // Get slot folder path.
             auto slotFolderName = SAVEGAME_SLOT_FOLDER_NAME_BASE + std::to_string(slotIdx + 1);
             auto slotFolder     = fs.GetWorkFolder() / slotFolderName;
             if (!std::filesystem::exists(slotFolder) || !std::filesystem::is_directory(slotFolder))
@@ -187,6 +189,8 @@ namespace Silent::Services
                     fileFolders.push_back(fileFolder.path());
                 }
             }
+
+            // Sort file folders.
             std::sort(fileFolders.begin(), fileFolders.end(), [](const std::filesystem::path& file0, const std::filesystem::path& file1)
             {
                 auto extractNumber = [](const std::filesystem::path& file)
@@ -219,6 +223,8 @@ namespace Silent::Services
                     }
                 }
             }
+
+            // Sort savegame files.
             std::sort(saveFiles.begin(), saveFiles.end(), [](const std::filesystem::path& file0, const std::filesystem::path& file1)
             {
                 auto extractNumber = [](const std::filesystem::path& file)

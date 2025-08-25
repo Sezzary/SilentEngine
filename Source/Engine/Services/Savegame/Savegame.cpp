@@ -258,7 +258,7 @@ namespace Silent::Services
         }
     }
 
-    std::unique_ptr<Savegame> SavegameManager::FromSavegameBuffer(const Silent::Buffers::Savegame& saveBuffer) const
+    std::unique_ptr<Savegame> SavegameManager::FromSavegameBuffer(const Buffers::Savegame& saveBuffer) const
     {
         auto save = std::make_unique<Savegame>();
 

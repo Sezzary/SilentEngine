@@ -90,6 +90,7 @@ namespace Silent::Services
         Short
     };
 
+    /** @brief User options configuration data. */
     struct Options
     {
         // Graphics (internal)
@@ -157,45 +158,80 @@ namespace Silent::Services
         bool EnableParallelism = false;
     };
 
+    /** @brief Central manager for the user options configuration. */
     class OptionsManager
     {
     private:
+        // =======
         // Fields
+        // =======
 
-        Options _options = {};
+        Options _options = {}; /** Options configuration data. */
 
     public:
+        // =============
         // Constructors
+        // =============
 
         OptionsManager() = default;
 
+        // ========
         // Setters
+        // ========
 
+        /** @brief Sets all graphics options to defaults. */
         void SetDefaultGraphicsOptions();
+
+        /** @brief Sets all gameplay options to defaults. */
         void SetDefaultGameplayOptions();
+
+        /** @brief Sets all keyboard and mouse input binding options to defaults. */
         void SetDefaultInputKmBindingsOptions();
+
+        /** @brief Sets all gamepad input binding options to defaults. */
         void SetDefaultInputGamepadCustomBindingOptions();
+
+        /** @brief Sets all control input options to defaults. */
         void SetDefaultInputControlsOptions();
+
+        /** @brief Sets all enhancements options to defaults. */
         void SetDefaultEnhancementsOptions();
+
+        /** @brief Sets all system options, excluding debug, to defaults. */
         void SetDefaultSystemOptions();
 
+        //===========
         // Utilities
+        //===========
 
+        /** @brief Initializes the options configurations to startup defaults, taking the build mode into account. */
         void Initialize();
+
+        /** @brief Saves the current options configuration to a JSON file on the user system's game work folder. */
         void Save();
+
+        /** @brief Loads the options configuration from a JSON file on the user system's game work folder. */
         void Load();
 
+        //===========
         // Operators
+        //===========
 
-        const Options* operator->() const;
-        Options*       operator->();
+        const Options* operator->() const; /** Accesses the internal options object. */
+        Options*       operator->();       /** Accesses the internal options object. */
 
     private:
+        //=========
         // Helpers
+        //=========
 
+        /** @brief Resets all configuration options, excluding debug, to defaults. */
         void SetDefaultOptions();
-        
+
+        /** @brief Parses a JSON containing the options configuration to an internal options object. */
         Options FromOptionsJson(const json& optionsJson) const;
-        json    ToOptionsJson(const Options& options) const;
+
+        /** @brief Parses an internal options object to a JSON containing the options configuration. */
+        json ToOptionsJson(const Options& options) const;
     };
 }

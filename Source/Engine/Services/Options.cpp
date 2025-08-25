@@ -153,6 +153,7 @@ namespace Silent::Services
     {
         _options.EnableDebugMode = IS_DEBUG_BUILD;
         _options.EnableDebugGui  = false;
+        SetDefaultOptions();
     }
 
     void OptionsManager::Save()

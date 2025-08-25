@@ -60,7 +60,7 @@ namespace Silent::Services
         SavegameMetadata      GetMetadata(const std::filesystem::path& saveFile) const;
         
         void                                            PopulateSlotMetadata();
-        std::unique_ptr<Savegame>                       FromSavegameBuffer(const Silent::Buffers::Savegame& saveBuffer) const;
+        std::unique_ptr<Savegame>                       FromSavegameBuffer(const Buffers::Savegame& saveBuffer) const;
         std::unique_ptr<flatbuffers::FlatBufferBuilder> ToSavegameBuffer(const Savegame& save) const;
     };
 }

@@ -24,6 +24,7 @@ namespace Silent::Utils
         // Getters
 
         uint GetThreadCount() const;
+        uint GetPendingTaskCount() const;
 
         // Utilities
 

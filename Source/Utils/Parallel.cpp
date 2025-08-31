@@ -12,6 +12,16 @@ namespace Silent::Utils
         return (uint)_threads.size();
     }
 
+    uint ParallelTaskManager::GetPendingTaskCount() const
+    {
+        // LOCK: Restrict task queue access.
+        {
+            auto taskLock = std::unique_lock(_taskMutex);
+
+            return (uint)_tasks.size();
+        }
+    }
+
     void ParallelTaskManager::Initialize()
     {
         // Reserve threads.

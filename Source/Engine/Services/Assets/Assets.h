@@ -2,25 +2,27 @@
 
 namespace Silent::Assets
 {
+    /** @brief Loaded asset types. Used in `Asset`. */
     enum class AssetType
     {
-        Tim, // PsyQ SDK texture data.
-        Vab, // PsyQ SDK audio container data.
-        Bin, // Original compiled logic overlay data.
-        Dms, // Cutscene keyframe data.
-        Anm, // Animation data.
-        Plm, // Global static model data.
-        Ipd, // Local static model data.
-        Ilm, // Skeletal model data.
-        Tmd, // PsyQ SDK 3D model data. Used exclusively for inventory.
-        Dat, // Demo playback data.
-        Kdt, // Konami MIDI tracker data.
-        Cmp, // Unknown. "Compressed"?
-        Xa,  // Audio data.
+        Tim, /** "Texture Image" | PsyQ SDK texture data. */
+        Vab, /** "Voice Audio Bank" | PsyQ SDK audio container data. */
+        Bin, /** "Binary" | Original compiled code overlay data. */
+        Dms, /** "Demo Motion Sequence"? | Cutscene keyframe data. */
+        Anm, /** "Animation" | Animation data. */
+        Plm, /** "Polygon List Data"? | Global static model data. */
+        Ipd, /** "Instance Polygon Data"? | Local static model data. */
+        Ilm, /** "Indexed Limb Model"? | Skeletal model data. */
+        Tmd, /** "3D Model Data" | PsyQ SDK 3D model data. Only used for inventory items. */
+        Dat, /** "Demo Data"? Demo playback data. */
+        Kdt, /** "Key Data Tracker"? | Konami MIDI tracker data. */
+        Cmp, /** "Compressed" or "Compiled"? | Unknown. */
+        Xa,  /** "Extended Audio" | PSX XA audio stream. */
 
         Count
     };
 
+    /** @brief Loaded asset states. Used in `Asset`. */
     enum class AssetState
     {
         Unloaded,
@@ -29,6 +31,7 @@ namespace Silent::Assets
         Error
     };
 
+    /** @brief Loaded asset data and metadata. */
     struct Asset
     {
         std::string           Name = {};             // Filename relative to assets folder.
@@ -40,31 +43,58 @@ namespace Silent::Assets
         std::shared_ptr<void>   Data  = nullptr;              // Parsed data.
     };
 
+    /** @brief Central manager for asset streaming. */
     class AssetManager
     {
     private:
+        // =======
         // Fields
+        // =======
 
         std::vector<std::shared_ptr<Asset>>  _assets       = {};
         std::unordered_map<std::string, int> _assetIdxs    = {}; // Key = asset name, value = asset index.
         std::atomic<uint>                    _loadingCount = 0;
 
     public:
+        // =============
         // Constructors
-
+        // =============
+        
         AssetManager() = default;
-
+        
+        // ========
         // Getters
-
+        // ========
+        
+        /** @brief Gets a loaded asset via a file index.
+         *
+         * @param assetIdx Asset file index.
+         * @return Pointer to an `Asset` object if the asset is loaded, `nullptr` otherwise.
+         */
         const std::shared_ptr<Asset> GetAsset(int assetIdx) const;
+
+        /** @brief Gets a loaded asset via a filename.
+         *
+         * @param assetName Asset filename.
+         * @return Pointer to an `Asset` object if the asset is loaded, `nullptr` otherwise.
+         */
         const std::shared_ptr<Asset> GetAsset(const std::string& assetName) const;
-        std::vector<std::string>     GetLoadedAssetNames() const;
 
+        /** @brief Gets a vector containing the names of all loaded assets.
+         *
+         * @return Vector of all loaded asset names.
+        */
+        std::vector<std::string> GetLoadedAssetNames() const;
+        
+        // ==========
         // Inquirers
-
+        // ==========
+        
         bool IsBusy() const;
-
+        
+        // ==========
         // Utilities
+        // ==========
 
         void              Initialize(const std::filesystem::path& assetsPath);
         std::future<void> LoadAsset(int assetIdx);
@@ -74,6 +104,13 @@ namespace Silent::Assets
         void              UnloadAllAssets();
     };
 
+    /** @brief Gets the typed loaded asset data.
+     *
+     * @tparam T Loaded asset type to cast the asset data to.
+     * @param data Data to retrieve.
+     * @return Typed loaded asset data.
+     * @throws `std::runtime_error` if `data` is `nullptr`.
+     */
     template <typename T>
     std::shared_ptr<T> GetAssetData(std::shared_ptr<void> data)
     {

@@ -21,7 +21,8 @@ file(GLOB LIB_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_opengl3.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_sdl3.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_vulkan.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo/*.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo/*.cpp"
+)
 target_sources(Math PRIVATE ${LIB_SOURCES})
 
 # Set `Debug` build definitions.
@@ -33,7 +34,8 @@ endif()
 target_compile_options(Math PRIVATE
     #-include "${CMAKE_CURRENT_LIST_DIR}/Source/Framework.h"
     $<$<CONFIG:DEBUG>:-DDEBUG_MODE>
-    $<$<CONFIG:RELEASE>:-O3>)
+    $<$<CONFIG:RELEASE>:-O3>
+)
 
 # TODO: Switch to GCC.
 # Set compiler warning flags.
@@ -51,7 +53,8 @@ set(BUILD_SHARED_LIBS OFF)
 # Add project header paths.
 target_include_directories(Math PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Source
-    ${CMAKE_CURRENT_LIST_DIR}/..)
+    ${CMAKE_CURRENT_LIST_DIR}/..
+)
 
 # Add library directories.
 add_subdirectory(Libraries/assimp)
@@ -74,7 +77,8 @@ target_include_directories(Math SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
-    ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb)
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb
+)
 
 # Force-find Vulkan SDK path.
 set(Vulkan_INCLUDE_DIR "$ENV{VK_SDK_PATH}/Include")
@@ -88,7 +92,8 @@ target_link_libraries(Math PRIVATE
     glm
     SDL3-static
     spdlog
-    Vulkan::Vulkan)
+    Vulkan::Vulkan
+)
 
 # Copy shaders to build folder.
 set(SHADER_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Shaders)

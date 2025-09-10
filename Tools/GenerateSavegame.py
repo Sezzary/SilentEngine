@@ -48,7 +48,6 @@ def get_flatc_executable():
     system_os = platform.system()
 
     # Define OS-specific executable path.
-    flatc_exe = Path()
     if system_os == "Windows":
         flatc_exe = os.path.join(FLATC_PATH, "Windows", FLATC_NAME + ".exe")
     elif system_os == "Linux":

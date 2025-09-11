@@ -545,10 +545,10 @@ namespace Silent::Input
         // Update action states asynchronously.
         auto tasks = ParallelTasks
         {
-            [&]() { updateUserActions(); },
-            [&]() { updateRawActions(); }
+            TASK(updateUserActions()),
+            TASK(updateRawActions())
         };
-        g_Parallel.AddTasks(tasks).wait();
+        g_Executor.AddTasks(tasks).wait();
     }
 
     void InputManager::HandleHotkeyActions()

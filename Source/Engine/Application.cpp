@@ -82,8 +82,8 @@ namespace Silent
         _work.Options.Initialize();
         _work.Options.Load();
 
-        // Parallelism.
-        g_Parallel.Initialize();
+        // Parallel executor.
+        g_Executor.Initialize();
 
         // Assets.
         _work.Assets.Initialize(_work.Filesystem.GetAssetsFolder());
@@ -132,8 +132,8 @@ namespace Silent
         _work.Input.Deinitialize();
         _work.Renderer->Deinitialize();
 
-        // Parallelism.
-        g_Parallel.Deinitialize();
+        // Parallel executor.
+        g_Executor.Deinitialize();
 
         // SDL.
         SDL_DestroyWindow(_window);

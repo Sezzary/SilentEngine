@@ -5,14 +5,14 @@
 
 namespace Silent::Utils
 {
-    ParallelTaskManager g_Parallel = ParallelTaskManager();
+    ParallelExecutor g_Executor = ParallelExecutor();
 
-    uint ParallelTaskManager::GetThreadCount() const
+    uint ParallelExecutor::GetThreadCount() const
     {
         return (uint)_threads.size();
     }
 
-    uint ParallelTaskManager::GetPendingTaskCount() const
+    uint ParallelExecutor::GetPendingTaskCount() const
     {
         return 0;
         // LOCK: Restrict task queue access.
@@ -23,7 +23,7 @@ namespace Silent::Utils
         }*/
     }
 
-    void ParallelTaskManager::Initialize()
+    void ParallelExecutor::Initialize()
     {
         // Reserve threads.
         uint threadCount = GetCoreCount() * 2;
@@ -32,11 +32,11 @@ namespace Silent::Utils
         // Create threads.
         for (int i = 0; (uint)i < threadCount; i++)
         {
-            _threads.push_back(std::jthread(&ParallelTaskManager::Worker, this));
+            _threads.push_back(std::jthread(&ParallelExecutor::Worker, this));
         }
     }
 
-    void ParallelTaskManager::Deinitialize()
+    void ParallelExecutor::Deinitialize()
     {
         // LOCK: Restrict shutdown flag access.
         {
@@ -49,12 +49,12 @@ namespace Silent::Utils
         _taskCond.notify_all();
     }
 
-    std::future<void> ParallelTaskManager::AddTask(const ParallelTask& task)
+    std::future<void> ParallelExecutor::AddTask(const ParallelTask& task)
     {
         return AddTasks(ParallelTasks{ task });
     }
 
-    std::future<void> ParallelTaskManager::AddTasks(const ParallelTasks& tasks)
+    std::future<void> ParallelExecutor::AddTasks(const ParallelTasks& tasks)
     {
         const auto& options = g_App.GetOptions();
 
@@ -91,7 +91,7 @@ namespace Silent::Utils
         return promise->get_future();
     }
 
-    void ParallelTaskManager::Worker()
+    void ParallelExecutor::Worker()
     {
         while (true)
         {
@@ -102,7 +102,7 @@ namespace Silent::Utils
                 auto taskLock = std::unique_lock(_taskMutex);
                 _taskCond.wait(taskLock, [this]
                 {
-                    return (_deinitialize || !_tasks.empty());
+                    return _deinitialize || !_tasks.empty();
                 });
 
                 // Shutting down and no pending tasks; return early.
@@ -127,7 +127,7 @@ namespace Silent::Utils
         }
     }
 
-    void ParallelTaskManager::AddTask(const ParallelTask& task, std::shared_ptr<std::atomic<int>> counter, std::shared_ptr<std::promise<void>> promise)
+    void ParallelExecutor::AddTask(const ParallelTask& task, std::shared_ptr<std::atomic<int>> counter, std::shared_ptr<std::promise<void>> promise)
     {
         // Increment counter for task group.
         counter->fetch_add(1, std::memory_order_relaxed);
@@ -144,7 +144,7 @@ namespace Silent::Utils
         }
     }
 
-    void ParallelTaskManager::HandleTask(const ParallelTask& task, std::atomic<int>& counter, std::promise<void>& promise)
+    void ParallelExecutor::HandleTask(const ParallelTask& task, std::atomic<int>& counter, std::promise<void>& promise)
     {
         // Execute task.
         if (task)

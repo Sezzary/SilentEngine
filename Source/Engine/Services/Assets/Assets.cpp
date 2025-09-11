@@ -159,7 +159,7 @@ namespace Silent::Assets
         _loadingCount++;
 
         // Load asynchronously.
-        return g_Parallel.AddTask([&]()
+        return g_Executor.AddTask([&]()
         {
             // Get parser function.
             auto parserFuncIt = PARSER_FUNCS.find(asset->Type);

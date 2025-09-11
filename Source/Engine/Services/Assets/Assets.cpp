@@ -250,6 +250,8 @@ namespace Silent::Assets
     {
         for (auto& asset : _assets)
         {
+            // TODO: Interrupt if something is loading?
+
             asset->State = AssetState::Unloaded;
             asset->Data.reset();
         }

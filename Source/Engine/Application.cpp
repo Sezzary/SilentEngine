@@ -127,10 +127,9 @@ namespace Silent
     {
         Log("Shutting down Silent Engine...");
 
-        // Input.
+        // Workspace.
+        _work.Assets.UnloadAllAssets();
         _work.Input.Deinitialize();
-
-        // Renderer.
         _work.Renderer->Deinitialize();
 
         // Parallelism.

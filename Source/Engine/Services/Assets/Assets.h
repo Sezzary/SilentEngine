@@ -5,19 +5,19 @@ namespace Silent::Assets
     /** @brief Loaded asset types. Used in `Asset`. */
     enum class AssetType
     {
-        Tim, /** "Texture Image"             | PsyQ SDK texture data. */
+        Tim, /** "Texture IMage"             | PsyQ SDK texture data. */
         Vab, /** "Voice Audio Bank"          | PsyQ SDK audio container data. */
-        Bin, /** "Binary"                    | Original compiled code overlay data. */
+        Bin, /** "BINary"                    | Original compiled code overlay data. */
         Dms, /** "Demo Motion Sequence"?     | Cutscene keyframe data. */
-        Anm, /** "Animation"                 | Animation data. */
+        Anm, /** "ANiMation"                 | Animation data. */
         Plm, /** "Polygon List Model"?       | Global static model data. */
         Ipd, /** "Instance Polygon Data"?    | Local static model data. */
         Ilm, /** "Indexed List Model"?       | Linked model data. */
         Tmd, /** "3D Model Data"             | PsyQ SDK 3D model data. Only used for inventory items. */
-        Dat, /** "Demo Data"?                | Demo playback data. */
+        Dat, /** "Demo dATa"?                | Demo playback data. */
         Kdt, /** "Key Data Tracker"?         | Konami MIDI tracker data. */
         Cmp, /** "Compressed" or "Compiled"? | Unknown. */
-        Xa,  /** "Extended Audio"            | PSX XA audio stream. */
+        Xa,  /** "eXtended Audio"            | PSX XA audio stream. */
 
         Count
     };

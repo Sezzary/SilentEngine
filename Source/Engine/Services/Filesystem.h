@@ -36,6 +36,7 @@ namespace Silent::Services
     
     constexpr uint JSON_INDENT_SIZE = 4;
 
+    /** @brief Central filesystem manager. */
     class FilesystemManager
     {
     private:

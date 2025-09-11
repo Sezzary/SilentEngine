@@ -54,5 +54,10 @@ namespace Silent::Assets
         std::vector<Mesh> Meshes = {};
     };
 
+    /** @brief Parses a TMD file to a usable asset.
+     *
+     * @param filename Absolute asset file path on the system.
+     * @return Parsed TMD asset data as a `void` pointer.
+     */
     std::shared_ptr<void> ParseTmd(const std::filesystem::path& filename);
 }

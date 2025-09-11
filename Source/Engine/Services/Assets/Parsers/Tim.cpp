@@ -3,6 +3,7 @@
 
 namespace Silent::Assets
 {
+    /** @brief Bits per pixel types. */
     enum class BitsPerPixel
     {
         Bpp4,

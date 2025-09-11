@@ -80,14 +80,14 @@ namespace Silent::Services
 
     enum class ViewMode
     {
-        Normal,
-        SelfView
+        Normal,  /** Third-person. */
+        SelfView /** First-person. */
     };
 
     enum class DialogPauseType
     {
-        Classic,
-        Short
+        Classic, /** Original pause length between dialog lines. */
+        Short    /** Shorter pause length between dialog lines. */
     };
 
     /** @brief User options configuration data. */
@@ -228,10 +228,18 @@ namespace Silent::Services
         /** @brief Resets all configuration options, excluding debug, to defaults. */
         void SetDefaultOptions();
 
-        /** @brief Parses a JSON containing the options configuration to an internal options object. */
+        /** @brief Parses a JSON containing the options configuration to an internal options object.
+         *
+         * @param optionsJson Options JSON to parse.
+         * @return Internal `Options` object.
+         */
         Options FromOptionsJson(const json& optionsJson) const;
 
-        /** @brief Parses an internal options object to a JSON containing the options configuration. */
+        /** @brief Parses an internal options object to a JSON containing the options configuration.
+         *
+         * @param options Internal `Options` object to parse.
+         * @return Options JSON.
+         */
         json ToOptionsJson(const Options& options) const;
     };
 }

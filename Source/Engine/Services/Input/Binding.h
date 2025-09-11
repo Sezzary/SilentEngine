@@ -48,24 +48,33 @@ namespace Silent::Input
     extern const std::vector<BindingProfileId> USER_GAMEPAD_BINDING_PROFILE_IDS;
     extern const std::vector<BindingProfileId> RAW_EVENT_BINDING_PROFILE_IDS;
 
+    /** @brief Central manager for input bindings. */
     class BindingManager
     {
     private:
+        // =======
         // Fields
+        // =======
 
         std::unordered_map<BindingProfileId, BindingProfile> _bindings = {}; // Key = binding profile ID, value = binding profile.
 
     public:
+        // =============
         // Constructors
+        // =============
 
         BindingManager() = default;
 
+        // ========
         // Getters
+        // ========
 
         const std::vector<EventId>& GetBoundEventIds(BindingProfileId profileId, ActionId actionId) const;
         const BindingProfile&       GetBindingProfile(BindingProfileId profileId) const;
 
+        // ==========
         // Utilities
+        // ==========
 
         void Initialize(const BindingProfile& customKeyboardMouseBinds, const BindingProfile& customGamepadBinds);
         void BindEventId(BindingProfileId profileId, ActionId actionId, EventId eventId);

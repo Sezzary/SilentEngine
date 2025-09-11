@@ -26,6 +26,7 @@ def generate_savegame_headers():
             for file in os.listdir(SCHEMAS_PATH) 
             if file.endswith(".fbs")
         ]
+        schema_files = sorted(schema_files)
 
         # Build generation command.
         command = [flatc_exe, "--cpp", "-o", OUTPUT_PATH, "-I", SCHEMAS_PATH] + schema_files

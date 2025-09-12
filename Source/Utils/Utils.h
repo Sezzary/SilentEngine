@@ -2,10 +2,34 @@
 
 namespace Silent::Utils
 {
+    /** @brief Converts a string to upper case.
+     *
+     * @param str String to convert
+     * @return String in upper case.
+     */
     std::string ToUpper(std::string str);
-    std::string ToLower(std::string str);
-    char*       CopyString(const char src[], uint size);
 
+    /** @brief Converts a string to lower case.
+     *
+     * @param str String to convert
+     * @return String in lower case.
+     */
+    std::string ToLower(std::string str);
+
+    /** @brief Creates a heap-allocated string copy.
+     *
+     * @param src String source.
+     * @param size String size.
+     * @return String copy.
+     */
+    char* CopyString(const char src[], uint size);
+
+    /** @brief Gets the sign of a value.
+     *
+     * @tparam T Numeric type.
+     * @param val Value.
+     * @return `1` if the value is >=0, `-1` otherwise.
+     */
     template <typename T>
     requires std::is_arithmetic_v<T>
     int GetSign(T val)
@@ -13,6 +37,14 @@ namespace Silent::Utils
         return (val >= 0) ? 1 : -1;
     }
 
+    /** @brief Checks if a container contains a given element
+     *
+     * @tparam TContainer Container type.
+     * @tparam TElement Element type.
+     * @param cont Container to check.
+     * @param element Element to check for.
+     * @return `true` if the container contains the element, `false` otherwise.
+     */
     template <typename TContainer, typename TElement>
     bool Contains(const TContainer& cont, const TElement& element)
     {
@@ -20,6 +52,13 @@ namespace Silent::Utils
         return it != cont.end();
     }
 
+    /** @brief Erases elements from a container based on a predicate.
+     *
+     * @tparam TContainer Container type.
+     * @tparam TPreciate Predicate type.
+     * @param cont Container to erase elements from.
+     * @param pred Predicate defining the basis of erasure for an element.
+     */
     template <typename TContainer, typename TPredicate>
     void EraseIf(TContainer& cont, TPredicate pred)
     {

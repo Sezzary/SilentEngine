@@ -30,7 +30,7 @@ namespace Silent::Utils
         _threads.reserve(threadCount);
 
         // Create threads.
-        for (int i = 0; (uint)i < threadCount; i++)
+        for (int i = 0; i < threadCount; i++)
         {
             _threads.push_back(std::jthread(&ParallelExecutor::Worker, this));
         }

@@ -8,7 +8,7 @@ namespace Silent::Utils
     /** @brief Wraps a task in a lambda for parallel execution.
      *
      * @param task Task to execute.
-     * @return Lambda with a generic context capture that runs the task.
+     * @return Lambda with a general context capture that runs the task.
      */
     #define TASK(task) \
         ([&]() { task; })
@@ -109,9 +109,9 @@ namespace Silent::Utils
      */
     uint GetCoreCount();
 
-    /** @brief Generates a ready dummy `std::future`. For use when a task future cannot be created.
+    /** @brief Generates a ready dummy future. Used when a task future cannot be created.
      *
-     * @return Ready dummy `std::future`.
+     * @return Ready dummy future.
      */
     std::future<void> GenerateReadyFuture();
 }

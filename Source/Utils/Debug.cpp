@@ -13,7 +13,7 @@ using namespace Silent::Renderer;
 using namespace Silent::Services;
 using namespace Silent::Utils;
 
-// Includes for `Scratchpad` go here.
+// Includes for `Scratchpad` function go here.
 #ifdef _DEBUG
 
 #endif
@@ -30,7 +30,6 @@ namespace Silent::Utils::Debug
 
     void Scratchpad()
     {
-        // Dedicated testing space.
         if constexpr (IS_DEBUG_BUILD)
         {
             auto& input = g_App.GetInput();

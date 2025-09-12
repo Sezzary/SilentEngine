@@ -2,6 +2,7 @@
 
 namespace Silent::Services
 {
+    /** @brief Toast data. */
     struct Toast
     {
         std::string Message  = {};
@@ -9,6 +10,7 @@ namespace Silent::Services
         int         Life     = 0;
     };
 
+    /** @brief Central toast manager. */
     class ToastManager
     {
     private:

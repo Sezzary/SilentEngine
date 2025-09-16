@@ -2,6 +2,7 @@
 
 namespace Silent::Services
 {
+    /** @brief Supported operating system types. */
     enum class OsType
     {
         Windows,
@@ -12,6 +13,7 @@ namespace Silent::Services
     constexpr char APP_NAME[]    = "Silent Engine";
     constexpr char APP_VERSION[] = "0.1.0";
 
+    // ahah
 #if defined(_WIN32) || defined(_WIN64)
     constexpr auto OS_TYPE = OsType::Windows;
 #elif defined(__APPLE__)
@@ -40,27 +42,36 @@ namespace Silent::Services
     class FilesystemManager
     {
     private:
+        // =======
         // Fields
+        // =======
 
-        std::filesystem::path _appFolder         = {};
-        std::filesystem::path _assetsFolder      = {};
-        std::filesystem::path _workFolder        = {};
-        std::filesystem::path _screenshotsFolder = {};
+        std::filesystem::path _appFolder         = {}; /** Application folder path. */
+        std::filesystem::path _assetsFolder      = {}; /** Game assets folder path. */
+        std::filesystem::path _workFolder        = {}; /** Engine workspace folder path. */
+        std::filesystem::path _screenshotsFolder = {}; /** Screenshots folder path. */
 
     public:
+        // =============
         // Constructors
+        // =============
 
         FilesystemManager() = default;
-
+        
+        // ========
         // Getters
+        // ========
 
         const std::filesystem::path& GetAppFolder() const;
         const std::filesystem::path& GetAssetsFolder() const;
         const std::filesystem::path& GetWorkFolder() const;
         const std::filesystem::path& GetScreenshotsFolder() const;
 
+        // =========
         // Utilities
+        // =========
 
+        /** @brief Initializes the filesystem. */
         void Initialize();
     };
 }

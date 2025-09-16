@@ -117,9 +117,9 @@ namespace Silent::Input
 
     void InputManager::ConnectGamepad(int deviceId)
     {
-        constexpr ushort XBOX_VENDOR_CODE     = 0x045E;
-        constexpr ushort NINTENDO_VENDOR_CODE = 0x057E;
-        constexpr ushort SONY_VENDOR_CODE     = 0x054C;
+        constexpr int XBOX_VENDOR_CODE     = 0x045E;
+        constexpr int NINTENDO_VENDOR_CODE = 0x057E;
+        constexpr int SONY_VENDOR_CODE     = 0x054C;
 
         // Check if a gamepad is already connected.
         if (IsGamepadConnected())
@@ -347,7 +347,7 @@ namespace Silent::Input
         // Set gamepad button event states.
         for (auto butCode : VALID_GAMEPAD_BUTTON_CODES)
         {
-            float state = 0.0f;
+            bool state = false;
             if (IsGamepadConnected())
             {
                 state = SDL_GetGamepadButton(_gamepad.Device, butCode);
@@ -363,8 +363,7 @@ namespace Silent::Input
 
         // Collect stick axes.
         auto stickAxes = std::vector<Vector2>(VALID_GAMEPAD_STICK_AXIS_CODES.size() / Vector2::AXIS_COUNT);
-        int  j         = 0;
-        for (int i = 0; i < VALID_GAMEPAD_STICK_AXIS_CODES.size(); i++)
+        for (int i = 0, j = 0; i < VALID_GAMEPAD_STICK_AXIS_CODES.size(); i++)
         {
             if (!IsGamepadConnected())
             {
@@ -382,18 +381,19 @@ namespace Silent::Input
             else
             {
                 axis.y = state;
-                j++;
 
                 // Remap axis to active range.
                 if (axis.Length() >= AXIS_DEADZONE)
                 {
                     float remappedLength = Remap(axis.Length(), AXIS_DEADZONE, 1.0f, 0.0f, 1.0f);
-                    axis = Vector2::Normalize(axis) * remappedLength;
+                    axis                 = Vector2::Normalize(axis) * remappedLength;
                 }
                 else
                 {
                     axis = Vector2::Zero;
                 }
+
+                j++;
             }
         }
 

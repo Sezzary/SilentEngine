@@ -307,6 +307,7 @@ namespace Silent::Input
         SDL_GAMEPAD_AXIS_RIGHT_TRIGGER
     };
 
+    /** @brief Map associating input event IDs with their names. */
     static const auto EVENT_NAMES = std::unordered_map<EventId, std::vector<std::string>>
     {   
         { EventId::A,                      { "A" } },

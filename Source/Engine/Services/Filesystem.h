@@ -13,7 +13,6 @@ namespace Silent::Services
     constexpr char APP_NAME[]    = "Silent Engine";
     constexpr char APP_VERSION[] = "0.1.0";
 
-    // ahah
 #if defined(_WIN32) || defined(_WIN64)
     constexpr auto OS_TYPE = OsType::Windows;
 #elif defined(__APPLE__)
@@ -67,9 +66,9 @@ namespace Silent::Services
         const std::filesystem::path& GetWorkFolder() const;
         const std::filesystem::path& GetScreenshotsFolder() const;
 
-        // =========
+        // ==========
         // Utilities
-        // =========
+        // ==========
 
         /** @brief Initializes the filesystem. */
         void Initialize();

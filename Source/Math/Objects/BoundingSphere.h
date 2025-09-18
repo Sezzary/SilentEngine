@@ -18,7 +18,7 @@ namespace Silent::Math
 
         // Constructors
 
-        constexpr BoundingSphere()                                    = default;
+        constexpr BoundingSphere() = default;
         constexpr BoundingSphere(const Vector3& center, float radius) : Center(center), Radius(radius) {}
 
         // Getters

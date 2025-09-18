@@ -56,7 +56,7 @@ namespace Silent::Utils::Debug
     /** @brief Global debug data. */
     extern DebugData g_DebugData;
 
-    /** @brief Executes scratch code. This is a dedicated space which can be used to test anything at all. */
+    /** @brief Executes scratch code. This is a dedicated space which can be used to test anything. */
     void Scratchpad();
 
     /** @brief Initializes the debug logger, log file for flushing, and GUI. */

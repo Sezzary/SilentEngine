@@ -48,12 +48,4 @@ namespace Silent::Utils::Compatibility
         struct GsCOORDINATE2* super;
         struct GsCOORDINATE2* sub;
     };
-
-    /** @brief Computes the dot product of the first column of a matrix with a vector in Q17.15 format. */
-    /*int FP_MULTIPLY_MATRIX(const MATRIX& mat, const VECTOR3& vec)
-    {
-        return ((mat.m[0][0] * vec.vx) +
-                (mat.m[1][0] * vec.vy) +
-                (mat.m[2][0] * vec.vz)) >> 17;
-    }*/
 }

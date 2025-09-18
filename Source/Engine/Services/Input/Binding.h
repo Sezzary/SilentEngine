@@ -7,31 +7,16 @@ namespace Silent::Input
 {
     using BindingProfile = std::unordered_map<ActionId, std::vector<EventId>>; /** Key = action ID, value = event IDs. */
 
-    /** @brief Default input binding profile for the first type of input action defaults tied to the keyboard/mouse. */
     extern const BindingProfile USER_KEYBOARD_MOUSE_BINDING_PROFILE_TYPE_1;
-
-    /** @brief Default input binding profile for the second type of input action defaults tied to the keyboard/mouse. */
     extern const BindingProfile USER_KEYBOARD_MOUSE_BINDING_PROFILE_TYPE_2;
-
-    /** @brief Default input binding profile for the third type of input action defaults tied to the keyboard/mouse. */
     extern const BindingProfile USER_KEYBOARD_MOUSE_BINDING_PROFILE_TYPE_3;
 
-    /** @brief Default input binding profile for the first type of input action defaults tied to the gamepad. */
     extern const BindingProfile USER_GAMEPAD_BINDING_PROFILE_TYPE_1;
-
-    /** @brief Default input binding profile for the second type of input action defaults tied to the gamepad. */
     extern const BindingProfile USER_GAMEPAD_BINDING_PROFILE_TYPE_2;
-
-    /** @brief Default input binding profile for the third type of input action defaults tied to the gamepad. */
     extern const BindingProfile USER_GAMEPAD_BINDING_PROFILE_TYPE_3;
 
-    /** @brief Input binding profile for raw keyboard inputs. */
     extern const BindingProfile RAW_KEYBOARD_BINDING_PROFILE;
-
-    /** @brief Input binding profile for raw mouse inputs. */
     extern const BindingProfile RAW_MOUSE_BINDING_PROFILE;
-
-    /** @brief Input binding profile for raw gamepad inputs. */
     extern const BindingProfile RAW_GAMEPAD_BINDING_PROFILE;
 
     /** @brief Input binding profile IDs. */
@@ -60,13 +45,8 @@ namespace Silent::Input
         Count
     };
 
-    /** @brief User-defined keyboard/mouse input binding profile IDs. */
     extern const std::vector<BindingProfileId> USER_KEYBOARD_MOUSE_BINDING_PROFILE_IDS;
-
-    /** @brief User-defined gamepad input binding profile IDs. */
     extern const std::vector<BindingProfileId> USER_GAMEPAD_BINDING_PROFILE_IDS;
-
-    /** @brief Raw device event input binding profile IDs. */
     extern const std::vector<BindingProfileId> RAW_EVENT_BINDING_PROFILE_IDS;
 
     /** @brief Central manager for input bindings. */

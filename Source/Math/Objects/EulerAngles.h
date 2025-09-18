@@ -28,7 +28,7 @@ namespace Silent::Math
 
         // Constructors
 
-        constexpr EulerAngles()                          = default;
+        constexpr EulerAngles() = default;
         constexpr EulerAngles(short x, short y, short z) : x(x), y(y), z(z) {}
 
         EulerAngles(const Vector3& dir);

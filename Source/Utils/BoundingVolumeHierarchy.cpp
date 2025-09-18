@@ -483,8 +483,6 @@ namespace Silent::Utils
         }
     }
 
-    // Performs left or right tree rotation if input node is imbalanced.
-    // Returns new subtree root ID.
     int BoundingVolumeHierarchy::BalanceNode(int nodeId)
     {
         if (nodeId == NO_VALUE)
@@ -762,81 +760,87 @@ namespace Silent::Utils
 
     void BoundingVolumeHierarchy::Validate() const
     {
-        Validate(_rootId);
-
-        // Validate unique object IDs.
-        auto objectIds = GetBoundedObjectIds();
-        for (int refObjectId : objectIds)
+        if (IS_DEBUG_BUILD)
         {
-            uint count = 0;
-            for (int objectId : objectIds)
-            {
-                if (refObjectId == objectId)
-                {
-                    count++;
-                }
-            }
+            Validate(_rootId);
 
-            Assert(count == 1, "BVH: Duplicate object IDs contained.");
+            // Validate unique object IDs.
+            auto objectIds = GetBoundedObjectIds();
+            for (int refObjectId : objectIds)
+            {
+                uint count = 0;
+                for (int objectId : objectIds)
+                {
+                    if (refObjectId == objectId)
+                    {
+                        count++;
+                    }
+                }
+
+                Assert(count == 1, "BVH: Duplicate object IDs contained.");
+            }
         }
     }
 
     void BoundingVolumeHierarchy::Validate(int nodeId) const
     {
-        if (nodeId == NO_VALUE)
+        if (IS_DEBUG_BUILD)
         {
-            return;
-        }
+            if (nodeId == NO_VALUE)
+            {
+                return;
+            }
 
-        // Get node.
-        const auto& node = _nodes[nodeId];
+            // Get node.
+            const auto& node = _nodes[nodeId];
 
-        // Validate root.
-        if (nodeId == _rootId)
-        {
-            Assert(node.ParentId == NO_VALUE, "BVH: Root node cannot have parent.");
-        }
+            // Validate root.
+            if (nodeId == _rootId)
+            {
+                Assert(node.ParentId == NO_VALUE, "BVH: Root node cannot have parent.");
+            }
 
-        // Validate leaf node.
-        if (node.IsLeaf())
-        {
-            Assert(node.ObjectId != NO_VALUE, "BVH: Leaf node must contain object ID.");
-            Assert(node.Height == 0, "BVH: Leaf node must have height of 0.");
-        }
-        // Validate inner node.
-        else
-        {
-            Assert(node.ObjectId == NO_VALUE, "BVH: Inner node cannot contain object ID.");
-            Assert(node.Height != 0, "BVH: Inner node cannot have height of 0.");
-        }
+            // Validate leaf node.
+            if (node.IsLeaf())
+            {
+                Assert(node.ObjectId != NO_VALUE, "BVH: Leaf node must contain object ID.");
+                Assert(node.Height == 0, "BVH: Leaf node must have height of 0.");
+            }
+            // Validate inner node.
+            else
+            {
+                Assert(node.ObjectId == NO_VALUE, "BVH: Inner node cannot contain object ID.");
+                Assert(node.Height != 0, "BVH: Inner node cannot have height of 0.");
+            }
 
-        // Validate parent.
-        if (nodeId != _rootId)
-        {
-            Assert(node.ParentId != NO_VALUE, "BVH: Non-root node must have parent.");
-        }
+            // Validate parent.
+            if (nodeId != _rootId)
+            {
+                Assert(node.ParentId != NO_VALUE, "BVH: Non-root node must have parent.");
+            }
 
-        // Validate parent of children.
-        if (node.LeftChildId != NO_VALUE)
-        {
-            const auto& leftChild = _nodes[node.LeftChildId];
-            Assert(leftChild.ParentId == nodeId, "BVH: Left child has wrong parent.");
-        }
-        if (node.RightChildId != NO_VALUE)
-        {
-            const auto& rightChild = _nodes[node.RightChildId];
-            Assert(rightChild.ParentId == nodeId, "BVH: Right child has wrong parent.");
-        }
+            // Validate parent of children.
+            if (node.LeftChildId != NO_VALUE)
+            {
+                const auto& leftChild = _nodes[node.LeftChildId];
+                Assert(leftChild.ParentId == nodeId, "BVH: Left child has wrong parent.");
+            }
+            if (node.RightChildId != NO_VALUE)
+            {
+                const auto& rightChild = _nodes[node.RightChildId];
+                Assert(rightChild.ParentId == nodeId, "BVH: Right child has wrong parent.");
+            }
 
-        // Validate height.
-        if (nodeId != _rootId)
-        {
-            const auto& parent = _nodes[node.ParentId];
-            Assert(node.Height < parent.Height, "BVH: Child height must be less than parent height.");
-        }
+            // Validate height.
+            if (nodeId != _rootId)
+            {
+                const auto& parent = _nodes[node.ParentId];
+                Assert(node.Height < parent.Height, "BVH: Child height must be less than parent height.");
+            }
 
-        // Validate recursively.
-        Validate(node.LeftChildId);
-        Validate(node.RightChildId);
+            // Validate recursively.
+            Validate(node.LeftChildId);
+            Validate(node.RightChildId);
+        }
     }
 }

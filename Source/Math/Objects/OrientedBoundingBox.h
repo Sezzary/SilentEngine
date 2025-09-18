@@ -27,7 +27,7 @@ namespace Silent::Math
 
         // Constructors
 
-       constexpr OrientedBoundingBox()                                                                    = default;
+       constexpr OrientedBoundingBox() = default;
        constexpr OrientedBoundingBox(const Vector3& center, const Vector3& extents, const Quaternion rot) : Center(center), Extents(extents), Rotation(rot) {}
 
        // Getters

@@ -18,7 +18,7 @@ namespace Silent::Math
 
         // Constructors
 
-        constexpr Ray()                                          = default;
+        constexpr Ray() = default;
         constexpr Ray(const Vector3& origin, const Vector3& dir) : Origin(origin), Direction(dir) {}
 
         // Inquirers

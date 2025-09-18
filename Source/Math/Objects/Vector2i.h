@@ -23,7 +23,7 @@ namespace Silent::Math
 
         // Constructors
 
-        constexpr Vector2i()                      = default;
+        constexpr Vector2i() = default;
         constexpr Vector2i(const glm::ivec2& vec) : glm::ivec2(vec) {}
         constexpr Vector2i(int x)                 : glm::ivec2(x) {}
         constexpr Vector2i(int x, int y)          : glm::ivec2(x, y) {}

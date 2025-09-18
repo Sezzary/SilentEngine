@@ -57,7 +57,7 @@ namespace Silent::Utils
      * @tparam TContainer Container type.
      * @tparam TPreciate Predicate type.
      * @param cont Container to erase elements from.
-     * @param pred Predicate defining the basis of erasure for an element.
+     * @param pred Predicate defining the basis for element erasure.
      */
     template <typename TContainer, typename TPredicate>
     void EraseIf(TContainer& cont, TPredicate pred)

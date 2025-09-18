@@ -24,7 +24,7 @@ namespace Silent::Math
 
         // Constructors
     
-        constexpr AxisAlignedBoundingBox()                                              = default;
+        constexpr AxisAlignedBoundingBox() = default;
         constexpr AxisAlignedBoundingBox(const Vector3& center, const Vector3& extents) : Center(center), Extents(extents) {}
 
         AxisAlignedBoundingBox(const std::span<const Vector3>& points);

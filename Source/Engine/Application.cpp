@@ -51,6 +51,11 @@ namespace Silent
         return _work.Savegame;
     }
 
+    SoundManager& ApplicationManager::GetSound()
+    {
+        return _work.Sound;
+    }
+
     TimeManager& ApplicationManager::GetTime()
     {
         return _work.Time;

@@ -8,6 +8,7 @@
 #include "Engine/Services/Time.h"
 #include "Engine/Services/Toasts.h"
 #include "Engine/Services/Savegame/Savegame.h"
+#include "Engine/Services/Sound.h"
 
 namespace Silent
 {
@@ -18,14 +19,13 @@ namespace Silent
 
     struct ApplicationWork
     {
-        // TODO: `g_SysWork`, `g_GameWork`, and probably other globals would go here.
-
         AssetManager                  Assets     = AssetManager();
         FilesystemManager             Filesystem = FilesystemManager();
         InputManager                  Input      = InputManager();
         OptionsManager                Options    = OptionsManager();
         std::unique_ptr<RendererBase> Renderer   = nullptr;
         SavegameManager               Savegame   = SavegameManager();
+        SoundManager                  Sound      = SoundManager();
         TimeManager                   Time       = TimeManager();
         ToastManager                  Toasts     = ToastManager();
     };
@@ -55,6 +55,7 @@ namespace Silent
         OptionsManager&    GetOptions();
         RendererBase&      GetRenderer();
         SavegameManager&   GetSavegame();
+        SoundManager&      GetSound();
         TimeManager&       GetTime();
 
         Vector2i GetWindowResolution() const;

@@ -23,7 +23,7 @@ namespace Silent::Services
         // Utilities
         // ==========
 
-        /** @brief Initializes streams for the audio manager. */
+        /** @brief Initializes the audio stream. */
         void Initialize();
 
         /** @brief Gracefully deinitializes the audio manager. */

@@ -11,7 +11,7 @@ namespace Silent::Utils
      * @return Lambda with a general context capture that runs the task.
      */
     #define TASK(task) \
-        ([&]() { task; })
+        [&]() { task; }
 
     /** @brief Parallel task executor. */
     class ParallelExecutor

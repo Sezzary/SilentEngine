@@ -4,15 +4,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-FLATC_NAME   = "flatc"
-BASE_PATH    = Path(__file__).parent
-FLATC_PATH   = BASE_PATH / FLATC_NAME
-SCHEMAS_PATH = BASE_PATH / "../Source/Engine/Services/Savegame/Schemas"
-OUTPUT_PATH  = BASE_PATH / "../Source/Engine/Services/Savegame/Generated"
+FLATC_NAME    = "flatc"
+BASE_PATH     = Path(__file__).parent
+FLATC_PATH    = BASE_PATH / FLATC_NAME
+SAVEGAME_PATH = BASE_PATH / "../Source/Engine/Services/Savegame"
+SCHEMAS_PATH  = SAVEGAME_PATH / "Schemas"
+OUTPUT_PATH   = SAVEGAME_PATH / "Generated"
 
 def generate_savegame_headers():
     """
-    Run `flatc` to generate FlatBuffers headers.
+    Run `flatc` to generate savegame FlatBuffers headers.
     """
     try:
         print("Generating savegame FlatBuffers headers...")
@@ -30,6 +31,7 @@ def generate_savegame_headers():
 
         # Build generation command.
         command = [flatc_exe, "--cpp", "-o", OUTPUT_PATH, "-I", SCHEMAS_PATH] + schema_files
+        print("Running command:\n" + " ".join(command))
 
         # Run generation command.
         result = subprocess.run(command, capture_output=True)
@@ -53,10 +55,10 @@ def get_flatc_executable():
         flatc_exe = os.path.join(FLATC_PATH, "Windows", FLATC_NAME + ".exe")
     elif system_os == "Linux":
         flatc_exe = os.path.join(FLATC_PATH, "Linux", FLATC_NAME)
-    elif system_os == "Darwin": # MacOS.
+    elif system_os == "Darwin": # macOS.
         flatc_exe = os.path.join(FLATC_PATH, "MacOs", FLATC_NAME)
     else:
-        raise Exception(f"Unsupported OS '{system_os}'.")
+        raise Exception(f"'{system_os}' is unsupported.")
 
     if not os.path.isfile(flatc_exe):
         raise Exception(f"`flatc` executable not found at '{flatc_exe}'.")

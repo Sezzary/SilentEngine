@@ -6,9 +6,9 @@
 #include "Engine/Services/Input/Input.h"
 #include "Engine/Services/Filesystem.h"
 #include "Engine/Services/Options.h"
+#include "Engine/Services/Savegame/Savegame.h"
 #include "Engine/Services/Time.h"
 #include "Engine/Services/Toasts.h"
-#include "Engine/Services/Savegame/Savegame.h"
 
 namespace Silent
 {
@@ -17,6 +17,7 @@ namespace Silent
     using namespace Renderer;
     using namespace Services;
 
+    /** @brief Application workspace. Keeps all subsystems. */
     struct ApplicationWork
     {
         AssetManager                  Assets     = AssetManager();

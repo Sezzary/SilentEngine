@@ -47,7 +47,7 @@ namespace Silent::Services
 
         std::filesystem::path _appFolder         = {}; /** Application folder path. */
         std::filesystem::path _assetsFolder      = {}; /** Game assets folder path. */
-        std::filesystem::path _workFolder        = {}; /** Engine workspace folder path. */
+        std::filesystem::path _workFolder        = {}; /** Workspace folder path. */
         std::filesystem::path _screenshotsFolder = {}; /** Screenshots folder path. */
 
     public:

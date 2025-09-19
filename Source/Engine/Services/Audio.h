@@ -28,5 +28,8 @@ namespace Silent::Services
 
         /** @brief Gracefully deinitializes the audio manager. */
         void Deinitialize();
+
+        /** @brief Updates the audio system. */
+        void Update();
     };
 }

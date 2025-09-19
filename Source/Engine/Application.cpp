@@ -147,6 +147,8 @@ namespace Silent
 
         // SDL.
         SDL_DestroyWindow(_window);
+        SDL_QuitSubSystem(SDL_INIT_AUDIO);
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
         SDL_Quit();
 
         // Finish.
@@ -212,7 +214,10 @@ namespace Silent
         // Update game state.
         Entry();
 
-        // Update toasts and debug.
+        // Update audio.
+        _work.Audio.Update();
+
+        // Update debug and toasts.
         UpdateDebug();
         _work.Toasts.Update();
     }

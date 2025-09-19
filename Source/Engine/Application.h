@@ -2,13 +2,13 @@
 
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Assets/Assets.h"
+#include "Engine/Services/Audio.h"
 #include "Engine/Services/Input/Input.h"
 #include "Engine/Services/Filesystem.h"
 #include "Engine/Services/Options.h"
 #include "Engine/Services/Time.h"
 #include "Engine/Services/Toasts.h"
 #include "Engine/Services/Savegame/Savegame.h"
-#include "Engine/Services/Sound.h"
 
 namespace Silent
 {
@@ -20,12 +20,12 @@ namespace Silent
     struct ApplicationWork
     {
         AssetManager                  Assets     = AssetManager();
+        AudioManager                  Audio      = AudioManager();
         FilesystemManager             Filesystem = FilesystemManager();
         InputManager                  Input      = InputManager();
         OptionsManager                Options    = OptionsManager();
         std::unique_ptr<RendererBase> Renderer   = nullptr;
         SavegameManager               Savegame   = SavegameManager();
-        SoundManager                  Sound      = SoundManager();
         TimeManager                   Time       = TimeManager();
         ToastManager                  Toasts     = ToastManager();
     };
@@ -49,14 +49,14 @@ namespace Silent
         // Getters
 
         AssetManager&      GetAssets();
+        AudioManager&      GetAudio();
         FilesystemManager& GetFilesystem();
-        ToastManager&      GetToasts();
         InputManager&      GetInput();
         OptionsManager&    GetOptions();
         RendererBase&      GetRenderer();
         SavegameManager&   GetSavegame();
-        SoundManager&      GetSound();
         TimeManager&       GetTime();
+        ToastManager&      GetToasts();
 
         Vector2i GetWindowResolution() const;
 

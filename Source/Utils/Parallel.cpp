@@ -25,8 +25,10 @@ namespace Silent::Utils
 
     void ParallelExecutor::Initialize()
     {
+        constexpr uint THREAD_COUNT_MIN = 2;
+
         // Reserve threads.
-        uint threadCount = GetCoreCount() * 2;
+        uint threadCount = std::max<uint>(GetCoreCount(), THREAD_COUNT_MIN);
         _threads.reserve(threadCount);
 
         // Create threads.

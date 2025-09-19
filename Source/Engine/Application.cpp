@@ -4,6 +4,7 @@
 #include "Engine/Game/main.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Assets/Assets.h"
+#include "Engine/Services/Audio.h"
 #include "Engine/Services/Filesystem.h"
 #include "Engine/Services/Input/Input.h"
 #include "Engine/Services/Options.h"
@@ -24,6 +25,11 @@ namespace Silent
     AssetManager& ApplicationManager::GetAssets()
     {
         return _work.Assets;
+    }
+
+    AudioManager& ApplicationManager::GetAudio()
+    {
+        return _work.Audio;
     }
 
     FilesystemManager& ApplicationManager::GetFilesystem()
@@ -49,11 +55,6 @@ namespace Silent
     SavegameManager& ApplicationManager::GetSavegame()
     {
         return _work.Savegame;
-    }
-
-    SoundManager& ApplicationManager::GetSound()
-    {
-        return _work.Sound;
     }
 
     TimeManager& ApplicationManager::GetTime()
@@ -94,7 +95,7 @@ namespace Silent
         _work.Assets.Initialize(_work.Filesystem.GetAssetsFolder());
 
         // SDL.
-        if (!SDL_Init(SDL_INIT_VIDEO))
+        if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO))
         {
             throw std::runtime_error("Failed to initialize SDL: " + std::string(SDL_GetError()));
         }
@@ -120,6 +121,9 @@ namespace Silent
         }
         _work.Renderer->Initialize(*_window);
 
+        // Audio.
+        _work.Audio.Initialize();
+
         // Input.
         _work.Input.Initialize();
 
@@ -134,6 +138,7 @@ namespace Silent
 
         // Workspace.
         _work.Assets.UnloadAllAssets();
+        _work.Audio.Deinitialize();
         _work.Input.Deinitialize();
         _work.Renderer->Deinitialize();
 

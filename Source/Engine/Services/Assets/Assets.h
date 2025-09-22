@@ -16,7 +16,7 @@ namespace Silent::Assets
         Tmd, /** "3D Model Data"             | PsyQ SDK 3D model data. Only used for inventory items. */
         Dat, /** "Demo dATa"?                | Demo playback data. */
         Kdt, /** "Key Data Tracker"?         | Konami MIDI tracker data. */
-        Cmp, /** "Compressed" or "Compiled"? | Unknown. */
+        Cmp, /** "CoMPressed" or "CoMPiled"? | Unknown. */
         Xa,  /** "eXtended Audio"            | PSX XA audio stream. */
 
         Count
@@ -136,7 +136,7 @@ namespace Silent::Assets
         void UnloadAllAssets();
     };
 
-    /** @brief Gets the typed loaded asset data.
+    /** @brief Gets the typed data of a loaded asset.
      *
      * @tparam T Loaded asset type to cast the asset data to.
      * @param data Data to retrieve.

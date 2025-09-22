@@ -24,7 +24,7 @@ namespace Silent::Assets
         { ".DAT", AssetType::Dat },
         { ".KDT", AssetType::Kdt },
         { ".CMP", AssetType::Cmp },
-        { "",     AssetType::Xa }   // TODO: Should be given .XA extension when exporting from ROM.
+        { "",     AssetType::Xa }   // @todo Should be given .XA extension when exporting from ROM.
     };
 
     static const auto PARSER_FUNCS = std::unordered_map<AssetType, std::function<std::shared_ptr<void>(const std::filesystem::path& file)>>
@@ -250,7 +250,7 @@ namespace Silent::Assets
     {
         for (auto& asset : _assets)
         {
-            // TODO: Interrupt if something is loading?
+            // @todo Interrupt if something is loading?
 
             asset->State = AssetState::Unloaded;
             asset->Data.reset();

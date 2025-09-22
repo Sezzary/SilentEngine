@@ -136,23 +136,23 @@ namespace Silent::Renderer
 
     void VulkanRenderer::SaveScreenshot() const
     {
-        // TODO
+        // @todo
     }
 
     void VulkanRenderer::LogError(const std::string& msg) const
     {
-        // TODO
+        // @todo
     }
 
     void VulkanRenderer::SubmitPrimitive2d(const Primitive2d& prim)
     {
-        // TODO
+        // @todo
     }
 
     void VulkanRenderer::SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
                                             int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
     {
-        // TODO
+        // @todo
     }
 
     VkInstance VulkanRenderer::GetInstance()
@@ -228,7 +228,7 @@ namespace Silent::Renderer
         auto deviceFeatures = VkPhysicalDeviceFeatures{};
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);*/
 
-        // TODO: Pick best GPU.
+        // @todo Pick best GPU.
 
         bool isExtSupported = CheckDeviceExtensionSupport(device);
 
@@ -342,7 +342,7 @@ namespace Silent::Renderer
                 idxs.PresentFamily = i;
             }
 
-            // TODO: Could prefer physical device that supports drawing and presentation in the same queue for improved performance.
+            // @todo Could prefer physical device that supports drawing and presentation in the same queue for improved performance.
 
             if (idxs.IsComplete())
             {
@@ -383,7 +383,7 @@ namespace Silent::Renderer
         // Wait for previous frame to finish.
         vkWaitForFences(_device, 1, &_inFlightFences[_activeFrame], VK_TRUE, UINT64_MAX);
 
-        // TODO: Parallelism requires storing a separate render buffer for game data
+        // @todo Parallelism requires storing a separate render buffer for game data
         // so that it doesn't get overwritten by `ApplicationManager::Update` while 
         // `RendererBase::Update` runs in the background. Depends how cleanly the OG engine
         // handles its data, but the buffer update would have to occur right here.
@@ -510,7 +510,7 @@ namespace Silent::Renderer
         auto exts = std::vector<VkExtensionProperties>(extCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extCount, exts.data());
 
-        // TODO: Check if all required SDL extensions are available.
+        // @todo Check if all required SDL extensions are available.
 
         // Log available Vulkan extensions.
         Log("Available Vulkan extensions (" + std::to_string(extCount) + "):");
@@ -1110,7 +1110,7 @@ namespace Silent::Renderer
                                                                   const VkDebugUtilsMessengerCallbackDataEXT* callbackData,
                                                                   void* userData)
     {
-        // TODO: Log level.
+        // @todo Log level.
         Log("Validation layer: " + std::string(callbackData->pMessage));
         return VK_FALSE;
     }

@@ -51,7 +51,7 @@ namespace Silent::Math
         static Matrix Scale(const Matrix& mat, const Vector3& scale);
         void          Scale(const Vector3& scale);
 
-        // TODO:
+        // @todo
         // LookAt
         // Transpose
         // Determinant

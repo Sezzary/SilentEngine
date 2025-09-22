@@ -63,7 +63,7 @@ namespace Silent::Math
     
     bool OrientedBoundingBox::Intersects(const Vector3& point) const
     {
-        auto rotMat     = Rotation.ToRotationMatrix(); // TODO: Invert?
+        auto rotMat     = Rotation.ToRotationMatrix(); // @todo Invert?
         auto localPoint = Vector3::Transform(point - Center, rotMat);
 
         return std::abs(localPoint.x) <= Extents.x && 
@@ -90,7 +90,7 @@ namespace Silent::Math
         // Compute center delta.
         auto centerDelta = obb.Center - Center;
 
-        // TODO
+        // @todo
         // Test all the axes. 8 total: 3 from OBB 0, and 3 from OBB 1, and 2 from cross products of axes.
         /*for (int i = 0; i < Vector3::AXIS_COUNT; i++)
         {

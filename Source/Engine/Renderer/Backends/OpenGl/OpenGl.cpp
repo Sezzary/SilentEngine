@@ -245,7 +245,7 @@ namespace Silent::Renderer
             Log("Failed to swap render buffer: " + std::string(SDL_GetError()), LogLevel::Warning);
         }
 
-        // Clear scene. TODO
+        // Clear scene. @todo
 
         // Clear primitives
         _primitives2d.clear();
@@ -361,7 +361,7 @@ namespace Silent::Renderer
 
     void OpenGlRenderer::SubmitPrimitive2d(const Primitive2d& prim)
     {
-        // TODO
+        // @todo
     }
 
     void OpenGlRenderer::SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
@@ -376,7 +376,7 @@ namespace Silent::Renderer
             return;
         }
 
-        // TODO
+        // @todo
     }
 
     void OpenGlRenderer::UpdateViewport()
@@ -475,7 +475,7 @@ namespace Silent::Renderer
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_LESS);
 
-        // TODO
+        // @todo
 
         glDepthMask(GL_TRUE);
     }
@@ -711,7 +711,7 @@ namespace Silent::Renderer
 
     void OpenGlRenderer::DrawDebugObjects()
     {
-        // TODO
+        // @todo
 
         // Clear object elements.
         //_debugLines.clear();

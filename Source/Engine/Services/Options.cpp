@@ -311,7 +311,7 @@ namespace Silent::Services
             }
         }
 
-        // TODO: Crashes.
+        // @todo Crashes.
         // Load enhancements options.
         /*const auto& enhancementsJson = optionsJson[KEY_ENHANCEMENTS];
         options.DialogPause          = enhancementsJson.value(KEY_DIALOG_PAUSE, DEFAULT_DIALOG_PAUSE);*/

@@ -30,7 +30,7 @@ namespace Silent::Renderer
         auto res = g_App.GetWindowResolution();
         return res;
 
-        // TODO: Hum, not sure how to do this.
+        // @todo Hum, not sure how to do this.
         switch (options->RenderScale)
         {
             default:
@@ -260,12 +260,12 @@ namespace Silent::Renderer
         // Wireframe.
         if (isWireframe)
         {
-            // TODO
+            // @todo
         }
         // Solid.
         else
         {
-            // TODO
+            // @todo
         }
     }
 
@@ -280,12 +280,12 @@ namespace Silent::Renderer
         // Wireframe.
         if (isWireframe)
         {
-            // TODO
+            // @todo
         }
         // Solid.
         else
         {
-            // TODO
+            // @todo
         }
     }
 
@@ -300,12 +300,12 @@ namespace Silent::Renderer
         // Wireframe.
         if (isWireframe)
         {
-            // TODO
+            // @todo
         }
         // Solid.
         else
         {
-            // TODO
+            // @todo
         }
     }
 }

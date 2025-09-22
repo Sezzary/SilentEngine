@@ -229,7 +229,7 @@ namespace Silent::Utils::Debug
                             }
                         }
 
-                        // TODO: Using `c_str` crashes.
+                        // @todo Using `c_str` crashes.
 
                         // `Clicked` info.
                         /*ImGui::TableNextRow();
@@ -625,7 +625,7 @@ namespace Silent::Utils::Debug
         Messages.clear();
     }
 
-    // TODO: Not working.
+    // @todo Not working.
     void Message(const char* msg, ...)
     {
         constexpr uint BUFFER_SIZE = 255;

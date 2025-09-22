@@ -53,7 +53,7 @@ namespace Silent::Services
         // Create savegame buffer.
         auto saveBuffer = ToSavegameBuffer(_savegame);
 
-        // TODO: Fill metadata.
+        // @todo Fill metadata.
 
         // Ensure directory exists.
         auto saveFile = GetSavegamePath(slotIdx, fileIdx, saveIdx);
@@ -159,7 +159,7 @@ namespace Silent::Services
         inputFile.read(fileBuffer.data(), fileSize);
         auto* saveBuffer = flatbuffers::GetRoot<Silent::Buffers::Savegame>(fileBuffer.data());
         
-        // TODO: Read metadata from savegame buffer.
+        // @todo Read metadata from savegame buffer.
         auto metadata = SavegameMetadata{};
 
         return metadata;
@@ -262,7 +262,7 @@ namespace Silent::Services
     {
         auto save = std::make_unique<Savegame>();
 
-        // TODO
+        // @todo
 
         return save;
     }
@@ -271,7 +271,7 @@ namespace Silent::Services
     {
         auto saveBuffer = std::make_unique<flatbuffers::FlatBufferBuilder>();
 
-        // TODO
+        // @todo
 
         return saveBuffer;
     }

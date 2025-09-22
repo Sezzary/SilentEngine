@@ -13,9 +13,9 @@ namespace Silent::Assets
 
     std::shared_ptr<void> ParseTim(const std::filesystem::path& filename)
     {
-        constexpr int HEADER_MAGIC  = 1 << 4;
-        constexpr int HAS_CLUT_FLAG = 1 << 3;
+        constexpr int HEADER_MAGIC  = 0x10;
         constexpr int BPP_MASK      = 0x7;
+        constexpr int HAS_CLUT_FLAG = 1 << 3;
 
         // Read file.
         auto file = std::ifstream(filename, std::ios::binary);
@@ -63,20 +63,20 @@ namespace Silent::Assets
         }
 
         // Read image data header (unused).
-        uint32 imgSize = 0;
-        file.read((char*)&imgSize, 4);
+        uint32 imageSize = 0;
+        file.read((char*)&imageSize, 4);
 
         // Read frame buffer coordinates (unused).
-        uint16 imgX = 0;
-        uint16 imgY = 0;
-        file.read((char*)&imgX, 2);
-        file.read((char*)&imgY, 2);
+        uint16 imageX = 0;
+        uint16 imageY = 0;
+        file.read((char*)&imageX, 2);
+        file.read((char*)&imageY, 2);
 
         // Read image dimensions.
-        uint16 imgW = 0;
-        uint16 imgH = 0;
-        file.read((char*)&imgW, 2);
-        file.read((char*)&imgH, 2);
+        uint16 imageW = 0;
+        uint16 imageH = 0;
+        file.read((char*)&imageW, 2);
+        file.read((char*)&imageH, 2);
 
         // Define BPP.
         auto bpp = BitsPerPixel::Bpp4;
@@ -130,7 +130,7 @@ namespace Silent::Assets
         }
 
         // Define image resolution.
-        auto res = Vector2i(imgW * widthCoeff, imgH);
+        auto res = Vector2i(imageW * widthCoeff, imageH);
 
         // Create asset.
         auto asset = TimAsset

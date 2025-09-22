@@ -2,8 +2,8 @@
 
 namespace Silent::Utils
 {
-    using ParallelTask  = std::function<void()>;
-    using ParallelTasks = std::vector<ParallelTask>;
+    using ParallelTask  = std::function<void()>;     /** Parallel task function. */
+    using ParallelTasks = std::vector<ParallelTask>; /** Parallel task function collection. */
 
     /** @brief Wraps a task in a lambda for parallel execution.
      *
@@ -23,9 +23,9 @@ namespace Silent::Utils
 
         std::vector<std::jthread> _threads      = {};    /** Worker threads. */
         std::queue<ParallelTask>  _tasks        = {};    /** Pending tasks to execute. */
-        std::mutex                _taskMutex    = {};    /** Mutex for locking `_tasks` access. */
+        std::mutex                _taskMutex    = {};    /** Mutex to lock `_tasks` access. */
         std::condition_variable   _taskCond     = {};    /** Condition variable to notify idle threads of new tasks. */
-        bool                      _deinitialize = false; /** Flag notifying worker threads of a shutdown. */
+        bool                      _deinitialize = false; /** Flag to notify worker threads of a shutdown. */
 
     public:
         // =============
@@ -90,8 +90,8 @@ namespace Silent::Utils
          */
         void AddTask(const ParallelTask& task, std::shared_ptr<std::atomic<int>> counter, std::shared_ptr<std::promise<void>> promise);
 
-        /** @brief Executes a grouped task and decrements the associated counter.
-         * When all tasks in the group are complete, it sets the `promise` to notify blocked threads waiting on the group.
+        /** @brief Executes a grouped task and decrements an associated counter.
+         * When all tasks in the group are complete, it sets a promise to notify blocked threads waiting on the group.
          *
          * @param task Task to execute in the group.
          * @param counter Group counter to decrement when the task completes.
@@ -109,7 +109,7 @@ namespace Silent::Utils
      */
     uint GetCoreCount();
 
-    /** @brief Generates a ready dummy future. Used when a task future cannot be created.
+    /** @brief Generates a ready dummy future. Used when a task future is required but cannot be created due to an early function exit.
      *
      * @return Ready dummy future.
      */

@@ -63,7 +63,7 @@ namespace Silent::Services
         _toasts.push_back(toast);
     }
 
-    // TODO
+    // @todo
     void ToastManager::Render()
     {
         constexpr float ROW_OFFSET = 2.0f;

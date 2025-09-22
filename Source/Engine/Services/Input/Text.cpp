@@ -335,7 +335,7 @@ namespace Silent::Input
 
             if (!hasNewChar && action.IsHeld())
             {
-                // TODO: Special handling for newline.
+                // @todo Special handling for newline.
 
                 // New action.
                 if (!Contains(_prevActionIds, actionId))
@@ -543,7 +543,7 @@ namespace Silent::Input
             return true;
         }
 
-        // TODO: Move up/down.
+        // @todo Move up/down.
 
         // Move or select to start/end.
         if (homeAction.IsClicked() || endAction.IsClicked())

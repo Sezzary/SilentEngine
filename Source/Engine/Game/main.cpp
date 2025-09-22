@@ -152,7 +152,7 @@ namespace Silent
 
             /*g_DeltaTime0 = FP_MULTIPLY(vCount, H_BLANKS_FP_TO_SEC_SCALE, Q12_SHIFT);
             g_DeltaTime1 = FP_MULTIPLY(vCountCopy, H_BLANKS_FP_TO_SEC_SCALE, Q12_SHIFT);
-            g_DeltaTime2 = FP_MULTIPLY(vCount, H_BLANKS_UNKNOWN_SCALE, Q12_SHIFT); // TODO: Unknown time scale.
+            g_DeltaTime2 = FP_MULTIPLY(vCount, H_BLANKS_UNKNOWN_SCALE, Q12_SHIFT); // @todo Unknown time scale.
             GsClearVcount();*/
             
             // Set clear color.
@@ -212,7 +212,7 @@ namespace Silent
             }
             else
             {
-                // TODO: Non-functioning call. Submit fullscreen sprite with luma-multiply blending.
+                // @todo Non-functioning call. Submit fullscreen sprite with luma-multiply blending.
                 auto color = Color(1.0f, 1.0f, 1.0f, (float)fade / (float)FP_COLOR(1.0f));
                 renderer.SubmitScreenSprite(e_FsFile::FILE_1ST_2ZANKO_E_TIM, SCREEN_SPACE_RES / 2.0f, FP_ANGLE(0.0f), Vector2::One, color,
                                             0, ScreenSpriteAlignMode::Center, ScreenSpriteScaleMode::Fit, BlendMode::LumaMultiply);

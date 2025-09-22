@@ -309,7 +309,7 @@ namespace Silent
 
                 case SDL_EVENT_MOUSE_WHEEL:
                 {
-                    // TODO: Handle this a better way.
+                    // @todo Handle this a better way.
                     _mouseWheelAxis = Vector2(event.wheel.x, event.wheel.y);
                     break;
                 }

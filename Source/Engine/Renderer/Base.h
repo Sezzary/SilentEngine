@@ -9,8 +9,7 @@ namespace Silent::Renderer
     enum class RendererType
     {
         OpenGl,
-        SdlGpu,
-        Vulkan
+        SdlGpu
     };
 
     enum class BlendMode

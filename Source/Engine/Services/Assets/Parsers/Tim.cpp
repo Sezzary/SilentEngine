@@ -17,7 +17,7 @@ namespace Silent::Assets
         Bpp8    = 1 << 0,
         Bpp16   = 1 << 1,
         HasClut = 1 << 3
-    }
+    };
 
     std::shared_ptr<void> ParseTim(const std::filesystem::path& filename)
     {

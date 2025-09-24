@@ -64,7 +64,6 @@
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl3.h>
-#include <imgui_impl_vulkan.h>
 
 // ImGuizmo
 #include <ImGuizmo.h>
@@ -88,9 +87,6 @@ using json = nlohmann::json;
 // stb
 #include <stb_image.h>
 #include <stb_image_write.h>
-
-// Vulkan
-#include <vulkan/vulkan.hpp>
 
 // ==========
 // RESOURCES

@@ -699,6 +699,7 @@ namespace Silent::Renderer
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
+        // Draw GUIs.
         for (auto& drawFunc : _debugGuiDrawCalls)
         {
             drawFunc();

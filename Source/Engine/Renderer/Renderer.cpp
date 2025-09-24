@@ -3,7 +3,6 @@
 
 #include "Engine/Renderer/Backends/SdlGpu/SdlGpu.h"
 #include "Engine/Renderer/Backends/OpenGl/OpenGl.h"
-#include "Engine/Renderer/Backends/Vulkan/Vulkan.h"
 #include "Engine/Renderer/Base.h"
 
 namespace Silent::Renderer
@@ -16,16 +15,10 @@ namespace Silent::Renderer
             {
                 return std::make_unique<OpenGlRenderer>();
             }
-
             /*case RendererType::SdlGpu:
             {
                 return std::make_unique<SdlGpuRenderer>();
             }*/
-
-            case RendererType::Vulkan:
-            {
-                return std::make_unique<VulkanRenderer>();
-            }
         }
 
         return nullptr;

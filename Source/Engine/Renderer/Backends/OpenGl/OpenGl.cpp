@@ -309,43 +309,36 @@ namespace Silent::Renderer
                     {
                         return;
                     }
-
                     case GL_INVALID_ENUM:
                     {    
                         error = "INVALID_ENUM";
                         break;
                     }
-
                     case GL_INVALID_VALUE:
                     {    
                         error = "INVALID_VALUE";
                         break;
                     }
-
                     case GL_INVALID_OPERATION:
                     {    
                         error = "INVALID_OPERATION";
                         break;
                     }
-
                     case GL_STACK_OVERFLOW:
                     {    
                         error = "STACK_OVERFLOW";
                         break;
                     }
-
                     case GL_STACK_UNDERFLOW:
                     {    
                         error = "STACK UNDERFLOW";
                         break;
                     }
-
                     case GL_OUT_OF_MEMORY:
                     {    
                         error = "OUT OF MEMORY";
                         break;
                     }
-
                     case GL_INVALID_FRAMEBUFFER_OPERATION:
                     {    
                         error = "INVALID FRAMEBUFFER OPERATION";
@@ -372,7 +365,7 @@ namespace Silent::Renderer
         const auto asset = assets.GetAsset(assetIdx);
         if (asset->Type != AssetType::Tim)
         {
-            Log("Attempted to draw non-image asset as screen sprite.", LogLevel::Warning, LogMode::Debug);
+            Log("Attempted to submit non-image asset as screen sprite.", LogLevel::Warning, LogMode::Debug);
             return;
         }
 

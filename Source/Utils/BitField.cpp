@@ -75,8 +75,7 @@ namespace Silent::Utils
         {
             for (int localBitIdx = 0; localBitIdx < CHUNK_SIZE; localBitIdx++)
             {
-                bool bit = bool(chunk & ((ChunkType)1 << localBitIdx));
-                if (bit)
+                if (chunk & ((ChunkType)1 << localBitIdx))
                 {
                     count++;
                 }
@@ -436,13 +435,13 @@ namespace Silent::Utils
         return newBitField;
     }
 
-    void BitField::Fill(bool val)
+    void BitField::Fill(bool state)
     {
-        auto fillChunk = val ? ~(ChunkType)0 : (ChunkType)0;
+        auto fillChunk = state ? ~(ChunkType)0 : (ChunkType)0;
         std::fill(_chunks.begin(), _chunks.end(), fillChunk);
 
         uint endBitCount = _size % CHUNK_SIZE;
-        if (endBitCount > 0 && val)
+        if (endBitCount > 0 && state)
         {
             _chunks.back() &= ((ChunkType)1 << endBitCount) - 1;
         }

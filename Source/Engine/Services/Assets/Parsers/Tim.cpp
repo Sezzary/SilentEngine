@@ -11,11 +11,18 @@ namespace Silent::Assets
         Bpp16
     };
 
+    enum class TimFlags
+    {
+        Bpp4    = 0,
+        Bpp8    = 1 << 0,
+        Bpp16   = 1 << 1,
+        HasClut = 1 << 3
+    }
+
     std::shared_ptr<void> ParseTim(const std::filesystem::path& filename)
     {
         constexpr int HEADER_MAGIC  = 0x10;
         constexpr int BPP_MASK      = 0x7;
-        constexpr int HAS_CLUT_FLAG = 1 << 3;
 
         // Read file.
         auto file = std::ifstream(filename, std::ios::binary);
@@ -38,7 +45,7 @@ namespace Silent::Assets
 
         // Read CLUT.
         auto clut = std::vector<uint16>{};
-        if (flags & HAS_CLUT_FLAG)
+        if (flags & (int)TimFlags::HasClut)
         {
             // Read size.
             uint32 clutSize = 0;
@@ -80,22 +87,22 @@ namespace Silent::Assets
 
         // Define BPP.
         auto bpp = BitsPerPixel::Bpp4;
-        switch (flags & BPP_MASK)
+        switch ((TimFlags)(flags & BPP_MASK))
         {
             default:
-            case 0:
+            case TimFlags::Bpp4:
             {
                 bpp = BitsPerPixel::Bpp4;
                 break;
             }
 
-            case 1:
+            case TimFlags::Bpp8:
             {
                 bpp = BitsPerPixel::Bpp8;
                 break;
             }
 
-            case 2:
+            case TimFlags::Bpp16:
             {
                 bpp = BitsPerPixel::Bpp16;
                 break;

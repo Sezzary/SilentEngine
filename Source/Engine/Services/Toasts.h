@@ -22,7 +22,7 @@ namespace Silent::Services
 
         // Fields
 
-        std::vector<Toast> _toasts = {};
+        std::vector<Toast> _toasts = {}; /** Active toasts. */
 
     public:
         // Constructors

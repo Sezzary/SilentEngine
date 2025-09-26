@@ -6,20 +6,20 @@
 
 namespace Silent::Renderer
 {
-    class FrameBufferObject
+    class FramebufferObject
     {
     private:
         // Fields
 
         uint               _frameBufferId = 0;
+        Texture            _texture       = Texture();
         VertexArrayObject  _vao           = VertexArrayObject();
         VertexBufferObject _vbo           = VertexBufferObject();
-        Texture            _texture       = Texture();
 
     public:
         // Constructors
 
-        FrameBufferObject() = default;
+        FramebufferObject() = default;
 
         // Utilities
 

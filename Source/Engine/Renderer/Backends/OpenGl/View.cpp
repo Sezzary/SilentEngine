@@ -17,7 +17,7 @@ namespace Silent::Renderer
 
     void View::ExportMatrix(float fov, float aspect, float nearPlane, float farPlane, ShaderProgram& shaderProg, const std::string& uniName)
     {
-        auto viewMat = Matrix::CreateLookAt(Position, Position + Direction * 3, Up);
+        auto viewMat = Matrix::CreateLookAt(Position, Position + (Direction * 3), Up);
         auto projMat = Matrix::CreatePerspective(Fov, aspect, nearPlane, farPlane);
         shaderProg.SetMatrix(uniName, projMat * viewMat);
     }

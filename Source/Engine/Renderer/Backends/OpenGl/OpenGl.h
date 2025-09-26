@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Renderer/Backends/OpenGl/ElementBuffer.h"
+#include "Engine/Renderer/Backends/OpenGl/Framebuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexArray.h"
@@ -26,6 +27,9 @@ namespace Silent::Renderer
         View                                           _view                 = View();
         std::unordered_map<std::string, ShaderProgram> _shaderPrograms       = {};
 
+        FramebufferObject                              _2dframebuffer        = FramebufferObject();
+        FramebufferObject                              _3dframebuffer        = FramebufferObject();
+
         VertexArrayObject                              _vertexArray          = VertexArrayObject();
         VertexArrayObject                              _vertexCubeArray      = VertexArrayObject();
         VertexBufferObject                             _vertexPositionBuffer = VertexBufferObject();
@@ -33,8 +37,6 @@ namespace Silent::Renderer
         VertexBufferObject                             _vertexTexCoordBuffer = VertexBufferObject();
         VertexBufferObject                             _vertexCubeBuffer     = VertexBufferObject();
         ElementBufferObject                            _elementBuffer        = ElementBufferObject();
-        Texture                                        _texture0             = Texture();
-        Texture                                        _texture1             = Texture();
 
         std::unordered_map<std::string, Texture> _textures     = {}; // Key = texture name, value = texture.
 
@@ -67,11 +69,8 @@ namespace Silent::Renderer
 
         void Draw2dScene();
         void Draw3dScene();
-        void DrawFullscreenQuad();
-        void DrawGui();
-        void DrawDebugGui();
-
         void DrawDebugObjects();
+        void DrawDebugGui();
 
         void CreateShaderProgram();
         void CreateDebugGui();

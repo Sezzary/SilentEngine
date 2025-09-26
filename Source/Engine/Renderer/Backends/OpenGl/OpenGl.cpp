@@ -283,15 +283,39 @@ namespace Silent::Renderer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    // Triangle vertices: position (x, y) and texture coordinates (u, v)
+    static auto TRIANGLE_VERTICES = std::vector<float>
+    {
+        0.0f,  0.5f,  0.5f, 1.0f,  // Top vertex
+       -0.5f, -0.5f,  0.0f, 0.0f,  // Bottom-left vertex
+        0.5f, -0.5f,  1.0f, 0.0f   // Bottom-right vertex
+    };
+
     void OpenGlRenderer::Draw2dScene()
     {
         _2dframebuffer.Bind();
-        glDepthMask(GL_FALSE);
+        glDepthMask(false);
         glDepthFunc(GL_LESS);
 
-        // @todo
+        _view.Move();
 
-        glDepthMask(GL_TRUE);
+        auto  res    = GetScreenResolution().ToVector2();
+        float aspect = res.x / res.y;
+        
+        auto modelMat = Matrix::CreateRotationX(glm::radians(-55.0f));
+        auto& shaderProg = _shaderPrograms.at("Default");
+
+        shaderProg.Activate();
+        shaderProg.SetMatrix("modelMat", modelMat);
+        _view.ExportMatrix(glm::radians(45.0f), aspect, 0.1f, 100.0f, shaderProg, "viewMat");
+        shaderProg.SetFloat("blendAlpha", g_DebugData.BlendAlpha);
+
+    // Draw the triangle (this goes to the _2dframebuffer's texture)
+        glBindVertexArray(_triangleVao);
+        glBindBuffer(GL_ARRAY_BUFFER, _triangleVbo);
+        glDrawArrays(GL_TRIANGLES, 0, 3);  // Draw the triangle
+
+        glDepthMask(true);
         _2dframebuffer.Unbind();
     }
 

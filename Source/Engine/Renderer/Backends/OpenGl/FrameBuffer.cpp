@@ -11,11 +11,11 @@ namespace Silent::Renderer
 {
     static auto FRAMEBUFFER_QUAD_VERTICES = std::vector<float>
     {
-        // Positions  Texture coords
-        -1.0f,  1.0f, 0.0f, 1.0f, // Top-left.
-         1.0f,  1.0f, 1.0f, 1.0f, // Top-right.
-        -1.0f, -1.0f, 0.0f, 0.0f, // Bottom-left.
-         1.0f, -1.0f, 1.0f, 0.0f  // Bottom-right.
+        // Positions | Texture coords
+        -1.0f,  1.0f,  0.0f, 1.0f, // Top-left.
+         1.0f,  1.0f,  1.0f, 1.0f, // Top-right.
+        -1.0f, -1.0f,  0.0f, 0.0f, // Bottom-left.
+         1.0f, -1.0f,  1.0f, 0.0f  // Bottom-right.
     };
 
     void FramebufferObject::Initialize()
@@ -43,19 +43,24 @@ namespace Silent::Renderer
         _vao.LinkAttrib(_vbo, 0, 2, GL_FLOAT, 4 * sizeof(float), (void*)0);
         _vao.LinkAttrib(_vbo, 1, 2, GL_FLOAT, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-        // Unbind VAO and framebuffer.
-        _vao.Unbind();
+        // Unbind framebuffer, VAO, VBO, and texture.
         Unbind();
     }
 
     void FramebufferObject::Bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferId);
+        _vao.Bind();
+        _vbo.Bind();
+        _texture.Bind();
     }
 
     void FramebufferObject::Unbind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        _vao.Unbind();
+        _vbo.Unbind();
+        _texture.Unbind();
     }
 
     void FramebufferObject::Delete()

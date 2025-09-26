@@ -93,7 +93,7 @@ namespace Silent::Renderer
 
     void ShaderProgram::SetMatrix(const std::string& uniName, const Matrix& val) const
     {
-        glUniformMatrix4fv(GetUniformLocation(uniName), 1, GL_FALSE, &val[0][0]);
+        glUniformMatrix4fv(GetUniformLocation(uniName), 1, false, &val[0][0]);
     }
 
     void ShaderProgram::SetIntArray(const std::string& uniName, const std::span<int>& val) const
@@ -128,7 +128,7 @@ namespace Silent::Renderer
 
     void ShaderProgram::SetMatrixArray(const std::string& uniName, const std::span<Matrix>& val) const
     {
-        glUniformMatrix4fv(GetUniformLocation(uniName), 1, GL_FALSE, (const float*)val.data());
+        glUniformMatrix4fv(GetUniformLocation(uniName), 1, false, (const float*)val.data());
     }
 
     void ShaderProgram::Activate() const

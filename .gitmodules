@@ -25,6 +25,9 @@
 [submodule "Libraries/SDL"]
     path = Libraries/SDL
     url = https://github.com/libsdl-org/SDL.git
+[submodule "Libraries/SDL_shadercross"]
+    path = Libraries/SDL_shadercross
+    url = https://github.com/libsdl-org/SDL_shadercross.git
 [submodule "Libraries/spdlog"]
     path = Libraries/spdlog
     url = https://github.com/gabime/spdlog.git

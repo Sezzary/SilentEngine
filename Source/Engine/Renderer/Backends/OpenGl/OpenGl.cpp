@@ -310,11 +310,11 @@ namespace Silent::Renderer
         _view.ExportMatrix(glm::radians(45.0f), aspect, 0.1f, 100.0f, shaderProg, "viewMat");
         shaderProg.SetFloat("blendAlpha", g_DebugData.BlendAlpha);
 
-    // Draw the triangle (this goes to the _2dframebuffer's texture)
-        glBindVertexArray(_triangleVao);
+        // Draw the triangle (this goes to the _2dframebuffer's texture)
+        /*glBindVertexArray(_triangleVao);
         glBindBuffer(GL_ARRAY_BUFFER, _triangleVbo);
         glDrawArrays(GL_TRIANGLES, 0, 3);  // Draw the triangle
-
+*/
         glDepthMask(true);
         _2dframebuffer.Unbind();
     }

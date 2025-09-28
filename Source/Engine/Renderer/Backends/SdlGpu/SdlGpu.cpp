@@ -53,4 +53,20 @@ namespace Silent::Renderer
     {
 
     }
+
+    void SdlGpuRenderer::LogError(const std::string& msg) const
+    {
+
+    }
+
+    void SdlGpuRenderer::SubmitPrimitive2d(const Primitive2d& prim)
+    {
+
+    }
+
+    void SdlGpuRenderer::SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
+                                            int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
+    {
+
+    }
 }

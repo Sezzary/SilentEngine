@@ -101,7 +101,7 @@ namespace Silent
         }
 
         // Collect window flags.
-        int rendererFlag   = SDL_WINDOW_OPENGL;
+        int rendererFlag   = 0;
         int fullscreenFlag = _work.Options->EnableFullscreen ? SDL_WINDOW_FULLSCREEN : 0;
         int maximizedFlag  = _work.Options->EnableMaximized  ? SDL_WINDOW_MAXIMIZED  : 0;
         int flags          = SDL_WINDOW_RESIZABLE | rendererFlag | fullscreenFlag | maximizedFlag;
@@ -114,7 +114,7 @@ namespace Silent
         }
 
         // Renderer.
-        _work.Renderer = CreateRenderer(RendererType::OpenGl);
+        _work.Renderer = CreateRenderer(RendererType::SdlGpu);
         if (_work.Renderer == nullptr)
         {
             throw std::runtime_error("Failed to create renderer.");

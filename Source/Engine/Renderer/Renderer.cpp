@@ -15,10 +15,10 @@ namespace Silent::Renderer
             {
                 return std::make_unique<OpenGlRenderer>();
             }
-            /*case RendererType::SdlGpu:
+            case RendererType::SdlGpu:
             {
                 return std::make_unique<SdlGpuRenderer>();
-            }*/
+            }
         }
 
         return nullptr;

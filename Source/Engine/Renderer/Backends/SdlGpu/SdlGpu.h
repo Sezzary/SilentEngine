@@ -4,12 +4,12 @@
 
 namespace Silent::Renderer
 {
-    /*class SdlGpuRenderer : public RendererBase
+    class SdlGpuRenderer : public RendererBase
     {
     private:
         // Fields
 
-
+        SDL_GPUDevice* _gpuDevice = nullptr;
 
     public:
         // Constructors
@@ -28,5 +28,5 @@ namespace Silent::Renderer
         // Helpers
 
         
-    };*/
+    };
 }

@@ -1,25 +1,28 @@
 Experimental implementations:
-- Math wrappers and functions
+- Math wrappers and functions (similar to DXTK but better)
 - Input handling
 - Savegame handling
-- Various utils pulled from other projects
-- Renderer (learning OpenGL and *maybe* Vulkan, who knows if anything will come of it)
+- Config options handling
 - Window handling
 - Asset streaming
-- Configuration handling
 - Timestep handling
 - Parallel task handling
-- Portability in mind for multi-platform support
+- Filesystem handling
+- Clean logging
+- Renderer (WIP)
+- Sound system (WIP)
+- Various utils pulled from other projects
 
 Dependencies:
 - assimp
 - FlatBuffers
-- GLAD (OpenGL 4.6)
 - GLM
 - ImGui
 - ImGuizmo
 - json
 - SDL3
+- SDL_shadercross
 - spdlog
 - stb
-- Vulkan
+
+Portability in mind as top priority for multi-platform support.

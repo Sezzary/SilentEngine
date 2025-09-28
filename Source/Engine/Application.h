@@ -1,18 +1,19 @@
 #pragma once
 
+#include "Engine/Audio/Audio.h"
+#include "Engine/Assets/Assets.h"
+#include "Engine/Input/Input.h"
 #include "Engine/Renderer/Renderer.h"
-#include "Engine/Services/Assets/Assets.h"
-#include "Engine/Services/Audio.h"
-#include "Engine/Services/Input/Input.h"
+#include "Engine/Savegame/Savegame.h"
 #include "Engine/Services/Filesystem.h"
 #include "Engine/Services/Options.h"
-#include "Engine/Services/Savegame/Savegame.h"
 #include "Engine/Services/Time.h"
 #include "Engine/Services/Toasts.h"
 
 namespace Silent
 {
     using namespace Assets;
+    using namespace Audio;
     using namespace Input;
     using namespace Renderer;
     using namespace Services;

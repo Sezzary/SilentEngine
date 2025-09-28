@@ -1,7 +1,7 @@
 #include "Framework.h"
-#include "Engine/Services/Audio.h"
+#include "Engine/Audio/Audio.h"
 
-namespace Silent::Services
+namespace Silent::Audio
 {
     void AudioManager::Initialize()
     {

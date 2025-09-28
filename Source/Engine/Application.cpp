@@ -1,18 +1,20 @@
 #include "Framework.h"
 #include "Engine/Application.h"
 
+#include "Engine/Assets/Assets.h"
+#include "Engine/Audio/Audio.h"
+#include "Engine/Input/Input.h"
 #include "Engine/Game/main.h"
 #include "Engine/Renderer/Renderer.h"
-#include "Engine/Services/Assets/Assets.h"
-#include "Engine/Services/Audio.h"
+#include "Engine/Savegame/Savegame.h"
 #include "Engine/Services/Filesystem.h"
-#include "Engine/Services/Input/Input.h"
 #include "Engine/Services/Options.h"
-#include "Engine/Services/Savegame/Savegame.h"
 #include "Engine/Services/Time.h"
 #include "Engine/Services/Toasts.h"
 #include "Utils/Parallel.h"
 
+using namespace Silent::Assets;
+using namespace Silent::Audio;
 using namespace Silent::Input;
 using namespace Silent::Renderer;
 using namespace Silent::Services;

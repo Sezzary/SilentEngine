@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Silent::Services
+namespace Silent::Audio
 {
     /** @brief Central audio manager. */
     class AudioManager

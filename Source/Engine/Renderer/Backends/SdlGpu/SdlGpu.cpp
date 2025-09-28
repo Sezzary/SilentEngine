@@ -8,6 +8,8 @@ namespace Silent::Renderer
         _type   = RendererType::SdlGpu;
         _window = &window;
 
+        Log("Using SDL_gpu renderer.");
+
         // Collect GPU flags.
         int formatFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
 
@@ -37,7 +39,7 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to wait and acquire SDL GPU swapchain texture: " + std::string(SDL_GetError()));
         }
     }
-    
+
     void SdlGpuRenderer::Deinitialize()
     {
 

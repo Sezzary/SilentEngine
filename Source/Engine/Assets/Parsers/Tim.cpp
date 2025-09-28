@@ -1,5 +1,5 @@
 #include "Framework.h"
-#include "Engine/Services/Assets/Parsers/Tim.h"
+#include "Engine/Assets/Assets/Parsers/Tim.h"
 
 namespace Silent::Assets
 {

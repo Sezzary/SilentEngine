@@ -8,13 +8,21 @@ namespace Silent::Renderer
         _type   = RendererType::SdlGpu;
         _window = &window;
 
-        _gpuDevice = SDL_CreateGPUDevice(0, IS_DEBUG_BUILD, nullptr);
+        // Collect GPU flags.
+        int gpuFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
+
+        // Create GPU device.
+        _gpuDevice = SDL_CreateGPUDevice(gpuFlags, IS_DEBUG_BUILD, nullptr);
         if (_gpuDevice == nullptr)
         {
-            throw std::runtime_error("Failed to create SDL GPU device.");
+            throw std::runtime_error("Failed to create SDL GPU device: " + std::string(SDL_GetError()));
         }
 
-        SDL_ClaimWindowForGPUDevice(_gpuDevice, _window);
+        // Claim window.
+        if (!SDL_ClaimWindowForGPUDevice(_gpuDevice, _window))
+        {
+            throw std::runtime_error("Failed to claim window for SDL GPU device: " + std::string(SDL_GetError()));
+        }
 
         // Set the viewport
         auto res = GetScreenResolution();

@@ -31,7 +31,7 @@ namespace Silent::Renderer
         _context = SDL_GL_CreateContext(_window);
         if (!_context)
         {
-            throw std::runtime_error("Failed to create OpenGL context: " + std::string(SDL_GetError()));
+            throw std::runtime_error("Failed to create SDL OpenGL context: " + std::string(SDL_GetError()));
         }
 
         // Load OpenGL functions using GLAD.

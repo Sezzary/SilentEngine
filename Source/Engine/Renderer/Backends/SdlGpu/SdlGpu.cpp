@@ -9,29 +9,33 @@ namespace Silent::Renderer
         _window = &window;
 
         // Collect GPU flags.
-        int gpuFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
+        int formatFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
 
         // Create GPU device.
-        _gpuDevice = SDL_CreateGPUDevice(gpuFlags, IS_DEBUG_BUILD, nullptr);
-        if (_gpuDevice == nullptr)
+        _device = SDL_CreateGPUDevice(formatFlags, IS_DEBUG_BUILD, nullptr);
+        if (_device == nullptr)
         {
             throw std::runtime_error("Failed to create SDL GPU device: " + std::string(SDL_GetError()));
         }
 
         // Claim window.
-        if (!SDL_ClaimWindowForGPUDevice(_gpuDevice, _window))
+        if (!SDL_ClaimWindowForGPUDevice(_device, _window))
         {
             throw std::runtime_error("Failed to claim window for SDL GPU device: " + std::string(SDL_GetError()));
         }
 
-        // Set the viewport
-        auto res = GetScreenResolution();
-        //SDL_GPU_SetViewport(_gpuDevice, 0, 0, res.x, res.y);
+        // Asquire command buffer.
+        _cmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
+        if (_cmdBuffer == nullptr)
+        {
+            throw std::runtime_error("Failed to acquire SDL GPU command buffer: " + std::string(SDL_GetError()));
+        }
 
-        // Clear screen to black
-        //SDL_GPU_Clear(_gpuDevice);
-
-        // TODO: Initialize shaders, buffers, and other resources
+        // Wait and acquire GPU swapchain texture.
+        if (!SDL_WaitAndAcquireGPUSwapchainTexture(_cmdBuffer, _window, &_swapchainTexture, NULL, NULL))
+        {
+            throw std::runtime_error("Failed to wait and acquire SDL GPU swapchain texture: " + std::string(SDL_GetError()));
+        }
     }
     
     void SdlGpuRenderer::Deinitialize()
@@ -41,7 +45,16 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Update()
     {
+        auto colorTargetInfo        = SDL_GPUColorTargetInfo{};
+        colorTargetInfo.texture     = _swapchainTexture;
+        colorTargetInfo.clear_color = SDL_FColor{ 0.3f, 0.6f, 0.5f, 1.0f };
+        colorTargetInfo.load_op     = SDL_GPU_LOADOP_CLEAR;
+        colorTargetInfo.store_op    = SDL_GPU_STOREOP_STORE;
 
+        auto* renderPass = SDL_BeginGPURenderPass(_cmdBuffer, &colorTargetInfo, 1, NULL);
+        SDL_EndGPURenderPass(renderPass);
+
+        SDL_SubmitGPUCommandBuffer(_cmdBuffer);
     }
 
     void SdlGpuRenderer::RefreshTextureFilter()

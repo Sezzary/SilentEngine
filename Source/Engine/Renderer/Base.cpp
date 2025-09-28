@@ -2,7 +2,7 @@
 #include "Engine/Renderer/Base.h"
 
 #include "Engine/Application.h"
-#include "Engine/Renderer/Objects/Primitive2d.h"
+#include "Engine/Renderer/Common/Objects/Primitive2d.h"
 
 namespace Silent::Renderer
 {

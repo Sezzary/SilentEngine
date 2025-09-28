@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Renderer/Common/Objects/Primitive2d.h"
 #include "Engine/Renderer/Backends/OpenGl/ElementBuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/Framebuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
@@ -8,7 +9,6 @@
 #include "Engine/Renderer/Backends/OpenGl/VertexBuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/View.h"
 #include "Engine/Renderer/Base.h"
-#include "Engine/Renderer/Objects/Primitive2d.h"
 
 namespace Silent::Renderer
 {

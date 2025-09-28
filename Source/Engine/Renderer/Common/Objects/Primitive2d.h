@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Renderer/Objects/Vertex2d.h"
+#include "Engine/Renderer/Common/Objects/Vertex2d.h"
 
 namespace Silent::Renderer
 {

@@ -60,15 +60,27 @@ namespace Silent
         TimeManager&       GetTime();
         ToastManager&      GetToasts();
 
+        /** @brief Gets the window resolution.
+         *
+         * @return Window resolution
+         */
         Vector2i GetWindowResolution() const;
 
         // Utilities
 
+        /** @brief Initializes the application and its subsystems. */
         void Initialize();
+
+        /** @brief Gracefully deinitializes the application and its subsystems. */
         void Deinitialize();
+
+        /** @brief Runs the application. */
         void Run();
 
+        /** @brief Toggles between fullscreen and windowed modes. */
         void ToggleFullscreen();
+
+        /** @brief Toggles the mouse cursor on and off. */
         void ToggleCursor();
 
     private:

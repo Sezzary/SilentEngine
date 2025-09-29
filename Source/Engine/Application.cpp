@@ -84,7 +84,7 @@ namespace Silent
         // Debug.
         InitializeDebug();
 
-        Log("Starting Silent Engine...");
+        Log("Starting " + std::string(APP_NAME) + "...");
 
         // Options.
         _work.Options.Initialize();
@@ -133,7 +133,7 @@ namespace Silent
 
     void ApplicationManager::Deinitialize()
     {
-        Log("Shutting down Silent Engine...");
+        Log("Shutting down " + std::string(APP_NAME) + "...");
 
         // Workspace.
         _work.Assets.UnloadAllAssets();
@@ -157,14 +157,12 @@ namespace Silent
 
         while (_isRunning)
         {
-            // Update time after blocking.
             _work.Time.Update();
 
             // Step game state and render.
             Update();
             Render();
 
-            // Block until next tick.
             _work.Time.WaitForNextTick();
         }
     }

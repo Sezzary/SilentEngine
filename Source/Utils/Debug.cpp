@@ -654,7 +654,7 @@ namespace Silent::Utils::Debug
         vsnprintf(buffer, BUFFER_SIZE, msg, args);
         va_end(args);
 
-        // LOCK: Restrict `Messages` access.
+        // @lock Restrict `Messages` access.
         static auto mutex = std::mutex();
         {
             auto lock = std::lock_guard(mutex);
@@ -675,7 +675,7 @@ namespace Silent::Utils::Debug
             }
         }
 
-        // LOCK: Restrict logger access.
+        // @lock Restrict logger access.
         static auto mutex = std::mutex();
         {
             auto lock = std::lock_guard(mutex);

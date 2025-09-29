@@ -90,9 +90,6 @@ namespace Silent
         _work.Options.Initialize();
         _work.Options.Load();
 
-        // Parallel executor.
-        g_Executor.Initialize();
-
         // Assets.
         _work.Assets.Initialize(_work.Filesystem.GetAssetsFolder());
 
@@ -143,9 +140,6 @@ namespace Silent
         _work.Audio.Deinitialize();
         _work.Input.Deinitialize();
         _work.Renderer->Deinitialize();
-
-        // Parallel executor.
-        g_Executor.Deinitialize();
 
         // SDL.
         SDL_DestroyWindow(_window);

@@ -28,11 +28,12 @@ namespace Silent::Utils
         bool                      _deinitialize = false; /** Flag to notify worker threads of a shutdown. */
 
     public:
-        // =============
-        // Constructors
-        // =============
+        // ==========================
+        // Constructors, Destructors
+        // ==========================
 
-        ParallelExecutor() = default;
+        ParallelExecutor();
+        ~ParallelExecutor();
 
         // ========
         // Getters
@@ -53,12 +54,6 @@ namespace Silent::Utils
         // ==========
         // Utilities
         // ==========
-
-        /** @brief Initializes the parallel task executor. */
-        void Initialize();
-
-        /** @brief Gracefully deinitializes the parallel task executor. */
-        void Deinitialize();
 
         /** @brief Adds a task to the queue for execution.
          *

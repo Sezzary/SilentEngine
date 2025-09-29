@@ -7,28 +7,12 @@ namespace Silent::Utils
 {
     ParallelExecutor g_Executor = ParallelExecutor();
 
-    uint ParallelExecutor::GetThreadCount() const
-    {
-        return (uint)_threads.size();
-    }
-
-    uint ParallelExecutor::GetPendingTaskCount() const
-    {
-        return 0;
-        // LOCK: Restrict task queue access.
-        /*{
-            auto taskLock = std::unique_lock(_taskMutex);
-
-            return (uint)_tasks.size();
-        }*/
-    }
-
-    void ParallelExecutor::Initialize()
+    void ParallelExecutor::ParallelExecutor()
     {
         constexpr uint THREAD_COUNT_MIN = 2;
 
         // Reserve threads.
-        uint threadCount = std::max<uint>(GetCoreCount(), THREAD_COUNT_MIN);
+        uint threadCount = std::max(GetCoreCount(), THREAD_COUNT_MIN);
         _threads.reserve(threadCount);
 
         // Create threads.
@@ -38,9 +22,9 @@ namespace Silent::Utils
         }
     }
 
-    void ParallelExecutor::Deinitialize()
+    void ParallelExecutor::~ParallelExecutor()
     {
-        // LOCK: Restrict shutdown flag access.
+        // @lock Restrict shutdown flag access.
         {
             auto taskLock = std::lock_guard(_taskMutex);
 
@@ -49,6 +33,23 @@ namespace Silent::Utils
 
         // Notify all threads they should stop.
         _taskCond.notify_all();
+    }
+
+    uint ParallelExecutor::GetThreadCount() const
+    {
+        return (uint)_threads.size();
+    }
+
+    uint ParallelExecutor::GetPendingTaskCount() const
+    {
+        // @todo Won't compile?
+        return 0;
+        // @lock Restrict task queue access.
+        /*{
+            auto taskLock = std::unique_lock(_taskMutex);
+
+            return (uint)_tasks.size();
+        }*/
     }
 
     std::future<void> ParallelExecutor::AddTask(const ParallelTask& task)
@@ -99,7 +100,7 @@ namespace Silent::Utils
         {
             auto task = ParallelTask();
 
-            // LOCK: Restrict task queue access.
+            // @lock Restrict task queue access.
             {
                 auto taskLock = std::unique_lock(_taskMutex);
                 _taskCond.wait(taskLock, [this]
@@ -134,7 +135,7 @@ namespace Silent::Utils
         // Increment counter for task group.
         counter->fetch_add(1, std::memory_order_relaxed);
 
-        // LOCK: Restrict task queue access.
+        // @lock Restrict task queue access.
         {
             auto taskLock = std::unique_lock(_taskMutex);
 

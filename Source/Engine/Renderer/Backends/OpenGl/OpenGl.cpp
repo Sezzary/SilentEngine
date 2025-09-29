@@ -2,6 +2,7 @@
 #include "Engine/Renderer/Backends/OpenGl/OpenGl.h"
 
 #include "Engine/Application.h"
+#include "Engine/Assets/Assets.h"
 #include "Engine/Game/main.h"
 #include "Engine/Renderer/Backends/OpenGl/ElementBuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
@@ -10,7 +11,6 @@
 #include "Engine/Renderer/Backends/OpenGl/VertexBuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/View.h"
 #include "Engine/Renderer/Base.h"
-#include "Engine/Services/Assets/Assets.h"
 #include "Engine/Services/Filesystem.h"
 #include "Engine/Services/Options.h"
 #include "Engine/Services/Time.h"

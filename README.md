@@ -1,5 +1,5 @@
 Experimental implementations:
-- Math wrappers and functions (similar to DXTK but better)
+- Math wrappers and functions (similar to DXTK but with some usability improvements)
 - Input handling
 - Savegame handling
 - Config options handling

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Services/Input/Action.h"
+#include "Engine/Input/Action.h"
 
 namespace Silent::Input
 {

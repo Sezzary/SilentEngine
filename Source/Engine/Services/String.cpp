@@ -2,8 +2,8 @@
 #include "Engine/Services/String.h"
 
 #include "Engine/Application.h"
-#include "Engine/Services/Assets/Assets.h"
-#include "Engine/Services/Assets/Parsers/Tim.h"
+#include "Engine/Assets/Assets.h"
+#include "Engine/Assets/Parsers/Tim.h"
 
 namespace Silent::Services
 {

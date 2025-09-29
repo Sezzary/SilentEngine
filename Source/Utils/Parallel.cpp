@@ -7,7 +7,7 @@ namespace Silent::Utils
 {
     ParallelExecutor g_Executor = ParallelExecutor();
 
-    void ParallelExecutor::ParallelExecutor()
+    ParallelExecutor::ParallelExecutor()
     {
         constexpr uint THREAD_COUNT_MIN = 2;
 
@@ -22,7 +22,7 @@ namespace Silent::Utils
         }
     }
 
-    void ParallelExecutor::~ParallelExecutor()
+    ParallelExecutor::~ParallelExecutor()
     {
         // @lock Restrict shutdown flag access.
         {

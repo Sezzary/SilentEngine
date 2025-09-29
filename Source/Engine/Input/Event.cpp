@@ -1,8 +1,8 @@
 #include "Framework.h"
-#include "Engine/Services/Input/Event.h"
+#include "Engine/Input/Event.h"
 
 #include "Engine/Application.h"
-#include "Engine/Services/Input/Input.h"
+#include "Engine/Input/Input.h"
 
 namespace Silent::Input
 {

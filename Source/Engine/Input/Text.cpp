@@ -1,8 +1,8 @@
 #include "Framework.h"
-#include "Engine/Services/Input/Text.h"
+#include "Engine/Input/Text.h"
 
 #include "Engine/Application.h"
-#include "Engine/Services/Input/Action.h"
+#include "Engine/Input/Action.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Utils;

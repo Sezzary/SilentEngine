@@ -2,7 +2,7 @@
 #include "Engine/Renderer/Backends/OpenGl/Framebuffer.h"
 
 #include "Engine/Application.h"
-#include "Engine/Renderer/Base.h"
+#include "Engine/Renderer/Renderer.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Utils;

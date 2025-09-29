@@ -109,7 +109,7 @@ namespace Silent::Assets
                 continue;
             }
 
-            // HEAP ALLOC: Create asset entry.
+            // @heapalloc Create asset entry.
             _assets.emplace_back(std::make_shared<Asset>());
 
             // Define asset entry.

@@ -49,7 +49,7 @@ namespace Silent::Utils
          *
          * @return Queued task count.
          */
-        uint GetPendingTaskCount() const;
+        uint GetPendingTaskCount();
 
         // ==========
         // Utilities

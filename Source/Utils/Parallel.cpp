@@ -20,6 +20,8 @@ namespace Silent::Utils
         {
             _threads.push_back(std::jthread(&ParallelExecutor::Worker, this));
         }
+
+        _deinitialize = false;
     }
 
     ParallelExecutor::~ParallelExecutor()
@@ -40,16 +42,14 @@ namespace Silent::Utils
         return (uint)_threads.size();
     }
 
-    uint ParallelExecutor::GetPendingTaskCount() const
+    uint ParallelExecutor::GetPendingTaskCount()
     {
-        // @todo Won't compile?
-        return 0;
         // @lock Restrict task queue access.
-        /*{
-            auto taskLock = std::unique_lock(_taskMutex);
+        {
+            auto taskLock = std::lock_guard(_taskMutex);
 
             return (uint)_tasks.size();
-        }*/
+        }
     }
 
     std::future<void> ParallelExecutor::AddTask(const ParallelTask& task)
@@ -75,7 +75,7 @@ namespace Silent::Utils
             return GenerateReadyFuture();
         }
 
-        // HEAP ALLOC: Create counter and promise.
+        // @heapalloc Create counter and promise.
         auto counter = std::make_shared<std::atomic<int>>();
         auto promise = std::make_shared<std::promise<void>>();
 
@@ -137,7 +137,7 @@ namespace Silent::Utils
 
         // @lock Restrict task queue access.
         {
-            auto taskLock = std::unique_lock(_taskMutex);
+            auto taskLock = std::lock_guard(_taskMutex);
 
             // Add task with promise and counter handling.
             _tasks.push([this, task, counter, promise]()

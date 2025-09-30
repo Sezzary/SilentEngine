@@ -20,6 +20,7 @@ file(GLOB LIB_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/*.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_opengl3.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_sdl3.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_sdlgpu3.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo/*.cpp"
 )
 target_sources(Math PRIVATE ${LIB_SOURCES})

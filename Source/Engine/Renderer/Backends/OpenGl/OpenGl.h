@@ -70,9 +70,9 @@ namespace Silent::Renderer
         void Draw2dScene();
         void Draw3dScene();
         void DrawDebugObjects();
-        void DrawDebugGui();
+        void DrawDebugGui() override;
 
         void CreateShaderProgram();
-        void CreateDebugGui();
+        void CreateDebugGui() override;
     };
 }

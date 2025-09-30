@@ -9,9 +9,8 @@ namespace Silent::Renderer
     private:
         // Fields
 
-        SDL_GPUDevice*        _device           = nullptr;
-        SDL_GPUCommandBuffer* _cmdBuffer        = nullptr;
-        SDL_GPUTexture*       _swapchainTexture = nullptr;
+        SDL_GPUDevice*  _device           = nullptr;
+        SDL_GPUTexture* _swapchainTexture = nullptr;
 
     public:
         // Constructors
@@ -34,6 +33,8 @@ namespace Silent::Renderer
     private:
         // Helpers
 
-        
+        void DrawDebugGui() override;
+
+        void CreateDebugGui() override;
     };
 }

@@ -32,7 +32,7 @@ namespace Silent::Renderer
         auto res = g_App.GetWindowResolution();
         return res;
 
-        // @todo Hum, not sure how to do this.
+        // @todo Not sure how to do this.
         switch (options->RenderScale)
         {
             default:

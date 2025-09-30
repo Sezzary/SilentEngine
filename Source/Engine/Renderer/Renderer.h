@@ -98,7 +98,7 @@ namespace Silent::Renderer
         virtual void SubmitPrimitive2d(const Primitive2d& prim) = 0;
         virtual void SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
                                         int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode) = 0;
-        
+
         // ======
         // Debug
         // ======
@@ -112,8 +112,17 @@ namespace Silent::Renderer
         void SubmitDebugCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page);
         void SubmitDebugCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page);
         void SubmitDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page);
+
+    private:
+        // ========
+        // Helpers
+        // ========
+
+        virtual void DrawDebugGui() = 0;
+
+        virtual void CreateDebugGui() = 0;
     };
-    
+
     /** @brief Creates a renderer of a specified backend type.
      *
      * @param type Renderer backend type.

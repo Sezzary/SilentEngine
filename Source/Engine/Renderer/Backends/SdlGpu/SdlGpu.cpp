@@ -5,6 +5,87 @@
 
 namespace Silent::Renderer
 {
+    SDL_GPUShader* LoadShader(SDL_GPUDevice* device, const std::string& shaderFilename,
+                              uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount)
+    {
+        auto stage = SDL_GPUShaderStage{};
+        if (SDL_strstr(shaderFilename.c_str(), ".vert"))
+        {
+            stage = SDL_GPU_SHADERSTAGE_VERTEX;
+        }
+        else if (SDL_strstr(shaderFilename.c_str(), ".frag"))
+        {
+            stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
+        }
+        else
+        {
+            Log("Invalid shader stage.", LogLevel::Error);
+            return nullptr;
+        }
+
+        char        fullPath[256];
+        auto        backendFormats = SDL_GetGPUShaderFormats(device);
+        auto        format         = (SDL_GPUShaderFormat)SDL_GPU_SHADERFORMAT_INVALID;
+        const char* entryPoint     = nullptr;
+
+        if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV)
+        {
+            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.spv", g_App.GetFilesystem().GetAppFolder() / SHADERS_FOLDER_NAME, shaderFilename);
+            format     = SDL_GPU_SHADERFORMAT_SPIRV;
+            entryPoint = "main";
+        }
+        else if (backendFormats & SDL_GPU_SHADERFORMAT_MSL)
+        {
+            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.msl", g_App.GetFilesystem().GetAppFolder() / SHADERS_FOLDER_NAME, shaderFilename);
+            format     = SDL_GPU_SHADERFORMAT_MSL;
+            entryPoint = "main0";
+        }
+        else if (backendFormats & SDL_GPU_SHADERFORMAT_DXIL)
+        {
+            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.dxil", g_App.GetFilesystem().GetAppFolder() / SHADERS_FOLDER_NAME, shaderFilename);
+            format     = SDL_GPU_SHADERFORMAT_DXIL;
+            entryPoint = "main";
+        }
+        else
+        {
+            Log("Unrecognized backend shader format.", LogLevel::Error);
+            return nullptr;
+        }
+
+        size_t codeSize = 0;
+        void*  code     = SDL_LoadFile(fullPath, &codeSize);
+        if (code == nullptr)
+        {
+            Log("Failed to load shader `" + std::string(fullPath) + "`: " + SDL_GetError(), LogLevel::Error);
+            return nullptr;
+        }
+
+        auto shaderInfo = SDL_GPUShaderCreateInfo
+        {
+            .code_size            = codeSize,
+            .code                 = (const uint8*)code,
+            .entrypoint           = entryPoint,
+            .format               = format,
+            .stage                = stage,
+            .num_samplers         = samplerCount,
+            .num_storage_textures = storageTexCount,
+            .num_storage_buffers  = storageBufferCount,
+            .num_uniform_buffers  = uniBufferCount
+        };
+
+        auto* shader = SDL_CreateGPUShader(device, &shaderInfo);
+        if (shader == nullptr)
+        {
+            Log("Failed to create shader: " + std::string(SDL_GetError()));
+            SDL_free(code);
+            return nullptr;
+        }
+
+        SDL_free(code);
+        return shader;
+    }
+
+    static SDL_GPUColorTargetDescription ColorTargetDesc = {};
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
         _type   = RendererType::SdlGpu;
@@ -28,6 +109,45 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to claim window for SDL GPU device: " + std::string(SDL_GetError()));
         }
 
+        auto* vertexShader = LoadShader(_device, "RawTriangle.vert", 0, 0, 0, 0);
+        if (vertexShader == NULL)
+        {
+            Log("Failed to create vertex shader.", LogLevel::Error);
+        }
+
+        auto* fragmentShader = LoadShader(_device, "SolidColor.frag", 0, 0, 0, 0);
+        if (fragmentShader == NULL)
+        {
+            Log("Failed to create fragment shader.", LogLevel::Error);
+        }
+
+        ColorTargetDesc.format = SDL_GetGPUSwapchainTextureFormat(_device, _window);
+
+        auto pipelineCreateInfo                                  = SDL_GPUGraphicsPipelineCreateInfo{};
+        pipelineCreateInfo.primitive_type                        = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
+        pipelineCreateInfo.vertex_shader                         = vertexShader;
+        pipelineCreateInfo.fragment_shader                       = fragmentShader;
+        pipelineCreateInfo.target_info.num_color_targets         = 1;
+        pipelineCreateInfo.target_info.color_target_descriptions = &ColorTargetDesc;
+
+        pipelineCreateInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
+        auto _fillPipeline                            = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
+        if (_fillPipeline == NULL)
+        {
+            throw std::runtime_error("Failed to create fill pipeline.");
+        }
+
+        pipelineCreateInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_LINE;
+        _linePipeline                                 = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
+        if (_linePipeline == NULL)
+        {
+            throw std::runtime_error("Failed to create line pipeline.");
+        }
+        
+        // Clean up shader resources
+        SDL_ReleaseGPUShader(_device, vertexShader);
+        SDL_ReleaseGPUShader(_device, fragmentShader);
+
         CreateDebugGui();
     }
 
@@ -36,6 +156,13 @@ namespace Silent::Renderer
 
     }
 
+    static void DrawTriangle()
+    {
+
+    }
+
+    static SDL_GPUViewport SmallViewport = { 160, 120, 320, 240, 0.1f, 1.0f };
+    static SDL_Rect        ScissorRect   = { 320, 240, 320, 240 };
     void SdlGpuRenderer::Update()
     {
         // Asquire command buffer.
@@ -45,21 +172,29 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to acquire SDL GPU command buffer: " + std::string(SDL_GetError()));
         }
 
-        // Wait and acquire GPU swapchain texture.
+        // Acquire GPU swapchain texture.
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(cmdBuffer, _window, &_swapchainTexture, NULL, NULL))
         {
             throw std::runtime_error("Failed to acquire SDL GPU swapchain texture: " + std::string(SDL_GetError()));
         }
 
-        auto colorTargetInfo        = SDL_GPUColorTargetInfo{};
-        colorTargetInfo.texture     = _swapchainTexture;
-        colorTargetInfo.clear_color = SDL_FColor{ _clearColor.R(), _clearColor.G(), _clearColor.B(), _clearColor.A() };
-        colorTargetInfo.load_op     = SDL_GPU_LOADOP_CLEAR;
-        colorTargetInfo.store_op    = SDL_GPU_STOREOP_STORE;
+        if (_swapchainTexture != nullptr)
+        {
+            auto colorTargetInfo        = SDL_GPUColorTargetInfo{};
+            colorTargetInfo.texture     = _swapchainTexture;
+            colorTargetInfo.clear_color = SDL_FColor{ _clearColor.R(), _clearColor.G(), _clearColor.B(), 0.0f };
+            colorTargetInfo.load_op     = SDL_GPU_LOADOP_CLEAR;
+            colorTargetInfo.store_op    = SDL_GPU_STOREOP_STORE;
 
-        auto* renderPass = SDL_BeginGPURenderPass(cmdBuffer, &colorTargetInfo, 1, NULL);
+            auto* renderPass = SDL_BeginGPURenderPass(cmdBuffer, &colorTargetInfo, 1, NULL);
+            SDL_BindGPUGraphicsPipeline(renderPass, _fillPipeline);
 
-        SDL_EndGPURenderPass(renderPass);
+			SDL_SetGPUViewport(renderPass, &SmallViewport);
+
+            SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
+            SDL_EndGPURenderPass(renderPass);
+        }
+
         SDL_SubmitGPUCommandBuffer(cmdBuffer);
     }
 

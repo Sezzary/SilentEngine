@@ -37,9 +37,9 @@ namespace Silent
     private:
         // Fields
 
-        bool            _isRunning = false;
-        ApplicationWork _work      = {};
-        SDL_Window*     _window    = nullptr;
+        bool            _quit   = false;
+        ApplicationWork _work   = {};
+        SDL_Window*     _window = nullptr;
 
         Vector2 _mouseWheelAxis = Vector2::Zero;
 
@@ -74,8 +74,11 @@ namespace Silent
         /** @brief Gracefully deinitializes the application and its subsystems. */
         void Deinitialize();
 
-        /** @brief Runs the application. */
+        /** @brief Runs the application loop. */
         void Run();
+
+        /** @brief Prompts the application to run the shutdown procedure. */
+        void Quit();
 
         /** @brief Toggles between fullscreen and windowed modes. */
         void ToggleFullscreen();

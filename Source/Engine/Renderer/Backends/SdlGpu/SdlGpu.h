@@ -9,8 +9,10 @@ namespace Silent::Renderer
     private:
         // Fields
 
-        SDL_GPUDevice*  _device           = nullptr;
-        SDL_GPUTexture* _swapchainTexture = nullptr;
+        SDL_GPUDevice*           _device           = nullptr;
+        SDL_GPUTexture*          _swapchainTexture = nullptr;
+        SDL_GPUGraphicsPipeline* _fillPipeline     = nullptr;
+        SDL_GPUGraphicsPipeline* _linePipeline     = nullptr;
 
     public:
         // Constructors

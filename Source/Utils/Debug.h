@@ -74,7 +74,7 @@ namespace Silent::Utils::Debug
      */
     void Message(const char* msg, ...);
 
-    /** @brief Logs a message in the terminal and log file.
+    /** @brief Logs a message to the terminal and log file.
      *
      * @param msg Message to log.
      * @param level Log severity level.

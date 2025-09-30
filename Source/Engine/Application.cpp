@@ -78,6 +78,8 @@ namespace Silent
 
     void ApplicationManager::Initialize()
     {
+        _quit = false;
+
         // Filesystem.
         _work.Filesystem.Initialize();
 
@@ -128,7 +130,6 @@ namespace Silent
 
         // Finish.
         Log("Startup complete.");
-        _isRunning = true;
     }
 
     void ApplicationManager::Deinitialize()
@@ -154,7 +155,7 @@ namespace Silent
     {
         _work.Time.Initialize();
 
-        while (_isRunning)
+        while (!_quit)
         {
             _work.Time.Update();
 
@@ -164,6 +165,11 @@ namespace Silent
 
             _work.Time.WaitForNextTick();
         }
+    }
+
+    void ApplicationManager::Quit()
+    {
+        _quit = true;
     }
 
     void ApplicationManager::ToggleFullscreen()
@@ -240,8 +246,7 @@ namespace Silent
             {
                 case SDL_EVENT_QUIT:
                 {
-                    // Unset run state.
-                    _isRunning = false;
+                    Quit();
                     break;
                 }
 

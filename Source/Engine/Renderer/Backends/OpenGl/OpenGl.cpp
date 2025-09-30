@@ -398,7 +398,6 @@ namespace Silent::Renderer
         // Generate shader program.
         _shaderPrograms.emplace("Default", ShaderProgram("Default"));
         _shaderPrograms.emplace("FullscreenQuad", ShaderProgram("FullscreenQuad"));
-
     }
 
     void OpenGlRenderer::CreateDebugGui()

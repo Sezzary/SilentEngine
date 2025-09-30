@@ -136,7 +136,6 @@ namespace Silent
         Log("Shutting down " + std::string(APP_NAME) + "...");
 
         // Workspace.
-        _work.Assets.UnloadAllAssets();
         _work.Audio.Deinitialize();
         _work.Input.Deinitialize();
         _work.Renderer->Deinitialize();

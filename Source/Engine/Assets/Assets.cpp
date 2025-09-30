@@ -245,17 +245,4 @@ namespace Silent::Assets
         const auto& [keyName, assetIdx] = *it;
         UnloadAsset(assetIdx);
     }
-
-    void AssetManager::UnloadAllAssets()
-    {
-        for (auto& asset : _assets)
-        {
-            // @todo Interrupt if something is loading?
-
-            asset->State = AssetState::Unloaded;
-            asset->Data.reset();
-        }
-
-        Log("All assets unloaded.", LogLevel::Info, LogMode::Debug);
-    }
 }

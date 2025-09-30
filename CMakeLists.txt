@@ -64,6 +64,7 @@ add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/json)
 add_subdirectory(Libraries/SDL)
 #add_subdirectory(Libraries/SDL_shadercross)
+#add_subdirectory(Libraries/SPIRV-Cross)
 add_subdirectory(Libraries/spdlog)
 
 # Add library header paths.
@@ -77,7 +78,8 @@ target_include_directories(Math SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
-    #${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL_shadercross/include
+    #${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL_shadercross
+    #${CMAKE_CURRENT_LIST_DIR}/Libraries/SPIRV-Cross
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb
 )
@@ -89,10 +91,11 @@ target_link_libraries(Math PRIVATE
     glm
     SDL3-static
     #SDL_shadercross
+    #spirv_cross
     spdlog
 )
 
-# Copy shaders to build folder.
+# Copy shaders to build folder. @todo Also cross-compile them for various backends.
 set(SHADER_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Shaders)
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 set(SHADER_BUILD_DIR ${CMAKE_BINARY_DIR}/${BUILD_TYPE}/Shaders)

@@ -39,7 +39,6 @@ Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning r
 - SDL3
 - SDL_shadercross
 - spdlog
-- spirv_cross
 - stb
 
 ```

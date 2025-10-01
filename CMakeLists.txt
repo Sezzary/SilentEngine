@@ -63,7 +63,7 @@ add_subdirectory(Libraries/glad/cmake)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/json)
 add_subdirectory(Libraries/SDL)
-#add_subdirectory(Libraries/SDL_shadercross)
+add_subdirectory(Libraries/SDL_shadercross)
 add_subdirectory(Libraries/spdlog)
 
 # Add library header paths.
@@ -77,7 +77,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
-    #${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL_shadercross
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL_shadercross
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb
 )
@@ -88,7 +88,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     flatbuffers
     glm
     SDL3::SDL3-static
-    #SDL3_shadercross::SDL3_shadercross-static
+    SDL3_shadercross::SDL3_shadercross-static
     spdlog
 )
 

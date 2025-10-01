@@ -31,7 +31,7 @@ def generate_savegame_headers():
 
         # Build generation command.
         command = [flatc_exe, "--cpp", "-o", str(OUTPUT_PATH), "-I", str(SCHEMAS_PATH)] + schema_files
-        print("Running command:\n" + " ".join(command))
+        #print("Running command:\n" + " ".join(command))
 
         # Run generation command.
         result = subprocess.run(command, capture_output=True)

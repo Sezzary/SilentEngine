@@ -14,7 +14,7 @@
 - Clean logging
 - Renderer (WIP)
 - Sound system (WIP)
-- Various utilities pulled from other projects, including a parallel task executor, a `Bitfield` class, and a `BoundingVolumeHierarchy` class.
+- Various utilities pulled from other projects including a `Bitfield` class and a `BoundingVolumeHierarchy` class.
 
 All considerations are being made to make this a flexible, readable, and extendable foundation. Portability is in mind as a top priority for multi-platform support from inception. 
 
@@ -25,7 +25,6 @@ All considerations are being made to make this a flexible, readable, and extenda
 The project has the following requirements:
 - cmake
 - git
-- ninja
 - python3
 
 ### Clone the repository
@@ -45,22 +44,20 @@ Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning r
 
 ```
 git clone --recursive https://github.com/Sezzary/SilentMath
+git submodule update --init --recursive
 ```
 
-### Build the code
+### Build the code (Debug/Release)
 
-TODO
-
-## Additional commands
-
-### Generating savegame headers
-
-The port relies on the FlatBuffers library for savegame serialization. If modifying the schemas at `Source/Engine/Savegame/Schemas` to accommodate for changes in the code, make sure to regenerate the savegame headers.
-
-```
-python Tools/GenerateSavegame.py
-```
+Available `Make` commands:
+- `debug`: Runs Debug build configuration and builds a Debug executable.
+- `release`: Runs Debug build configuration and builds a Release executable.
+- `configure-debug`: Runs Debug build configuration.
+- `configure-release`: Runs Release build configuration.
+- `build-debug`: Builds a Debug executable.
+- `build-release`: Builds a Release executable.
+- `generate-savegame`: Generates savegame headers from schemas.
 
 ### Contributing
 
-Too early for this, but feel free to take a look around!
+Too early for this, but feel free to take a look around in the meantime!

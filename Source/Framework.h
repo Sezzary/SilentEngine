@@ -82,7 +82,7 @@ using json = nlohmann::json;
 #include <SDL3/SDL_vulkan.h>
 
 // SDL_shadercross
-//#include "SDL3_shadercross/SDL_shadercross.h"
+#include <SDL3_shadercross/SDL_shadercross.h>
 
 // spdlog
 #include <spdlog/sinks/basic_file_sink.h>

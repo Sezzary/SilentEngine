@@ -19,11 +19,6 @@ namespace Silent::Math
         return x;
     }
 
-    uchar Color::R8() const
-    {
-        return FP_COLOR(R());
-    }
-
     const float& Color::G() const
     {
         return y;
@@ -32,11 +27,6 @@ namespace Silent::Math
     float& Color::G()
     {
         return y;
-    }
-
-    uchar Color::G8() const
-    {
-        return FP_COLOR(G());
     }
 
     const float& Color::B() const
@@ -49,11 +39,6 @@ namespace Silent::Math
         return z;
     }
 
-    uchar Color::B8() const
-    {
-        return FP_COLOR(B());
-    }
-
     const float& Color::A() const
     {
         return w;
@@ -62,6 +47,21 @@ namespace Silent::Math
     float& Color::A()
     {
         return w;
+    }
+
+    uchar Color::R8() const
+    {
+        return FP_COLOR(R());
+    }
+
+    uchar Color::G8() const
+    {
+        return FP_COLOR(G());
+    }
+
+    uchar Color::B8() const
+    {
+        return FP_COLOR(B());
     }
 
     uchar Color::A8() const

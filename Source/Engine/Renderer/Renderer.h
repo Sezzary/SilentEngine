@@ -49,7 +49,7 @@ namespace Silent::Renderer
         // Fields
         // =======
 
-        RendererType _type          = RendererType::OpenGl;
+        RendererType _type          = RendererType::SdlGpu;
         SDL_Window*  _window        = nullptr;
         bool         _isResized     = false;
         uint         _drawCallCount = 0;
@@ -72,14 +72,32 @@ namespace Silent::Renderer
         // Getters
         // ========
 
+        /** @brief Gets the renderer backend type;
+         *
+         * @return Renderer backend type.
+         */
         RendererType GetType() const;
-        Vector2i     GetScreenResolution() const;
-        uint         GetDrawCallCount() const;
+
+        /** @brief Gets the screen render resolution in pixels.
+         *
+         * @return Render resolution.
+         */
+        Vector2i GetScreenResolution() const;
+
+        /** @brief Gets the draw call count for the current render tick.
+         *
+         * @return Draw call count.
+         */
+        uint GetDrawCallCount() const;
 
         // ========
         // Setters
         // ========
 
+        /** @brief Sets the color used to clear the screen.
+         *
+         * @param color New clear color.
+         */
         void SetClearColor(const Color& color);
 
         // ==========
@@ -119,7 +137,6 @@ namespace Silent::Renderer
         // ========
 
         virtual void DrawDebugGui() = 0;
-
         virtual void CreateDebugGui() = 0;
     };
 

@@ -30,19 +30,19 @@ namespace Silent::Renderer
 
         if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV)
         {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.spv", g_App.GetFilesystem().GetAppFolder() / SHADERS_FOLDER_NAME, shaderFilename);
+            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.spv", SDL_GetBasePath(), shaderFilename.c_str());
             format     = SDL_GPU_SHADERFORMAT_SPIRV;
             entryPoint = "main";
         }
         else if (backendFormats & SDL_GPU_SHADERFORMAT_MSL)
         {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.msl", g_App.GetFilesystem().GetAppFolder() / SHADERS_FOLDER_NAME, shaderFilename);
+            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.msl", SDL_GetBasePath(), shaderFilename.c_str());
             format     = SDL_GPU_SHADERFORMAT_MSL;
             entryPoint = "main0";
         }
         else if (backendFormats & SDL_GPU_SHADERFORMAT_DXIL)
         {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.dxil", g_App.GetFilesystem().GetAppFolder() / SHADERS_FOLDER_NAME, shaderFilename);
+            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.dxil", SDL_GetBasePath(), shaderFilename.c_str());
             format     = SDL_GPU_SHADERFORMAT_DXIL;
             entryPoint = "main";
         }
@@ -131,8 +131,8 @@ namespace Silent::Renderer
         pipelineCreateInfo.target_info.color_target_descriptions = &ColorTargetDesc;
 
         pipelineCreateInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
-        auto _fillPipeline                            = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
-        if (_fillPipeline == NULL)
+        _fillPipeline                                 = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
+        if (_fillPipeline == NULL) 
         {
             throw std::runtime_error("Failed to create fill pipeline.");
         }
@@ -165,7 +165,7 @@ namespace Silent::Renderer
     static SDL_Rect        ScissorRect   = { 320, 240, 320, 240 };
     void SdlGpuRenderer::Update()
     {
-        // Asquire command buffer.
+        // Acquire command buffer.
         auto* cmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
         if (cmdBuffer == nullptr)
         {
@@ -188,11 +188,12 @@ namespace Silent::Renderer
 
             auto* renderPass = SDL_BeginGPURenderPass(cmdBuffer, &colorTargetInfo, 1, NULL);
             SDL_BindGPUGraphicsPipeline(renderPass, _fillPipeline);
-
-			SDL_SetGPUViewport(renderPass, &SmallViewport);
-
             SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
             SDL_EndGPURenderPass(renderPass);
+            /*SDL_BindGPUGraphicsPipeline(renderPass, _fillPipeline);
+            SDL_SetGPUViewport(renderPass, &SmallViewport);
+            SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
+            SDL_EndGPURenderPass(renderPass);*/
         }
 
         SDL_SubmitGPUCommandBuffer(cmdBuffer);

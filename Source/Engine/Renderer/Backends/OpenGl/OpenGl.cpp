@@ -54,7 +54,9 @@ namespace Silent::Renderer
         _primitives2d.reserve(1024);
 
         CreateShaderProgram();
-        CreateDebugGui();
+
+        ImGui_ImplSDL3_InitForOpenGL(_window, _context);
+        ImGui_ImplOpenGL3_Init(OPEN_GL_VERSION);
 
         // Log renderer specs.
         Log("Using OpenGL renderer:");
@@ -119,7 +121,7 @@ namespace Silent::Renderer
         _drawCallCount = 0;
         UpdateViewport();
 
-        // Render.
+        // Draw frame.
         Draw3dScene();
         Draw2dScene();
         DrawDebugGui();
@@ -242,8 +244,8 @@ namespace Silent::Renderer
         // @todo
     }
 
-    void OpenGlRenderer::SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
-                                            int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
+    void OpenGlRenderer::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
+                                            const Color& color, int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
     {
         auto& assets = g_App.GetAssets();
 
@@ -359,15 +361,6 @@ namespace Silent::Renderer
         _2dframebuffer.Unbind();
     }
 
-    void OpenGlRenderer::DrawDebugObjects()
-    {
-        // @todo
-
-        // Clear object elements.
-        //_debugLines.clear();
-        //_debugTriangles.clear();
-    }
-
     void OpenGlRenderer::DrawDebugGui()
     {
         // If debug GUI is disabled, return early.
@@ -383,9 +376,9 @@ namespace Silent::Renderer
         ImGui::NewFrame();
 
         // Draw GUIs.
-        for (auto& drawFunc : _debugGuiDrawCalls)
+        for (auto& drawCall : _debugGuiDrawCalls)
         {
-            drawFunc();
+            drawCall();
         }
         _debugGuiDrawCalls.clear();
 
@@ -398,11 +391,5 @@ namespace Silent::Renderer
         // Generate shader program.
         _shaderPrograms.emplace("Default", ShaderProgram("Default"));
         _shaderPrograms.emplace("FullscreenQuad", ShaderProgram("FullscreenQuad"));
-    }
-
-    void OpenGlRenderer::CreateDebugGui()
-    {
-        ImGui_ImplSDL3_InitForOpenGL(_window, _context);
-        ImGui_ImplOpenGL3_Init(OPEN_GL_VERSION);
     }
 }

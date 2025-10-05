@@ -100,23 +100,23 @@ namespace Silent::Renderer
         _device = SDL_CreateGPUDevice(formatFlags, IS_DEBUG_BUILD, nullptr);
         if (_device == nullptr)
         {
-            throw std::runtime_error("Failed to create SDL GPU device: " + std::string(SDL_GetError()));
+            throw std::runtime_error("Failed to create GPU device: " + std::string(SDL_GetError()));
         }
 
         // Claim window.
         if (!SDL_ClaimWindowForGPUDevice(_device, _window))
         {
-            throw std::runtime_error("Failed to claim window for SDL GPU device: " + std::string(SDL_GetError()));
+            throw std::runtime_error("Failed to claim window for GPU device: " + std::string(SDL_GetError()));
         }
 
-        auto* vertexShader = LoadShader(_device, "RawTriangle.vert", 0, 0, 0, 0);
-        if (vertexShader == nullptr)
+        auto* vertShader = LoadShader(_device, "RawTriangle.vert", 0, 0, 0, 0);
+        if (vertShader == nullptr)
         {
             Log("Failed to create vertex shader.", LogLevel::Error);
         }
 
-        auto* fragmentShader = LoadShader(_device, "SolidColor.frag", 0, 0, 0, 0);
-        if (fragmentShader == nullptr)
+        auto* fragShader = LoadShader(_device, "SolidColor.frag", 0, 0, 0, 0);
+        if (fragShader == nullptr)
         {
             Log("Failed to create fragment shader.", LogLevel::Error);
         }
@@ -125,8 +125,8 @@ namespace Silent::Renderer
 
         auto pipelineCreateInfo = SDL_GPUGraphicsPipelineCreateInfo
         {
-            .vertex_shader   = vertexShader,
-            .fragment_shader = fragmentShader,
+            .vertex_shader   = vertShader,
+            .fragment_shader = fragShader,
             .primitive_type  = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
             .target_info     = SDL_GPUGraphicsPipelineTargetInfo
             {
@@ -139,23 +139,37 @@ namespace Silent::Renderer
         _fillPipeline3d                               = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
         if (_fillPipeline3d == nullptr) 
         {
-            throw std::runtime_error("Failed to create fill pipeline.");
+            throw std::runtime_error("Failed to create 3D fill pipeline.");
         }
 
         pipelineCreateInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_LINE;
         _linePipeline3d                               = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
         if (_linePipeline3d == nullptr)
         {
-            throw std::runtime_error("Failed to create line pipeline.");
+            throw std::runtime_error("Failed to create 3D line pipeline.");
         }
 
-        // Clean up shader resources.
-        SDL_ReleaseGPUShader(_device, vertexShader);
-        SDL_ReleaseGPUShader(_device, fragmentShader);
+        // TODO: 2D pipelines.
 
-        CreateDebugGui();
+        // Clean up shader resources.
+        SDL_ReleaseGPUShader(_device, vertShader);
+        SDL_ReleaseGPUShader(_device, fragShader);
+
+        // Create ImGui ImGui context.
+        ImGui::CreateContext();
+        ImGui_ImplSDL3_InitForSDLGPU(_window);
+
+        // Initialize ImGui SDL_gpu backend.
+        auto initInfo = ImGui_ImplSDLGPU3_InitInfo
+        {
+            .Device            = _device,
+            .ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(_device, _window),
+            .MSAASamples       = SDL_GPU_SAMPLECOUNT_1
+        };
+        ImGui_ImplSDLGPU3_Init(&initInfo);
     }
 
+    // TODO: Has errors.
     void SdlGpuRenderer::Deinitialize()
     {
         SDL_WaitForGPUIdle(_device);
@@ -170,24 +184,29 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Update()
     {
+        // Reset.
+        _drawCallCount = 0;
+
         // Acquire command buffer.
         _commandBuffer = SDL_AcquireGPUCommandBuffer(_device);
         if (_commandBuffer == nullptr)
         {
-            throw std::runtime_error("Failed to acquire SDL GPU command buffer: " + std::string(SDL_GetError()));
+            Log("Failed to acquire command buffer: " + std::string(SDL_GetError()), LogLevel::Error);
+            return;
         }
 
-        // Acquire GPU swapchain texture.
+        // Acquire swapchain texture.
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(_commandBuffer, _window, &_swapchainTexture, nullptr, nullptr))
         {
-            throw std::runtime_error("Failed to acquire SDL GPU swapchain texture: " + std::string(SDL_GetError()));
+            Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Error);
+            return;
         }
 
         // Draw frame.
         if (_swapchainTexture != nullptr)
         {
             Draw3dScene();
-            Draw2dScene();
+            //Draw2dScene();
             DrawDebugGui();
         }
 
@@ -215,8 +234,8 @@ namespace Silent::Renderer
 
     }
 
-    void SdlGpuRenderer::SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
-                                            int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
+    void SdlGpuRenderer::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
+                                            const Color& color, int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
     {
 
     }
@@ -241,7 +260,19 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Draw2dScene()
     {
-        
+        // Begin render pass.
+        auto colorTargetInfo = SDL_GPUColorTargetInfo
+        {
+            .texture  = _swapchainTexture,
+            .load_op  = SDL_GPU_LOADOP_LOAD,
+            .store_op = SDL_GPU_STOREOP_STORE
+        };
+        auto* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
+
+        // Process render pass.
+        SDL_BindGPUGraphicsPipeline(renderPass, g_DebugData.EnableWireframeMode ? _linePipeline2d : _fillPipeline2d);
+        SDL_DrawGPUPrimitives(renderPass, 4, 1, 0, 0);
+        SDL_EndGPURenderPass(renderPass);
     }
 
     void SdlGpuRenderer::DrawDebugGui()
@@ -260,9 +291,9 @@ namespace Silent::Renderer
         ImGui::NewFrame();
 
         // Draw GUIs.
-        for (auto& drawFunc : _debugGuiDrawCalls)
+        for (auto& drawCall : _debugGuiDrawCalls)
         {
-            drawFunc();
+            drawCall();
         }
         _debugGuiDrawCalls.clear();
 
@@ -283,21 +314,5 @@ namespace Silent::Renderer
         // Process render pass.
         ImGui_ImplSDLGPU3_RenderDrawData(drawData, _commandBuffer, renderPass);
         SDL_EndGPURenderPass(renderPass);
-    }
-
-    void SdlGpuRenderer::CreateDebugGui()
-    {
-        // Create context.
-        ImGui::CreateContext();
-        ImGui_ImplSDL3_InitForSDLGPU(_window);
-
-        // Initialize SDL_gpu backend.
-        auto initInfo = ImGui_ImplSDLGPU3_InitInfo
-        {
-            .Device            = _device,
-            .ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(_device, _window),
-            .MSAASamples       = SDL_GPU_SAMPLECOUNT_1
-        };
-        ImGui_ImplSDLGPU3_Init(&initInfo);
     }
 }

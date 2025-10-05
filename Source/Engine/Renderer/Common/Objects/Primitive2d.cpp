@@ -35,12 +35,12 @@ namespace Silent::Renderer
     }
 
     Primitive2d Primitive2d::CreateTriangle2d(const Vector2& pos, const Vector2& size, const Color& color0, const Color& color1, const Color& color2,
-                                              float depth, const std::string& texId, const Vector4& atlasRegion)
+                                              float depth, const std::string& texId, const Vector4& uvs)
     {
         // Create primitive.
         auto prim      = Primitive2d();
         prim.Depth     = depth;
-        prim.TextureId = texId;
+        //prim.TextureId = texId;
 
         // Define positions.
         auto halfSize = size / 2.0f;
@@ -49,9 +49,9 @@ namespace Silent::Renderer
         auto pos2     = pos + halfSize;
 
         // Define UVs.
-        auto  uv0 = Vector2(atlasRegion.x, atlasRegion.y);
-        auto  uv1 = Vector2(atlasRegion.x + atlasRegion.z, atlasRegion.y);
-        auto  uv2 = Vector2(atlasRegion.x + atlasRegion.z, atlasRegion.y + atlasRegion.w);
+        auto uv0 = Vector2(uvs.x, uvs.y);
+        auto uv1 = Vector2(uvs.x + uvs.z, uvs.y);
+        auto uv2 = Vector2(uvs.x + uvs.z, uvs.y + uvs.w);
 
         // Define vertices.
         prim.Vertices =
@@ -80,18 +80,18 @@ namespace Silent::Renderer
     }
 
     Primitive2d Primitive2d::CreateTriangle2d(const Vector2& pos, const Vector2& size, const Color& color,
-                                              float depth, const std::string& texId, const Vector4& atlasRegion)
+                                              float depth, const std::string& texId, const Vector4& uvs)
     {
-        return CreateTriangle2d(pos, size, color, color, color, depth, texId, atlasRegion);
+        return CreateTriangle2d(pos, size, color, color, color, depth, texId, uvs);
     }
 
     Primitive2d Primitive2d::CreateQuad2d(const Vector2& pos, const Vector2& size, const Color& color0, const Color& color1, const Color& color2, const Color& color3,
-                                          float depth, const std::string& texId, const Vector4& atlasRegion)
+                                          float depth, const std::string& texId, const Vector4& uvs)
     {
         // Create primitive.
         auto prim      = Primitive2d();
         prim.Depth     = depth;
-        prim.TextureId = texId;
+        //prim.TextureId = texId;
 
         // Define positions.
         auto halfSize = size / 2.0f;
@@ -101,10 +101,10 @@ namespace Silent::Renderer
         auto pos3     = pos + Vector2(-halfSize.x, halfSize.y);
 
         // Define UVs.
-        auto  uv0 = Vector2(atlasRegion.x, atlasRegion.y);
-        auto  uv1 = Vector2(atlasRegion.x + atlasRegion.z, atlasRegion.y);
-        auto  uv2 = Vector2(atlasRegion.x + atlasRegion.z, atlasRegion.y + atlasRegion.w);
-        auto  uv3 = Vector2(atlasRegion.x, atlasRegion.y + atlasRegion.w);
+        auto  uv0 = Vector2(uvs.x, uvs.y);
+        auto  uv1 = Vector2(uvs.x + uvs.z, uvs.y);
+        auto  uv2 = Vector2(uvs.x + uvs.z, uvs.y + uvs.w);
+        auto  uv3 = Vector2(uvs.x, uvs.y + uvs.w);
 
         // Define vertices.
         prim.Vertices =
@@ -139,8 +139,8 @@ namespace Silent::Renderer
     }
 
     Primitive2d Primitive2d::CreateQuad2d(const Vector2& pos, const Vector2& size, const Color& color,
-                                          float depth, const std::string& texId, const Vector4& atlasRegion)
+                                          float depth, const std::string& texId, const Vector4& uvs)
     {
-        return CreateQuad2d(pos, size, color, color, color, color, depth, texId, atlasRegion);
+        return CreateQuad2d(pos, size, color, color, color, color, depth, texId, uvs);
     }
 }

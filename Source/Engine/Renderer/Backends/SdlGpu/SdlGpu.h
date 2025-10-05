@@ -37,6 +37,8 @@ namespace Silent::Renderer
     private:
         // Helpers
 
+        void Draw3dScene();
+        void Draw2dScene();
         void DrawDebugGui() override;
 
         void CreateDebugGui() override;

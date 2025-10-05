@@ -67,8 +67,8 @@ namespace Silent::Renderer
     
         void UpdateViewport();
 
-        void Draw2dScene();
         void Draw3dScene();
+        void Draw2dScene();
         void DrawDebugObjects();
         void DrawDebugGui() override;
 

@@ -123,12 +123,17 @@ namespace Silent::Renderer
 
         ColorTargetDesc.format = SDL_GetGPUSwapchainTextureFormat(_device, _window);
 
-        auto pipelineCreateInfo                                  = SDL_GPUGraphicsPipelineCreateInfo{};
-        pipelineCreateInfo.primitive_type                        = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
-        pipelineCreateInfo.vertex_shader                         = vertexShader;
-        pipelineCreateInfo.fragment_shader                       = fragmentShader;
-        pipelineCreateInfo.target_info.num_color_targets         = 1;
-        pipelineCreateInfo.target_info.color_target_descriptions = &ColorTargetDesc;
+        auto pipelineCreateInfo = SDL_GPUGraphicsPipelineCreateInfo
+        {
+            .vertex_shader   = vertexShader,
+            .fragment_shader = fragmentShader,
+            .primitive_type  = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
+            .target_info     = SDL_GPUGraphicsPipelineTargetInfo
+            {
+                .color_target_descriptions = &ColorTargetDesc,
+                .num_color_targets         = 1
+            }
+        };
 
         pipelineCreateInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
         _fillPipeline3d                               = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
@@ -154,17 +159,13 @@ namespace Silent::Renderer
     void SdlGpuRenderer::Deinitialize()
     {
         SDL_WaitForGPUIdle(_device);
+
         ImGui_ImplSDL3_Shutdown();
         ImGui_ImplSDLGPU3_Shutdown();
         ImGui::DestroyContext();
 
         SDL_ReleaseWindowFromGPUDevice(_device, _window);
         SDL_DestroyGPUDevice(_device);
-    }
-
-    static void DrawTriangle()
-    {
-
     }
 
     void SdlGpuRenderer::Update()
@@ -185,19 +186,12 @@ namespace Silent::Renderer
         // Draw frame.
         if (_swapchainTexture != nullptr)
         {
-            auto colorTargetInfo        = SDL_GPUColorTargetInfo{};
-            colorTargetInfo.texture     = _swapchainTexture;
-            colorTargetInfo.clear_color = SDL_FColor{ _clearColor.R(), _clearColor.G(), _clearColor.B(), _clearColor.A() };
-            colorTargetInfo.load_op     = SDL_GPU_LOADOP_CLEAR;
-            colorTargetInfo.store_op    = SDL_GPU_STOREOP_STORE;
-
-            auto* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
-            SDL_BindGPUGraphicsPipeline(renderPass, g_DebugData.EnableWireframeMode ? _linePipeline3d : _fillPipeline3d);
-            SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
-            SDL_EndGPURenderPass(renderPass);
-            
+            Draw3dScene();
+            Draw2dScene();
             DrawDebugGui();
         }
+
+        // Submit command buffer.
         SDL_SubmitGPUCommandBuffer(_commandBuffer);
     }
 
@@ -227,6 +221,29 @@ namespace Silent::Renderer
 
     }
 
+    void SdlGpuRenderer::Draw3dScene()
+    {
+        // Begin render pass.
+        auto colorTargetInfo = SDL_GPUColorTargetInfo
+        {
+            .texture     = _swapchainTexture,
+            .clear_color = SDL_FColor{ _clearColor.R(), _clearColor.G(), _clearColor.B(), _clearColor.A() },
+            .load_op     = SDL_GPU_LOADOP_CLEAR,
+            .store_op    = SDL_GPU_STOREOP_STORE
+        };
+        auto* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
+
+        // Process render pass.
+        SDL_BindGPUGraphicsPipeline(renderPass, g_DebugData.EnableWireframeMode ? _linePipeline3d : _fillPipeline3d);
+        SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
+        SDL_EndGPURenderPass(renderPass);
+    }
+
+    void SdlGpuRenderer::Draw2dScene()
+    {
+        
+    }
+
     void SdlGpuRenderer::DrawDebugGui()
     {
         // If debug GUI is disabled, return early.
@@ -242,7 +259,7 @@ namespace Silent::Renderer
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
-        // Create GUIs.
+        // Draw GUIs.
         for (auto& drawFunc : _debugGuiDrawCalls)
         {
             drawFunc();
@@ -254,16 +271,16 @@ namespace Silent::Renderer
         auto* drawData = ImGui::GetDrawData();
         ImGui_ImplSDLGPU3_PrepareDrawData(drawData, _commandBuffer);
 
-        // Create color target info.
+        // Begin render pass.
         auto colorTargetInfo = SDL_GPUColorTargetInfo
         {
-            .texture               = _swapchainTexture,
-            .load_op               = SDL_GPU_LOADOP_LOAD,
-            .store_op              = SDL_GPU_STOREOP_STORE,
+            .texture  = _swapchainTexture,
+            .load_op  = SDL_GPU_LOADOP_LOAD,
+            .store_op = SDL_GPU_STOREOP_STORE
         };
+        auto* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
         // Process render pass.
-        auto* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
         ImGui_ImplSDLGPU3_RenderDrawData(drawData, _commandBuffer, renderPass);
         SDL_EndGPURenderPass(renderPass);
     }
@@ -275,10 +292,12 @@ namespace Silent::Renderer
         ImGui_ImplSDL3_InitForSDLGPU(_window);
 
         // Initialize SDL_gpu backend.
-        auto initInfo              = ImGui_ImplSDLGPU3_InitInfo{};
-        initInfo.Device            = _device;
-        initInfo.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(_device, _window);
-        initInfo.MSAASamples       = SDL_GPU_SAMPLECOUNT_1;
+        auto initInfo = ImGui_ImplSDLGPU3_InitInfo
+        {
+            .Device            = _device,
+            .ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(_device, _window),
+            .MSAASamples       = SDL_GPU_SAMPLECOUNT_1
+        };
         ImGui_ImplSDLGPU3_Init(&initInfo);
     }
 }

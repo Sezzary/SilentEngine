@@ -237,49 +237,48 @@ namespace Silent::Renderer
             return;
         }
 
+        // Start new frame.
         ImGui_ImplSDLGPU3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
-        // Draw GUIs.
+        // Create GUIs.
         for (auto& drawFunc : _debugGuiDrawCalls)
         {
             drawFunc();
         }
         _debugGuiDrawCalls.clear();
 
+        // Prepare render data.
         ImGui::Render();
         auto* drawData = ImGui::GetDrawData();
         ImGui_ImplSDLGPU3_PrepareDrawData(drawData, _commandBuffer);
 
-        auto colorTargetInfo                 = SDL_GPUColorTargetInfo{};
-        colorTargetInfo.texture              = _swapchainTexture;
-        colorTargetInfo.clear_color          = SDL_FColor{ 0.0f, 0.0f, 0.0f, 0.0f };
-        colorTargetInfo.load_op              = SDL_GPU_LOADOP_LOAD;
-        colorTargetInfo.store_op             = SDL_GPU_STOREOP_STORE;
-        colorTargetInfo.mip_level            = 0;
-        colorTargetInfo.layer_or_depth_plane = 0;
-        colorTargetInfo.cycle                = false;
+        // Create color target info.
+        auto colorTargetInfo = SDL_GPUColorTargetInfo
+        {
+            .texture               = _swapchainTexture,
+            .load_op               = SDL_GPU_LOADOP_LOAD,
+            .store_op              = SDL_GPU_STOREOP_STORE,
+        };
 
-        SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
+        // Process render pass.
+        auto* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
         ImGui_ImplSDLGPU3_RenderDrawData(drawData, _commandBuffer, renderPass);
         SDL_EndGPURenderPass(renderPass);
     }
 
     void SdlGpuRenderer::CreateDebugGui()
     {
+        // Create context.
         ImGui::CreateContext();
-        auto& io        = ImGui::GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
-        ImGui::StyleColorsDark();
         ImGui_ImplSDL3_InitForSDLGPU(_window);
 
+        // Initialize SDL_gpu backend.
         auto initInfo              = ImGui_ImplSDLGPU3_InitInfo{};
         initInfo.Device            = _device;
         initInfo.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(_device, _window);
-        initInfo.MSAASamples       = SDL_GPU_SAMPLECOUNT_1; // Only used in multi-viewports mode.
+        initInfo.MSAASamples       = SDL_GPU_SAMPLECOUNT_1;
         ImGui_ImplSDLGPU3_Init(&initInfo);
     }
 }

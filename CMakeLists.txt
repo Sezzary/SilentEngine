@@ -116,65 +116,67 @@ file(MAKE_DIRECTORY ${SHADER_SPV_DIR})
 #    file(REMOVE ${OLD_SHADER})
 #endforeach()
 
-# SDL_shadercross executable.
-set(SHADERCROSS_EXECUTABLE shadercross)
-
-# Collect all shader files in source directory.
-file(GLOB SHADERS "${SHADER_SOURCE_DIR}/*.hlsl")
-
-# Collect shader compilation targets.
-foreach(SHADER ${SHADERS})
-    get_filename_component(FILE_NAME ${SHADER} NAME)
-
-    # Set output paths for compiled shaders (DXBC, DXIL, HLSL, MSL, SPIR-V).
-    set(OUTPUT_DXBC ${SHADER_MSL_DIR}/${FILE_NAME}.dxbc)
-    set(OUTPUT_DXIL ${SHADER_MSL_DIR}/${FILE_NAME}.dxil)
-    set(OUTPUT_HLSL ${SHADER_HLSL_DIR}/${FILE_NAME}.hlsl)
-    set(OUTPUT_MSL ${SHADER_MSL_DIR}/${FILE_NAME}.msl)
-    set(OUTPUT_SPV ${SHADER_SPV_DIR}/${FILE_NAME}.spv)
-
-    # HLSL (source).
-    add_custom_command(
-        TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${OUTPUT_HLSL} ${DESTINATION_DIR}/${FILE_NAME}.hlsl
-        DEPENDS ${OUTPUT_HLSL}
-        COMMENT "Copying HLSL shader ${FILE_NAME}."
-    )
-
-    # DXBC.
-    add_custom_command(
-        OUTPUT ${OUTPUT_DXBC}
-        COMMAND ${SHADERCROSS_EXECUTABLE} ${SHADER} -s HLSL -d DXBC -t fragment -e main -o ${OUTPUT_DXBC}
-        DEPENDS ${SHADER}
-        COMMENT "Compiling shader ${FILE_NAME} to DXBC."
-    )
-
-    # DXIL.
-    add_custom_command(
-        OUTPUT ${OUTPUT_DXIL}
-        COMMAND ${SHADERCROSS_EXECUTABLE} ${SHADER} -s HLSL -d DXIL -t fragment -e main -o ${OUTPUT_DXIL}
-        DEPENDS ${SHADER}
-        COMMENT "Compiling shader ${FILE_NAME} to DXIL."
-    )
-
-    # MSL.
-    add_custom_command(
-        OUTPUT ${OUTPUT_MSL}
-        COMMAND ${SHADERCROSS_EXECUTABLE} ${SHADER} -s HLSL -d MSL -t fragment -e main -o ${OUTPUT_MSL}
-        DEPENDS ${SHADER}
-        COMMENT "Compiling shader ${FILE_NAME} to MSL."
-    )
-
-    # SPIR-V.
-    add_custom_command(
-        OUTPUT ${OUTPUT_SPV}
-        COMMAND ${SHADERCROSS_EXECUTABLE} ${SHADER} -s HLSL -d SPIRV -t fragment -e main -o ${OUTPUT_SPV}
-        DEPENDS ${SHADER}
-        COMMENT "Compiling shader ${FILE_NAME} to SPIR-V."
-    )
-
-    list(APPEND COMPILED_SHADERS ${OUTPUT_SPV} ${OUTPUT_MSL} ${OUTPUT_HLSL})
-endforeach()
-
-# Create custom target to run shader compilation.
-add_custom_target(CompileShaders ALL DEPENDS ${COMPILED_SHADERS})
+## SDL_shadercross executable.
+#set(SHADERCROSS_EXECUTABLE shadercross)
+#
+## Collect all shader files in source directory.
+#file(GLOB SHADERS "${SHADER_SOURCE_DIR}/*.hlsl")
+#
+## Collect shader compilation targets.
+#foreach(SHADER ${SHADERS})
+#    get_filename_component(FILE_NAME ${SHADER} NAME)
+#
+#    # Set output paths for compiled shaders (DXBC, DXIL, HLSL, MSL, SPIR-V).
+#    set(OUTPUT_DXBC ${SHADER_DXBC_DIR}/${FILE_NAME}.dxbc)
+#    set(OUTPUT_DXIL ${SHADER_DXIL_DIR}/${FILE_NAME}.dxil)
+#    set(OUTPUT_HLSL ${SHADER_HLSL_DIR}/${FILE_NAME}.hlsl)
+#    set(OUTPUT_MSL ${SHADER_MSL_DIR}/${FILE_NAME}.msl)
+#    set(OUTPUT_SPV ${SHADER_SPV_DIR}/${FILE_NAME}.spv)
+#
+#    # HLSL (source).
+#    add_custom_command(
+#        TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy ${OUTPUT_HLSL} ${DESTINATION_DIR}/${FILE_NAME}.hlsl
+#        COMMENT "Copying HLSL shader ${FILE_NAME}."
+#    )
+#
+#    # Strip `.hlsl` extension.
+#    get_filename_component(FILE_BASENAME ${FILE_NAME} NAME_WE)
+#
+#    # DXBC.
+#    add_custom_command(
+#        OUTPUT ${OUTPUT_DXBC}
+#        COMMAND ${SHADERCROSS_EXECUTABLE} ${SHADER} -s HLSL -d DXBC -t fragment -e main -o ${OUTPUT_DXBC}
+#        DEPENDS ${SHADER}
+#        COMMENT "Compiling shader ${FILE_NAME} to DXBC."
+#    )
+#
+#    # DXIL.
+#    add_custom_command(
+#        OUTPUT ${OUTPUT_DXIL}
+#        COMMAND ${SHADERCROSS_EXECUTABLE} ${SHADER} -s HLSL -d DXIL -t fragment -e main -o ${OUTPUT_DXIL}
+#        DEPENDS ${SHADER}
+#        COMMENT "Compiling shader ${FILE_NAME} to DXIL."
+#    )
+#
+#    # MSL.
+#    add_custom_command(
+#        OUTPUT ${OUTPUT_MSL}
+#        COMMAND ${SHADERCROSS_EXECUTABLE} ${SHADER} -s HLSL -d MSL -t fragment -e main -o ${OUTPUT_MSL}
+#        DEPENDS ${SHADER}
+#        COMMENT "Compiling shader ${FILE_NAME} to MSL."
+#    )
+#
+#    # SPIR-V.
+#    add_custom_command(
+#        OUTPUT ${OUTPUT_SPV}
+#        COMMAND ${SHADERCROSS_EXECUTABLE} ${SHADER} -s HLSL -d SPIRV -t fragment -e main -o ${OUTPUT_SPV}
+#        DEPENDS ${SHADER}
+#        COMMENT "Compiling shader ${FILE_NAME} to SPIR-V."
+#    )
+#
+#    list(APPEND COMPILED_SHADERS ${OUTPUT_SPV} ${OUTPUT_MSL} ${OUTPUT_HLSL})
+#endforeach()
+#
+## Create custom target to run shader compilation.
+#add_custom_target(CompileShaders ALL DEPENDS ${COMPILED_SHADERS})

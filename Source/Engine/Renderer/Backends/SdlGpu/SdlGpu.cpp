@@ -167,6 +167,9 @@ namespace Silent::Renderer
             .MSAASamples       = SDL_GPU_SAMPLECOUNT_1
         };
         ImGui_ImplSDLGPU3_Init(&initInfo);
+
+        // Reserve memory.
+        _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
     }
 
     // TODO: Has errors.
@@ -196,6 +199,7 @@ namespace Silent::Renderer
         }
 
         // Acquire swapchain texture.
+        _swapchainTexture = nullptr;
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(_commandBuffer, _window, &_swapchainTexture, nullptr, nullptr))
         {
             Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Error);
@@ -212,32 +216,75 @@ namespace Silent::Renderer
 
         // Submit command buffer.
         SDL_SubmitGPUCommandBuffer(_commandBuffer);
+
+        // Clear.
+        _primitives2d.clear();
     }
 
     void SdlGpuRenderer::RefreshTextureFilter()
     {
-
+        // @todo
     }
 
     void SdlGpuRenderer::SaveScreenshot() const
     {
+        constexpr uint COLOR_CHANNEL_COUNT = 3; // RGB.
 
+        const auto& fs = g_App.GetFilesystem();
+
+        // Get window size.
+        auto res = GetScreenResolution();
+
+        // Ensure directory exists.
+        auto timestamp = GetCurrentDateString() + "_" + GetCurrentTimeString();
+        auto filename  = (SCREENSHOT_FILENAME_BASE + timestamp) + PNG_FILE_EXT;
+        auto path      = fs.GetScreenshotsFolder() / filename;
+        std::filesystem::create_directories(path.parent_path());
+
+        // Get window surface.
+        auto* surface = SDL_GetWindowSurface(_window);
+        if (surface == nullptr)
+        {
+            Log("Failed to capture screenshot: " + std::string(SDL_GetError()), LogLevel::Error);
+            return;
+        }
+
+        // Lock surface to access pixels.
+        if (SDL_LockSurface(surface))
+        {
+            Log("Failed to capture screenshot: " + std::string(SDL_GetError()), LogLevel::Error);
+            return;
+        }
+
+        // Write screenshot file.
+        if (!stbi_write_png(path.string().c_str(), res.x, res.y, COLOR_CHANNEL_COUNT, surface->pixels, res.x * COLOR_CHANNEL_COUNT))
+        {
+            Log("Failed to save screenshot.", LogLevel::Error, LogMode::DebugRelease, true);
+        }
+        
+        SDL_UnlockSurface(surface);
     }
 
     void SdlGpuRenderer::LogError(const std::string& msg) const
     {
-
+        // Not needed?
     }
 
     void SdlGpuRenderer::SubmitPrimitive2d(const Primitive2d& prim)
     {
+        if (_primitives2d.size() >= PRIMITIVE_2D_COUNT_MAX)
+        {
+            Log("Attampted to add 2D primitive to full container.", LogLevel::Warning, LogMode::Debug);
+            return;
+        }
 
+        _primitives2d.push_back(prim);
     }
 
     void SdlGpuRenderer::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
                                             const Color& color, int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
     {
-
+        // @todo
     }
 
     void SdlGpuRenderer::Draw3dScene()

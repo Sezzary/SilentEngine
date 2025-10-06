@@ -101,6 +101,7 @@
         "sdl.h": "c",
         "cwctype": "cpp",
         "numbers": "cpp",
-        "stdout_color_sinks.h": "c"
+        "stdout_color_sinks.h": "c",
+        "*.inc": "cpp"
     }
 }

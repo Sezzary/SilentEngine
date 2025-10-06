@@ -2,145 +2,59 @@
 #include "Engine/Renderer/Common/Objects/Primitive2d.h"
 
 #include "Engine/Renderer/Common/Objects/Vertex2d.h"
+#include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
 {
-    Primitive2d Primitive2d::CreateLine2d(const Vector2& pos0, const Vector2& pos1, const Color& color0, const Color& color1, float depth)
+    Primitive2d Primitive2d::CreateLine(const Vector2& from, const Vector2& to, const Color& color0, const Color& color1, int depth)
     {
-        // Create primitive.
-        auto prim  = Primitive2d();
-        prim.Depth = depth;
+        constexpr float WIDTH = SCREEN_SPACE_RES.y / CLASSIC_SCREEN_SPACE_RES.y;
 
-        // Define vertices.
-        prim.Vertices =
+        float rot    = glm::atan2(to.y - from.y, to.x - from.x);
+        auto  dir    = Vector2::Normalize(to - from);
+        auto  offset = Vector2(-dir.y, dir.x) * WIDTH;
+
+        return Primitive2d
         {
-            Vertex2d
+            .Vertices =
             {
-                pos0,
-                color0
+                Vertex2d{ from,          color0 },
+                Vertex2d{ to,            color1 },
+                Vertex2d{ from + offset, color0 },
+                Vertex2d{ to   + offset, color1 }
             },
-            Vertex2d
-            {
-                pos1,
-                color1,
-            }
+            .Depth = depth
         };
-
-        return prim;
     }
 
-    Primitive2d Primitive2d::CreateLine2d(const Vector2& pos0, const Vector2& pos1, const Color& color, float depth)
+    Primitive2d Primitive2d::CreateTriangle(const Vector2& vert0, const Vector2& vert1, const Vector2& vert2,
+                                            const Color& color0, const Color& color1, const Color& color2, int depth)
     {
-        return CreateLine2d(pos0, pos1, color, color, depth);
-    }
-
-    Primitive2d Primitive2d::CreateTriangle2d(const Vector2& pos, const Vector2& size, const Color& color0, const Color& color1, const Color& color2,
-                                              float depth, const std::string& texId, const Vector4& uvs)
-    {
-        // Create primitive.
-        auto prim      = Primitive2d();
-        prim.Depth     = depth;
-        //prim.TextureId = texId;
-
-        // Define positions.
-        auto halfSize = size / 2.0f;
-        auto pos0     = pos - halfSize;
-        auto pos1     = pos + Vector2(halfSize.x, -halfSize.y);
-        auto pos2     = pos + halfSize;
-
-        // Define UVs.
-        auto uv0 = Vector2(uvs.x, uvs.y);
-        auto uv1 = Vector2(uvs.x + uvs.z, uvs.y);
-        auto uv2 = Vector2(uvs.x + uvs.z, uvs.y + uvs.w);
-
-        // Define vertices.
-        prim.Vertices =
+        return Primitive2d
         {
-            Vertex2d
+            .Vertices =
             {
-                pos0,
-                color0,
-                uv0
+                Vertex2d{ vert0, color0 },
+                Vertex2d{ vert1, color1 },
+                Vertex2d{ vert2, color2 }
             },
-            Vertex2d
-            {
-                pos1,
-                color1,
-                uv1
-            },
-            Vertex2d
-            {
-                pos2,
-                color2,
-                uv2
-            }
+            .Depth = depth
         };
-
-        return prim;
     }
 
-    Primitive2d Primitive2d::CreateTriangle2d(const Vector2& pos, const Vector2& size, const Color& color,
-                                              float depth, const std::string& texId, const Vector4& uvs)
+    Primitive2d Primitive2d::CreateQuad(const Vector2& vert0, const Vector2& vert1, const Vector2& vert2, const Vector2& vert3,
+                                        const Color& color0, const Color& color1, const Color& color2, const Color& color3, int depth)
     {
-        return CreateTriangle2d(pos, size, color, color, color, depth, texId, uvs);
-    }
-
-    Primitive2d Primitive2d::CreateQuad2d(const Vector2& pos, const Vector2& size, const Color& color0, const Color& color1, const Color& color2, const Color& color3,
-                                          float depth, const std::string& texId, const Vector4& uvs)
-    {
-        // Create primitive.
-        auto prim      = Primitive2d();
-        prim.Depth     = depth;
-        //prim.TextureId = texId;
-
-        // Define positions.
-        auto halfSize = size / 2.0f;
-        auto pos0     = pos - halfSize;
-        auto pos1     = pos + Vector2(halfSize.x, -halfSize.y);
-        auto pos2     = pos + halfSize;
-        auto pos3     = pos + Vector2(-halfSize.x, halfSize.y);
-
-        // Define UVs.
-        auto  uv0 = Vector2(uvs.x, uvs.y);
-        auto  uv1 = Vector2(uvs.x + uvs.z, uvs.y);
-        auto  uv2 = Vector2(uvs.x + uvs.z, uvs.y + uvs.w);
-        auto  uv3 = Vector2(uvs.x, uvs.y + uvs.w);
-
-        // Define vertices.
-        prim.Vertices =
+        return Primitive2d
         {
-            Vertex2d
+            .Vertices =
             {
-                pos0,
-                color0,
-                uv0
+                Vertex2d{ vert0, color0 },
+                Vertex2d{ vert1, color1 },
+                Vertex2d{ vert2, color2 },
+                Vertex2d{ vert3, color3 }
             },
-            Vertex2d
-            {
-                pos1,
-                color1,
-                uv1
-            },
-            Vertex2d
-            {
-                pos2,
-                color2,
-                uv2
-            },
-            Vertex2d
-            {
-                pos3,
-                color3,
-                uv3
-            }
+            .Depth = depth
         };
-
-        return prim;
-    }
-
-    Primitive2d Primitive2d::CreateQuad2d(const Vector2& pos, const Vector2& size, const Color& color,
-                                          float depth, const std::string& texId, const Vector4& uvs)
-    {
-        return CreateQuad2d(pos, size, color, color, color, color, depth, texId, uvs);
     }
 }

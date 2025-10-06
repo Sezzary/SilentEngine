@@ -6,8 +6,6 @@ project(SilentEngine)
 # Specify C and C++ standards.
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 23)
-#set(CMAKE_CXX_SCAN_FOR_MODULES ON) # @todo Want to use modules but can't get them to work.
-set(CMAKE_CXX_MODULES ON)
 
 # Add executable.
 file(GLOB_RECURSE SOURCES "Source/*.cpp")

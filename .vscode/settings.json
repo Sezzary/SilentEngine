@@ -102,6 +102,7 @@
         "cwctype": "cpp",
         "numbers": "cpp",
         "stdout_color_sinks.h": "c",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "*.hpp11": "cpp"
     }
 }

@@ -5,6 +5,19 @@
 
 namespace Silent::Renderer
 {
+    struct RendererVertex
+    {
+        float x, y, z;
+        float r, g, b, a;
+    };
+
+    static const auto VERTICES = std::vector<RendererVertex>
+    {
+        {  0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+        { -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f },
+        {  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f }
+    };
+
     SDL_GPUShader* LoadShader(SDL_GPUDevice* device, const std::string& shaderFilename,
                               uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount)
     {
@@ -109,13 +122,13 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to claim window for GPU device: " + std::string(SDL_GetError()));
         }
 
-        auto* vertShader = LoadShader(_device, "RawTriangle.vert", 0, 0, 0, 0);
+        auto* vertShader = LoadShader(_device, "Shaders/RawTriangle.vert", 0, 0, 0, 0);
         if (vertShader == nullptr)
         {
             Log("Failed to create vertex shader.", LogLevel::Error);
         }
 
-        auto* fragShader = LoadShader(_device, "SolidColor.frag", 0, 0, 0, 0);
+        auto* fragShader = LoadShader(_device, "Shaders/SolidColor.frag", 0, 0, 0, 0);
         if (fragShader == nullptr)
         {
             Log("Failed to create fragment shader.", LogLevel::Error);
@@ -155,11 +168,30 @@ namespace Silent::Renderer
         SDL_ReleaseGPUShader(_device, vertShader);
         SDL_ReleaseGPUShader(_device, fragShader);
 
-        // Create ImGui ImGui context.
+        /*auto bufferInfo = SDL_GPUBufferCreateInfo
+        {
+            .size  = sizeof(VERTICES),
+            .usage = SDL_GPU_BUFFERUSAGE_VERTEX
+        };
+        _vertexBuffer = SDL_CreateGPUBuffer(_device, &bufferInfo);
+
+        auto transferInfo = SDL_GPUTransferBufferCreateInfo
+        {
+            .size  = sizeof(VERTICES),
+            .usage = SDL_GPU_TRANSFER_BUFFER_USAGE_UPLOAD
+        };
+        _transferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferInfo);
+
+        auto* data = (RendererVertex*)SDL_MapGPUTransferBuffer(_device, _transferBuffer, false);
+        data[0] = VERTICES[0];
+        data[1] = VERTICES[1];
+        data[2] = VERTICES[2];*/
+
+        // Create ImGui context.
         ImGui::CreateContext();
         ImGui_ImplSDL3_InitForSDLGPU(_window);
 
-        // Initialize ImGui SDL_gpu backend.
+        // Initialize ImGui backend.
         auto initInfo = ImGui_ImplSDLGPU3_InitInfo
         {
             .Device            = _device,
@@ -172,7 +204,7 @@ namespace Silent::Renderer
         _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
     }
 
-    // TODO: Has errors.
+    // @todo Has errors.
     void SdlGpuRenderer::Deinitialize()
     {
         SDL_WaitForGPUIdle(_device);
@@ -245,14 +277,14 @@ namespace Silent::Renderer
         auto* surface = SDL_GetWindowSurface(_window);
         if (surface == nullptr)
         {
-            Log("Failed to capture screenshot: " + std::string(SDL_GetError()), LogLevel::Error);
+            Log("Failed to capture screenshot: " + std::string(SDL_GetError()), LogLevel::Error, LogMode::DebugRelease, true);
             return;
         }
 
         // Lock surface to access pixels.
         if (SDL_LockSurface(surface))
         {
-            Log("Failed to capture screenshot: " + std::string(SDL_GetError()), LogLevel::Error);
+            Log("Failed to capture screenshot: " + std::string(SDL_GetError()), LogLevel::Error, LogMode::DebugRelease, true);
             return;
         }
 
@@ -261,7 +293,7 @@ namespace Silent::Renderer
         {
             Log("Failed to save screenshot.", LogLevel::Error, LogMode::DebugRelease, true);
         }
-        
+
         SDL_UnlockSurface(surface);
     }
 

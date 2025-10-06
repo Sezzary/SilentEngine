@@ -14,6 +14,8 @@ namespace Silent::Renderer
         SDL_GPUDevice*           _device           = nullptr;
         SDL_GPUTexture*          _swapchainTexture = nullptr;
         SDL_GPUCommandBuffer*    _commandBuffer    = nullptr;
+        SDL_GPUBuffer*           _vertexBuffer     = nullptr;
+        SDL_GPUTransferBuffer*   _transferBuffer   = nullptr;
         SDL_GPUGraphicsPipeline* _fillPipeline3d   = nullptr;
         SDL_GPUGraphicsPipeline* _fillPipeline2d   = nullptr;
         SDL_GPUGraphicsPipeline* _linePipeline3d   = nullptr;

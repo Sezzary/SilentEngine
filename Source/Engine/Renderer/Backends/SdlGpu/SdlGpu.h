@@ -51,5 +51,7 @@ namespace Silent::Renderer
         void Draw3dScene() override;
         void Draw2dScene() override;
         void DrawDebugGui() override;
+
+        SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount);
     };
 }

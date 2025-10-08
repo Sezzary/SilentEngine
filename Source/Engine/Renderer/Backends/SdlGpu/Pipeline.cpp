@@ -47,7 +47,7 @@ namespace Silent::Renderer
         _pipelines[(int)PipelineType::Fill]           = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
         if (_pipelines[(int)PipelineType::Fill] == nullptr) 
         {
-            throw std::runtime_error("Failed to create 3D fill pipeline.");
+            throw std::runtime_error("Failed to create fill pipeline.");
         }
 
         // Create line pipeline.
@@ -55,7 +55,7 @@ namespace Silent::Renderer
         _pipelines[(int)PipelineType::Line]           = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
         if (_pipelines[(int)PipelineType::Line] == nullptr)
         {
-            throw std::runtime_error("Failed to create 3D line pipeline.");
+            throw std::runtime_error("Failed to create line pipeline.");
         }
 
         // Clean up shader resources.

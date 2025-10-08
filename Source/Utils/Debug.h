@@ -83,7 +83,7 @@ namespace Silent::Utils::Debug
      */
     void Log(const std::string& msg, LogLevel level = LogLevel::Info, LogMode mode = LogMode::DebugRelease, bool repeat = false);
 
-    /** @brief Asserts a condition in the debug build with a message detailing the failure.
+    /** @brief Asserts a condition with a failure message. Functional only in the debug build.
      *
      * @param cond Condition to assert.
      * @param msg Message to log in case of failure.

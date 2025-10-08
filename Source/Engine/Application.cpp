@@ -305,7 +305,7 @@ namespace Silent
                 }
                 case SDL_EVENT_MOUSE_WHEEL:
                 {
-                    // @todo Handle this a better way.
+                    // @todo Handle this a better way. `SDL_GetMouseState` doesn't capture the mouse wheel.
                     _mouseWheelAxis = Vector2(event.wheel.x, event.wheel.y);
                     break;
                 }

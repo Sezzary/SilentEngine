@@ -36,7 +36,6 @@ namespace Silent::Renderer
                 SetNearestFilter();
                 break;
             }
-
             case TextureFilterType::Bilinear:
             {
                 SetBilinearFilter();

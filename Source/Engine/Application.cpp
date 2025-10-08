@@ -86,7 +86,7 @@ namespace Silent
         // Debug.
         InitializeDebug();
 
-        Log("Starting " + std::string(APP_NAME) + "...");
+        Log("Starting " + std::string(APP_NAME) + APP_VERSION + "...");
 
         // Options.
         _work.Options.Initialize();
@@ -99,10 +99,9 @@ namespace Silent
         }
 
         // Collect window flags.
-        int rendererFlag   = 0;
         int fullscreenFlag = _work.Options->EnableFullscreen ? SDL_WINDOW_FULLSCREEN : 0;
         int maximizedFlag  = _work.Options->EnableMaximized  ? SDL_WINDOW_MAXIMIZED  : 0;
-        int flags          = SDL_WINDOW_RESIZABLE | rendererFlag | fullscreenFlag | maximizedFlag;
+        int flags          = SDL_WINDOW_RESIZABLE | fullscreenFlag | maximizedFlag;
 
         // Create window.
         _window = SDL_CreateWindow(APP_NAME, _work.Options->WindowedSize.x, _work.Options->WindowedSize.y, flags);
@@ -120,7 +119,7 @@ namespace Silent
         _work.Renderer->Initialize(*_window);
 
         // Assets.
-        _work.Assets.Initialize(_work.Filesystem.GetAssetsFolder());
+        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory());
 
         // Audio.
         _work.Audio.Initialize();
@@ -249,7 +248,6 @@ namespace Silent
                     Quit();
                     break;
                 }
-
                 case SDL_EVENT_WINDOW_RESIZED:
                 {
                     // Ignore if fullscreen or maximized.
@@ -276,7 +274,6 @@ namespace Silent
                     _work.Renderer->SignalResize();
                     break;
                 }
-
                 case SDL_EVENT_WINDOW_MAXIMIZED:
                 case SDL_EVENT_WINDOW_RESTORED:
                 {
@@ -289,7 +286,6 @@ namespace Silent
                     _work.Renderer->SignalResize();
                     break;
                 }
-
                 case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
                 case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
                 {
@@ -304,21 +300,18 @@ namespace Silent
                     _work.Renderer->SignalResize();
                     break;
                 }
-
                 case SDL_EVENT_MOUSE_WHEEL:
                 {
                     // @todo Handle this a better way.
                     _mouseWheelAxis = Vector2(event.wheel.x, event.wheel.y);
                     break;
                 }
-
                 case SDL_EVENT_GAMEPAD_ADDED:
                 {
                     // Attempt connecting gamepad.
                     _work.Input.ConnectGamepad(event.cdevice.which);
                     break;
                 }
-
                 case SDL_EVENT_GAMEPAD_REMOVED:
                 {
                     // Attempt disconnecting gamepad.

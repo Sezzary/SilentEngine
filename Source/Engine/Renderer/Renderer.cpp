@@ -40,19 +40,16 @@ namespace Silent::Renderer
             {
                 break;
             }
-
             case RenderScaleType::Half:
             {
                 res /= 2;
                 break;
             }
-
             case RenderScaleType::Quarter:
             {
                 res /= 4;
                 break;
             }
-
             case RenderScaleType::Retro:
             {
                 res = RETRO_RES;
@@ -223,7 +220,6 @@ namespace Silent::Renderer
                             point1 = sphere.Center + Vector3(sphere.Radius * glm::cos(theta1), sphere.Radius * glm::sin(theta1), 0.0f);
                             break;
                         }
-
                         // YZ plane.
                         case 1:
                         {
@@ -231,7 +227,6 @@ namespace Silent::Renderer
                             point1 = sphere.Center + Vector3(0.0f, sphere.Radius * glm::cos(theta1), sphere.Radius * glm::sin(theta1));
                             break;
                         }
-
                         // ZX plane.
                         case 2:
                         {

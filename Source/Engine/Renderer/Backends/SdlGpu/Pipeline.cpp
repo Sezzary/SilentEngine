@@ -2,6 +2,7 @@
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 
 #include "Engine/Services/Filesystem.h"
+#include "Engine/Application.h"
 
 using namespace Silent::Services;
 
@@ -87,26 +88,28 @@ namespace Silent::Renderer
 
         // Define shader properties.
         char        fullPath[256];
-        auto        backendFormats = SDL_GetGPUShaderFormats(_device);
-        auto        format         = (SDL_GPUShaderFormat)SDL_GPU_SHADERFORMAT_INVALID;
-        const char* entryPoint     = nullptr;
+        auto        formatFlags = SDL_GetGPUShaderFormats(_device);
+        auto        formatFlag  = (SDL_GPUShaderFormat)SDL_GPU_SHADERFORMAT_INVALID;
+        const char* entryPoint  = nullptr;
 
-        if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV)
+        const auto& fs = g_App.GetFilesystem();
+
+        if (formatFlags & SDL_GPU_SHADERFORMAT_SPIRV)
         {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.spv", SDL_GetBasePath(), (std::string(SHADERS_FOLDER_NAME) + "/" + filename).c_str());
-            format     = SDL_GPU_SHADERFORMAT_SPIRV;
+            snprintf(fullPath, sizeof(fullPath), "%s.spv", (fs.GetShadersDirectory() / filename).string().c_str());
+            formatFlag = SDL_GPU_SHADERFORMAT_SPIRV;
             entryPoint = "main";
         }
-        else if (backendFormats & SDL_GPU_SHADERFORMAT_MSL)
+        else if (formatFlags & SDL_GPU_SHADERFORMAT_MSL)
         {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.msl", SDL_GetBasePath(), (std::string(SHADERS_FOLDER_NAME) + "/" + filename).c_str());
-            format     = SDL_GPU_SHADERFORMAT_MSL;
+            snprintf(fullPath, sizeof(fullPath), "%s.msl", (fs.GetShadersDirectory() / filename).string().c_str());
+            formatFlag = SDL_GPU_SHADERFORMAT_MSL;
             entryPoint = "main0";
         }
-        else if (backendFormats & SDL_GPU_SHADERFORMAT_DXIL)
+        else if (formatFlags & SDL_GPU_SHADERFORMAT_DXIL)
         {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.dxil", SDL_GetBasePath(), (std::string(SHADERS_FOLDER_NAME) + "/" + filename).c_str());
-            format     = SDL_GPU_SHADERFORMAT_DXIL;
+            snprintf(fullPath, sizeof(fullPath), "%s.dxil", (fs.GetShadersDirectory() / filename).string().c_str());
+            formatFlag = SDL_GPU_SHADERFORMAT_DXIL;
             entryPoint = "main";
         }
         else
@@ -129,7 +132,7 @@ namespace Silent::Renderer
             .code_size            = codeSize,
             .code                 = (const uint8*)code,
             .entrypoint           = entryPoint,
-            .format               = format,
+            .format               = formatFlag,
             .stage                = stage,
             .num_samplers         = samplerCount,
             .num_storage_textures = storageTexCount,

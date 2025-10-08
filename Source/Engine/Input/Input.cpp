@@ -142,19 +142,16 @@ namespace Silent::Input
                     _gamepad.VendorId = GamepadVendorId::Xbox;
                     break;
                 }
-
                 case NINTENDO_VENDOR_CODE:
                 {
                     _gamepad.VendorId = GamepadVendorId::Nintendo;
                     break;
                 }
-
                 case SONY_VENDOR_CODE:
                 {
                     _gamepad.VendorId = GamepadVendorId::Sony;
                     break;
                 }
-
                 default:
                 {
                     _gamepad.VendorId = GamepadVendorId::Generic;
@@ -216,17 +213,14 @@ namespace Silent::Input
             {
                 break;
             }
-
             case GamepadVendorId::Xbox:
             {
                 return XBOX_VENDOR_NAME;
             }
-
             case GamepadVendorId::Nintendo:
             {
                 return NINTENDO_VENDOR_NAME;
             }
-
             case GamepadVendorId::Sony:
             {
                 return SONY_VENDOR_NAME;

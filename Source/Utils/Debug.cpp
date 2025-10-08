@@ -54,7 +54,7 @@ namespace Silent::Utils::Debug
         const auto& fs = g_App.GetFilesystem();
 
         // Set file and console log targets.
-        auto path        = fs.GetAppFolder() / LOG_FILENAME;
+        auto path        = fs.GetAppDirectory() / LOG_FILENAME;
         auto fileSink    = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path.string(), true); // `true` = create new log at launch.
         auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         auto logger      = std::make_shared<spdlog::logger>(LOGGER_NAME, spdlog::sinks_init_list{ fileSink, consoleSink });
@@ -67,7 +67,7 @@ namespace Silent::Utils::Debug
 
         // Initialize `ImGui`.
         ImGui::CreateContext();
-        auto imguiPath             = (fs.GetWorkFolder() / IMGUI_FILENAME).string();
+        auto imguiPath             = (fs.GetWorkDirectory() / IMGUI_FILENAME).string();
         ImGui::GetIO().IniFilename = CopyString(imguiPath.c_str(), imguiPath.size());
 
         // Reserve `Messages` size.
@@ -703,19 +703,16 @@ namespace Silent::Utils::Debug
                     logger->info(msg);
                     break;
                 }
-                
                 case LogLevel::Warning:
                 {
                     logger->warn(msg);
                     break;
                 }
-
                 case LogLevel::Error:
                 {
                     logger->error(msg);
                     break;
                 }
-
                 case LogLevel::Critical:
                 {
                     logger->critical(msg);

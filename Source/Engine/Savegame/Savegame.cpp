@@ -7,6 +7,9 @@
 
 namespace Silent::Services
 {
+    constexpr char SAVEGAME_SLOT_FILE_DIR_NAME_BASE[] = "File ";
+    constexpr char SAVEGAME_SLOT_DIR_NAME_BASE[]      = "Slot ";
+
     static const char* SAVE_LOCATION_NAMES[] =
     {
         "Anywhere",
@@ -123,10 +126,10 @@ namespace Silent::Services
 
         const auto& fs = g_App.GetFilesystem();
 
-        auto slotFolderName = SAVEGAME_SLOT_FOLDER_NAME_BASE + std::to_string(slotIdx + 1);
-        auto fileFolderName = SAVEGAME_SLOT_FILE_FOLDER_NAME_BASE + std::to_string(fileIdx + 1);
+        auto slotDirName = SAVEGAME_SLOT_DIR_NAME_BASE + std::to_string(slotIdx + 1);
+        auto fileDirName = SAVEGAME_SLOT_FILE_DIR_NAME_BASE + std::to_string(fileIdx + 1);
         auto saveFilename   = std::to_string(saveIdx + 1) + SAVEGAME_FILE_EXT;
-        return fs.GetWorkFolder() / SAVEGAME_FOLDER_NAME / slotFolderName / fileFolderName / saveFilename;
+        return fs.GetSavegameDirectory() / slotDirName / fileDirName / saveFilename;
     }
 
     SavegameMetadata SavegameManager::GetMetadata(const std::filesystem::path& saveFile) const
@@ -173,25 +176,25 @@ namespace Silent::Services
         for (int slotIdx = 0; slotIdx < _slotMetadata.size(); slotIdx++)
         {
             // Get slot folder path.
-            auto slotFolderName = SAVEGAME_SLOT_FOLDER_NAME_BASE + std::to_string(slotIdx + 1);
-            auto slotFolder     = fs.GetWorkFolder() / slotFolderName;
-            if (!std::filesystem::exists(slotFolder) || !std::filesystem::is_directory(slotFolder))
+            auto slotDirName = SAVEGAME_SLOT_DIR_NAME_BASE + std::to_string(slotIdx + 1);
+            auto slotDir     = fs.GetWorkDirectory() / slotDirName;
+            if (!std::filesystem::exists(slotDir) || !std::filesystem::is_directory(slotDir))
             {
                 continue;
             }
 
             // Collect file folders.
-            auto fileFolders = std::vector<std::filesystem::path>{};
-            for (const auto& fileFolder : std::filesystem::directory_iterator(slotFolder))
+            auto fileDirs = std::vector<std::filesystem::path>{};
+            for (const auto& fileDir : std::filesystem::directory_iterator(slotDir))
             {
-                if (fileFolder.is_directory())
+                if (fileDir.is_directory())
                 {
-                    fileFolders.push_back(fileFolder.path());
+                    fileDirs.push_back(fileDir.path());
                 }
             }
 
             // Sort file folders.
-            std::sort(fileFolders.begin(), fileFolders.end(), [](const std::filesystem::path& file0, const std::filesystem::path& file1)
+            std::sort(fileDirs.begin(), fileDirs.end(), [](const std::filesystem::path& file0, const std::filesystem::path& file1)
             {
                 auto extractNumber = [](const std::filesystem::path& file)
                 {
@@ -213,9 +216,9 @@ namespace Silent::Services
 
             // Collect savegame files.
             auto saveFiles = std::vector<std::filesystem::path>{};
-            for (const auto& fileFolder : fileFolders)
+            for (const auto& fileDir : fileDirs)
             {
-                for (const auto& saveFile : std::filesystem::directory_iterator(fileFolder))
+                for (const auto& saveFile : std::filesystem::directory_iterator(fileDir))
                 {
                     if (saveFile.is_regular_file() && saveFile.path().extension() == SAVEGAME_FILE_EXT)
                     {

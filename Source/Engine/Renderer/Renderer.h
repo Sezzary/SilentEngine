@@ -4,10 +4,11 @@
 
 namespace Silent::Renderer
 {
-    constexpr auto SCREEN_SPACE_RES         = Vector2(100.0f);
-    constexpr auto CLASSIC_SCREEN_SPACE_RES = Vector2(320.0f, 240.0f);
-    constexpr uint PRIMITIVE_2D_COUNT_MAX   = 128;
-
+    constexpr auto SCREEN_SPACE_RES           = Vector2(100.0f);
+    constexpr auto CLASSIC_SCREEN_SPACE_RES   = Vector2(320.0f, 240.0f);
+    constexpr uint PRIMITIVE_2D_COUNT_MAX     = 128;
+    constexpr char SCREENSHOT_FILENAME_BASE[] = "Screenshot_";
+    
     enum class RendererType
     {
         OpenGl,

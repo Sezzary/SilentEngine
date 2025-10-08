@@ -35,20 +35,26 @@ namespace Silent
     class ApplicationManager
     {
     private:
+        // =======
         // Fields
+        // =======
 
-        bool            _quit   = false;
-        ApplicationWork _work   = {};
-        SDL_Window*     _window = nullptr;
+        bool            _quit   = false;   /** Quit procedure state. */
+        ApplicationWork _work   = {};      /** Subsystem workspace. */
+        SDL_Window*     _window = nullptr; /** Application window. */
 
-        Vector2 _mouseWheelAxis = Vector2::Zero;
+        Vector2 _mouseWheelAxis = Vector2::Zero; /** Mouse wheel axis input. */
 
     public:
+        // =============
         // Constructors
+        // =============
 
         ApplicationManager() = default;
 
+        // ========
         // Getters
+        // ========
 
         AssetManager&      GetAssets();
         AudioManager&      GetAudio();
@@ -66,7 +72,9 @@ namespace Silent
          */
         Vector2i GetWindowResolution() const;
 
+        // ==========
         // Utilities
+        // ==========
 
         /** @brief Initializes the application and its subsystems. */
         void Initialize();
@@ -87,7 +95,9 @@ namespace Silent
         void ToggleCursor();
 
     private:
+        // ========
         // Helpers
+        // ========
 
         void Update();
         void Render();

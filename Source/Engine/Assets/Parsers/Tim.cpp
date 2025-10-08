@@ -122,13 +122,11 @@ namespace Silent::Assets
                 widthCoeff = 4;
                 break;
             }
-
             case BitsPerPixel::Bpp8:
             {
                 widthCoeff = 2;
                 break;
             }
-
             case BitsPerPixel::Bpp16:
             {
                 widthCoeff = 1;

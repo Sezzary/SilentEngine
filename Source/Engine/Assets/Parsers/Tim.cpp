@@ -95,13 +95,11 @@ namespace Silent::Assets
                 bpp = BitsPerPixel::Bpp4;
                 break;
             }
-
             case TimFlags::Bpp8:
             {
                 bpp = BitsPerPixel::Bpp8;
                 break;
             }
-
             case TimFlags::Bpp16:
             {
                 bpp = BitsPerPixel::Bpp16;
@@ -197,7 +195,6 @@ namespace Silent::Assets
                         }
                         break;
                     }
-
                     case BitsPerPixel::Bpp8:
                     {
                         // Read color data.
@@ -221,7 +218,6 @@ namespace Silent::Assets
                         x++;
                         break;
                     }
-
                     case BitsPerPixel::Bpp16:
                     {
                         // Read color.

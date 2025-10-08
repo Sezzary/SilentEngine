@@ -208,7 +208,6 @@ namespace Silent::Input
 
         switch (vendorId)
         {
-            default:
             case GamepadVendorId::Generic:
             {
                 break;

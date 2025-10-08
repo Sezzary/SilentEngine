@@ -35,7 +35,6 @@ namespace Silent::Renderer
         // @todo Not sure how to do this.
         switch (options->RenderScale)
         {
-            default:
             case RenderScaleType::Native:
             {
                 break;

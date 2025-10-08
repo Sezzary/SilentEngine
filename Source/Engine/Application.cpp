@@ -92,9 +92,6 @@ namespace Silent
         _work.Options.Initialize();
         _work.Options.Load();
 
-        // Assets.
-        _work.Assets.Initialize(_work.Filesystem.GetAssetsFolder());
-
         // SDL.
         if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO))
         {
@@ -121,6 +118,9 @@ namespace Silent
             throw std::runtime_error("Failed to create renderer.");
         }
         _work.Renderer->Initialize(*_window);
+
+        // Assets.
+        _work.Assets.Initialize(_work.Filesystem.GetAssetsFolder());
 
         // Audio.
         _work.Audio.Initialize();

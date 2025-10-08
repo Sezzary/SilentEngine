@@ -552,8 +552,6 @@ namespace Silent::Input
         {
             const auto& renderer = g_App.GetRenderer();
             renderer.SaveScreenshot();
-
-            Log("Captured screenshot.", LogLevel::Info, LogMode::DebugRelease, true);
         }
         dbScreenshot = !(_states.Events[(int)EventId::PrintScreen] || _states.Events[(int)EventId::F12]);
 
@@ -562,8 +560,6 @@ namespace Silent::Input
         if (((_states.Events[(int)EventId::Alt] && _states.Events[(int)EventId::Return]) || _states.Events[(int)EventId::F11]) && dbFullscreen)
         {
             g_App.ToggleFullscreen();
-
-            Log("Toggled fullscreen.", LogLevel::Info, LogMode::DebugRelease, true);
         }
         dbFullscreen = !((_states.Events[(int)EventId::Alt] && _states.Events[(int)EventId::Return]) || _states.Events[(int)EventId::F11]);
 

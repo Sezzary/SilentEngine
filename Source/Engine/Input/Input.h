@@ -45,7 +45,7 @@ namespace Silent::Input
     struct States
     {
         bool               IsUsingGamepad     = false;
-        std::vector<float> Events             = {}; // Index = `EventId`.
+        std::vector<float> Events             = {}; /** Index = `EventId`. */
         Vector2            CursorPosition     = {};
         Vector2            PrevCursorPosition = {};
     };

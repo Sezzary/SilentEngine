@@ -174,10 +174,13 @@ namespace Silent::Renderer
         }
 
         // Write screenshot file.
-        if (!stbi_write_png(path.string().c_str(), res.x, res.y, COLOR_CHANNEL_COUNT, pixels.data(), res.x * COLOR_CHANNEL_COUNT))
+        if (stbi_write_png(path.string().c_str(), res.x, res.y, COLOR_CHANNEL_COUNT, pixels.data(), res.x * COLOR_CHANNEL_COUNT))
         {
-            Log("Failed to save screenshot.", LogLevel::Warning, LogMode::DebugRelease, true);
+            Log("Saved screenshot.", LogLevel::Info, LogMode::DebugRelease, true);
+            return;
         }
+
+        Log("Failed to save screenshot.", LogLevel::Warning, LogMode::DebugRelease, true);
     }
 
     void OpenGlRenderer::LogError(const std::string& msg) const

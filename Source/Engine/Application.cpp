@@ -173,10 +173,13 @@ namespace Silent
 
     void ApplicationManager::ToggleFullscreen()
     {
-        if (!SDL_SetWindowFullscreen(_window, !_work.Options->EnableFullscreen))
+        if (SDL_SetWindowFullscreen(_window, !_work.Options->EnableFullscreen))
         {
-            Log("Failed to toggle fullscreen mode: " + std::string(SDL_GetError()), LogLevel::Warning);
+            Log("Toggled fullscreen mode.", LogLevel::Info, LogMode::DebugRelease, true);
+            return;
         }
+
+        Log("Failed to toggle fullscreen mode: " + std::string(SDL_GetError()), LogLevel::Warning);
     }
 
     void ApplicationManager::ToggleCursor()

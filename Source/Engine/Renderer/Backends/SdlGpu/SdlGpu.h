@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
@@ -16,10 +17,10 @@ namespace Silent::Renderer
         SDL_GPUCommandBuffer*    _commandBuffer    = nullptr;
         SDL_GPUBuffer*           _vertexBuffer     = nullptr;
         SDL_GPUTransferBuffer*   _transferBuffer   = nullptr;
-        SDL_GPUGraphicsPipeline* _fillPipeline3d   = nullptr;
-        SDL_GPUGraphicsPipeline* _fillPipeline2d   = nullptr;
-        SDL_GPUGraphicsPipeline* _linePipeline3d   = nullptr;
-        SDL_GPUGraphicsPipeline* _linePipeline2d   = nullptr;
+
+        PipelineManager _pipelines = PipelineManager();
+
+        std::unordered_map<SDL_GPUTexture*, int> _textureCache = {}; /** Key = texture, value = asset ID. */
 
     public:
         // =============
@@ -51,7 +52,5 @@ namespace Silent::Renderer
         void Draw3dScene() override;
         void Draw2dScene() override;
         void DrawDebugGui() override;
-
-        SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount);
     };
 }

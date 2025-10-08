@@ -2,6 +2,10 @@
 #include "Engine/Renderer/Backends/SdlGpu/SdlGpu.h"
 
 #include "Engine/Application.h"
+#include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
+#include "Engine/Services/Filesystem.h"
+
+using namespace Silent::Services;
 
 namespace Silent::Renderer
 {
@@ -20,16 +24,14 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
+        Log("Using SDL_gpu renderer.");
+
         _type   = RendererType::SdlGpu;
         _window = &window;
 
-        Log("Using SDL_gpu renderer.");
-
-        // Collect GPU flags.
-        int formatFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
-
         // Create GPU device.
-        _device = SDL_CreateGPUDevice(formatFlags, IS_DEBUG_BUILD, nullptr);
+        int formatFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
+        _device         = SDL_CreateGPUDevice(formatFlags, IS_DEBUG_BUILD, nullptr);
         if (_device == nullptr)
         {
             throw std::runtime_error("Failed to create GPU device: " + std::string(SDL_GetError()));
@@ -41,53 +43,8 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to claim window for GPU device: " + std::string(SDL_GetError()));
         }
 
-        auto* vertShader = LoadShader("RawTriangle.vert", 0, 0, 0, 0);
-        if (vertShader == nullptr)
-        {
-            Log("Failed to create vertex shader.", LogLevel::Error);
-        }
-
-        auto* fragShader = LoadShader("SolidColor.frag", 0, 0, 0, 0);
-        if (fragShader == nullptr)
-        {
-            Log("Failed to create fragment shader.", LogLevel::Error);
-        }
-
-        auto colorTargetDesc = SDL_GPUColorTargetDescription
-        {
-            .format = SDL_GetGPUSwapchainTextureFormat(_device, _window)
-        };
-        auto pipelineCreateInfo = SDL_GPUGraphicsPipelineCreateInfo
-        {
-            .vertex_shader   = vertShader,
-            .fragment_shader = fragShader,
-            .primitive_type  = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
-            .target_info     = SDL_GPUGraphicsPipelineTargetInfo
-            {
-                .color_target_descriptions = &colorTargetDesc,
-                .num_color_targets         = 1
-            }
-        };
-
-        pipelineCreateInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
-        _fillPipeline3d                               = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
-        if (_fillPipeline3d == nullptr) 
-        {
-            throw std::runtime_error("Failed to create 3D fill pipeline.");
-        }
-
-        pipelineCreateInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_LINE;
-        _linePipeline3d                               = SDL_CreateGPUGraphicsPipeline(_device, &pipelineCreateInfo);
-        if (_linePipeline3d == nullptr)
-        {
-            throw std::runtime_error("Failed to create 3D line pipeline.");
-        }
-
-        // TODO: 2D pipelines.
-
-        // Clean up shader resources.
-        SDL_ReleaseGPUShader(_device, vertShader);
-        SDL_ReleaseGPUShader(_device, fragShader);
+        // Initialize pipelines with shaders.
+        _pipelines.Initialize(*_window, *_device);
 
         /*auto bufferInfo = SDL_GPUBufferCreateInfo
         {
@@ -251,12 +208,12 @@ namespace Silent::Renderer
             .load_op     = SDL_GPU_LOADOP_CLEAR,
             .store_op    = SDL_GPU_STOREOP_STORE
         };
-        auto* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
+        auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
         // Process render pass.
-        SDL_BindGPUGraphicsPipeline(renderPass, g_DebugData.EnableWireframeMode ? _linePipeline3d : _fillPipeline3d);
-        SDL_DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
-        SDL_EndGPURenderPass(renderPass);
+        _pipelines.Bind(g_DebugData.EnableWireframeMode ? PipelineType::Line : PipelineType::Fill, renderPass);
+        SDL_DrawGPUPrimitives(&renderPass, 3, 1, 0, 0);
+        SDL_EndGPURenderPass(&renderPass);
     }
 
     void SdlGpuRenderer::Draw2dScene()
@@ -268,12 +225,12 @@ namespace Silent::Renderer
             .load_op  = SDL_GPU_LOADOP_LOAD,
             .store_op = SDL_GPU_STOREOP_STORE
         };
-        auto* renderPass = SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
+        auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
         // Process render pass.
-        SDL_BindGPUGraphicsPipeline(renderPass, g_DebugData.EnableWireframeMode ? _linePipeline2d : _fillPipeline2d);
-        SDL_DrawGPUPrimitives(renderPass, 4, 1, 0, 0);
-        SDL_EndGPURenderPass(renderPass);
+        _pipelines.Bind(g_DebugData.EnableWireframeMode ? PipelineType::Line : PipelineType::Fill, renderPass);
+        SDL_DrawGPUPrimitives(&renderPass, 4, 1, 0, 0);
+        SDL_EndGPURenderPass(&renderPass);
     }
 
     void SdlGpuRenderer::DrawDebugGui()
@@ -315,84 +272,5 @@ namespace Silent::Renderer
         // Process render pass.
         ImGui_ImplSDLGPU3_RenderDrawData(drawData, _commandBuffer, renderPass);
         SDL_EndGPURenderPass(renderPass);
-    }
-
-    SDL_GPUShader* SdlGpuRenderer::LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount)
-    {
-        auto stage = SDL_GPUShaderStage{};
-        if (SDL_strstr(filename.c_str(), ".vert"))
-        {
-            stage = SDL_GPU_SHADERSTAGE_VERTEX;
-        }
-        else if (SDL_strstr(filename.c_str(), ".frag"))
-        {
-            stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
-        }
-        else
-        {
-            Log("Invalid shader stage.", LogLevel::Error);
-            return nullptr;
-        }
-
-        char        fullPath[256];
-        auto        backendFormats = SDL_GetGPUShaderFormats(_device);
-        auto        format         = (SDL_GPUShaderFormat)SDL_GPU_SHADERFORMAT_INVALID;
-        const char* entryPoint     = nullptr;
-
-        if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV)
-        {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.spv", SDL_GetBasePath(), (std::string(SHADERS_FOLDER_NAME) + "/" + filename).c_str());
-            format     = SDL_GPU_SHADERFORMAT_SPIRV;
-            entryPoint = "main";
-        }
-        else if (backendFormats & SDL_GPU_SHADERFORMAT_MSL)
-        {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.msl", SDL_GetBasePath(), (std::string(SHADERS_FOLDER_NAME) + "/" + filename).c_str());
-            format     = SDL_GPU_SHADERFORMAT_MSL;
-            entryPoint = "main0";
-        }
-        else if (backendFormats & SDL_GPU_SHADERFORMAT_DXIL)
-        {
-            SDL_snprintf(fullPath, sizeof(fullPath), "%s%s.dxil", SDL_GetBasePath(), (std::string(SHADERS_FOLDER_NAME) + "/" + filename).c_str());
-            format     = SDL_GPU_SHADERFORMAT_DXIL;
-            entryPoint = "main";
-        }
-        else
-        {
-            Log("Unrecognized backend shader format.", LogLevel::Error);
-            return nullptr;
-        }
-
-        size_t codeSize = 0;
-        void*  code     = SDL_LoadFile(fullPath, &codeSize);
-        if (code == nullptr)
-        {
-            Log("Failed to load shader `" + std::string(fullPath) + "`: " + SDL_GetError(), LogLevel::Error);
-            return nullptr;
-        }
-
-        auto shaderInfo = SDL_GPUShaderCreateInfo
-        {
-            .code_size            = codeSize,
-            .code                 = (const uint8*)code,
-            .entrypoint           = entryPoint,
-            .format               = format,
-            .stage                = stage,
-            .num_samplers         = samplerCount,
-            .num_storage_textures = storageTexCount,
-            .num_storage_buffers  = storageBufferCount,
-            .num_uniform_buffers  = uniBufferCount
-        };
-
-        auto* shader = SDL_CreateGPUShader(_device, &shaderInfo);
-        if (shader == nullptr)
-        {
-            Log("Failed to create shader: " + std::string(SDL_GetError()));
-            SDL_free(code);
-            return nullptr;
-        }
-
-        SDL_free(code);
-        return shader;
     }
 }

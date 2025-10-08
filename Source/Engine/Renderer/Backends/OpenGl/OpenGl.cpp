@@ -24,6 +24,8 @@ namespace Silent::Renderer
 {
     void OpenGlRenderer::Initialize(SDL_Window& window)
     {
+        Log("Using OpenGL renderer:");
+
         _type   = RendererType::OpenGl;
         _window = &window;
 
@@ -57,9 +59,6 @@ namespace Silent::Renderer
 
         ImGui_ImplSDL3_InitForOpenGL(_window, _context);
         ImGui_ImplOpenGL3_Init(OPEN_GL_VERSION);
-
-        // Log renderer specs.
-        Log("Using OpenGL renderer:");
 
         auto gpu    = std::string((const char*)glGetString(GL_RENDERER));
         auto vendor = std::string((const char*)glGetString(GL_VENDOR));

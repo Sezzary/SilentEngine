@@ -12,6 +12,12 @@ namespace Silent::Renderer
         Count
     };
 
+    struct PipelineConfig
+    {
+        std::string VertexShaderName   = {};
+        std::string FragmentShaderName = {};
+    };
+
     /** @brief Central graphics pipeline manager. */
     class PipelineManager
     {
@@ -52,10 +58,8 @@ namespace Silent::Renderer
         // Helpers
         // ========
 
-        SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount);
+        void InitializeGraphicsPipeline(const PipelineConfig& config);
 
-        void InitializeFillPipeline(const std::string& vertShaderName, const std::string fragShaderName);
-        void InitializeLinePipeline(const std::string& vertShaderName, const std::string fragShaderName);
-        // etc. @todo Dedicated init functions for each pipeline to cleanly encapsulate procedures.
+        SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount);
     };
 }

@@ -21,7 +21,7 @@ namespace Silent::Renderer
         // =============
 
         Buffer() = default;
-        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<const T> objs);
+        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<const T> data);
 
         //===========
         // Utilities
@@ -29,12 +29,10 @@ namespace Silent::Renderer
 
         /** @brief Uploads data to the buffer.
          *
-         * @todo Rename `objs` to `data`?
-         *
-         * @param objs Object data to transfer to the buffer.
-         * @param startIdx Start index in the buffer at which to transfer the object data.
+         * @param data New data to transfer to the buffer.
+         * @param startIdx Start index in the buffer at which to transfer the new data.
          */
-        void Update(SDL_GPUCopyPass& copyPass, std::span<const T> objs, uint startIdx);
+        void Update(SDL_GPUCopyPass& copyPass, std::span<const T> data, uint startIdx);
 
         /** @brief Binds the buffer for drawing.
          *
@@ -47,7 +45,7 @@ namespace Silent::Renderer
     };
 
     template <typename T>
-    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<const T> objs)
+    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<const T> data)
     {
         if (!(usageFlags & (SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_INDEX | SDL_GPU_BUFFERUSAGE_INDIRECT)))
         {
@@ -59,7 +57,7 @@ namespace Silent::Renderer
         auto bufferInfo = SDL_GPUBufferCreateInfo
         {
             .usage = usageFlags,
-            .size  = (uint)objs.size_bytes()
+            .size  = (uint)data.size_bytes()
         };
 
         // Create buffer.
@@ -69,14 +67,14 @@ namespace Silent::Renderer
             Log("Failed to create buffer: " + std::string(SDL_GetError()));
         }
 
-        auto transferInfo = SDL_GPUTransferBufferCreateInfo
+        auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = (uint)objs.size_bytes()
+            .size  = (uint)data.size_bytes()
         };
 
         // Create transfer buffer.
-        _transfer = SDL_CreateGPUTransferBuffer(_device, &transferInfo);
+        _transfer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
         if (_transfer == nullptr)
         {
             Log("Failed to create transfer buffer: " + std::string(SDL_GetError()));
@@ -84,22 +82,21 @@ namespace Silent::Renderer
     }
 
     template <typename T>
-    void Buffer<T>::Update(SDL_GPUCopyPass& copyPass, std::span<const T> objs, uint startIdx)
+    void Buffer<T>::Update(SDL_GPUCopyPass& copyPass, std::span<const T> data, uint startIdx)
     {
-        auto* data = (T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
-        memcpy(data, objs.data(), objs.size_bytes());
+        auto* transferBuffer = (T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
+        memcpy(transferBuffer, data.data(), data.size_bytes());
         SDL_UnmapGPUTransferBuffer(_device, _transfer);
 
         auto loc = SDL_GPUTransferBufferLocation
         {
             .transfer_buffer = _transfer
         };
-
         auto region = SDL_GPUBufferRegion
         {
             .buffer = _buffer,
             .offset = startIdx * sizeof(T),
-            .size   = (uint)objs.size_bytes()
+            .size   = (uint)data.size_bytes()
         };
 
         SDL_UploadToGPUBuffer(&copyPass, &loc, &region, true);

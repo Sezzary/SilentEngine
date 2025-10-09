@@ -86,7 +86,7 @@ namespace Silent
         // Debug.
         InitializeDebug();
 
-        Log("Starting " + std::string(APP_NAME) + APP_VERSION + "...");
+        Log("Starting " + std::string(APP_NAME) + " " + APP_VERSION + "...");
 
         // Options.
         _work.Options.Initialize();

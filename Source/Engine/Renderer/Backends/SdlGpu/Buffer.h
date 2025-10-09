@@ -20,8 +20,16 @@ namespace Silent::Renderer
         // Constructors
         // =============
 
+        /** @brief Constructs an uninitialized default `Buffer`. */
         Buffer() = default;
-        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<const T> data);
+
+        /** @brief Constructs a vertex, index, or indirect `Buffer`.
+         *
+         * @param device GPU device.
+         * @param usageFlags Buffer usage flags.
+         * @param size Static buffer size.
+         */
+        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size);
 
         //===========
         // Utilities
@@ -45,11 +53,11 @@ namespace Silent::Renderer
     };
 
     template <typename T>
-    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<const T> data)
+    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size)
     {
         if (!(usageFlags & (SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_INDEX | SDL_GPU_BUFFERUSAGE_INDIRECT)))
         {
-            throw std::runtime_error("Attempted to create invalid GPU buffer.");
+            throw std::runtime_error("Attempted to create GPU buffer with invalid usage flags.");
         }
 
         _device = &device;
@@ -57,7 +65,7 @@ namespace Silent::Renderer
         auto bufferInfo = SDL_GPUBufferCreateInfo
         {
             .usage = usageFlags,
-            .size  = (uint)data.size_bytes()
+            .size  = size * sizeof(T)
         };
 
         // Create buffer.
@@ -70,7 +78,7 @@ namespace Silent::Renderer
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = (uint)data.size_bytes()
+            .size  = size * sizeof(T)
         };
 
         // Create transfer buffer.
@@ -98,7 +106,6 @@ namespace Silent::Renderer
             .offset = startIdx * sizeof(T),
             .size   = (uint)data.size_bytes()
         };
-
         SDL_UploadToGPUBuffer(&copyPass, &loc, &region, true);
     }
 
@@ -109,6 +116,6 @@ namespace Silent::Renderer
         bufferBindings[0].buffer = _buffer;
         bufferBindings[0].offset = startIdx * sizeof(T),
 
-        SDL_BindGPUVertexBuffers(&renderPass, 0, bufferBindings.data(), 1);
+        SDL_BindGPUVertexBuffers(&renderPass, 0, bufferBindings.data(), bufferBindings.size());
     }
 };

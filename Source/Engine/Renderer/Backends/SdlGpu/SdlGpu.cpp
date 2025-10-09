@@ -48,10 +48,10 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to claim window for GPU device: " + std::string(SDL_GetError()));
         }
 
-        // Initialize pipelines with shaders.
+        // Initialize pipelines.
         _pipelines.Initialize(*_window, *_device);
 
-        VertexBuffer = Buffer<RendererVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, ToSpan(VERTICES));
+        VertexBuffer = Buffer<RendererVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, VERTICES.size());
 
         // Create ImGui context.
         ImGui::CreateContext();
@@ -105,10 +105,6 @@ namespace Silent::Renderer
             return;
         }
 
-        auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
-        VertexBuffer.Update(*copyPass, ToSpan(VERTICES), 0);
-        SDL_EndGPUCopyPass(copyPass);
-
         // Draw frame.
         if (_swapchainTexture != nullptr)
         {
@@ -117,7 +113,7 @@ namespace Silent::Renderer
             DrawDebugGui();
         }
 
-        // Submit command buffer.
+        // Submit command buffer to GPU.
         SDL_SubmitGPUCommandBuffer(_commandBuffer);
 
         // Clear.
@@ -196,6 +192,11 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Draw3dScene()
     {
+        // Process copy pass.
+        auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
+        VertexBuffer.Update(*copyPass, ToSpan(VERTICES), 0);
+        SDL_EndGPUCopyPass(copyPass);
+
         // Begin render pass.
         auto colorTargetInfo = SDL_GPUColorTargetInfo
         {
@@ -206,11 +207,11 @@ namespace Silent::Renderer
         };
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
+        // Bind.
         _pipelines.Bind(renderPass, PipelineType::Triangle);
         VertexBuffer.Bind(renderPass, 0);
 
         // Process render pass.
-        //_pipelines.Bind(renderPass, g_DebugData.EnableWireframeMode ? PipelineType::Line : PipelineType::Fill);
         SDL_DrawGPUPrimitives(&renderPass, 3, 1, 0, 0);
         SDL_EndGPURenderPass(&renderPass);
     }
@@ -226,8 +227,10 @@ namespace Silent::Renderer
         };
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
+        // Bind.
+        _pipelines.Bind(renderPass, PipelineType::Triangle);
+
         // Process render pass.
-        _pipelines.Bind(renderPass, g_DebugData.EnableWireframeMode ? PipelineType::Line : PipelineType::Fill);
         SDL_DrawGPUPrimitives(&renderPass, 4, 1, 0, 0);
         SDL_EndGPURenderPass(&renderPass);
     }

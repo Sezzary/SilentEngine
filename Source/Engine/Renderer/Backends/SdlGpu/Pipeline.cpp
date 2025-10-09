@@ -8,6 +8,7 @@ using namespace Silent::Services;
 
 namespace Silent::Renderer
 {
+    // @todo Temp.
     struct RendererVertex
     {
         Vector3 Position = Vector3::Zero;
@@ -18,14 +19,6 @@ namespace Silent::Renderer
     {
         _device = &device;
 
-        /*auto fillPipelineConfig = PipelineConfig
-        {
-            .Type               = PipelineType::Fill,
-            .VertexShaderName   = "RawTriangle.vert",
-            .FragmentShaderName = "SolidColor.frag"
-        };
-        InitializeGraphicsPipeline(window, fillPipelineConfig);*/
-
         auto triPipelineConfig = PipelineConfig
         {
             .Type               = PipelineType::Triangle,
@@ -33,7 +26,6 @@ namespace Silent::Renderer
             .FragmentShaderName = "Frag.frag"/*,
             .VertBufferDescs    = std::vector<SDL_GPUVertexBufferDescription>
             {
-                SDL_GPUVertexBufferDescription
                 {
                     .pitch              = sizeof(RendererVertex),
                     .slot               = 0,
@@ -43,14 +35,12 @@ namespace Silent::Renderer
             },
             .VertBufferAttribs = std::vector<SDL_GPUVertexAttribute>
             {
-                SDL_GPUVertexAttribute
                 {
                     .location    = 0,
                     .buffer_slot = 0,
                     .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
                     .offset      = 0
                 },
-                SDL_GPUVertexAttribute
                 {
                     .location    = 1,
                     .buffer_slot = 0,
@@ -60,7 +50,6 @@ namespace Silent::Renderer
             },
             .ColorTargetDescs = std::vector<SDL_GPUColorTargetDescription>
             {
-                SDL_GPUColorTargetDescription
                 {
                     .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
                     .blend_state = SDL_GPUColorTargetBlendState
@@ -78,7 +67,6 @@ namespace Silent::Renderer
         };
         triPipelineConfig.VertBufferDescs    = std::vector<SDL_GPUVertexBufferDescription>
         {
-            SDL_GPUVertexBufferDescription
             {
                 .slot               = 0,
                 .pitch              = sizeof(RendererVertex),
@@ -88,14 +76,12 @@ namespace Silent::Renderer
         };
         triPipelineConfig.VertBufferAttribs = std::vector<SDL_GPUVertexAttribute>
         {
-            SDL_GPUVertexAttribute
             {
                 .location    = 0,
                 .buffer_slot = 0,
                 .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
                 .offset      = 0
             },
-            SDL_GPUVertexAttribute
             {
                 .location    = 1,
                 .buffer_slot = 0,
@@ -105,7 +91,6 @@ namespace Silent::Renderer
         };
         triPipelineConfig.ColorTargetDescs = std::vector<SDL_GPUColorTargetDescription>
         {
-            SDL_GPUColorTargetDescription
             {
                 .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
                 .blend_state = SDL_GPUColorTargetBlendState
@@ -138,7 +123,6 @@ namespace Silent::Renderer
         {
             throw std::runtime_error("Failed to create vertex shader `" + config.VertexShaderName + "`.");
         }
-        SDL_ReleaseGPUShader(_device, vertShader);
 
         // Load fragment shader.
         auto* fragShader = LoadShader(config.FragmentShaderName,
@@ -148,12 +132,7 @@ namespace Silent::Renderer
         {
             throw std::runtime_error("Failed to create fragment shader `" + config.FragmentShaderName + "`.");
         }
-        SDL_ReleaseGPUShader(_device, fragShader);
 
-        /*auto colorTargetDesc = SDL_GPUColorTargetDescription
-        {
-            .format = SDL_GetGPUSwapchainTextureFormat(_device, &window)
-        };*/
         auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
         {
             .vertex_shader      = vertShader,
@@ -181,8 +160,12 @@ namespace Silent::Renderer
         _pipelines[(int)config.Type] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
         if (_pipelines[(int)config.Type] == nullptr) 
         {
-            throw std::runtime_error("Failed to create graphics pipeline type " + std::to_string((int)config.Type) + ".");
+            throw std::runtime_error("Failed to create graphics pipeline type " + std::to_string((int)config.Type) + ": " + std::string(SDL_GetError()));
         }
+
+        // Free shaders.
+        SDL_ReleaseGPUShader(_device, vertShader);
+        SDL_ReleaseGPUShader(_device, fragShader);
     }
 
     SDL_GPUShader* PipelineManager::LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount)

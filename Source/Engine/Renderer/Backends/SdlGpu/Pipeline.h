@@ -5,16 +5,15 @@ namespace Silent::Renderer
     /** @brief Pipeline types. */
     enum class PipelineType
     {
-        Fill,
-        Line,
         Triangle,
 
         Count
     };
 
+    /** @brief Pipeline configuration data. */
     struct PipelineConfig
     {
-        PipelineType Type = PipelineType::Fill;
+        PipelineType Type = PipelineType::Triangle;
 
         std::string VertexShaderName             = {};
         uint        VertShaderSamplerCount       = 0;
@@ -41,22 +40,24 @@ namespace Silent::Renderer
         // Fields
         // =======
 
-        SDL_GPUDevice*                                                 _device    = nullptr;
-        std::array<SDL_GPUGraphicsPipeline*, (int)PipelineType::Count> _pipelines = {};
+        SDL_GPUDevice*                                                 _device    = nullptr; /** GPU device. */
+        std::array<SDL_GPUGraphicsPipeline*, (int)PipelineType::Count> _pipelines = {};      /** Available pipelines. */
 
     public:
         // =============
         // Constructors
         // =============
 
+        /** @brief Constructs an uninitialized default `PipelineManager`. */
         PipelineManager() = default;
 
         // ==========
         // Utilities
         // ==========
 
-        /** @brief Initializes all pipelines and their shaders.
+        /** @brief Initializes all pipelines.
          *
+         * @param window App window.
          * @param device GPU device.
          */
         void Initialize(SDL_Window& window, SDL_GPUDevice& device);
@@ -73,8 +74,22 @@ namespace Silent::Renderer
         // Helpers
         // ========
 
+        /** @brief Initializes a graphics pipeline with vertex and fragment shaders.
+         *
+         * @param window App window.
+         * @param config Pipeline configuration details.
+         */
         void InitializeGraphicsPipeline(SDL_Window& window, const PipelineConfig& config);
 
+        /** @brief Loads a shader.
+         *
+         * @param filename Shader filename. Suffix must be `.vert` or `.frag`.
+         * @param samplerCount Sampler count.
+         * @param uniBufferCount Uniform buffer count.
+         * @param stroageBufferCount StorageBuffer count.
+         * @param storageTexCount Storage texture count.
+         * @return Compiled GPU shader.
+         */
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount);
     };
 }

@@ -27,14 +27,14 @@ namespace Silent::Renderer
         // Utilities
         //===========
 
-        /** @brief Uploads data to the buffer.
+        /** @brief Uploads data to the GPU buffer.
          *
          * @param data New data to transfer to the buffer.
          * @param startIdx Start index in the buffer at which to transfer the new data.
          */
         void Update(SDL_GPUCopyPass& copyPass, std::span<const T> data, uint startIdx);
 
-        /** @brief Binds the buffer for drawing.
+        /** @brief Binds the GPU buffer for drawing.
          *
          * @todo How would you bind multiple?
          *

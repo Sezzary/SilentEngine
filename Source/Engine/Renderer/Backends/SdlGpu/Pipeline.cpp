@@ -18,21 +18,20 @@ namespace Silent::Renderer
     {
         _device = &device;
 
-        // Load vertex shader.
-        auto* vertShader = LoadShader("RawTriangle.vert", 0, 0, 0, 0);
-        if (vertShader == nullptr)
+        auto fillPipelineConfig = PipelineConfig
         {
-            Log("Failed to create vertex shader.", LogLevel::Error);
-        }
-        SDL_ReleaseGPUShader(_device, vertShader);
+            .Type               = PipelineType::Fill,
+            .VertexShaderName   = "RawTriangle.vert",
+            .FragmentShaderName = "SolidColor.frag"
+        };
+        InitializeGraphicsPipeline(window, fillPipelineConfig);
 
-        // Load fragment shader.
-        auto* fragShader = LoadShader("SolidColor.frag", 0, 0, 0, 0);
-        if (fragShader == nullptr)
+        auto triPipelineConfig = PipelineConfig
         {
-            Log("Failed to create fragment shader.", LogLevel::Error);
-        }
-        SDL_ReleaseGPUShader(_device, fragShader);
+            .Type               = PipelineType::Triangle,
+            .VertexShaderName   = "Vertex.vert",
+            .FragmentShaderName = "Frag.frag"
+        };
 
         // Load other vertex shader.
         auto* vertShader2 = LoadShader("Vertex.vert", 0, 0, 0, 0);
@@ -56,8 +55,8 @@ namespace Silent::Renderer
         };
         auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
         {
-            .vertex_shader   = vertShader,
-            .fragment_shader = fragShader,
+            //.vertex_shader   = vertShader,
+            //.fragment_shader = fragShader,
             .primitive_type  = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
             .target_info     = SDL_GPUGraphicsPipelineTargetInfo
             {
@@ -65,22 +64,6 @@ namespace Silent::Renderer
                 .num_color_targets         = 1
             }
         };
-
-        // Create fill pipeline.
-        pipelineInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
-        _pipelines[(int)PipelineType::Fill]           = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
-        if (_pipelines[(int)PipelineType::Fill] == nullptr) 
-        {
-            throw std::runtime_error("Failed to create fill pipeline.");
-        }
-
-        // Create line pipeline.
-        pipelineInfo.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_LINE;
-        _pipelines[(int)PipelineType::Line]           = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
-        if (_pipelines[(int)PipelineType::Line] == nullptr)
-        {
-            throw std::runtime_error("Failed to create line pipeline.");
-        }
 
         // Triangle pipeline. @todo This function is messy. Need a clean way of initializing all pipelines at once.
         // ===============
@@ -144,9 +127,50 @@ namespace Silent::Renderer
         SDL_BindGPUGraphicsPipeline(&renderPass, _pipelines[(int)pipelineType]);
     }
 
-    void PipelineManager::InitializeGraphicsPipeline(const PipelineConfig& config)
+    void PipelineManager::InitializeGraphicsPipeline(SDL_Window& window, const PipelineConfig& config)
     {
-        
+        // Load vertex shader.
+        auto* vertShader = LoadShader(config.VertexShaderName, config.VertShaderSamplerCount, config.VertShaderUniBufferCount, config.VertShaderStorageBufferCount, config.VertShaderStorageTexCount);
+        if (vertShader == nullptr)
+        {
+            Log("Failed to create vertex shader.", LogLevel::Error);
+        }
+        SDL_ReleaseGPUShader(_device, vertShader);
+
+        // Load fragment shader.
+        auto* fragShader = LoadShader(config.FragmentShaderName,config.FragShaderSamplerCount, config.FragShaderUniBufferCount, config.FragShaderStorageBufferCount, config.FragShaderStorageTexCount);
+        if (fragShader == nullptr)
+        {
+            Log("Failed to create fragment shader.", LogLevel::Error);
+        }
+        SDL_ReleaseGPUShader(_device, fragShader);
+
+        auto colorTargetDesc = SDL_GPUColorTargetDescription
+        {
+            .format = SDL_GetGPUSwapchainTextureFormat(_device, &window)
+        };
+        auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
+        {
+            .vertex_shader    = vertShader,
+            .fragment_shader  = fragShader,
+            .primitive_type   = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
+            .rasterizer_state = SDL_GPURasterizerState
+            {
+                .fill_mode = SDL_GPU_FILLMODE_FILL
+            },
+            .target_info      = SDL_GPUGraphicsPipelineTargetInfo
+            {
+                .color_target_descriptions = &colorTargetDesc,
+                .num_color_targets         = 1
+            }
+        };
+
+        // Create pipeline.
+        _pipelines[(int)config.Type] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
+        if (_pipelines[(int)config.Type] == nullptr) 
+        {
+            throw std::runtime_error("Failed to create graphics pipeline.");
+        }
     }
 
     SDL_GPUShader* PipelineManager::LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount)

@@ -2,7 +2,7 @@
 
 namespace Silent::Renderer
 {
-    /** @brief Graphics pipeline types. */
+    /** @brief Pipeline types. */
     enum class PipelineType
     {
         Fill,
@@ -14,8 +14,23 @@ namespace Silent::Renderer
 
     struct PipelineConfig
     {
-        std::string VertexShaderName   = {};
-        std::string FragmentShaderName = {};
+        PipelineType Type                         = PipelineType::Fill;
+
+        std::string VertexShaderName             = {};
+        uint        VertShaderSamplerCount       = 0;
+        uint        VertShaderUniBufferCount     = 0;
+        uint        VertShaderStorageBufferCount = 0;
+        uint        VertShaderStorageTexCount    = 0;
+
+        std::string FragmentShaderName           = {};
+        uint        FragShaderSamplerCount       = 0;
+        uint        FragShaderUniBufferCount     = 0;
+        uint        FragShaderStorageBufferCount = 0;
+        uint        FragShaderStorageTexCount    = 0;
+
+        std::vector<SDL_GPUVertexBufferDescription> VertBufferDescs   = {};
+        std::vector<SDL_GPUVertexAttribute>         VertBufferAttribs = {};
+        SDL_GPUColorTargetDescription               ColorTargetDesc   = {};
     };
 
     /** @brief Central graphics pipeline manager. */
@@ -58,7 +73,7 @@ namespace Silent::Renderer
         // Helpers
         // ========
 
-        void InitializeGraphicsPipeline(const PipelineConfig& config);
+        void InitializeGraphicsPipeline(SDL_Window& window, const PipelineConfig& config);
 
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount);
     };

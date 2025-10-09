@@ -21,7 +21,7 @@ namespace Silent::Renderer
         // =============
 
         Buffer() = default;
-        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<T> objs);
+        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<const T> objs);
 
         //===========
         // Utilities
@@ -34,7 +34,7 @@ namespace Silent::Renderer
          * @param objs Object data to transfer to the buffer.
          * @param startIdx Start index in the buffer at which to transfer the object data.
          */
-        void Update(SDL_GPUCopyPass& copyPass, std::span<T> objs, uint startIdx);
+        void Update(SDL_GPUCopyPass& copyPass, std::span<const T> objs, uint startIdx);
 
         /** @brief Binds the buffer for drawing.
          *
@@ -47,7 +47,7 @@ namespace Silent::Renderer
     };
 
     template <typename T>
-    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<T> objs)
+    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<const T> objs)
     {
         if (!(usageFlags & (SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_INDEX | SDL_GPU_BUFFERUSAGE_INDIRECT)))
         {
@@ -84,7 +84,7 @@ namespace Silent::Renderer
     }
 
     template <typename T>
-    void Buffer<T>::Update(SDL_GPUCopyPass& copyPass, std::span<T> objs, uint startIdx)
+    void Buffer<T>::Update(SDL_GPUCopyPass& copyPass, std::span<const T> objs, uint startIdx)
     {
         auto* data = (T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
         memcpy(data, objs.data(), objs.size_bytes());

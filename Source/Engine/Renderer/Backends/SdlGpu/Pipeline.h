@@ -7,6 +7,7 @@ namespace Silent::Renderer
     {
         Fill,
         Line,
+        Triangle,
 
         Count
     };
@@ -41,10 +42,10 @@ namespace Silent::Renderer
 
         /** @brief Binds a graphics pipeline for use in rendering.
          *
-         * @param pipelineType Pipeline to bind.
          * @param renderPass Render pass used in rendering to bind the pipeline to.
+         * @param pipelineType Pipeline to bind.
          */
-        void Bind(PipelineType pipelineType, SDL_GPURenderPass& renderPass);
+        void Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType);
 
     private:
         // ========
@@ -52,5 +53,9 @@ namespace Silent::Renderer
         // ========
 
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount);
+
+        void InitializeFillPipeline(const std::string& vertShaderName, const std::string fragShaderName);
+        void InitializeLinePipeline(const std::string& vertShaderName, const std::string fragShaderName);
+        // etc. @todo Dedicated init functions for each pipeline to cleanly encapsulate procedures.
     };
 }

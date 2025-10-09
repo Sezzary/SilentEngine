@@ -2,24 +2,29 @@
 #include "Engine/Renderer/Backends/SdlGpu/SdlGpu.h"
 
 #include "Engine/Application.h"
+#include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 #include "Engine/Services/Filesystem.h"
+#include "Utils/Utils.h"
 
 using namespace Silent::Services;
+using namespace Silent::Utils;
 
 namespace Silent::Renderer
 {
     struct RendererVertex
     {
-        Vector3 Position = Vector3::Zero;
-        Color   Col      = Color::Black;
+        float x, y, z;
+        float r, g, b, a;
     };
 
-    static const auto VERTICES = std::vector<RendererVertex>
+    static auto VertexBuffer = Buffer<RendererVertex>();
+
+    static auto VERTICES = std::vector<RendererVertex>
     {
-        { Vector3(0.0f,   0.5f, 0.0f), Color(1.0f, 0.0f, 0.0f, 1.0f) },
-        { Vector3(-0.5f, -0.5f, 0.0f), Color(1.0f, 1.0f, 0.0f, 1.0f) },
-        { Vector3(0.5f,  -0.5f, 0.0f), Color(1.0f, 0.0f, 1.0f, 1.0f) }
+        { 0.0f,   0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+        { -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f },
+        { 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f }
     };
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
@@ -46,24 +51,7 @@ namespace Silent::Renderer
         // Initialize pipelines with shaders.
         _pipelines.Initialize(*_window, *_device);
 
-        /*auto bufferInfo = SDL_GPUBufferCreateInfo
-        {
-            .size  = sizeof(VERTICES),
-            .usage = SDL_GPU_BUFFERUSAGE_VERTEX
-        };
-        _vertexBuffer = SDL_CreateGPUBuffer(_device, &bufferInfo);
-
-        auto transferInfo = SDL_GPUTransferBufferCreateInfo
-        {
-            .size  = sizeof(VERTICES),
-            .usage = SDL_GPU_TRANSFER_BUFFER_USAGE_UPLOAD
-        };
-        _transferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferInfo);
-
-        auto* data = (RendererVertex*)SDL_MapGPUTransferBuffer(_device, _transferBuffer, false);
-        data[0] = VERTICES[0];
-        data[1] = VERTICES[1];
-        data[2] = VERTICES[2];*/
+        VertexBuffer = Buffer<RendererVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, ToSpan(VERTICES));
 
         // Create ImGui context.
         ImGui::CreateContext();
@@ -116,6 +104,10 @@ namespace Silent::Renderer
             Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Error);
             return;
         }
+
+        auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
+        VertexBuffer.Update(*copyPass, ToSpan(VERTICES), 0);
+        SDL_EndGPUCopyPass(copyPass);
 
         // Draw frame.
         if (_swapchainTexture != nullptr)
@@ -214,8 +206,11 @@ namespace Silent::Renderer
         };
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
+        _pipelines.Bind(renderPass, PipelineType::Triangle);
+        VertexBuffer.Bind(renderPass, 0);
+
         // Process render pass.
-        _pipelines.Bind(g_DebugData.EnableWireframeMode ? PipelineType::Line : PipelineType::Fill, renderPass);
+        //_pipelines.Bind(renderPass, g_DebugData.EnableWireframeMode ? PipelineType::Line : PipelineType::Fill);
         SDL_DrawGPUPrimitives(&renderPass, 3, 1, 0, 0);
         SDL_EndGPURenderPass(&renderPass);
     }
@@ -232,7 +227,7 @@ namespace Silent::Renderer
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
         // Process render pass.
-        _pipelines.Bind(g_DebugData.EnableWireframeMode ? PipelineType::Line : PipelineType::Fill, renderPass);
+        _pipelines.Bind(renderPass, g_DebugData.EnableWireframeMode ? PipelineType::Line : PipelineType::Fill);
         SDL_DrawGPUPrimitives(&renderPass, 4, 1, 0, 0);
         SDL_EndGPURenderPass(&renderPass);
     }

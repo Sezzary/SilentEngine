@@ -2,7 +2,7 @@
 
 namespace Silent::Renderer
 {
-    /** @brief GPU buffer with objects of type `T`. */
+    /** @brief GPU buffer with data of type `T`. */
 	template <typename T>
     class Buffer
     {
@@ -20,18 +20,30 @@ namespace Silent::Renderer
         // Constructors
         // =============
 
+        Buffer() = default;
         Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, std::span<T> objs);
 
         //===========
         // Utilities
         //===========
 
-        /** @brief Uploads object data to the buffer.
+        /** @brief Uploads data to the buffer.
+         *
+         * @todo Rename `objs` to `data`?
          *
          * @param objs Object data to transfer to the buffer.
          * @param startIdx Start index in the buffer at which to transfer the object data.
          */
-        void Upload(SDL_GPUCopyPass& copyPass, std::span<T> objs, uint startIdx);
+        void Update(SDL_GPUCopyPass& copyPass, std::span<T> objs, uint startIdx);
+
+        /** @brief Binds the buffer for drawing.
+         *
+         * @todo How would you bind multiple?
+         *
+         * @param renderPass 
+         * @param startIdx 
+         */
+        void Bind(SDL_GPURenderPass& renderPass, uint startIdx);
     };
 
     template <typename T>
@@ -47,7 +59,7 @@ namespace Silent::Renderer
         auto bufferInfo = SDL_GPUBufferCreateInfo
         {
             .usage = usageFlags,
-            .size  = objs.size_bytes()
+            .size  = (uint)objs.size_bytes()
         };
 
         // Create buffer.
@@ -59,8 +71,8 @@ namespace Silent::Renderer
 
         auto transferInfo = SDL_GPUTransferBufferCreateInfo
         {
-            .size  = objs.size_bytes(),
-            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD
+            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+            .size  = (uint)objs.size_bytes()
         };
 
         // Create transfer buffer.
@@ -72,7 +84,7 @@ namespace Silent::Renderer
     }
 
     template <typename T>
-    void Buffer<T>::Upload(SDL_GPUCopyPass& copyPass, std::span<T> objs, uint startIdx)
+    void Buffer<T>::Update(SDL_GPUCopyPass& copyPass, std::span<T> objs, uint startIdx)
     {
         auto* data = (T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
         memcpy(data, objs.data(), objs.size_bytes());
@@ -86,14 +98,20 @@ namespace Silent::Renderer
         auto region = SDL_GPUBufferRegion
         {
             .buffer = _buffer,
-            .size   = objs.size_bytes(),
-            .offset = sizeof(T) * startIdx
+            .offset = startIdx * sizeof(T),
+            .size   = (uint)objs.size_bytes()
         };
 
-        SDL_UploadToGPUBuffer(copyPass, &loc, &region, true);
+        SDL_UploadToGPUBuffer(&copyPass, &loc, &region, true);
+    }
 
-        // @todo Call these in outer scope.
-        //SDL_EndGPUCopyPass(copyPass);
-        //SDL_SubmitGPUCommandBuffer(cmdBuffer);
+    template <typename T>
+    void Buffer<T>::Bind(SDL_GPURenderPass& renderPass, uint startIdx)
+    {
+        auto bufferBindings      = std::array<SDL_GPUBufferBinding, 1>{};
+        bufferBindings[0].buffer = _buffer;
+        bufferBindings[0].offset = startIdx * sizeof(T),
+
+        SDL_BindGPUVertexBuffers(&renderPass, 0, bufferBindings.data(), 1);
     }
 };

@@ -298,7 +298,7 @@ namespace Silent
 
                     // Show/hide cursor.
                     ToggleCursor();
-                    
+
                     // Update render size.
                     _work.Renderer->SignalResize();
                     break;

@@ -11,15 +11,15 @@ namespace Silent::Renderer
 {
     struct RendererVertex
     {
-        float x, y, z;
-        float r, g, b, a;
+        Vector3 Position = Vector3::Zero;
+        Color   Col      = Color::Black;
     };
 
     static const auto VERTICES = std::vector<RendererVertex>
     {
-        {  0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-        { -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f },
-        {  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f }
+        { Vector3(0.0f,   0.5f, 0.0f), Color(1.0f, 0.0f, 0.0f, 1.0f) },
+        { Vector3(-0.5f, -0.5f, 0.0f), Color(1.0f, 1.0f, 0.0f, 1.0f) },
+        { Vector3(0.5f,  -0.5f, 0.0f), Color(1.0f, 0.0f, 1.0f, 1.0f) }
     };
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)

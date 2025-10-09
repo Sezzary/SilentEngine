@@ -14,7 +14,7 @@ namespace Silent::Renderer
 
     struct PipelineConfig
     {
-        PipelineType Type                         = PipelineType::Fill;
+        PipelineType Type = PipelineType::Fill;
 
         std::string VertexShaderName             = {};
         uint        VertShaderSamplerCount       = 0;
@@ -30,7 +30,7 @@ namespace Silent::Renderer
 
         std::vector<SDL_GPUVertexBufferDescription> VertBufferDescs   = {};
         std::vector<SDL_GPUVertexAttribute>         VertBufferAttribs = {};
-        SDL_GPUColorTargetDescription               ColorTargetDesc   = {};
+        std::vector<SDL_GPUColorTargetDescription>  ColorTargetDescs  = {};
     };
 
     /** @brief Central graphics pipeline manager. */

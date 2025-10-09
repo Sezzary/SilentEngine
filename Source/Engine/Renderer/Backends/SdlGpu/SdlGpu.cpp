@@ -22,9 +22,9 @@ namespace Silent::Renderer
 
     static const auto VERTICES = std::vector<RendererVertex>
     {
-        { 0.0f,   0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+        {  0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
         { -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f },
-        { 0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f }
+        {  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f }
     };
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)

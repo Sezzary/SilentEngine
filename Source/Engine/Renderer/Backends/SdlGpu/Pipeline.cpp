@@ -18,108 +18,109 @@ namespace Silent::Renderer
     {
         _device = &device;
 
-        auto fillPipelineConfig = PipelineConfig
+        /*auto fillPipelineConfig = PipelineConfig
         {
             .Type               = PipelineType::Fill,
             .VertexShaderName   = "RawTriangle.vert",
             .FragmentShaderName = "SolidColor.frag"
         };
-        InitializeGraphicsPipeline(window, fillPipelineConfig);
+        InitializeGraphicsPipeline(window, fillPipelineConfig);*/
 
         auto triPipelineConfig = PipelineConfig
         {
             .Type               = PipelineType::Triangle,
             .VertexShaderName   = "Vertex.vert",
-            .FragmentShaderName = "Frag.frag"
-        };
-
-        // Load other vertex shader.
-        auto* vertShader2 = LoadShader("Vertex.vert", 0, 0, 0, 0);
-        if (vertShader2 == nullptr)
-        {
-            Log("Failed to create vertex shader.", LogLevel::Error);
-        }
-        SDL_ReleaseGPUShader(_device, vertShader2);
-
-        // Load other fragment shader.
-        auto* fragShader2 = LoadShader("Frag.frag", 0, 0, 0, 0);
-        if (fragShader2 == nullptr)
-        {
-            Log("Failed to create fragment shader.", LogLevel::Error);
-        }
-        SDL_ReleaseGPUShader(_device, fragShader2);
-
-        auto colorTargetDesc = SDL_GPUColorTargetDescription
-        {
-            .format = SDL_GetGPUSwapchainTextureFormat(_device, &window)
-        };
-        auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
-        {
-            //.vertex_shader   = vertShader,
-            //.fragment_shader = fragShader,
-            .primitive_type  = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
-            .target_info     = SDL_GPUGraphicsPipelineTargetInfo
+            .FragmentShaderName = "Frag.frag"/*,
+            .VertBufferDescs    = std::vector<SDL_GPUVertexBufferDescription>
             {
-                .color_target_descriptions = &colorTargetDesc,
-                .num_color_targets         = 1
+                SDL_GPUVertexBufferDescription
+                {
+                    .pitch              = sizeof(RendererVertex),
+                    .slot               = 0,
+                    .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+                    .instance_step_rate = 0
+                }
+            },
+            .VertBufferAttribs = std::vector<SDL_GPUVertexAttribute>
+            {
+                SDL_GPUVertexAttribute
+                {
+                    .location    = 0,
+                    .buffer_slot = 0,
+                    .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+                    .offset      = 0
+                },
+                SDL_GPUVertexAttribute
+                {
+                    .location    = 1,
+                    .buffer_slot = 0,
+                    .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
+                    .offset      = sizeof(float) * 3
+                }
+            },
+            .ColorTargetDescs = std::vector<SDL_GPUColorTargetDescription>
+            {
+                SDL_GPUColorTargetDescription
+                {
+                    .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
+                    .blend_state = SDL_GPUColorTargetBlendState
+                    {
+                        .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+                        .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                        .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+                        .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+                        .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                        .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
+                        .enable_blend          = true
+                    }
+                }
+            }*/
+        };
+        triPipelineConfig.VertBufferDescs    = std::vector<SDL_GPUVertexBufferDescription>
+        {
+            SDL_GPUVertexBufferDescription
+            {
+                .slot               = 0,
+                .pitch              = sizeof(RendererVertex),
+                .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+                .instance_step_rate = 0
             }
         };
-
-        // Triangle pipeline. @todo This function is messy. Need a clean way of initializing all pipelines at once.
-        // ===============
-
-        auto vertexBufferDesctiptions = std::array<SDL_GPUVertexBufferDescription, 1>{};
-        vertexBufferDesctiptions[0].slot               = 0;
-        vertexBufferDesctiptions[0].input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX;
-        vertexBufferDesctiptions[0].instance_step_rate = 0;
-        vertexBufferDesctiptions[0].pitch              = sizeof(RendererVertex);
-
-        pipelineInfo.rasterizer_state.fill_mode                    = SDL_GPU_FILLMODE_FILL;
-        pipelineInfo.vertex_input_state.num_vertex_buffers         = 1;
-        pipelineInfo.vertex_input_state.vertex_buffer_descriptions = vertexBufferDesctiptions.data();
-
-        // describe the vertex attribute
-        auto vertexAttributes = std::array<SDL_GPUVertexAttribute, 2>{};
-
-        // a_position
-        vertexAttributes[0].buffer_slot = 0;
-        vertexAttributes[0].location    = 0;
-        vertexAttributes[0].format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3;
-        vertexAttributes[0].offset      = 0;
-
-        // a_color
-        vertexAttributes[1].buffer_slot = 0;
-        vertexAttributes[1].location    = 1;
-        vertexAttributes[1].format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4;
-        vertexAttributes[1].offset      = sizeof(float) * 3;
-
-        pipelineInfo.vertex_input_state.num_vertex_attributes = 2;
-        pipelineInfo.vertex_input_state.vertex_attributes     = vertexAttributes.data();
-
-        // describe the color target
-        SDL_GPUColorTargetDescription colorTargetDescriptions[1];
-        colorTargetDescriptions[0] = {};
-        colorTargetDescriptions[0].blend_state.enable_blend          = true;
-        colorTargetDescriptions[0].blend_state.color_blend_op        = SDL_GPU_BLENDOP_ADD;
-        colorTargetDescriptions[0].blend_state.alpha_blend_op        = SDL_GPU_BLENDOP_ADD;
-        colorTargetDescriptions[0].blend_state.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA;
-        colorTargetDescriptions[0].blend_state.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-        colorTargetDescriptions[0].blend_state.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA;
-        colorTargetDescriptions[0].blend_state.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-        colorTargetDescriptions[0].format                            = SDL_GetGPUSwapchainTextureFormat(_device, &window);
-
-        pipelineInfo.target_info.num_color_targets         = 1;
-        pipelineInfo.target_info.color_target_descriptions = colorTargetDescriptions;
-
-        pipelineInfo.vertex_shader   = vertShader2;
-        pipelineInfo.fragment_shader = fragShader2;
-
-        // create the pipeline
-        _pipelines[(int)PipelineType::Triangle] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
-        if (_pipelines[(int)PipelineType::Triangle] == nullptr) 
+        triPipelineConfig.VertBufferAttribs = std::vector<SDL_GPUVertexAttribute>
         {
-            throw std::runtime_error("Failed to create triangle pipeline.");
-        }
+            SDL_GPUVertexAttribute
+            {
+                .location    = 0,
+                .buffer_slot = 0,
+                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+                .offset      = 0
+            },
+            SDL_GPUVertexAttribute
+            {
+                .location    = 1,
+                .buffer_slot = 0,
+                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
+                .offset      = sizeof(float) * 3
+            }
+        };
+        triPipelineConfig.ColorTargetDescs = std::vector<SDL_GPUColorTargetDescription>
+        {
+            SDL_GPUColorTargetDescription
+            {
+                .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
+                .blend_state = SDL_GPUColorTargetBlendState
+                {
+                    .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+                    .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                    .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+                    .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+                    .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                    .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
+                    .enable_blend          = true
+                }
+            }
+        };
+        InitializeGraphicsPipeline(window, triPipelineConfig);
     }
 
     void PipelineManager::Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType)
@@ -130,38 +131,49 @@ namespace Silent::Renderer
     void PipelineManager::InitializeGraphicsPipeline(SDL_Window& window, const PipelineConfig& config)
     {
         // Load vertex shader.
-        auto* vertShader = LoadShader(config.VertexShaderName, config.VertShaderSamplerCount, config.VertShaderUniBufferCount, config.VertShaderStorageBufferCount, config.VertShaderStorageTexCount);
+        auto* vertShader = LoadShader(config.VertexShaderName,
+                                      config.VertShaderSamplerCount, config.VertShaderUniBufferCount,
+                                      config.VertShaderStorageBufferCount, config.VertShaderStorageTexCount);
         if (vertShader == nullptr)
         {
-            Log("Failed to create vertex shader.", LogLevel::Error);
+            throw std::runtime_error("Failed to create vertex shader `" + config.VertexShaderName + "`.");
         }
         SDL_ReleaseGPUShader(_device, vertShader);
 
         // Load fragment shader.
-        auto* fragShader = LoadShader(config.FragmentShaderName,config.FragShaderSamplerCount, config.FragShaderUniBufferCount, config.FragShaderStorageBufferCount, config.FragShaderStorageTexCount);
+        auto* fragShader = LoadShader(config.FragmentShaderName,
+                                      config.FragShaderSamplerCount, config.FragShaderUniBufferCount,
+                                      config.FragShaderStorageBufferCount, config.FragShaderStorageTexCount);
         if (fragShader == nullptr)
         {
-            Log("Failed to create fragment shader.", LogLevel::Error);
+            throw std::runtime_error("Failed to create fragment shader `" + config.FragmentShaderName + "`.");
         }
         SDL_ReleaseGPUShader(_device, fragShader);
 
-        auto colorTargetDesc = SDL_GPUColorTargetDescription
+        /*auto colorTargetDesc = SDL_GPUColorTargetDescription
         {
             .format = SDL_GetGPUSwapchainTextureFormat(_device, &window)
-        };
+        };*/
         auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
         {
-            .vertex_shader    = vertShader,
-            .fragment_shader  = fragShader,
+            .vertex_shader      = vertShader,
+            .fragment_shader    = fragShader,
+            .vertex_input_state =
+            {
+                .vertex_buffer_descriptions = config.VertBufferDescs.data(),
+                .num_vertex_buffers         = (uint)config.VertBufferDescs.size(),
+                .vertex_attributes          = config.VertBufferAttribs.data(),
+                .num_vertex_attributes      = (uint)config.VertBufferAttribs.size()
+            },
             .primitive_type   = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
             .rasterizer_state = SDL_GPURasterizerState
             {
                 .fill_mode = SDL_GPU_FILLMODE_FILL
             },
-            .target_info      = SDL_GPUGraphicsPipelineTargetInfo
+            .target_info = SDL_GPUGraphicsPipelineTargetInfo
             {
-                .color_target_descriptions = &colorTargetDesc,
-                .num_color_targets         = 1
+                .color_target_descriptions = config.ColorTargetDescs.data(),
+                .num_color_targets         = (uint)config.ColorTargetDescs.size()
             }
         };
 
@@ -169,7 +181,7 @@ namespace Silent::Renderer
         _pipelines[(int)config.Type] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
         if (_pipelines[(int)config.Type] == nullptr) 
         {
-            throw std::runtime_error("Failed to create graphics pipeline.");
+            throw std::runtime_error("Failed to create graphics pipeline type " + std::to_string((int)config.Type) + ".");
         }
     }
 

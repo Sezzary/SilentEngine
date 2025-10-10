@@ -1,18 +1,19 @@
 #pragma once
 
+#include "Engine/Audio/Audio.h"
+#include "Engine/Assets/Assets.h"
+#include "Engine/Input/Input.h"
 #include "Engine/Renderer/Renderer.h"
-#include "Engine/Services/Assets/Assets.h"
-#include "Engine/Services/Audio.h"
-#include "Engine/Services/Input/Input.h"
+#include "Engine/Savegame/Savegame.h"
 #include "Engine/Services/Filesystem.h"
 #include "Engine/Services/Options.h"
-#include "Engine/Services/Savegame/Savegame.h"
 #include "Engine/Services/Time.h"
 #include "Engine/Services/Toasts.h"
 
 namespace Silent
 {
     using namespace Assets;
+    using namespace Audio;
     using namespace Input;
     using namespace Renderer;
     using namespace Services;
@@ -34,20 +35,26 @@ namespace Silent
     class ApplicationManager
     {
     private:
+        // =======
         // Fields
+        // =======
 
-        bool            _isRunning = false;
-        ApplicationWork _work      = {};
-        SDL_Window*     _window    = nullptr;
+        bool            _quit   = false;   /** Quit procedure state. */
+        ApplicationWork _work   = {};      /** Subsystem workspace. */
+        SDL_Window*     _window = nullptr; /** Application window. */
 
-        Vector2 _mouseWheelAxis = Vector2::Zero;
+        Vector2 _mouseWheelAxis = Vector2::Zero; /** Mouse wheel axis input. */
 
     public:
+        // =============
         // Constructors
+        // =============
 
         ApplicationManager() = default;
 
+        // ========
         // Getters
+        // ========
 
         AssetManager&      GetAssets();
         AudioManager&      GetAudio();
@@ -59,19 +66,38 @@ namespace Silent
         TimeManager&       GetTime();
         ToastManager&      GetToasts();
 
+        /** @brief Gets the window resolution.
+         *
+         * @return Window resolution
+         */
         Vector2i GetWindowResolution() const;
 
+        // ==========
         // Utilities
+        // ==========
 
+        /** @brief Initializes the application and its subsystems. */
         void Initialize();
+
+        /** @brief Gracefully deinitializes the application and its subsystems. */
         void Deinitialize();
+
+        /** @brief Runs the application loop. */
         void Run();
 
+        /** @brief Prompts the application to run the shutdown procedure. */
+        void Quit();
+
+        /** @brief Toggles between fullscreen and windowed modes. */
         void ToggleFullscreen();
+
+        /** @brief Toggles the mouse cursor on and off. */
         void ToggleCursor();
 
     private:
+        // ========
         // Helpers
+        // ========
 
         void Update();
         void Render();

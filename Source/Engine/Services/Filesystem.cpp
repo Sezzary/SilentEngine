@@ -3,126 +3,128 @@
 
 namespace Silent::Services
 {
-    const std::filesystem::path& FilesystemManager::GetAppFolder() const
+    const std::filesystem::path& FilesystemManager::GetAppDirectory() const
     {
-        return _appFolder;
+        return _appDir;
     }
 
-    const std::filesystem::path& FilesystemManager::GetAssetsFolder() const
+    const std::filesystem::path& FilesystemManager::GetAssetsDirectory() const
     {
-        return _assetsFolder;
+        return _assetsDir;
     }
 
-    const std::filesystem::path& FilesystemManager::GetWorkFolder() const
+    const std::filesystem::path& FilesystemManager::GetWorkDirectory() const
     {
-        return _workFolder;
+        return _workDir;
     }
 
-    const std::filesystem::path& FilesystemManager::GetScreenshotsFolder() const
+    const std::filesystem::path& FilesystemManager::GetSavegameDirectory() const
     {
-        return _screenshotsFolder;
+        return _savegameDir;
+    }
+
+    const std::filesystem::path& FilesystemManager::GetScreenshotsDirectory() const
+    {
+        return _screenshotsDir;
+    }
+    
+    const std::filesystem::path& FilesystemManager::GetShadersDirectory() const
+    {
+        return _shadersDir;
     }
 
     void FilesystemManager::Initialize()
     {
+        constexpr char ASSETS_DIR_NAME[]      = "Assets";
+        constexpr char SAVEGAME_DIR_NAME[]    = "Savegame";
+        constexpr char SCREENSHOTS_DIR_NAME[] = "Screenshots";
+        constexpr char SHADERS_DIR_NAME[]     = "Shaders";
+
         char*  buffer = nullptr;
         size_t length = 0;
 
         // Set app path.
-        _appFolder = std::filesystem::current_path();
+        _appDir = std::filesystem::current_path();
 
-        // Set assets path.
-        _assetsFolder = _appFolder / ASSETS_FOLDER_NAME;
-
-        // Set work and screenshots paths.
+        // Set workspace and screenshots paths.
         switch (OS_TYPE)
         {
             case OsType::Windows:
             {
-                // Set `APPDATA` path for work.
+                // Use `APPDATA` directory for workspace path.
                 if (_dupenv_s(&buffer, &length, "APPDATA") == 0 && buffer != nullptr)
                 {
-                    auto path   = std::filesystem::path(buffer);
-                    _workFolder = path / APP_NAME; 
+                    auto path = std::filesystem::path(buffer);
+                    _workDir  = path / APP_NAME; 
                 }
 
-                // Set `Pictures` folder path for screenshots.
+                // Use `Pictures` directory for screenshots path.
                 if (_dupenv_s(&buffer, &length, "USERPROFILE") == 0 && buffer != nullptr)
                 {
-                    auto path          = std::filesystem::path(buffer);
-                    _screenshotsFolder = path / "Pictures" / SCREENSHOTS_FOLDER_NAME;
+                    auto path       = std::filesystem::path(buffer);
+                    _screenshotsDir = path / "Pictures" / SCREENSHOTS_DIR_NAME;
                 }
                 break;
             }
-
             case OsType::MacOs:
             {
-                // Set `HOME` path for work.
+                // Use `HOME` directory for workspace path.
                 if (_dupenv_s(&buffer, &length, "HOME") == 0 && buffer != nullptr)
                 {
-                    auto path   = std::filesystem::path(buffer);
-                    _workFolder = path / APP_NAME; 
+                    auto path = std::filesystem::path(buffer);
+                    _workDir  = path / APP_NAME; 
                 }
 
-                // Set `Pictures` folder path for screenshots.
+                // Use `Pictures` directory for screenshots path.
                 if (buffer != nullptr)
                 {
-                    auto path          = std::filesystem::path(buffer);
-                    _screenshotsFolder = path / "Pictures" / SCREENSHOTS_FOLDER_NAME;
+                    auto path       = std::filesystem::path(buffer);
+                    _screenshotsDir = path / "Pictures" / SCREENSHOTS_DIR_NAME;
                 }
                 break;
             }
-
             case OsType::Linux:
             {
-                // Set `HOME` path for work.
+                // Use `HOME` directory for workspace path.
                 if (_dupenv_s(&buffer, &length, "HOME") == 0 && buffer != nullptr)
                 {
-                    auto path   = std::filesystem::path(buffer);
-                    _workFolder = path / APP_NAME; 
+                    auto path = std::filesystem::path(buffer);
+                    _workDir  = path / APP_NAME; 
                 }
 
-                // Set `Pictures` folder path for screenshots.
+                // Use `Pictures` directory for screenshots path.
                 if (buffer != nullptr)
                 {
-                    auto path          = std::filesystem::path(buffer);
-                    _screenshotsFolder = path / "Pictures" / SCREENSHOTS_FOLDER_NAME;
+                    auto path       = std::filesystem::path(buffer);
+                    _screenshotsDir = path / "Pictures" / SCREENSHOTS_DIR_NAME;
                 }
                 break;
             }
-
             default:
             {
                 throw std::runtime_error("Unsupported OS.");
             }
         }
 
-        // Check app folder.
-        if (_appFolder.empty())
+        // Set workspace paths.
+        _assetsDir   = _appDir / ASSETS_DIR_NAME;
+        _savegameDir = _appDir / SAVEGAME_DIR_NAME;
+        _shadersDir  = _appDir / SHADERS_DIR_NAME;
+
+        // Check for assets directory.
+        if (!std::filesystem::exists(_assetsDir))
         {
-            throw std::runtime_error("Failed to define app folder path.");
+            throw std::runtime_error("`" + std::string(ASSETS_DIR_NAME) + "` folder not found in application directory.");
         }
 
-        // Check assets folder.
-        if (!std::filesystem::exists(_assetsFolder))
+        // Check for shaders directory.
+        if (!std::filesystem::exists(_shadersDir))
         {
-            throw std::runtime_error("Assets folder not found in application directory.");
+            throw std::runtime_error("`" + std::string(SHADERS_DIR_NAME) + "` folder not found in application directory.");
         }
 
-        // Check screenshots folder.
-        if (_screenshotsFolder.empty())
-        {
-            throw std::runtime_error("Failed to define screenshots folder path.");
-        }
-
-        // Check work folder.
-        if (_workFolder.empty())
-        {
-            throw std::runtime_error("Failed to define work folder path.");
-        }
-        
-        // Create work folder.
-        std::filesystem::create_directories(_workFolder);
-        std::filesystem::create_directories(_workFolder / SAVEGAME_FOLDER_NAME);
+        // Create workspace directories.
+        std::filesystem::create_directories(_workDir);
+        std::filesystem::create_directories(_savegameDir);
     }
 }

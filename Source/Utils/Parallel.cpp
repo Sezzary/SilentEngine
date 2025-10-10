@@ -7,28 +7,12 @@ namespace Silent::Utils
 {
     ParallelExecutor g_Executor = ParallelExecutor();
 
-    uint ParallelExecutor::GetThreadCount() const
-    {
-        return (uint)_threads.size();
-    }
-
-    uint ParallelExecutor::GetPendingTaskCount() const
-    {
-        return 0;
-        // LOCK: Restrict task queue access.
-        /*{
-            auto taskLock = std::unique_lock(_taskMutex);
-
-            return (uint)_tasks.size();
-        }*/
-    }
-
-    void ParallelExecutor::Initialize()
+    ParallelExecutor::ParallelExecutor()
     {
         constexpr uint THREAD_COUNT_MIN = 2;
 
         // Reserve threads.
-        uint threadCount = std::max<uint>(GetCoreCount(), THREAD_COUNT_MIN);
+        uint threadCount = std::max(GetCoreCount(), THREAD_COUNT_MIN);
         _threads.reserve(threadCount);
 
         // Create threads.
@@ -36,11 +20,13 @@ namespace Silent::Utils
         {
             _threads.push_back(std::jthread(&ParallelExecutor::Worker, this));
         }
+
+        _deinitialize = false;
     }
 
-    void ParallelExecutor::Deinitialize()
+    ParallelExecutor::~ParallelExecutor()
     {
-        // LOCK: Restrict shutdown flag access.
+        // @lock Restrict shutdown flag access.
         {
             auto taskLock = std::lock_guard(_taskMutex);
 
@@ -49,6 +35,21 @@ namespace Silent::Utils
 
         // Notify all threads they should stop.
         _taskCond.notify_all();
+    }
+
+    uint ParallelExecutor::GetThreadCount() const
+    {
+        return (uint)_threads.size();
+    }
+
+    uint ParallelExecutor::GetPendingTaskCount()
+    {
+        // @lock Restrict task queue access.
+        {
+            auto taskLock = std::lock_guard(_taskMutex);
+
+            return (uint)_tasks.size();
+        }
     }
 
     std::future<void> ParallelExecutor::AddTask(const ParallelTask& task)
@@ -74,7 +75,7 @@ namespace Silent::Utils
             return GenerateReadyFuture();
         }
 
-        // HEAP ALLOC: Create counter and promise.
+        // @heapalloc Create counter and promise.
         auto counter = std::make_shared<std::atomic<int>>();
         auto promise = std::make_shared<std::promise<void>>();
 
@@ -99,7 +100,7 @@ namespace Silent::Utils
         {
             auto task = ParallelTask();
 
-            // LOCK: Restrict task queue access.
+            // @lock Restrict task queue access.
             {
                 auto taskLock = std::unique_lock(_taskMutex);
                 _taskCond.wait(taskLock, [this]
@@ -134,9 +135,9 @@ namespace Silent::Utils
         // Increment counter for task group.
         counter->fetch_add(1, std::memory_order_relaxed);
 
-        // LOCK: Restrict task queue access.
+        // @lock Restrict task queue access.
         {
-            auto taskLock = std::unique_lock(_taskMutex);
+            auto taskLock = std::lock_guard(_taskMutex);
 
             // Add task with promise and counter handling.
             _tasks.push([this, task, counter, promise]()

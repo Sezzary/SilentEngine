@@ -2,9 +2,9 @@
 #include "Engine/Services/Options.h"
 
 #include "Engine/Application.h"
+#include "Engine/Input/Action.h"
+#include "Engine/Input/Binding.h"
 #include "Engine/Services/Filesystem.h"
-#include "Engine/Services/Input/Action.h"
-#include "Engine/Services/Input/Binding.h"
 #include "Utils/Parallel.h"
 
 using namespace Silent::Input;
@@ -12,6 +12,8 @@ using namespace Silent::Utils;
 
 namespace Silent::Services
 {
+    constexpr char OPTIONS_FILENAME[] = "Options";
+
     constexpr char KEY_GRAPHICS[]     = "Graphics";
     constexpr char KEY_GAMEPLAY[]     = "Gameplay";
     constexpr char KEY_INPUT[]        = "Input";
@@ -164,7 +166,7 @@ namespace Silent::Services
         auto optionsJson = ToOptionsJson(_options);
 
         // Ensure directory exists.
-        auto path = fs.GetWorkFolder() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT);
+        auto path = fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT);
         std::filesystem::create_directories(path.parent_path());
 
         // Write options JSON file.
@@ -180,7 +182,7 @@ namespace Silent::Services
     {
         const auto& fs = g_App.GetFilesystem();
 
-        auto path = fs.GetWorkFolder() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT);
+        auto path = fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT);
         
         // Open options JSON file.
         auto inputFile = std::ifstream(path);

@@ -13,19 +13,20 @@ namespace Silent::Math
 
         const float& R() const;
         float&       R();
-        uchar        R8() const;
 
         const float& G() const;
         float&       G();
-        uchar        G8() const;
 
         const float& B() const;
         float&       B();
-        uchar        B8() const;
 
         const float& A() const;
         float&       A();
-        uchar        A8() const;
+
+        uchar R8() const;
+        uchar G8() const;
+        uchar B8() const;
+        uchar A8() const;
 
         // Presets
 

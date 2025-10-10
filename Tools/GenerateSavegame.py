@@ -7,7 +7,7 @@ from pathlib import Path
 FLATC_NAME    = "flatc"
 BASE_PATH     = Path(__file__).parent
 FLATC_PATH    = BASE_PATH / FLATC_NAME
-SAVEGAME_PATH = BASE_PATH / "../Source/Engine/Services/Savegame"
+SAVEGAME_PATH = BASE_PATH / "../Source/Engine/Savegame"
 SCHEMAS_PATH  = SAVEGAME_PATH / "Schemas"
 OUTPUT_PATH   = SAVEGAME_PATH / "Generated"
 
@@ -30,8 +30,8 @@ def generate_savegame_headers():
         schema_files = sorted(schema_files)
 
         # Build generation command.
-        command = [flatc_exe, "--cpp", "-o", OUTPUT_PATH, "-I", SCHEMAS_PATH] + schema_files
-        print("Running command:\n" + " ".join(command))
+        command = [flatc_exe, "--cpp", "-o", str(OUTPUT_PATH), "-I", str(SCHEMAS_PATH)] + schema_files
+        #print("Running command:\n" + " ".join(command))
 
         # Run generation command.
         result = subprocess.run(command, capture_output=True)

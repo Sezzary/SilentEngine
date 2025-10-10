@@ -12,9 +12,9 @@ namespace Silent::Services
 
         // Fields
 
-        uint   _ticks              = 0;
-        uint64 _prevUptimeMicrosec = 0; /** Application uptime microseconds on the previous tick. */
-        uint64 _baseMicrosec       = 0;
+        uint   _ticks              = 0; /** Tick count accumulated on the previous update. */
+        uint64 _prevUptimeMicrosec = 0; /** Uptime microseconds on the previous tick. */
+        uint64 _baseMicrosec       = 0; /** Microseconds since epoch on initialization. */
 
     public:
         // Constructors

@@ -1,13 +1,14 @@
 #pragma once
 
+#include "Engine/Renderer/Common/Objects/Primitive2d.h"
 #include "Engine/Renderer/Backends/OpenGl/ElementBuffer.h"
+#include "Engine/Renderer/Backends/OpenGl/Framebuffer.h"
 #include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexArray.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexBuffer.h"
-#include "Engine/Renderer/Backends/OpenGl/View.h"
-#include "Engine/Renderer/Base.h"
-#include "Engine/Renderer/Objects/Primitive2d.h"
+#include "Engine/Renderer/Common/View.h"
+#include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
 {
@@ -26,6 +27,9 @@ namespace Silent::Renderer
         View                                           _view                 = View();
         std::unordered_map<std::string, ShaderProgram> _shaderPrograms       = {};
 
+        FramebufferObject                              _2dframebuffer        = FramebufferObject();
+        FramebufferObject                              _3dframebuffer        = FramebufferObject();
+
         VertexArrayObject                              _vertexArray          = VertexArrayObject();
         VertexArrayObject                              _vertexCubeArray      = VertexArrayObject();
         VertexBufferObject                             _vertexPositionBuffer = VertexBufferObject();
@@ -33,8 +37,6 @@ namespace Silent::Renderer
         VertexBufferObject                             _vertexTexCoordBuffer = VertexBufferObject();
         VertexBufferObject                             _vertexCubeBuffer     = VertexBufferObject();
         ElementBufferObject                            _elementBuffer        = ElementBufferObject();
-        Texture                                        _texture0             = Texture();
-        Texture                                        _texture1             = Texture();
 
         std::unordered_map<std::string, Texture> _textures     = {}; // Key = texture name, value = texture.
 
@@ -58,22 +60,17 @@ namespace Silent::Renderer
         void LogError(const std::string& msg) const override;
 
         void SubmitPrimitive2d(const Primitive2d& prim) override;
-        void SubmitScreenSprite(int assetIdx, const Vector2& pos, short rot, const Vector2& scale, const Color& color,
-                                int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode) override;
+        void SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
+                                const Color& color, int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode) override;
     private:
         // Utilities
     
         void UpdateViewport();
 
-        void Draw2dScene();
-        void Draw3dScene();
-        void DrawFullscreenQuad();
-        void DrawGui();
-        void DrawDebugGui();
-
-        void DrawDebugObjects();
+        void Draw3dScene() override;
+        void Draw2dScene() override;
+        void DrawDebugGui() override;
 
         void CreateShaderProgram();
-        void CreateDebugGui();
     };
 }

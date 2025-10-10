@@ -1,25 +1,62 @@
-Experimental implementations:
-- Math wrappers and functions
+# Silent Math
+
+## WIP implementations
+
+- Math wrappers and functions (similar to DXTK but with some usability improvements)
 - Input handling
 - Savegame handling
-- Various utils pulled from other projects
-- Renderer (learning OpenGL and *maybe* Vulkan, who knows if anything will come of it)
+- Config options handling
 - Window handling
 - Asset streaming
-- Configuration handling
 - Timestep handling
 - Parallel task handling
-- Portability in mind for multi-platform support
+- Filesystem handling
+- Clean logging
+- Renderer (WIP)
+- Sound system (WIP)
+- Various utilities pulled from other projects including a `Bitfield` class and a `BoundingVolumeHierarchy` class.
 
-Dependencies:
+All considerations are being made to make this a flexible, readable, and extendable foundation. Portability is in mind as a top priority for multi-platform support from inception. 
+
+## Building (Windows/macOS/Linux)
+
+### Install dependencies
+
+The project has the following requirements:
+- cmake
+- git
+- python3
+
+### Clone the repository
+
+Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning recursively will ensure all the following submodules are included in the process:
 - assimp
 - FlatBuffers
-- GLAD (OpenGL 4.6)
 - GLM
 - ImGui
 - ImGuizmo
 - json
 - SDL3
+- SDL_shadercross
 - spdlog
 - stb
-- Vulkan
+
+```
+git clone --recursive https://github.com/Sezzary/SilentMath
+git submodule update --init --recursive
+```
+
+### Build the code (Debug/Release)
+
+Available `Make` commands:
+- `debug`: Runs Debug build configuration and builds a Debug executable.
+- `release`: Runs Debug build configuration and builds a Release executable.
+- `configure-debug`: Runs Debug build configuration.
+- `configure-release`: Runs Release build configuration.
+- `build-debug`: Builds a Debug executable.
+- `build-release`: Builds a Release executable.
+- `generate-savegame`: Generates savegame headers from schemas.
+
+### Contributing
+
+Too early for this, but feel free to take a look around in the meantime!

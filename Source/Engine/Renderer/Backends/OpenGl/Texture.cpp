@@ -2,9 +2,9 @@
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
 
 #include "Engine/Application.h"
+#include "Engine/Assets/Assets.h"
+#include "Engine/Assets/Parsers/Tim.h" // @todo Shouldn't need this.
 #include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
-#include "Engine/Services/Assets/Assets.h"
-#include "Engine/Services/Assets/Parsers/Tim.h" // @todo Shouldn't need this.
 #include "Engine/Services/Options.h"
 
 using namespace Silent::Assets;
@@ -36,7 +36,6 @@ namespace Silent::Renderer
                 SetNearestFilter();
                 break;
             }
-
             case TextureFilterType::Bilinear:
             {
                 SetBilinearFilter();
@@ -157,7 +156,6 @@ namespace Silent::Renderer
                 SetNearestFilter();
                 break;
             }
-
             case TextureFilterType::Bilinear:
             {
                 SetBilinearFilter();

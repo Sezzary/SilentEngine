@@ -1,6 +1,10 @@
 # Silent Math
 
-## WIP implementations
+## Track decompilation progress
+
+https://github.com/Vatuu/silent-hill-decomp
+
+## Current foundations
 
 - Math wrappers and functions (similar to DXTK but with some usability improvements)
 - Input handling
@@ -12,11 +16,11 @@
 - Parallel task handling
 - Filesystem handling
 - Clean logging
-- Renderer (WIP)
-- Sound system (WIP)
+- Renderer with swappable backends.
+- Sound system
 - Various utilities pulled from other projects including a `Bitfield` class and a `BoundingVolumeHierarchy` class.
 
-All considerations are being made to make this a flexible, readable, and extendable foundation. Portability is in mind as a top priority for multi-platform support from inception. 
+All considerations are being made to make this a flexible, readable, and extendable foundation. Portability is in mind as a top priority for multi-platform support from inception.
 
 ## Building (Windows/macOS/Linux)
 
@@ -57,6 +61,16 @@ Available `Make` commands:
 - `build-release`: Builds a Release executable.
 - `generate-savegame`: Generates savegame headers from schemas.
 
-### Contributing
+### TODOs
+
+- Decompilation must to be farther along before the bulk of the porting work can begin.
+- Must switch to GCC as the compiler.
+- Forward renderer. Getting better with graphics programming basics now.
+- Sound system. Need to write a `KDC`+`VAB` -> `XM` comverter?
+- Parsers for all proprietary game file types.
+- Math needs more work.
+- Extensive documentation.
+
+## Contributing
 
 Too early for this, but feel free to take a look around in the meantime!

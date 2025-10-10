@@ -19,7 +19,7 @@ namespace Silent::Renderer
     {
         _device = &device;
 
-        // @todo Vectors won't compile as part of initialization list.
+        // @todo Vectors won't compile as part of initialiser list.
         auto triPipelineConfig = PipelineConfig
         {
             .Type                     = PipelineType::Triangle,

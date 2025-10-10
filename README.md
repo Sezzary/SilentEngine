@@ -22,6 +22,16 @@ https://github.com/Vatuu/silent-hill-decomp
 
 All considerations are being made to make this a flexible, readable, and extendable foundation. Portability is in mind as a top priority for multi-platform support from inception.
 
+### TODOs
+
+- The decomp must be farther along before the bulk of the porting work can begin. More basic things like the boot screen and game menus *could* be ported already with some effort, but it's not worth doing yet while the decomp is in constant flux.
+- Must switch to GCC as the compiler.
+- Forward renderer.
+- Sound system. Need to write a `KDC`+`VAB` -> `XM` converter?
+- Parsers for all proprietary game file types.
+- Math needs more work.
+- Extensive documentation.
+
 ## Building (Windows/macOS/Linux)
 
 ### Install dependencies
@@ -60,16 +70,6 @@ Available `Make` commands:
 - `build-debug`: Builds a Debug executable.
 - `build-release`: Builds a Release executable.
 - `generate-savegame`: Generates savegame headers from schemas.
-
-### TODOs
-
-- Decompilation must to be farther along before the bulk of the porting work can begin.
-- Must switch to GCC as the compiler.
-- Forward renderer. Getting better with graphics programming basics now.
-- Sound system. Need to write a `KDC`+`VAB` -> `XM` comverter?
-- Parsers for all proprietary game file types.
-- Math needs more work.
-- Extensive documentation.
 
 ## Contributing
 

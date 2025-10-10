@@ -72,7 +72,7 @@ namespace Silent::Renderer
         _buffer = SDL_CreateGPUBuffer(&device, &bufferInfo);
         if (_buffer == nullptr)
         {
-            Log("Failed to create buffer: " + std::string(SDL_GetError()));
+            Log("Failed to create buffer: " + std::string(SDL_GetError()), LogLevel::Error);
         }
 
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
@@ -85,28 +85,28 @@ namespace Silent::Renderer
         _transfer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
         if (_transfer == nullptr)
         {
-            Log("Failed to create transfer buffer: " + std::string(SDL_GetError()));
+            Log("Failed to create transfer buffer: " + std::string(SDL_GetError()), LogLevel::Error);
         }
     }
 
     template <typename T>
     void Buffer<T>::Update(SDL_GPUCopyPass& copyPass, std::span<const T> data, uint startIdx)
     {
-        auto* transferBuffer = (T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
-        memcpy(transferBuffer, data.data(), data.size_bytes());
+        auto& mappedData = *(T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
+        memcpy(&mappedData, data.data(), data.size_bytes());
         SDL_UnmapGPUTransferBuffer(_device, _transfer);
 
-        auto loc = SDL_GPUTransferBufferLocation
+        auto transferBufferLoc = SDL_GPUTransferBufferLocation
         {
             .transfer_buffer = _transfer
         };
-        auto region = SDL_GPUBufferRegion
+        auto bufferRegion = SDL_GPUBufferRegion
         {
             .buffer = _buffer,
             .offset = startIdx * sizeof(T),
             .size   = (uint)data.size_bytes()
         };
-        SDL_UploadToGPUBuffer(&copyPass, &loc, &region, true);
+        SDL_UploadToGPUBuffer(&copyPass, &transferBufferLoc, &bufferRegion, true);
     }
 
     template <typename T>

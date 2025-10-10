@@ -32,7 +32,7 @@ namespace Silent::Renderer
         std::vector<SDL_GPUColorTargetDescription>  ColorTargetDescs  = {};
     };
 
-    /** @brief Central graphics pipeline manager. */
+    /** @brief Central pipeline manager. */
     class PipelineManager
     {
     private:

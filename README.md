@@ -69,7 +69,6 @@ Available `Make` commands:
 - `configure-release`: Runs Release build configuration.
 - `build-debug`: Builds a Debug executable.
 - `build-release`: Builds a Release executable.
-- `generate-savegame`: Generates savegame headers from schemas.
 
 ## Contributing
 

@@ -1,36 +1,43 @@
 [submodule "Libraries/assimp"]
     path = Libraries/assimp
     url = https://github.com/assimp/assimp.git
+
 [submodule "Libraries/flatbuffers"]
     path = Libraries/flatbuffers
     url = https://github.com/google/flatbuffers.git
+
 [submodule "Libraries/glad"]
     path = Libraries/glad
     url = https://github.com/Dav1dde/glad.git
+
 [submodule "Libraries/glm"]
     path = Libraries/glm
     url = https://github.com/g-truc/glm.git
+
 [submodule "Libraries/imgui"]
     path = Libraries/imgui
     url = https://github.com/ocornut/imgui.git
+
 [submodule "Libraries/ImGuizmo"]
     path = Libraries/ImGuizmo
     url = https://github.com/CedricGuillemet/ImGuizmo.git
+
 [submodule "Libraries/json"]
     path = Libraries/json
     url = https://github.com/nlohmann/json.git
-[submodule "Libraries/PsyCross"]
-    path = Libraries/PsyCross
-    url = https://github.com/OpenDriver2/PsyCross.git
+
 [submodule "Libraries/SDL"]
     path = Libraries/SDL
     url = https://github.com/libsdl-org/SDL.git
+
 [submodule "Libraries/SDL_shadercross"]
     path = Libraries/SDL_shadercross
     url = https://github.com/libsdl-org/SDL_shadercross.git
+
 [submodule "Libraries/spdlog"]
     path = Libraries/spdlog
     url = https://github.com/gabime/spdlog.git
+
 [submodule "Libraries/stb"]
     path = Libraries/stb
     url = https://github.com/nothings/stb.git

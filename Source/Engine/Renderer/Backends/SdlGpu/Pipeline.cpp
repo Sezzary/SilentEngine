@@ -1,8 +1,8 @@
 #include "Framework.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 
-#include "Engine/Services/Filesystem.h"
 #include "Engine/Application.h"
+#include "Engine/Services/Filesystem.h"
 
 using namespace Silent::Services;
 
@@ -19,12 +19,14 @@ namespace Silent::Renderer
     {
         _device = &device;
 
+        // @todo Vectors won't compile as part of initialization list.
         auto triPipelineConfig = PipelineConfig
         {
-            .Type               = PipelineType::Triangle,
-            .VertexShaderName   = "Vertex.vert",
-            .FragmentShaderName = "Frag.frag"/*,
-            .VertBufferDescs    = std::vector<SDL_GPUVertexBufferDescription>
+            .Type                     = PipelineType::Triangle,
+            .VertexShaderName         = "Vertex.vert",
+            .FragmentShaderName       = "Fragment.frag",
+            .FragShaderUniBufferCount = 1,
+            /*.VertBufferDescs    = std::vector<SDL_GPUVertexBufferDescription>
             {
                 {
                     .pitch              = sizeof(RendererVertex),
@@ -65,7 +67,7 @@ namespace Silent::Renderer
                 }
             }*/
         };
-        triPipelineConfig.VertBufferDescs    = std::vector<SDL_GPUVertexBufferDescription>
+        triPipelineConfig.VertBufferDescs = std::vector<SDL_GPUVertexBufferDescription>
         {
             {
                 .slot               = 0,

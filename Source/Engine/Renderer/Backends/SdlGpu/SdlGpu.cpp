@@ -4,6 +4,7 @@
 #include "Engine/Application.h"
 #include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
+#include "Engine/Renderer/Common/View.h"
 #include "Engine/Services/Filesystem.h"
 #include "Utils/Utils.h"
 
@@ -18,7 +19,13 @@ namespace Silent::Renderer
         float r, g, b, a;
     };
 
-    static auto VertexBuffer = Buffer<RendererVertex>();
+    struct TimeUniform
+    {
+        float Time = 0;
+    };
+
+    static auto VertexBuffer  = Buffer<RendererVertex>();
+    static auto UniformBuffer = TimeUniform{};
 
     static const auto VERTICES = std::vector<RendererVertex>
     {
@@ -196,6 +203,9 @@ namespace Silent::Renderer
         auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
         VertexBuffer.Update(*copyPass, ToSpan(VERTICES), 0);
         SDL_EndGPUCopyPass(copyPass);
+
+        UniformBuffer.Time = SDL_GetTicksNS() / 1e9f;
+        SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
 
         // Begin render pass.
         auto colorTargetInfo = SDL_GPUColorTargetInfo

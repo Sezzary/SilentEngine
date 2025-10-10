@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
+#include "Engine/Renderer/Common/View.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
@@ -16,6 +17,7 @@ namespace Silent::Renderer
         SDL_GPUTexture*       _swapchainTexture = nullptr;           /** Active swapchain texture. */
         SDL_GPUCommandBuffer* _commandBuffer    = nullptr;           /** Active command buffer. */
         PipelineManager       _pipelines        = PipelineManager(); /** Pipeline handler. */
+        View                  _view             = View();            /** Camera view. */
 
         std::unordered_map<SDL_GPUTexture*, int> _textureCache = {}; /** Key = texture, value = asset ID. */
 

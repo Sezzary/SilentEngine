@@ -133,7 +133,7 @@ namespace Silent
 
     void ApplicationManager::Deinitialize()
     {
-        Log("Shutting down " + std::string(APP_NAME) + "...");
+        Log("Shutting down...");
 
         // Workspace.
         _work.Audio.Deinitialize();

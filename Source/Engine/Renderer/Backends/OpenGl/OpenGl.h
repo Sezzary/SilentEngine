@@ -7,7 +7,7 @@
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexArray.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexBuffer.h"
-#include "Engine/Renderer/Backends/OpenGl/View.h"
+#include "Engine/Renderer/Common/View.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer

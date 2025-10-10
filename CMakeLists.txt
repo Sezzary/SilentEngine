@@ -90,6 +90,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     spdlog
 )
 
+# @todo Weird errors with this. Running the commands manually in a terminal works, but not here for some reason.
 ## Set shader directories.
 #set(SHADER_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Shaders)
 #set(SHADER_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/Shaders)

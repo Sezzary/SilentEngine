@@ -9,7 +9,7 @@
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexArray.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexBuffer.h"
-#include "Engine/Renderer/Backends/OpenGl/View.h"
+#include "Engine/Renderer/Common/View.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Filesystem.h"
 #include "Engine/Services/Options.h"
@@ -311,7 +311,7 @@ namespace Silent::Renderer
 
         shaderProg.Activate();
         shaderProg.SetMatrix("modelMat", modelMat);
-        _view.ExportMatrix(glm::radians(45.0f), aspect, 0.1f, 100.0f, shaderProg, "viewMat");
+        shaderProg.SetMatrix("viewMat", _view.GetMatrix(glm::radians(45.0f), aspect, 0.1f, 100.0f));
         shaderProg.SetFloat("blendAlpha", g_DebugData.BlendAlpha);
 
         // Cubes
@@ -351,7 +351,7 @@ namespace Silent::Renderer
 
         shaderProg.Activate();
         shaderProg.SetMatrix("modelMat", modelMat);
-        _view.ExportMatrix(glm::radians(45.0f), aspect, 0.1f, 100.0f, shaderProg, "viewMat");
+        shaderProg.SetMatrix("viewMat", _view.GetMatrix(glm::radians(45.0f), aspect, 0.1f, 100.0f));
         shaderProg.SetFloat("blendAlpha", g_DebugData.BlendAlpha);
 
         // Draw the triangle (this goes to the _2dframebuffer's texture)

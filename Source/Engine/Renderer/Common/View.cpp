@@ -1,9 +1,8 @@
 #include "Framework.h"
-#include "Engine/Renderer/Backends/OpenGl/View.h"
+#include "Engine/Renderer/Common/View.h"
 
 #include "Engine/Application.h"
 #include "Engine/Input/Input.h"
-#include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
 
 using namespace Silent::Input;
 
@@ -15,11 +14,11 @@ namespace Silent::Renderer
         Size     = size;
     }
 
-    void View::ExportMatrix(float fov, float aspect, float nearPlane, float farPlane, ShaderProgram& shaderProg, const std::string& uniName)
+    Matrix View::GetMatrix(float fov, float aspect, float nearPlane, float farPlane)
     {
         auto viewMat = Matrix::CreateLookAt(Position, Position + (Direction * 3), Up);
         auto projMat = Matrix::CreatePerspective(Fov, aspect, nearPlane, farPlane);
-        shaderProg.SetMatrix(uniName, projMat * viewMat);
+        return projMat * viewMat;
     }
 
     void View::Move()

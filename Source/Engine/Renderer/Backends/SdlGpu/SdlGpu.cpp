@@ -229,9 +229,6 @@ namespace Silent::Renderer
         VertexBuffer.Update(*copyPass, ToSpan(VERTICES), 0);
         SDL_EndGPUCopyPass(copyPass);
 
-        UniformBuffer.Time = SDL_GetTicksNS() / 1e9f;
-        SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
-
         // Begin render pass.
         auto colorTargetInfo = SDL_GPUColorTargetInfo
         {
@@ -245,6 +242,10 @@ namespace Silent::Renderer
         // Bind.
         _pipelines.Bind(renderPass, PipelineType::Triangle);
         VertexBuffer.Bind(renderPass, 0);
+
+        // Upload uniform data.
+        UniformBuffer.Time = SDL_GetTicksNS() / 1e9f;
+        SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
 
         // Process render pass.
         SDL_DrawGPUPrimitives(&renderPass, 3, 1, 0, 0);

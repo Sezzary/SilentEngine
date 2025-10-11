@@ -37,7 +37,7 @@ namespace Silent::Renderer
             }
             case TextureFilterType::Linear:
             {
-                SetBilinearFilter();
+                SetLinearFilter();
                 break;
             }
         }
@@ -155,9 +155,9 @@ namespace Silent::Renderer
                 SetNearestFilter();
                 break;
             }
-            case TextureFilterType::Bilinear:
+            case TextureFilterType::Linear:
             {
-                SetBilinearFilter();
+                SetLinearFilter();
                 break;
             }
         }
@@ -171,7 +171,7 @@ namespace Silent::Renderer
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f);
     }
 
-    void Texture::SetBilinearFilter()
+    void Texture::SetLinearFilter()
     {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

@@ -33,6 +33,6 @@ namespace Silent::Renderer
         // Helpers
 
         void SetNearestFilter();
-        void SetBilinearFilter();
+        void SetLinearFilter();
     };
 }

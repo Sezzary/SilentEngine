@@ -14,15 +14,15 @@ namespace Silent::Renderer
         SDL_GPUTexture* _texture = nullptr;
 
     public:
-        //===========================
-        // Constructors, destructors
-        //===========================
+        //==============
+        // Constructors
+        //==============
 
         /** @brief Constructs an uninitialized default `Texture`. */
         Texture() = default;
 
         /** @brief Constructs a `Texture` and uploads it to the GPU.
-         * If the relevant TIM asset isn't already loaded, it will be load as a preliminary step.
+         * If the TIM asset isn't already loaded, it will be loaded as a preliminary step.
          *
          * @param device GPU device.
          * @param copyPass Copy pass.

@@ -25,47 +25,7 @@ namespace Silent::Renderer
             .Type                     = PipelineType::Triangle,
             .VertexShaderName         = "Vertex.vert",
             .FragmentShaderName       = "Fragment.frag",
-            .FragShaderUniBufferCount = 1,
-            /*.VertBufferDescs    = std::vector<SDL_GPUVertexBufferDescription>
-            {
-                {
-                    .pitch              = sizeof(RendererVertex),
-                    .slot               = 0,
-                    .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
-                    .instance_step_rate = 0
-                }
-            },
-            .VertBufferAttribs = std::vector<SDL_GPUVertexAttribute>
-            {
-                {
-                    .location    = 0,
-                    .buffer_slot = 0,
-                    .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-                    .offset      = 0
-                },
-                {
-                    .location    = 1,
-                    .buffer_slot = 0,
-                    .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
-                    .offset      = sizeof(float) * 3
-                }
-            },
-            .ColorTargetDescs = std::vector<SDL_GPUColorTargetDescription>
-            {
-                {
-                    .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
-                    .blend_state = SDL_GPUColorTargetBlendState
-                    {
-                        .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-                        .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-                        .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-                        .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-                        .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-                        .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
-                        .enable_blend          = true
-                    }
-                }
-            }*/
+            .FragShaderUniBufferCount = 1
         };
         triPipelineConfig.VertBufferDescs = std::vector<SDL_GPUVertexBufferDescription>
         {
@@ -119,8 +79,8 @@ namespace Silent::Renderer
     {
         // Load vertex shader.
         auto* vertShader = LoadShader(config.VertexShaderName,
-                                      config.VertShaderSamplerCount, config.VertShaderUniBufferCount,
-                                      config.VertShaderStorageBufferCount, config.VertShaderStorageTexCount);
+                                      config.VertShaderSamplerCount, config.VertShaderStorageTexCount,
+                                      config.VertShaderStorageBufferCount, config.VertShaderUniBufferCount);
         if (vertShader == nullptr)
         {
             throw std::runtime_error("Failed to create vertex shader `" + config.VertexShaderName + "`.");
@@ -128,8 +88,8 @@ namespace Silent::Renderer
 
         // Load fragment shader.
         auto* fragShader = LoadShader(config.FragmentShaderName,
-                                      config.FragShaderSamplerCount, config.FragShaderUniBufferCount,
-                                      config.FragShaderStorageBufferCount, config.FragShaderStorageTexCount);
+                                      config.FragShaderSamplerCount, config.FragShaderStorageTexCount,
+                                      config.FragShaderStorageBufferCount, config.FragShaderUniBufferCount);
         if (fragShader == nullptr)
         {
             throw std::runtime_error("Failed to create fragment shader `" + config.FragmentShaderName + "`.");
@@ -170,7 +130,7 @@ namespace Silent::Renderer
         SDL_ReleaseGPUShader(_device, fragShader);
     }
 
-    SDL_GPUShader* PipelineManager::LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount)
+    SDL_GPUShader* PipelineManager::LoadShader(const std::string& filename, uint samplerCount, uint storageTexCount, uint storageBufferCount, uint uniBufferCount)
     {
         // Define shader stage.
         auto stage = SDL_GPUShaderStage{};

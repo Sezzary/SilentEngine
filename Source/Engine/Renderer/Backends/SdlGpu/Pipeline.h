@@ -90,6 +90,6 @@ namespace Silent::Renderer
          * @param storageTexCount Storage texture count.
          * @return Compiled GPU shader.
          */
-        SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint uniBufferCount, uint storageBufferCount, uint storageTexCount);
+        SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint storageTexCount, uint storageBufferCount, uint uniBufferCount);
     };
 }

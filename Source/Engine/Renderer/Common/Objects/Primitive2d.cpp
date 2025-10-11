@@ -6,9 +6,9 @@
 
 namespace Silent::Renderer
 {
-    Primitive2d Primitive2d::CreateLine(const Vector2& from, const Vector2& to, const Color& color0, const Color& color1, int depth)
+    Primitive2d Primitive2d::CreateLine(const Vector2& from, const Vector2& to, const Color& colorFrom, const Color& colorTo, int depth)
     {
-        constexpr float WIDTH = SCREEN_SPACE_RES.y / CLASSIC_SCREEN_SPACE_RES.y;
+        constexpr float WIDTH = SCREEN_SPACE_RES.y / RETRO_SCREEN_SPACE_RES.y;
 
         float rot    = glm::atan2(to.y - from.y, to.x - from.x);
         auto  dir    = Vector2::Normalize(to - from);
@@ -18,10 +18,10 @@ namespace Silent::Renderer
         {
             .Vertices =
             {
-                Vertex2d{ from,          color0 },
-                Vertex2d{ to,            color1 },
-                Vertex2d{ from + offset, color0 },
-                Vertex2d{ to   + offset, color1 }
+                Vertex2d{ from,          colorFrom },
+                Vertex2d{ to,            colorTo   },
+                Vertex2d{ from + offset, colorFrom },
+                Vertex2d{ to   + offset, colorTo   }
             },
             .Depth = depth
         };

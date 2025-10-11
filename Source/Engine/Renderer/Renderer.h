@@ -5,8 +5,8 @@
 namespace Silent::Renderer
 {
     constexpr auto SCREEN_SPACE_RES           = Vector2(100.0f);
-    constexpr auto CLASSIC_SCREEN_SPACE_RES   = Vector2(320.0f, 240.0f);
-    constexpr uint PRIMITIVE_2D_COUNT_MAX     = 128;
+    constexpr auto RETRO_SCREEN_SPACE_RES     = Vector2(320.0f, 240.0f);
+    constexpr uint PRIMITIVE_2D_COUNT_MAX     = 256;
     constexpr char SCREENSHOT_FILENAME_BASE[] = "Screenshot_";
 
     /** @brief Renderer backend types. */
@@ -137,7 +137,7 @@ namespace Silent::Renderer
          *
          * @param prim 2D primitive.
          */
-        virtual void SubmitPrimitive2d(const Primitive2d& prim) = 0;
+        virtual void Submit2dPrimitive(const Primitive2d& prim) = 0;
 
         /** @brief Submits a screen sprite for drawing.
          *

@@ -6,6 +6,19 @@
 
 namespace Silent::Renderer
 {
+    enum class BufferId
+    {
+        Primitives2d,
+
+        Count
+    };
+
+    struct BufferVertex
+    {
+        float x, y, z;
+        float r, g, b, a;
+    };
+
     class SdlGpuRenderer : public RendererBase
     {
     private:
@@ -41,7 +54,7 @@ namespace Silent::Renderer
         void SaveScreenshot() const override;
         void LogError(const std::string& msg) const override;
 
-        void SubmitPrimitive2d(const Primitive2d& prim) override;
+        void Submit2dPrimitive(const Primitive2d& prim) override;
         void SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
                                 const Color& color, int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode) override;
 
@@ -53,5 +66,7 @@ namespace Silent::Renderer
         void Draw3dScene() override;
         void Draw2dScene() override;
         void DrawDebugGui() override;
+
+        void Copy2dPrimitives(SDL_GPUCopyPass& copyPass, std::vector<BufferVertex>& bufferVerts);
     };
 }

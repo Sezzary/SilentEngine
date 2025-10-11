@@ -13,12 +13,6 @@ using namespace Silent::Utils;
 
 namespace Silent::Renderer
 {
-    struct BufferVertex
-    {
-        float x, y, z;
-        float r, g, b, a;
-    };
-
     struct TimeUniform
     {
         float Time = 0;
@@ -76,7 +70,7 @@ namespace Silent::Renderer
         _samplers.push_back(SDL_CreateGPUSampler(_device, &linearSamplerInfo));
 
         // @temp Initialize vertex buffer.
-        VertexBuffer = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, 9);
+        VertexBuffer = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, 12);
 
         // Reserve memory.
         _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
@@ -129,6 +123,35 @@ namespace Silent::Renderer
             Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Error);
             return;
         }
+
+        // @temp
+        auto tri0 = Primitive2d::CreateTriangle(Vector2(0.0f + 0.2f, 0.5f + 0.2f),
+                                                Vector2(-0.5f + 0.2f, -0.5f + 0.2f),
+                                                Vector2(0.5f + 0.2f, -0.5f + 0.2f),
+                                                Color(1.0f, 0.0f, 1.0f, 0.5f),
+                                                Color(1.0f, 1.0f, 1.0f, 0.5f),
+                                                Color(1.0f, 0.0f, 1.0f, 0.5f),
+                                                0);
+        auto tri1 = Primitive2d::CreateTriangle(Vector2(0.2f, 0.25f),
+                                                Vector2(-0.25f, -0.25f),
+                                                Vector2(0.25f, -0.25f),
+                                                Color(1.0f, 0.0f, 0.0f, 0.75f),
+                                                Color(0.0f, 1.0f, 1.0f, 0.75f),
+                                                Color(0.0f, 0.0f, 1.0f, 0.75f),
+                                                0);
+        auto quad = Primitive2d::CreateQuad(Vector2(-0.1f, -0.2f) - Vector2(0.3f),
+                                            Vector2(0.1f, -0.2f) - Vector2(0.3f),
+                                            Vector2(0.1f, 0.2f) - Vector2(0.3f),
+                                            Vector2(-0.1f, 0.2f) - Vector2(0.3f),
+                                            Color(0.0f, 0.0f, 0.0f, 0.0f),
+                                            Color(0.0f, 1.0f, 0.0f, 1.0f),
+                                            Color(0.0f, 1.0f, 0.0f, 1.0f),
+                                            Color(0.0f, 0.0f, 0.0f, 0.0f),
+                                            0);
+
+        //Submit2dPrimitive(tri0);
+        //Submit2dPrimitive(tri1);
+        Submit2dPrimitive(quad);
 
         // Draw frame.
         if (_swapchainTexture != nullptr)
@@ -198,7 +221,7 @@ namespace Silent::Renderer
         // Not needed?
     }
 
-    void SdlGpuRenderer::SubmitPrimitive2d(const Primitive2d& prim)
+    void SdlGpuRenderer::Submit2dPrimitive(const Primitive2d& prim)
     {
         if (_primitives2d.size() >= PRIMITIVE_2D_COUNT_MAX)
         {
@@ -233,57 +256,12 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Draw2dScene()
     {
-        // @temp
-        auto tri0 = Primitive2d::CreateTriangle(Vector2(0.0f + 0.2f, 0.5f + 0.2f),
-                                                Vector2(-0.5f + 0.2f, -0.5f + 0.2f),
-                                                Vector2(0.5f + 0.2f, -0.5f + 0.2f),
-                                                Color(1.0f, 0.0f, 1.0f, 1.0f),
-                                                Color(1.0f, 1.0f, 1.0f, 1.0f),
-                                                Color(1.0f, 0.0f, 1.0f, 1.0f),
-                                                0);
-        auto tri1 = Primitive2d::CreateTriangle(Vector2(0.2f, 0.25f),
-                                                Vector2(-0.25f, -0.25f),
-                                                Vector2(0.25f, -0.25f),
-                                                Color(1.0f, 0.0f, 0.0f, 0.75f),
-                                                Color(0.0f, 1.0f, 1.0f, 0.75f),
-                                                Color(0.0f, 0.0f, 1.0f, 0.75f),
-                                                0);
-        SubmitPrimitive2d(tri0);
-        SubmitPrimitive2d(tri1);
-
-        // Create 2D primitive vertex buffer data.
-        auto bufferVerts = std::vector<BufferVertex>{};
-        bufferVerts.reserve(_primitives2d.size() * 3); // @todo Not a clean reservation as some may have multiple triangles.
-        for (const auto& prim : _primitives2d)
-        {
-            if (prim.Vertices.size() == TRIANGLE_VERTEX_COUNT)
-            {
-                for (const auto& vert : prim.Vertices)
-                {
-                    bufferVerts.push_back(BufferVertex
-                    {
-                        .x = vert.Position.x,
-                        .y = vert.Position.y,
-                        .z = std::clamp(prim.Depth / 4096.0f, 0.0f, 1.0f),
-                        .r = vert.Col.R(),
-                        .g = vert.Col.G(),
-                        .b = vert.Col.B(),
-                        .a = vert.Col.A()
-                    });
-                }
-            }
-            else if (prim.Vertices.size() == QUAD_VERTEX_COUNT)
-            {
-                for (const auto& vert : prim.Vertices)
-                {
-                    // @todo
-                }
-            }
-        }
-
         // Process copy pass.
         auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
-        VertexBuffer.Update(*copyPass, ToSpan(bufferVerts), 0);
+
+        auto bufferVerts = std::vector<BufferVertex>{};
+        Copy2dPrimitives(*copyPass, bufferVerts);
+
         SDL_EndGPUCopyPass(copyPass);
 
         // Begin render pass.
@@ -347,5 +325,55 @@ namespace Silent::Renderer
         // Process render pass.
         ImGui_ImplSDLGPU3_RenderDrawData(drawData, _commandBuffer, renderPass);
         SDL_EndGPURenderPass(renderPass);
+    }
+
+    void SdlGpuRenderer::Copy2dPrimitives(SDL_GPUCopyPass& copyPass, std::vector<BufferVertex>& bufferVerts)
+    {
+        // Create 2D primitive vertex buffer data.
+        bufferVerts.reserve(_primitives2d.size() * 3); // Rough reservation.
+        for (const auto& prim : _primitives2d)
+        {
+            // 2D triangle primitive.
+            if (prim.Vertices.size() == TRIANGLE_VERTEX_COUNT)
+            {
+                for (const auto& vert : prim.Vertices)
+                {
+                    auto pos = ConvertNdcToPercent(Vector2(vert.Position.x, vert.Position.y)); // @todo
+                    bufferVerts.push_back(BufferVertex
+                    {
+                        .x = vert.Position.x,
+                        .y = vert.Position.y,
+                        .z = std::clamp(prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f),
+                        .r = vert.Col.R(),
+                        .g = vert.Col.G(),
+                        .b = vert.Col.B(),
+                        .a = vert.Col.A()
+                    });
+                }
+            }
+            // 2D line or quad primitive.
+            else if (prim.Vertices.size() == QUAD_VERTEX_COUNT)
+            {
+                for (int i : QUAD_TRIANGLE_IDXS)
+                {
+                    const auto& vert = prim.Vertices[i];
+
+                    auto pos = ConvertPercentToNdc(Vector2(vert.Position.x, vert.Position.y)); // @todo
+                    bufferVerts.push_back(BufferVertex
+                    {
+                        .x = vert.Position.x,
+                        .y = vert.Position.y,
+                        .z = std::clamp(prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f),
+                        .r = vert.Col.R(),
+                        .g = vert.Col.G(),
+                        .b = vert.Col.B(),
+                        .a = vert.Col.A()
+                    });
+                }
+            }
+        }
+
+        // Update buffer.
+        VertexBuffer.Update(copyPass, ToSpan(bufferVerts), 0);
     }
 }

@@ -241,7 +241,7 @@ namespace Silent::Renderer
         }
     }
 
-    void OpenGlRenderer::SubmitPrimitive2d(const Primitive2d& prim)
+    void OpenGlRenderer::Submit2dPrimitive(const Primitive2d& prim)
     {
         // @todo
     }

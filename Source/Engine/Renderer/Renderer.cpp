@@ -64,6 +64,11 @@ namespace Silent::Renderer
         _isResized = true;
     }
 
+    void RendererBase::ClearFrameData()
+    {
+        _primitives2d.clear();
+    }
+
     void RendererBase::SubmitDebugGui(std::function<void()> drawFunc)
     {
         const auto& options = g_App.GetOptions();

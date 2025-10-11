@@ -9,7 +9,7 @@ using namespace Silent::Services;
 namespace Silent::Renderer
 {
     // @todo Temp.
-    struct RendererVertex
+    struct BufferVertex
     {
         Vector3 Position = Vector3::Zero;
         Color   Col      = Color::Black;
@@ -31,7 +31,7 @@ namespace Silent::Renderer
         {
             {
                 .slot               = 0,
-                .pitch              = sizeof(RendererVertex),
+                .pitch              = sizeof(BufferVertex),
                 .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
                 .instance_step_rate = 0
             }
@@ -155,7 +155,6 @@ namespace Silent::Renderer
         const char* entryPoint  = nullptr;
 
         const auto& fs = g_App.GetFilesystem();
-
         if (formatFlags & SDL_GPU_SHADERFORMAT_SPIRV)
         {
             snprintf(fullPath, sizeof(fullPath), "%s.spv", (fs.GetShadersDirectory() / filename).string().c_str());

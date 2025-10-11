@@ -111,6 +111,9 @@ namespace Silent::Renderer
         /** @brief Signals a viewport resize. */
         void SignalResize();
 
+        /** @brief Clears renderer data used for the previous frame. */
+        void ClearFrameData();
+
         /** @brief Initializes the renderer and its subsystems.
          *
          * @param window Window to claim as the render surface.

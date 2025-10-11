@@ -13,7 +13,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Renderer
 {
-    struct RendererVertex
+    struct BufferVertex
     {
         float x, y, z;
         float r, g, b, a;
@@ -24,15 +24,8 @@ namespace Silent::Renderer
         float Time = 0;
     };
 
-    static auto VertexBuffer  = Buffer<RendererVertex>();
+    static auto VertexBuffer  = Buffer<BufferVertex>();
     static auto UniformBuffer = TimeUniform{};
-
-    static const auto VERTICES = std::vector<RendererVertex>
-    {
-        {  0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-        { -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f },
-        {  0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f }
-    };
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
@@ -83,7 +76,7 @@ namespace Silent::Renderer
         _samplers.push_back(SDL_CreateGPUSampler(_device, &linearSamplerInfo));
 
         // @temp Initialize vertex buffer.
-        VertexBuffer = Buffer<RendererVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, VERTICES.size());
+        VertexBuffer = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, 9);
 
         // Reserve memory.
         _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
@@ -141,20 +134,20 @@ namespace Silent::Renderer
         if (_swapchainTexture != nullptr)
         {
             Draw3dScene();
-            //Draw2dScene();
+            Draw2dScene();
             DrawDebugGui();
         }
 
         // Submit command buffer to GPU.
         SDL_SubmitGPUCommandBuffer(_commandBuffer);
 
-        // Clear.
-        _primitives2d.clear();
+        // Clear previous frame data.
+        ClearFrameData();
     }
 
     void SdlGpuRenderer::RefreshTextureFilter()
     {
-        // @todo
+        // @todo Not necessary for this backend.
     }
 
     void SdlGpuRenderer::SaveScreenshot() const
@@ -224,11 +217,6 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Draw3dScene()
     {
-        // Process copy pass.
-        auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
-        VertexBuffer.Update(*copyPass, ToSpan(VERTICES), 0);
-        SDL_EndGPUCopyPass(copyPass);
-
         // Begin render pass.
         auto colorTargetInfo = SDL_GPUColorTargetInfo
         {
@@ -236,6 +224,74 @@ namespace Silent::Renderer
             .clear_color = SDL_FColor{ _clearColor.R(), _clearColor.G(), _clearColor.B(), _clearColor.A() },
             .load_op     = SDL_GPU_LOADOP_CLEAR,
             .store_op    = SDL_GPU_STOREOP_STORE
+        };
+        auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
+
+        // Process render pass.
+        SDL_EndGPURenderPass(&renderPass);
+    }
+
+    void SdlGpuRenderer::Draw2dScene()
+    {
+        // @temp
+        auto tri0 = Primitive2d::CreateTriangle(Vector2(0.0f + 0.2f, 0.5f + 0.2f),
+                                                Vector2(-0.5f + 0.2f, -0.5f + 0.2f),
+                                                Vector2(0.5f + 0.2f, -0.5f + 0.2f),
+                                                Color(1.0f, 0.0f, 1.0f, 1.0f),
+                                                Color(1.0f, 1.0f, 1.0f, 1.0f),
+                                                Color(1.0f, 0.0f, 1.0f, 1.0f),
+                                                0);
+        auto tri1 = Primitive2d::CreateTriangle(Vector2(0.2f, 0.25f),
+                                                Vector2(-0.25f, -0.25f),
+                                                Vector2(0.25f, -0.25f),
+                                                Color(1.0f, 0.0f, 0.0f, 0.75f),
+                                                Color(0.0f, 1.0f, 1.0f, 0.75f),
+                                                Color(0.0f, 0.0f, 1.0f, 0.75f),
+                                                0);
+        SubmitPrimitive2d(tri0);
+        SubmitPrimitive2d(tri1);
+
+        // Create 2D primitive vertex buffer data.
+        auto bufferVerts = std::vector<BufferVertex>{};
+        bufferVerts.reserve(_primitives2d.size() * 3); // @todo Not a clean reservation as some may have multiple triangles.
+        for (const auto& prim : _primitives2d)
+        {
+            if (prim.Vertices.size() == TRIANGLE_VERTEX_COUNT)
+            {
+                for (const auto& vert : prim.Vertices)
+                {
+                    bufferVerts.push_back(BufferVertex
+                    {
+                        .x = vert.Position.x,
+                        .y = vert.Position.y,
+                        .z = std::clamp(prim.Depth / 4096.0f, 0.0f, 1.0f),
+                        .r = vert.Col.R(),
+                        .g = vert.Col.G(),
+                        .b = vert.Col.B(),
+                        .a = vert.Col.A()
+                    });
+                }
+            }
+            else if (prim.Vertices.size() == QUAD_VERTEX_COUNT)
+            {
+                for (const auto& vert : prim.Vertices)
+                {
+                    // @todo
+                }
+            }
+        }
+
+        // Process copy pass.
+        auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
+        VertexBuffer.Update(*copyPass, ToSpan(bufferVerts), 0);
+        SDL_EndGPUCopyPass(copyPass);
+
+        // Begin render pass.
+        auto colorTargetInfo = SDL_GPUColorTargetInfo
+        {
+            .texture  = _swapchainTexture,
+            .load_op  = SDL_GPU_LOADOP_LOAD,
+            .store_op = SDL_GPU_STOREOP_STORE
         };
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
@@ -248,26 +304,7 @@ namespace Silent::Renderer
         SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
 
         // Process render pass.
-        SDL_DrawGPUPrimitives(&renderPass, 3, 1, 0, 0);
-        SDL_EndGPURenderPass(&renderPass);
-    }
-
-    void SdlGpuRenderer::Draw2dScene()
-    {
-        // Begin render pass.
-        auto colorTargetInfo = SDL_GPUColorTargetInfo
-        {
-            .texture  = _swapchainTexture,
-            .load_op  = SDL_GPU_LOADOP_LOAD,
-            .store_op = SDL_GPU_STOREOP_STORE
-        };
-        auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
-
-        // Bind.
-        _pipelines.Bind(renderPass, PipelineType::Triangle);
-
-        // Process render pass.
-        SDL_DrawGPUPrimitives(&renderPass, 4, 1, 0, 0);
+        SDL_DrawGPUPrimitives(&renderPass, bufferVerts.size(), sizeof(bufferVerts) / sizeof(BufferVertex), 0, 0);
         SDL_EndGPURenderPass(&renderPass);
     }
 

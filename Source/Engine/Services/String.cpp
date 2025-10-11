@@ -3,7 +3,6 @@
 
 #include "Engine/Application.h"
 #include "Engine/Assets/Assets.h"
-#include "Engine/Assets/Parsers/Tim.h"
 
 namespace Silent::Services
 {

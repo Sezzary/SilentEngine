@@ -38,7 +38,7 @@ namespace Silent::Services
     enum class TextureFilterType
     {
         Nearest,
-        Bilinear
+        Linear
     };
 
     enum class LightingType

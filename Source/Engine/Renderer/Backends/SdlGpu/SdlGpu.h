@@ -13,11 +13,12 @@ namespace Silent::Renderer
         // Fields
         // =======
 
-        SDL_GPUDevice*        _device           = nullptr;           /** GPU device. */
-        SDL_GPUTexture*       _swapchainTexture = nullptr;           /** Active swapchain texture. */
-        SDL_GPUCommandBuffer* _commandBuffer    = nullptr;           /** Active command buffer. */
-        PipelineManager       _pipelines        = PipelineManager(); /** Pipeline handler. */
-        View                  _view             = View();            /** Camera view. */
+        SDL_GPUDevice*               _device           = nullptr;           /** GPU device. */
+        SDL_GPUTexture*              _swapchainTexture = nullptr;           /** Active swapchain texture. */
+        SDL_GPUCommandBuffer*        _commandBuffer    = nullptr;           /** Active command buffer. */
+        std::vector<SDL_GPUSampler*> _samplers         = {};                /** Texture samplers. */
+        PipelineManager              _pipelines        = PipelineManager(); /** Pipeline handler. */
+        View                         _view             = View();            /** Camera view. */
 
         std::unordered_map<SDL_GPUTexture*, int> _textureCache = {}; /** Key = texture, value = asset ID. */
 

@@ -3,7 +3,7 @@
 namespace Silent::Renderer
 {
     /** @brief GPU buffer with data of type `T`. */
-	template <typename T>
+    template <typename T>
     class Buffer
     {
     private:
@@ -92,10 +92,12 @@ namespace Silent::Renderer
     template <typename T>
     void Buffer<T>::Update(SDL_GPUCopyPass& copyPass, std::span<const T> data, uint startIdx)
     {
-        auto& mappedData = *(T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
-        memcpy(&mappedData, data.data(), data.size_bytes());
+        // Map transfer data.
+        auto* mappedData = (T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
+        memcpy(mappedData, data.data(), data.size_bytes());
         SDL_UnmapGPUTransferBuffer(_device, _transfer);
 
+        // Upload data.
         auto transferBufferLoc = SDL_GPUTransferBufferLocation
         {
             .transfer_buffer = _transfer

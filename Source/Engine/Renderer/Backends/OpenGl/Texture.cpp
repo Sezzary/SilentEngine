@@ -3,7 +3,6 @@
 
 #include "Engine/Application.h"
 #include "Engine/Assets/Assets.h"
-#include "Engine/Assets/Parsers/Tim.h" // @todo Shouldn't need this.
 #include "Engine/Renderer/Backends/OpenGl/ShaderProgram.h"
 #include "Engine/Services/Options.h"
 
@@ -36,7 +35,7 @@ namespace Silent::Renderer
                 SetNearestFilter();
                 break;
             }
-            case TextureFilterType::Bilinear:
+            case TextureFilterType::Linear:
             {
                 SetBilinearFilter();
                 break;

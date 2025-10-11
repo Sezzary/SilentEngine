@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Engine/Assets/Parsers/Tim.h"
+#include "Engine/Assets/Parsers/Tmd.h"
+
 namespace Silent::Assets
 {
     /** @brief Loaded asset types. Used in `Asset`. */

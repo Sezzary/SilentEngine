@@ -1,8 +1,8 @@
 #include "Framework.h"
 #include "Engine/Assets/Assets.h"
 
-#include "Engine/Assets/Parsers/Tmd.h"
 #include "Engine/Assets/Parsers/Tim.h"
+#include "Engine/Assets/Parsers/Tmd.h"
 #include "Utils/Parallel.h"
 #include "Utils/Utils.h"
 
@@ -94,7 +94,7 @@ namespace Silent::Assets
 
         // Sort files alphabetically.
         std::sort(files.begin(), files.end());
-        
+
         // Register assets.
         _assets.reserve(files.size());
         for (int i = 0; i < files.size(); i++)
@@ -138,6 +138,7 @@ namespace Silent::Assets
         }
         auto& asset = _assets[assetIdx];
 
+        // @todo Should be able to wait until loaded. Could maybe store futures of loading assets.
         // Check if already loading or loaded.
         if (asset->State == AssetState::Loading || asset->State == AssetState::Loaded)
         {

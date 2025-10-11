@@ -52,7 +52,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 # Prevent SDL_shadercross from looking for system packages.
-set(SDLSHADERCROSS_VENDORED ON)
+#set(SDLSHADERCROSS_VENDORED ON)
 
 # Add library directories.
 add_subdirectory(Libraries/assimp)
@@ -61,7 +61,7 @@ add_subdirectory(Libraries/glad/cmake)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/json)
 add_subdirectory(Libraries/SDL)
-add_subdirectory(Libraries/SDL_shadercross)
+#add_subdirectory(Libraries/SDL_shadercross)
 add_subdirectory(Libraries/spdlog)
 
 # Add library header paths.

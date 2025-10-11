@@ -59,11 +59,11 @@ namespace Silent::Renderer
         uint         _drawCallCount = 0;
 
         Color _clearColor = Color::Black;
-
-        std::vector<std::function<void()>> _debugGuiDrawCalls = {};
-
+        
         std::vector<Primitive2d> _primitives2d = {};
         //std::vector<Primitive3d>           _debugPrimitives3d = {};
+
+        std::vector<std::function<void()>> _debugGuiDrawCalls = {};
 
     public:
         // =============

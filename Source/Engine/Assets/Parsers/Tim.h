@@ -7,7 +7,7 @@ namespace Silent::Assets
     {
         uint               ColorDepth = 0;
         Vector2i           Resolution = Vector2i::Zero;
-        std::vector<uchar> Pixels     = {};
+        std::vector<uint8> Pixels     = {};
     };
 
     /** @brief Parses a TIM file to a usable asset.

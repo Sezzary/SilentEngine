@@ -360,7 +360,7 @@ namespace Silent::Renderer
                     {
                         .Position = Vector3(pos.x,
                                             pos.y,
-                                            std::clamp(prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                                            std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
                         .Col      = vert.Col
                     });
                 }
@@ -377,7 +377,7 @@ namespace Silent::Renderer
                     {
                         .Position = Vector3(pos.x,
                                             pos.y,
-                                            std::clamp(prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                                            std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
                         .Col      = vert.Col
                     });
                 }

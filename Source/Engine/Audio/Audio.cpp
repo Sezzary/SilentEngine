@@ -30,6 +30,9 @@ namespace Silent::Audio
 
     void AudioManager::Update()
     {
+        // @todo Memory leak.
+        return;
+
         static float time = 0.0f;
 
         // Generate a sine wave continuously.

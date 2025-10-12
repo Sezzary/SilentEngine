@@ -70,7 +70,7 @@ namespace Silent::Renderer
         _samplers.push_back(SDL_CreateGPUSampler(_device, &linearSamplerInfo));
 
         // @temp Initialize vertex buffer.
-        VertexBuffer = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, 12);
+        VertexBuffer = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, (PRIMITIVE_2D_COUNT_MAX * 2) * TRIANGLE_VERTEX_COUNT);
 
         // Reserve memory.
         _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
@@ -148,15 +148,27 @@ namespace Silent::Renderer
                                             Color(0.0f, 1.0f, 0.0f, 1.0f),
                                             Color(0.0f, 0.0f, 0.0f, 0.0f),
                                             0);
-        auto line = Primitive2d::CreateLine(Vector2(10.0f, 10.0f) - Vector2(0.3f),
-                                            Vector2(50.0f, 10.0f) - Vector2(0.3f),
-                                            Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                            Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                            0);
+        auto line0 = Primitive2d::CreateLine(Vector2i(10, 10),
+                                             Vector2i(50, 10),
+                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                             Color(0.0f, 0.0f, 0.0f, 0.0f),
+                                             0);
+        auto line1 = Primitive2d::CreateLine(Vector2i(15, 11),
+                                             Vector2i(70, 11),
+                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                             0);
+        auto line2 = Primitive2d::CreateLine(Vector2i(10, 220),
+                                             Vector2i(50, 220),
+                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                             0);
         //Submit2dPrimitive(tri0);
         //Submit2dPrimitive(tri1);
         Submit2dPrimitive(quad);
-        Submit2dPrimitive(line);
+        Submit2dPrimitive(line0);
+        Submit2dPrimitive(line1);
+        Submit2dPrimitive(line2);
 
         // Draw frame.
         if (_swapchainTexture != nullptr)

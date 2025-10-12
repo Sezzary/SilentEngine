@@ -12,7 +12,7 @@ namespace Silent::Renderer
     {
         constexpr float WIDTH = SCREEN_SPACE_RES.y / RETRO_SCREEN_SPACE_RES.y;
 
-        float rot    = glm::atan2(to.y - from.y, to.x - from.x);
+        // @todo May have to offset in the opposite direction for certain rotations.
         auto  dir    = Vector2::Normalize(to - from);
         auto  offset = Vector2(-dir.y, dir.x) * WIDTH;
 

@@ -27,8 +27,9 @@ namespace Silent::Renderer
             .FragmentShaderName       = "2dPrimitive.frag",
             .FragShaderUniBufferCount = 1
         };
-        triPipelineConfig.VertBufferDescs = std::vector<SDL_GPUVertexBufferDescription>
+        triPipelineConfig.VertBufferDescs =
         {
+            SDL_GPUVertexBufferDescription
             {
                 .slot               = 0,
                 .pitch              = sizeof(BufferVertex),
@@ -36,14 +37,16 @@ namespace Silent::Renderer
                 .instance_step_rate = 0
             }
         };
-        triPipelineConfig.VertBufferAttribs = std::vector<SDL_GPUVertexAttribute>
+        triPipelineConfig.VertBufferAttribs =
         {
+            SDL_GPUVertexAttribute
             {
                 .location    = 0,
                 .buffer_slot = 0,
                 .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
                 .offset      = 0
             },
+            SDL_GPUVertexAttribute
             {
                 .location    = 1,
                 .buffer_slot = 0,
@@ -51,8 +54,9 @@ namespace Silent::Renderer
                 .offset      = sizeof(float) * 3
             }
         };
-        triPipelineConfig.ColorTargetDescs = std::vector<SDL_GPUColorTargetDescription>
+        triPipelineConfig.ColorTargetDescs =
         {
+            SDL_GPUColorTargetDescription
             {
                 .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
                 .blend_state = SDL_GPUColorTargetBlendState

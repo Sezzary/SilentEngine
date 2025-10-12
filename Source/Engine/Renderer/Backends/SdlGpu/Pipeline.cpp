@@ -15,6 +15,14 @@ namespace Silent::Renderer
         Color   Col      = Color::Black;
     };
 
+    PipelineManager::~PipelineManager()
+    {
+        for (auto* pipeline : _pipelines)
+        {
+	        SDL_ReleaseGPUGraphicsPipeline(_device, pipeline);
+        }
+    }
+
     void PipelineManager::Initialize(SDL_Window& window, SDL_GPUDevice& device)
     {
         _device = &device;

@@ -51,6 +51,9 @@ namespace Silent::Renderer
         /** @brief Constructs an uninitialized default `PipelineManager`. */
         PipelineManager() = default;
 
+        /** @brief Gracefull destroys the `PipelineManager` and releases GPU resources. */
+        ~PipelineManager();
+
         // ==========
         // Utilities
         // ==========

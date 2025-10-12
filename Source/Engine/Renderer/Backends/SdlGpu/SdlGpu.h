@@ -15,8 +15,8 @@ namespace Silent::Renderer
 
     struct BufferVertex
     {
-        float x, y, z;
-        float r, g, b, a;
+        Vector3 Position = Vector3::Zero;
+        Color   Col      = Color::Black;
     };
 
     class SdlGpuRenderer : public RendererBase

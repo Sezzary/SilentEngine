@@ -139,19 +139,24 @@ namespace Silent::Renderer
                                                 Color(0.0f, 1.0f, 1.0f, 0.75f),
                                                 Color(0.0f, 0.0f, 1.0f, 0.75f),
                                                 0);
-        auto quad = Primitive2d::CreateQuad(Vector2(-0.1f, -0.2f) - Vector2(0.3f),
-                                            Vector2(0.1f, -0.2f) - Vector2(0.3f),
-                                            Vector2(0.1f, 0.2f) - Vector2(0.3f),
-                                            Vector2(-0.1f, 0.2f) - Vector2(0.3f),
+        auto quad = Primitive2d::CreateQuad(Vector2(40.0f, 40.0f),
+                                            Vector2(50.0f, 40.0f),
+                                            Vector2(50.0f, 50.0f),
+                                            Vector2(40.0f, 50.0f),
                                             Color(0.0f, 0.0f, 0.0f, 0.0f),
                                             Color(0.0f, 1.0f, 0.0f, 1.0f),
                                             Color(0.0f, 1.0f, 0.0f, 1.0f),
                                             Color(0.0f, 0.0f, 0.0f, 0.0f),
                                             0);
-
+        auto line = Primitive2d::CreateLine(Vector2(10.0f, 10.0f) - Vector2(0.3f),
+                                            Vector2(50.0f, 10.0f) - Vector2(0.3f),
+                                            Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                            Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                            0);
         //Submit2dPrimitive(tri0);
         //Submit2dPrimitive(tri1);
         Submit2dPrimitive(quad);
+        Submit2dPrimitive(line);
 
         // Draw frame.
         if (_swapchainTexture != nullptr)
@@ -330,7 +335,7 @@ namespace Silent::Renderer
     void SdlGpuRenderer::Copy2dPrimitives(SDL_GPUCopyPass& copyPass, std::vector<BufferVertex>& bufferVerts)
     {
         // Create 2D primitive vertex buffer data.
-        bufferVerts.reserve(_primitives2d.size() * 3); // Rough reservation.
+        bufferVerts.reserve((_primitives2d.size() * 2) * 3);
         for (const auto& prim : _primitives2d)
         {
             // 2D triangle primitive.
@@ -338,16 +343,13 @@ namespace Silent::Renderer
             {
                 for (const auto& vert : prim.Vertices)
                 {
-                    auto pos = ConvertNdcToPercent(Vector2(vert.Position.x, vert.Position.y)); // @todo
+                    auto pos = ConvertNdcToPercent(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
-                        .x = vert.Position.x,
-                        .y = vert.Position.y,
-                        .z = std::clamp(prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f),
-                        .r = vert.Col.R(),
-                        .g = vert.Col.G(),
-                        .b = vert.Col.B(),
-                        .a = vert.Col.A()
+                        .Position = Vector3(pos.x,
+                                            pos.y,
+                                            std::clamp(prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                        .Col      = vert.Col
                     });
                 }
             }
@@ -358,16 +360,13 @@ namespace Silent::Renderer
                 {
                     const auto& vert = prim.Vertices[i];
 
-                    auto pos = ConvertPercentToNdc(Vector2(vert.Position.x, vert.Position.y)); // @todo
+                    auto pos = ConvertPercentToNdc(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
-                        .x = vert.Position.x,
-                        .y = vert.Position.y,
-                        .z = std::clamp(prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f),
-                        .r = vert.Col.R(),
-                        .g = vert.Col.G(),
-                        .b = vert.Col.B(),
-                        .a = vert.Col.A()
+                        .Position = Vector3(pos.x,
+                                            pos.y,
+                                            std::clamp(prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                        .Col      = vert.Col
                     });
                 }
             }

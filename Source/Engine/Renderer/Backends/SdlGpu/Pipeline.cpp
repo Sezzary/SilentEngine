@@ -23,8 +23,8 @@ namespace Silent::Renderer
         auto triPipelineConfig = PipelineConfig
         {
             .Type                     = PipelineType::Triangle,
-            .VertexShaderName         = "Vertex.vert",
-            .FragmentShaderName       = "Fragment.frag",
+            .VertexShaderName         = "2dPrimitive.vert",
+            .FragmentShaderName       = "2dPrimitive.frag",
             .FragShaderUniBufferCount = 1
         };
         triPipelineConfig.VertBufferDescs = std::vector<SDL_GPUVertexBufferDescription>
@@ -206,8 +206,6 @@ namespace Silent::Renderer
         if (shader == nullptr)
         {
             Log("Failed to create shader: " + std::string(SDL_GetError()));
-            SDL_free(code);
-            return nullptr;
         }
         SDL_free(code);
 

@@ -2,11 +2,14 @@
 
 #include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
+#include "Engine/Renderer/Common/Objects/Vertex2d.h"
+#include "Engine/Renderer/Common/Objects/Vertex3d.h"
 #include "Engine/Renderer/Common/View.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
 {
+    // @todo Can use `Vertex2d` instead?
     struct BufferVertex
     {
         Vector3 Position = Vector3::Zero;
@@ -16,6 +19,7 @@ namespace Silent::Renderer
     struct BufferData
     {
         Buffer<BufferVertex> Primitives2d = Buffer<BufferVertex>();
+        Buffer<Vertex2d>     Sprites2d    = Buffer<Vertex2d>();
     };
 
     class SdlGpuRenderer : public RendererBase

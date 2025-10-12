@@ -300,7 +300,7 @@ namespace Silent::Renderer
     void SdlGpuRenderer::Copy2dPrimitives(SDL_GPUCopyPass& copyPass, std::vector<BufferVertex>& bufferVerts)
     {
         // Create 2D primitive vertex buffer data.
-        bufferVerts.reserve((_primitives2d.size() * 2) * 3);
+        bufferVerts.reserve((_primitives2d.size() * 2) * TRIANGLE_VERTEX_COUNT);
         for (const auto& prim : _primitives2d)
         {
             // 2D triangle primitive.
@@ -308,7 +308,7 @@ namespace Silent::Renderer
             {
                 for (const auto& vert : prim.Vertices)
                 {
-                    auto pos = ConvertNdcToPercent(Vector2(vert.Position.x, vert.Position.y));
+                    auto pos = ConvertNdcToScreenPosition(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
                         .Position = Vector3(pos.x,
@@ -325,7 +325,7 @@ namespace Silent::Renderer
                 {
                     const auto& vert = prim.Vertices[i];
 
-                    auto pos = ConvertPercentToNdc(Vector2(vert.Position.x, vert.Position.y));
+                    auto pos = ConvertScreenPositionToNdc(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
                         .Position = Vector3(pos.x,

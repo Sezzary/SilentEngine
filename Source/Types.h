@@ -13,6 +13,7 @@ namespace Silent
     using u32 = uint32_t;
     using u64 = uint64_t;
 
+    using byte   = uint8_t;
     using uchar  = unsigned char;
     using ushort = unsigned short;
     using uint   = unsigned int;

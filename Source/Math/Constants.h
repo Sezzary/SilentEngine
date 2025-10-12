@@ -18,6 +18,9 @@ namespace Silent::Math
     constexpr float SQRT_2   = 1.41421356237f;
     constexpr float EPSILON  = 0.00001f;
 
+    constexpr uint TRIANGLE_VERTEX_COUNT = 3;
+    constexpr uint QUAD_VERTEX_COUNT     = 4;
+
     enum class ContainmentType
     {
         None,

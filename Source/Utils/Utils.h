@@ -24,19 +24,26 @@ namespace Silent::Utils
      */
     char* CopyString(const char src[], uint size);
 
+    /** @brief Gets a screen position in percent corrected according to the aspect ratio of the screen.
+     *
+     * @param pos Screen position in percent.
+     * @return Screen position in percent corrected for the screen aspect ratio.
+     */
+    Vector2 GetAspectCorrectScreenPosition(const Vector2& pos);
+
     /** @brief Converts a screen position in percent to normalized device coordinates.
      *
      * @param pos Screen position in percent with components in the range `[0.0f, 100.0f]`.
      * @return Normalized device coordinates with components in the range `[-1.0f, 1.0f]`.
      */
-    Vector2 ConvertPercentToNdc(const Vector2& pos);
+    Vector2 ConvertScreenPositionToNdc(const Vector2& pos);
 
     /** @brief Converts normalized device coordinates to a screen position in percent.
      *
      * @param ndc Normalized device coordinates with components in the range `[-1.0f, 1.0f]`.
      * @return Screen position in percent with components in the range `[0.0f, 100.0f]`.
      */
-    Vector2 ConvertNdcToPercent(const Vector2& ndc);
+    Vector2 ConvertNdcToScreenPosition(const Vector2& ndc);
 
     /** @brief Gets the sign of a value.
      *

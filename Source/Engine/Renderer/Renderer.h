@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Engine/Renderer/Common/Objects/Primitive2d.h"
+#include "Engine/Renderer/Common/Objects/Primitive3d.h"
+#include "Engine/Renderer/Common/Objects/Sprite2d.h"
 
 namespace Silent::Renderer
 {
@@ -16,36 +18,6 @@ namespace Silent::Renderer
         SdlGpu
     };
 
-    enum class BlendMode
-    {
-        Opaque,
-        Alpha,
-        Add,
-        Subtract,
-        Multiply,
-        LumaMultiply
-    };
-
-    enum class ScreenSpriteAlignMode
-    {
-        Center,
-        CenterTop,
-        CenterBottom,
-        CenterLeft,
-        CenterRight,
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight
-    };
-
-    enum class ScreenSpriteScaleMode
-    {
-        Fit,
-        Fill,
-        Stretch
-    };
-
     class RendererBase
     {
     protected:
@@ -59,10 +31,11 @@ namespace Silent::Renderer
         uint         _drawCallCount = 0;
 
         Color _clearColor = Color::Black;
-        
-        std::vector<Primitive2d> _primitives2d = {};
-        //std::vector<Primitive3d>           _debugPrimitives3d = {};
 
+        std::vector<Primitive3d> _primitives3d = {};
+
+        std::vector<Primitive2d>           _primitives2d      = {};
+        std::vector<Sprite2d>              _sprites2d         = {};
         std::vector<std::function<void()>> _debugGuiDrawCalls = {};
 
     public:

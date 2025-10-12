@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Renderer/Common/Enums.h"
 #include "Engine/Renderer/Common/Objects/Vertex2d.h"
 
 namespace Silent::Renderer
@@ -12,6 +13,7 @@ namespace Silent::Renderer
     {
         std::vector<Vertex2d> Vertices  = {};
         int                   Depth     = 0;
+        BlendMode             BlendMode = BlendMode::Opaque;
 
         /** @brief Constructs a 2D line primitive with a width at the retro resolution pixel scale (320x240) using screen positions in percent.
          *

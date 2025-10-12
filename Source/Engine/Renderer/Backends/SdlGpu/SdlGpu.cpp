@@ -18,7 +18,6 @@ namespace Silent::Renderer
         float Time = 0;
     };
 
-    static auto VertexBuffer  = Buffer<BufferVertex>();
     static auto UniformBuffer = TimeUniform{};
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
@@ -69,8 +68,8 @@ namespace Silent::Renderer
         };
         _samplers.push_back(SDL_CreateGPUSampler(_device, &linearSamplerInfo));
 
-        // @temp Initialize vertex buffer.
-        VertexBuffer = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, (PRIMITIVE_2D_COUNT_MAX * 2) * TRIANGLE_VERTEX_COUNT);
+        // Initialize vertex, index, and indirect buffers.
+        _buffers.Primitives2d = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, (PRIMITIVE_2D_COUNT_MAX * 2) * TRIANGLE_VERTEX_COUNT);
 
         // Reserve memory.
         _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
@@ -123,52 +122,6 @@ namespace Silent::Renderer
             Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Error);
             return;
         }
-
-        // @temp
-        auto tri0 = Primitive2d::CreateTriangle(Vector2(0.0f + 0.2f, 0.5f + 0.2f),
-                                                Vector2(-0.5f + 0.2f, -0.5f + 0.2f),
-                                                Vector2(0.5f + 0.2f, -0.5f + 0.2f),
-                                                Color(1.0f, 0.0f, 1.0f, 0.5f),
-                                                Color(1.0f, 1.0f, 1.0f, 0.5f),
-                                                Color(1.0f, 0.0f, 1.0f, 0.5f),
-                                                0);
-        auto tri1 = Primitive2d::CreateTriangle(Vector2(0.2f, 0.25f),
-                                                Vector2(-0.25f, -0.25f),
-                                                Vector2(0.25f, -0.25f),
-                                                Color(1.0f, 0.0f, 0.0f, 0.75f),
-                                                Color(0.0f, 1.0f, 1.0f, 0.75f),
-                                                Color(0.0f, 0.0f, 1.0f, 0.75f),
-                                                0);
-        auto quad = Primitive2d::CreateQuad(Vector2(40.0f, 40.0f),
-                                            Vector2(50.0f, 40.0f),
-                                            Vector2(50.0f, 50.0f),
-                                            Vector2(40.0f, 50.0f),
-                                            Color(0.0f, 0.0f, 0.0f, 0.0f),
-                                            Color(0.0f, 1.0f, 0.0f, 1.0f),
-                                            Color(0.0f, 1.0f, 0.0f, 1.0f),
-                                            Color(0.0f, 0.0f, 0.0f, 0.0f),
-                                            0);
-        auto line0 = Primitive2d::CreateLine(Vector2i(10, 10),
-                                             Vector2i(50, 10),
-                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                             Color(0.0f, 0.0f, 0.0f, 0.0f),
-                                             0);
-        auto line1 = Primitive2d::CreateLine(Vector2i(15, 11),
-                                             Vector2i(70, 11),
-                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                             0);
-        auto line2 = Primitive2d::CreateLine(Vector2i(10, 220),
-                                             Vector2i(50, 220),
-                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                             Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                             0);
-        //Submit2dPrimitive(tri0);
-        //Submit2dPrimitive(tri1);
-        Submit2dPrimitive(quad);
-        Submit2dPrimitive(line0);
-        Submit2dPrimitive(line1);
-        Submit2dPrimitive(line2);
 
         // Draw frame.
         if (_swapchainTexture != nullptr)
@@ -292,7 +245,7 @@ namespace Silent::Renderer
 
         // Bind.
         _pipelines.Bind(renderPass, PipelineType::Triangle);
-        VertexBuffer.Bind(renderPass, 0);
+        _buffers.Primitives2d.Bind(renderPass, 0);
 
         // Upload uniform data.
         UniformBuffer.Time = SDL_GetTicksNS() / 1e9f;
@@ -385,6 +338,6 @@ namespace Silent::Renderer
         }
 
         // Update buffer.
-        VertexBuffer.Update(copyPass, ToSpan(bufferVerts), 0);
+        _buffers.Primitives2d.Update(copyPass, ToSpan(bufferVerts), 0);
     }
 }

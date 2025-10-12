@@ -1,22 +1,21 @@
 #pragma once
 
+#include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 #include "Engine/Renderer/Common/View.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
 {
-    enum class BufferId
-    {
-        Primitives2d,
-
-        Count
-    };
-
     struct BufferVertex
     {
         Vector3 Position = Vector3::Zero;
         Color   Col      = Color::Black;
+    };
+
+    struct BufferData
+    {
+        Buffer<BufferVertex> Primitives2d = Buffer<BufferVertex>();
     };
 
     class SdlGpuRenderer : public RendererBase
@@ -30,6 +29,7 @@ namespace Silent::Renderer
         SDL_GPUTexture*              _swapchainTexture = nullptr;           /** Active swapchain texture. */
         SDL_GPUCommandBuffer*        _commandBuffer    = nullptr;           /** Active command buffer. */
         std::vector<SDL_GPUSampler*> _samplers         = {};                /** Texture samplers. */
+        BufferData                   _buffers          = {};                /** Vertex, index, and indirect buffers. */
         PipelineManager              _pipelines        = PipelineManager(); /** Pipeline handler. */
         View                         _view             = View();            /** Camera view. */
 

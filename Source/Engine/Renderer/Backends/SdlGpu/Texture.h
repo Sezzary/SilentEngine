@@ -30,7 +30,7 @@ namespace Silent::Renderer
          */
         Texture(SDL_GPUDevice& device, SDL_GPUCopyPass& copyPass, int assetIdx);
 
-        /** @brief Gracefully destroys the `Texture`, freeing GPU resources. */
+        /** @brief Gracefully destroys the `Texture`, and frees GPU resources. */
         ~Texture();
     };
 }

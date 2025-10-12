@@ -43,6 +43,56 @@ namespace Silent::Utils::Debug
 
             input.UpdateText("Test");
             Message(input.GetText("Test").c_str());
+
+            //=====================================
+
+            auto& renderer = g_App.GetRenderer();
+
+            // @temp
+            auto tri0 = Primitive2d::CreateTriangle(Vector2(0.0f + 0.2f, 0.5f + 0.2f),
+                                                    Vector2(-0.5f + 0.2f, -0.5f + 0.2f),
+                                                    Vector2(0.5f + 0.2f, -0.5f + 0.2f),
+                                                    Color(1.0f, 0.0f, 1.0f, 0.5f),
+                                                    Color(1.0f, 1.0f, 1.0f, 0.5f),
+                                                    Color(1.0f, 0.0f, 1.0f, 0.5f),
+                                                    0);
+            auto tri1 = Primitive2d::CreateTriangle(Vector2(0.2f, 0.25f),
+                                                    Vector2(-0.25f, -0.25f),
+                                                    Vector2(0.25f, -0.25f),
+                                                    Color(1.0f, 0.0f, 0.0f, 0.75f),
+                                                    Color(0.0f, 1.0f, 1.0f, 0.75f),
+                                                    Color(0.0f, 0.0f, 1.0f, 0.75f),
+                                                    0);
+            auto quad = Primitive2d::CreateQuad(Vector2(40.0f, 40.0f),
+                                                Vector2(50.0f, 40.0f),
+                                                Vector2(50.0f, 50.0f),
+                                                Vector2(40.0f, 50.0f),
+                                                Color(0.0f, 0.0f, 0.0f, 0.0f),
+                                                Color(0.0f, 1.0f, 0.0f, 1.0f),
+                                                Color(0.0f, 1.0f, 0.0f, 1.0f),
+                                                Color(0.0f, 0.0f, 0.0f, 0.0f),
+                                                0);
+            auto line0 = Primitive2d::CreateLine(Vector2i(10, 10),
+                                                Vector2i(50, 10),
+                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                Color(0.0f, 0.0f, 0.0f, 0.0f),
+                                                0);
+            auto line1 = Primitive2d::CreateLine(Vector2i(15, 11),
+                                                Vector2i(70, 11),
+                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                0);
+            auto line2 = Primitive2d::CreateLine(Vector2i(10, 220),
+                                                Vector2i(50, 220),
+                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                0);
+            //renderer.Submit2dPrimitive(tri0);
+            //renderer.Submit2dPrimitive(tri1);
+            renderer.Submit2dPrimitive(quad);
+            renderer.Submit2dPrimitive(line0);
+            renderer.Submit2dPrimitive(line1);
+            renderer.Submit2dPrimitive(line2);
         }
     }
 

@@ -14,7 +14,6 @@ namespace Silent::Renderer
         SDL_GPUDevice*         _device   = nullptr;
         SDL_GPUBuffer*         _buffer   = nullptr;
         SDL_GPUTransferBuffer* _transfer = nullptr;
-        uint                   _stride   = 0;
 
     public:
         // =============
@@ -62,12 +61,11 @@ namespace Silent::Renderer
         }
 
         _device = &device;
-        _stride = sizeof(T);
 
         auto bufferInfo = SDL_GPUBufferCreateInfo
         {
             .usage = usageFlags,
-            .size  = size * _stride
+            .size  = size * sizeof(T)
         };
 
         // Create buffer.
@@ -80,7 +78,7 @@ namespace Silent::Renderer
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = size * _stride
+            .size  = size * sizeof(T)
         };
 
         // Create transfer buffer.
@@ -107,7 +105,7 @@ namespace Silent::Renderer
         auto bufferRegion = SDL_GPUBufferRegion
         {
             .buffer = _buffer,
-            .offset = startIdx * _stride,
+            .offset = startIdx * sizeof(T),
             .size   = (uint)data.size_bytes()
         };
         SDL_UploadToGPUBuffer(&copyPass, &transferBufferLoc, &bufferRegion, true);
@@ -118,7 +116,7 @@ namespace Silent::Renderer
     {
         auto bufferBindings      = std::array<SDL_GPUBufferBinding, 1>{};
         bufferBindings[0].buffer = _buffer;
-        bufferBindings[0].offset = startIdx * _stride;
+        bufferBindings[0].offset = startIdx * sizeof(T);
 
         SDL_BindGPUVertexBuffers(&renderPass, 0, bufferBindings.data(), bufferBindings.size());
     }

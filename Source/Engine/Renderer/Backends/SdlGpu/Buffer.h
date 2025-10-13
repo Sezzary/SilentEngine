@@ -28,8 +28,9 @@ namespace Silent::Renderer
          * @param device GPU device.
          * @param usageFlags Buffer usage flags.
          * @param size Static buffer size.
+         * @param name Buffer name.
          */
-        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size);
+        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size, const std::string& name);
 
         //===========
         // Utilities
@@ -56,7 +57,7 @@ namespace Silent::Renderer
     };
 
     template <typename T>
-    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size)
+    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size, const std::string& name)
     {
         if (!(usageFlags & (SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_INDEX | SDL_GPU_BUFFERUSAGE_INDIRECT)))
         {
@@ -78,7 +79,8 @@ namespace Silent::Renderer
             Log("Failed to create buffer: " + std::string(SDL_GetError()), LogLevel::Error);
         }
 
-        //SDL_SetGPUBufferName(_device, _buffer, name); // @todo
+        // Set buffer name.
+        SDL_SetGPUBufferName(_device, _buffer, name.c_str());
 
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {

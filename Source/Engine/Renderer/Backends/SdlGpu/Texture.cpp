@@ -52,7 +52,7 @@ namespace Silent::Renderer
         // Set texture name.
         SDL_SetGPUTextureName(_device, _texture, asset->Name.c_str());
 
-        // Create texture transfer buffer.
+        // Create transfer buffer.
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
@@ -60,7 +60,7 @@ namespace Silent::Renderer
         };
         auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
 
-        uint8* mappedTexTransferData = (uint8*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
+        byte* mappedTexTransferData = (byte*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
         memcpy(mappedTexTransferData, data->Pixels.data(), (data->Resolution.x * data->Resolution.y) * 4);
         SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
 
@@ -78,6 +78,7 @@ namespace Silent::Renderer
             .d       = 1
         };
         SDL_UploadToGPUTexture(&copyPass, &texTransferInfo, &texRegion, false);
+	    SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
     }
 
     Texture::~Texture()

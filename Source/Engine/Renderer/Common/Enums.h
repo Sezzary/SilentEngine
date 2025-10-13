@@ -13,7 +13,7 @@ namespace Silent::Renderer
         LumaMultiply // @todo Not a blend mode, just a shader.
     };
 
-    enum class ScreenSpriteAlignMode
+    enum class AlignMode
     {
         Center,
         CenterTop,
@@ -26,7 +26,7 @@ namespace Silent::Renderer
         BottomRight
     };
 
-    enum class ScreenSpriteScaleMode
+    enum class ScaleMode
     {
         Fit,
         Fill,

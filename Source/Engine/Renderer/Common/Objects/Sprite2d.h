@@ -5,11 +5,20 @@
 
 namespace Silent::Renderer
 {
-    class Sprite2d
+    struct Sprite2d
     {
-        std::array<Vertex2d, QUAD_VERTEX_COUNT> Vertices  = {};
-        Color                                   Col       = Color::Black;
-        int                                     Depth     = 0;
-        BlendMode                               BlendMode = BlendMode::Opaque;
+        int                                     AssetIdx = 0;
+        std::array<Vertex2d, QUAD_VERTEX_COUNT> Vertices = {};
+        float                                   Rotation = 0.0f;
+        Vector2                                 Scale    = Vector3::Zero;
+        Color                                   Col      = Color::Black;
+        int                                     Depth    = 0;
+        BlendMode                               BlendM   = BlendMode::Opaque;
+        ScaleMode                               ScaleM   = ScaleMode::Fit;
+
+        static Sprite2d CreateSprite2d(int assetIdx, const Vector2& pos, float rot, const Vector2& scale, const Color& color,
+                                       int depth, BlendMode blendMode, ScaleMode scaleMode);
+
+        static Sprite2d CreateSprite2d(const Vector2i& pos);
     };
 }

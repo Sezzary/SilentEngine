@@ -8,8 +8,11 @@ namespace Silent::Renderer
 {
     constexpr auto SCREEN_SPACE_RES           = Vector2(100.0f);
     constexpr auto RETRO_SCREEN_SPACE_RES     = Vector2(320.0f, 240.0f);
-    constexpr uint PRIMITIVE_2D_COUNT_MAX     = 256;
     constexpr char SCREENSHOT_FILENAME_BASE[] = "Screenshot_";
+
+    constexpr uint PRIMITIVE_2D_COUNT_MAX = 256;
+    constexpr uint SPRITE_2D_COUNT_MAX    = 256;
+    constexpr uint PRIMITIVE_3D_COUNT_MAX = 256;
 
     /** @brief Renderer backend types. */
     enum class RendererType
@@ -127,7 +130,7 @@ namespace Silent::Renderer
          * @param blendMode Draw blend mode.
          */
         virtual void SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
-                                        const Color& color, int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode) = 0;
+                                        const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode) = 0;
 
         // ======
         // Debug

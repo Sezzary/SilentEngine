@@ -203,7 +203,7 @@ namespace Silent::Renderer
     }
 
     void SdlGpuRenderer::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
-                                            const Color& color, int depth, ScreenSpriteAlignMode alignMode, ScreenSpriteScaleMode scaleMode, BlendMode blendMode)
+                                            const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode)
     {
         // @todo
     }

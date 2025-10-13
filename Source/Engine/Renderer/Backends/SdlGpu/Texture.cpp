@@ -60,8 +60,8 @@ namespace Silent::Renderer
         };
         auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
 
-        uint8* mappedTexTransferData = (uint8*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
-        memcpy(mappedTexTransferData, data->Pixels.data(), (data->Resolution.x * data->Resolution.y) * 4);
+        byte* mappedTransferData = (byte*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
+        memcpy(mappedTransferData, data->Pixels.data(), (data->Resolution.x * data->Resolution.y) * 4);
         SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
 
         // Upload texture data.
@@ -78,6 +78,7 @@ namespace Silent::Renderer
             .d       = 1
         };
         SDL_UploadToGPUTexture(&copyPass, &texTransferInfo, &texRegion, false);
+	    SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
     }
 
     Texture::~Texture()

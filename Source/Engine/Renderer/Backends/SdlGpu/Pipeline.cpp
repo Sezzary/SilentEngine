@@ -30,7 +30,7 @@ namespace Silent::Renderer
         // @todo Vectors won't compile as part of initialiser list.
         auto triPipelineConfig = PipelineConfig
         {
-            .Type                     = PipelineType::Triangle,
+            .Type                     = PipelineType::Primitive2d,
             .VertexShaderName         = "2dPrimitive.vert",
             .FragmentShaderName       = "2dPrimitive.frag",
             .FragShaderUniBufferCount = 1
@@ -203,7 +203,7 @@ namespace Silent::Renderer
         auto shaderInfo = SDL_GPUShaderCreateInfo
         {
             .code_size            = codeSize,
-            .code                 = (const uint8*)code,
+            .code                 = (const byte*)code,
             .entrypoint           = entryPoint,
             .format               = formatFlag,
             .stage                = stage,

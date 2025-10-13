@@ -244,7 +244,7 @@ namespace Silent::Renderer
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
         // Bind.
-        _pipelines.Bind(renderPass, PipelineType::Triangle);
+        _pipelines.Bind(renderPass, PipelineType::Primitive2d);
         _buffers.Primitives2d.Bind(renderPass, 0);
 
         // Upload uniform data.
@@ -311,9 +311,7 @@ namespace Silent::Renderer
                     auto pos = ConvertNdcToScreenPosition(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
-                        .Position = Vector3(pos.x,
-                                            pos.y,
-                                            std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                        .Position = Vector3(pos.x, pos.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
                         .Col      = vert.Col
                     });
                 }
@@ -328,9 +326,7 @@ namespace Silent::Renderer
                     auto pos = ConvertScreenPositionToNdc(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
-                        .Position = Vector3(pos.x,
-                                            pos.y,
-                                            std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                        .Position = Vector3(pos.x, pos.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
                         .Col      = vert.Col
                     });
                 }

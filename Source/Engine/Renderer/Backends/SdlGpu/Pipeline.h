@@ -5,7 +5,7 @@ namespace Silent::Renderer
     /** @brief Pipeline types. */
     enum class PipelineType
     {
-        Triangle,
+        Primitive2d,
 
         Count
     };
@@ -13,7 +13,7 @@ namespace Silent::Renderer
     /** @brief Pipeline configuration data. */
     struct PipelineConfig
     {
-        PipelineType Type = PipelineType::Triangle;
+        PipelineType Type = PipelineType::Primitive2d;
 
         std::string VertexShaderName             = {};
         uint        VertShaderSamplerCount       = 0;

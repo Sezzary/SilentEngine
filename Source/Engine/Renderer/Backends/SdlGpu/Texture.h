@@ -32,5 +32,7 @@ namespace Silent::Renderer
 
         /** @brief Gracefully destroys the `Texture`, and frees GPU resources. */
         ~Texture();
+
+        void Bind(SDL_GPURenderPass& renderPass, SDL_GPUSampler& sampler);
     };
 }

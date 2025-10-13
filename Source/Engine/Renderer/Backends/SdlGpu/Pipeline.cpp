@@ -14,6 +14,11 @@ namespace Silent::Renderer
         Vector3 Position = Vector3::Zero;
         Color   Col      = Color::Black;
     };
+    struct BufferTexVertex
+    {
+        Vector3 Position = Vector3::Zero;
+        Vector2 Uv       = Vector2::Zero;
+    };
 
     PipelineManager::~PipelineManager()
     {
@@ -28,14 +33,14 @@ namespace Silent::Renderer
         _device = &device;
 
         // @todo Vectors won't compile as part of initialiser list.
-        auto triPipelineConfig = PipelineConfig
+        auto prim2dPipelineConfig = PipelineConfig
         {
-            .Type                     = PipelineType::Triangle,
+            .Type                     = PipelineType::Primitive2d,
             .VertexShaderName         = "2dPrimitive.vert",
             .FragmentShaderName       = "2dPrimitive.frag",
             .FragShaderUniBufferCount = 1
         };
-        triPipelineConfig.VertBufferDescs =
+        prim2dPipelineConfig.VertBufferDescs =
         {
             SDL_GPUVertexBufferDescription
             {
@@ -45,7 +50,7 @@ namespace Silent::Renderer
                 .instance_step_rate = 0
             }
         };
-        triPipelineConfig.VertBufferAttribs =
+        prim2dPipelineConfig.VertBufferAttribs =
         {
             SDL_GPUVertexAttribute
             {
@@ -62,7 +67,7 @@ namespace Silent::Renderer
                 .offset      = sizeof(float) * 3
             }
         };
-        triPipelineConfig.ColorTargetDescs =
+        prim2dPipelineConfig.ColorTargetDescs =
         {
             SDL_GPUColorTargetDescription
             {
@@ -79,7 +84,60 @@ namespace Silent::Renderer
                 }
             }
         };
-        InitializeGraphicsPipeline(window, triPipelineConfig);
+        InitializeGraphicsPipeline(window, prim2dPipelineConfig);
+        
+        auto texQuadPipelineConfig = PipelineConfig
+        {
+            .Type                   = PipelineType::Primitive2dTextured,
+            .VertexShaderName       = "TexturedQuad.vert",
+            .FragmentShaderName     = "TexturedQuad.frag",
+            .FragShaderSamplerCount = 1
+        };
+        texQuadPipelineConfig.VertBufferDescs =
+        {
+            SDL_GPUVertexBufferDescription
+            {
+                .slot               = 0,
+                .pitch              = sizeof(BufferTexVertex),
+                .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+                .instance_step_rate = 0
+            }
+        };
+        texQuadPipelineConfig.VertBufferAttribs =
+        {
+            SDL_GPUVertexAttribute
+            {
+                .location    = 0,
+                .buffer_slot = 0,
+                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+                .offset      = 0
+            },
+            SDL_GPUVertexAttribute
+            {
+                .location    = 1,
+                .buffer_slot = 0,
+                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2,
+                .offset      = sizeof(float) * 3
+            }
+        };
+        texQuadPipelineConfig.ColorTargetDescs =
+        {
+            SDL_GPUColorTargetDescription
+            {
+                .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
+                .blend_state = SDL_GPUColorTargetBlendState
+                {
+                    .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+                    .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                    .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+                    .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+                    .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                    .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
+                    .enable_blend          = true
+                }
+            }
+        };
+        InitializeGraphicsPipeline(window, texQuadPipelineConfig);
     }
 
     void PipelineManager::Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType)

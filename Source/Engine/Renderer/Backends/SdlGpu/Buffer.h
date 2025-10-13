@@ -50,6 +50,9 @@ namespace Silent::Renderer
          * @param startIdx 
          */
         void Bind(SDL_GPURenderPass& renderPass, uint startIdx);
+
+        // temp
+        void BindIndex(SDL_GPURenderPass& renderPass, uint startIdx);
     };
 
     template <typename T>
@@ -75,10 +78,12 @@ namespace Silent::Renderer
             Log("Failed to create buffer: " + std::string(SDL_GetError()), LogLevel::Error);
         }
 
+        //SDL_SetGPUBufferName(_device, _buffer, name); // @todo
+
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = size * sizeof(T)
+            .size  = size * sizeof(T)/* + (sizeof(uint16) * 6)*/
         };
 
         // Create transfer buffer.
@@ -119,5 +124,16 @@ namespace Silent::Renderer
         bufferBindings[0].offset = startIdx * sizeof(T);
 
         SDL_BindGPUVertexBuffers(&renderPass, 0, bufferBindings.data(), bufferBindings.size());
+    }
+
+    template <typename T>
+    void Buffer<T>::BindIndex(SDL_GPURenderPass& renderPass, uint startIdx)
+    {
+        auto bufferBindings = SDL_GPUBufferBinding
+        {
+            .buffer = _buffer,
+            .offset = startIdx * sizeof(T)
+        };
+        SDL_BindGPUIndexBuffer(&renderPass, &bufferBindings, SDL_GPU_INDEXELEMENTSIZE_16BIT);
     }
 };

@@ -5,8 +5,8 @@
 
 namespace Silent::Renderer
 {
-    constexpr uint                                       DEPTH_MAX             = 1024;
-    constexpr std::array<int, TRIANGLE_VERTEX_COUNT * 2> QUAD_TRIANGLE_IDXS    = { 0, 1, 2, 0, 2, 3 };
+    constexpr uint                                       DEPTH_MAX          = 1024;
+    constexpr std::array<int, TRIANGLE_VERTEX_COUNT * 2> QUAD_TRIANGLE_IDXS = { 0, 1, 2, 0, 2, 3 };
 
     /** @brief 2D screen space primitive representing a line, triangle, or quad. */
     struct Primitive2d

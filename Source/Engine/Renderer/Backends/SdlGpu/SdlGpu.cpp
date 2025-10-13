@@ -4,6 +4,7 @@
 #include "Engine/Application.h"
 #include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
+#include "Engine/Renderer/Backends/SdlGpu/Texture.h"
 #include "Engine/Renderer/Common/View.h"
 #include "Engine/Services/Filesystem.h"
 #include "Utils/Utils.h"
@@ -19,6 +20,7 @@ namespace Silent::Renderer
     };
 
     static auto UniformBuffer = TimeUniform{};
+    static auto TexQuadTex    = Texture();
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
@@ -70,6 +72,8 @@ namespace Silent::Renderer
 
         // Initialize vertex, index, and indirect buffers.
         _buffers.Primitives2d = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, (PRIMITIVE_2D_COUNT_MAX * 2) * TRIANGLE_VERTEX_COUNT);
+        _buffers.TexQuad      = Buffer<BufferTexVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, 20);
+        _buffers.TexQuadIdxs  = Buffer<uint16>(*_device, SDL_GPU_BUFFERUSAGE_INDEX, 20);
 
         // Reserve memory.
         _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
@@ -224,10 +228,32 @@ namespace Silent::Renderer
         SDL_EndGPURenderPass(&renderPass);
     }
 
+    static auto TexVerts = std::vector<BufferTexVertex>
+    {
+        { Vector3(-1,  1, 0), Vector2(0, 0) },
+        { Vector3( 1,  1, 0), Vector2(4, 0) },
+        { Vector3( 1, -1, 0), Vector2(4, 4) },
+        { Vector3(-1, -1, 0), Vector2(0, 4) }
+    };
+    static auto TexVertIdxs = std::vector<uint16>
+    {
+        0, 1, 2,
+        0, 2, 3
+    };
+
     void SdlGpuRenderer::Draw2dScene()
     {
         // Process copy pass.
         auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
+
+        static bool isFirstTime = true;
+        if (isFirstTime)
+        {
+            TexQuadTex  = Texture(*_device, *copyPass, 7);
+            isFirstTime = false;
+            _buffers.TexQuad.Update(*copyPass, ToSpan(TexVerts), 0);
+            _buffers.TexQuadIdxs.Update(*copyPass, ToSpan(TexVertIdxs), 0);
+        }
 
         auto bufferVerts = std::vector<BufferVertex>{};
         Copy2dPrimitives(*copyPass, bufferVerts);
@@ -244,7 +270,7 @@ namespace Silent::Renderer
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
         // Bind.
-        _pipelines.Bind(renderPass, PipelineType::Triangle);
+        _pipelines.Bind(renderPass, PipelineType::Primitive2d);
         _buffers.Primitives2d.Bind(renderPass, 0);
 
         // Upload uniform data.
@@ -253,6 +279,15 @@ namespace Silent::Renderer
 
         // Process render pass.
         SDL_DrawGPUPrimitives(&renderPass, bufferVerts.size(), sizeof(bufferVerts) / sizeof(BufferVertex), 0, 0);
+
+
+        _pipelines.Bind(renderPass, PipelineType::Primitive2dTextured);
+        _buffers.TexQuad.Bind(renderPass, 0);
+        _buffers.TexQuadIdxs.BindIndex(renderPass, 0);
+        //TexQuadTex.Bind(renderPass, *_samplers[0]);
+        //SDL_DrawGPUIndexedPrimitives(&renderPass, 6, 1, 0, 0, 0);
+
+
         SDL_EndGPURenderPass(&renderPass);
     }
 

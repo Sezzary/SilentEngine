@@ -84,4 +84,14 @@ namespace Silent::Renderer
     {
         SDL_ReleaseGPUTexture(_device, _texture);
     }
+
+    void Texture::Bind(SDL_GPURenderPass& renderPass, SDL_GPUSampler& sampler)
+    {
+        auto texSamplerBinding = SDL_GPUTextureSamplerBinding
+        {
+            .texture = _texture,
+            .sampler = &sampler
+        };
+        SDL_BindGPUFragmentSamplers(&renderPass, 0, &texSamplerBinding, 1);
+    }
 }

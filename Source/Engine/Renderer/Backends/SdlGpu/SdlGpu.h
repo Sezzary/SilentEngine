@@ -9,16 +9,23 @@
 
 namespace Silent::Renderer
 {
-    // @todo Can use `Vertex2d` instead?
     struct BufferVertex
     {
         Vector3 Position = Vector3::Zero;
         Color   Col      = Color::Black;
     };
+    struct BufferTexVertex
+    {
+        Vector3 Position = Vector3::Zero;
+        Vector2 Uv       = Vector2::Zero;
+    };
 
     struct BufferData
     {
-        Buffer<BufferVertex> Primitives2d = Buffer<BufferVertex>();
+        Buffer<BufferVertex>    Primitives2d = Buffer<BufferVertex>();
+        Buffer<BufferTexVertex> TexQuad      = Buffer<BufferTexVertex>();
+        Buffer<uint16>          TexQuadIdxs  = Buffer<uint16>();
+
         Buffer<Vertex2d>     Sprites2d    = Buffer<Vertex2d>();
     };
 

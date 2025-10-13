@@ -1,0 +1,98 @@
+{
+    "version": "2.0.0",
+    "tasks":
+    [
+        {
+            "label": "Configure Debug",
+            "type": "shell",
+            "command": "cmake",
+            "args":
+            [
+                "-S",
+                "${workspaceFolder}",
+                "-B",
+                "${workspaceFolder}/Build/Debug",
+                "-DCMAKE_BUILD_TYPE=Debug"
+            ],
+            "group":
+            {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$msCompile"],
+            "detail": "Configure the project for Debug build"
+        },
+        {
+            "label": "Configure Release",
+            "type": "shell",
+            "command": "cmake",
+            "args":
+            [
+                "-S",
+                "${workspaceFolder}",
+                "-B",
+                "${workspaceFolder}/Build/Release",
+                "-DCMAKE_BUILD_TYPE=Release"
+            ],
+            "group":
+            {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": ["$msCompile"],
+            "detail": "Configure the project for Release build"
+        },
+        {
+            "label": "Build Debug",
+            "dependsOn": "Configure Debug",
+            "type": "shell",
+            "command": "cmake",
+            "args":
+            [
+                "--build",
+                "${workspaceFolder}/Build/Debug"
+            ],
+            "group":
+            {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": ["$msCompile"],
+            "detail": "Build the project in Debug configuration"
+        },
+        {
+            "label": "Build Release",
+            "dependsOn": "Configure Release",
+            "type": "shell",
+            "command": "cmake",
+            "args":
+            [
+                "--build",
+                "${workspaceFolder}/Build/Release"
+            ],
+            "group":
+            {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": ["$msCompile"],
+            "detail": "Build the project in Release configuration"
+        },
+        {
+            "label": "Generate savegame",
+            "type": "shell",
+            "command": "python",
+            "args":
+            [
+                "${workspaceFolder}/Tools/GenerateSavegame.py"
+            ],
+            "group":
+            {
+                "kind": "none",
+                "isDefault": false
+            },
+            "problemMatcher": ["$msCompile"],
+            "detail": "Generate the savegame buffer headers"
+        }
+    ]
+}

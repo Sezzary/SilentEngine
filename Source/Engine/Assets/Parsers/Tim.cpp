@@ -140,7 +140,7 @@ namespace Silent::Assets
         {
             .ColorDepth = colorDepth,
             .Resolution = res,
-            .Pixels     = std::vector<uint8>((res.x * res.y) * 4)
+            .Pixels     = std::vector<byte>((res.x * res.y) * 4)
         };
 
         auto setPixelColor = [&](int x, int y, uint16 color)

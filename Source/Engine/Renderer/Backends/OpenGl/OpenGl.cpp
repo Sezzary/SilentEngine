@@ -159,7 +159,7 @@ namespace Silent::Renderer
         std::filesystem::create_directories(path.parent_path());
 
         // Capture screenshot.
-        auto pixels = std::vector<uint8>((res.x * res.y) * COLOR_CHANNEL_COUNT);
+        auto pixels = std::vector<byte>((res.x * res.y) * COLOR_CHANNEL_COUNT);
         glReadPixels(0, 0, res.x, res.y, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
 
         // Flip pixels vertically.

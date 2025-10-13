@@ -100,8 +100,8 @@ namespace Silent::Renderer
     void Buffer<T>::Update(SDL_GPUCopyPass& copyPass, std::span<const T> data, uint startIdx)
     {
         // Map transfer data.
-        auto* mappedData = (T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
-        memcpy(mappedData, data.data(), data.size_bytes());
+        auto* mappedTransferData = (T*)SDL_MapGPUTransferBuffer(_device, _transfer, false);
+        memcpy(mappedTransferData, data.data(), data.size_bytes());
         SDL_UnmapGPUTransferBuffer(_device, _transfer);
 
         // Upload data.

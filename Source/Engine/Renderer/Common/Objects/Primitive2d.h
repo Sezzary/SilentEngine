@@ -11,9 +11,10 @@ namespace Silent::Renderer
     /** @brief 2D screen space primitive representing a line, triangle, or quad. */
     struct Primitive2d
     {
-        std::vector<Vertex2d> Vertices  = {};
-        int                   Depth     = 0;
-        BlendMode             BlendMode = BlendMode::Opaque;
+        std::vector<Vertex2d> Vertices = {};
+        int                   Depth    = 0;
+        ScaleMode             ScaleM   = ScaleMode::Fit;
+        BlendMode             BlendM   = BlendMode::Alpha;
 
         /** @brief Constructs a 2D line primitive with a width at the retro resolution pixel scale (320x240) using screen positions in percent.
          *
@@ -26,7 +27,7 @@ namespace Silent::Renderer
          */
         static Primitive2d CreateLine(const Vector2& from, const Vector2& to,
                                       const Color& colorFrom, const Color& colorTo,
-                                      int depth);
+                                      int depth = 0, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
 
         /** @brief Constructs a 2D line primitive with a width at the retro resolution pixel scale (320x240) using retro screen coordinates.
          *
@@ -39,7 +40,7 @@ namespace Silent::Renderer
          */
         static Primitive2d CreateLine(const Vector2i& from, const Vector2i& to,
                                       const Color& colorFrom, const Color& colorTo,
-                                      int depth);
+                                      int depth = 0, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
 
         /** @brief Constructs a 2D triangle primitive using screen positions in percent.
          *
@@ -54,7 +55,7 @@ namespace Silent::Renderer
          */
         static Primitive2d CreateTriangle(const Vector2& vert0, const Vector2& vert1, const Vector2& vert2,
                                           const Color& color0, const Color& color1, const Color& color2,
-                                          int depth);
+                                          int depth = 0, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
 
         /** @brief Constructs a 2D triangle primitive using retro screen coordinates.
          *
@@ -69,7 +70,7 @@ namespace Silent::Renderer
          */
         static Primitive2d CreateTriangle(const Vector2i& vert0, const Vector2i& vert1, const Vector2i& vert2,
                                           const Color& color0, const Color& color1, const Color& color2,
-                                          int depth);
+                                          int depth = 0, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
 
         /** @brief Constructs a 2D quad primitive.
          *
@@ -86,7 +87,7 @@ namespace Silent::Renderer
          */
         static Primitive2d CreateQuad(const Vector2& vert0, const Vector2& vert1, const Vector2& vert2, const Vector2& vert3,
                                       const Color& color0, const Color& color1, const Color& color2, const Color& color3,
-                                      int depth);
+                                      int depth = 0, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
 
         /** @brief Constructs a 2D quad primitive.
          *
@@ -103,6 +104,6 @@ namespace Silent::Renderer
          */
         static Primitive2d CreateQuad(const Vector2i& vert0, const Vector2i& vert1, const Vector2i& vert2, const Vector2i& vert3,
                                       const Color& color0, const Color& color1, const Color& color2, const Color& color3,
-                                      int depth);
+                                      int depth = 0, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
     };
 }

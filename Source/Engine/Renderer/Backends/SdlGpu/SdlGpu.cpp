@@ -5,6 +5,7 @@
 #include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 #include "Engine/Renderer/Backends/SdlGpu/Texture.h"
+#include "Engine/Renderer/Common/Utils.h"
 #include "Engine/Renderer/Common/View.h"
 #include "Engine/Services/Filesystem.h"
 #include "Utils/Utils.h"
@@ -436,10 +437,11 @@ namespace Silent::Renderer
             {
                 for (const auto& vert : prim.Vertices)
                 {
-                    auto pos = ConvertNdcToScreenPosition(Vector2(vert.Position.x, vert.Position.y));
+                    auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
+                    auto ndc = ConvertScreenPositionToNdc(pos);
                     bufferVerts.push_back(BufferVertex
                     {
-                        .Position = Vector3(pos.x, pos.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                        .Position = Vector3(ndc.x, ndc.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
                         .Col      = vert.Col
                     });
                 }
@@ -451,10 +453,11 @@ namespace Silent::Renderer
                 {
                     const auto& vert = prim.Vertices[i];
 
-                    auto pos = ConvertScreenPositionToNdc(Vector2(vert.Position.x, vert.Position.y));
+                    auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
+                    auto ndc = ConvertScreenPositionToNdc(pos);
                     bufferVerts.push_back(BufferVertex
                     {
-                        .Position = Vector3(pos.x, pos.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                        .Position = Vector3(ndc.x, ndc.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
                         .Col      = vert.Col
                     });
                 }

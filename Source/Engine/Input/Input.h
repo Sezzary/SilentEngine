@@ -151,7 +151,7 @@ namespace Silent::Input
         bool IsGamepadConnected() const;
 
         /** @brief Checks if a gamepad is being currently being used. The condition will be `true` if one of the inputs
-         * registered on the current tick came from a gamepad.
+         * registered for the current tick came from a gamepad.
          *
          * @return `true` if a gamepad is being used, `false` otherwise.
          */

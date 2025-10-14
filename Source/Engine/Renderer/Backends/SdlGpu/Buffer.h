@@ -32,9 +32,9 @@ namespace Silent::Renderer
          */
         Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size, const std::string& name);
 
-        //===========
+        // ==========
         // Utilities
-        //===========
+        // ==========
 
         /** @brief Uploads data to the GPU buffer.
          *

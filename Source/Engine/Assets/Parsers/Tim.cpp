@@ -178,7 +178,7 @@ namespace Silent::Assets
                             // Set pixel.
                             if (clut.empty())
                             {
-                                // Grayscale color [0, 15].
+                                // Grayscale color `[0, 15]`.
                                 uint16 color = ((i == 0) ? val0 : val1) * (0xFFFF / 0xF);
                                 setPixelColor(x, y, color);
                             }
@@ -200,7 +200,7 @@ namespace Silent::Assets
                         // Set pixel.
                         if (clut.empty())
                         {
-                            // Grayscale color [0, 255].
+                            // Grayscale color `[0, 255]`.
                             uint16 color = idx * (0xFFFF / 0xFF);
                             setPixelColor(x, y, 0xFFFF);
                         }

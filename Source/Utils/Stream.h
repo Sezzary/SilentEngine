@@ -85,12 +85,16 @@ namespace Silent::Utils
          */
         float ReadFloat();
 
-        /** @brief Reads arbitrary data from the data stream and increments the file pointer.
+        /** @brief Reads an array from the data stream and increments the file pointer.
          *
+         * @tparam T Data type.
          * @param dest Destination.
-         * @param dataSize Data size in bytes.
          * @param count Number of data elements.
          */
-        void ReadData(void* dest, uint dataSize, uint count);
+        template <typename T>
+        void ReadArray(std::span<T> dest, uint count = NO_VALUE)
+        {
+            _stream.read((byte*)dest.data(), ((count != NO_VALUE) ? count : dest.size()) * sizeof(T));
+        }
     };
 }

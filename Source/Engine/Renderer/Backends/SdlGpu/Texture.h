@@ -14,9 +14,9 @@ namespace Silent::Renderer
         SDL_GPUTexture* _texture = nullptr;
 
     public:
-        //==============
+        // =============
         // Constructors
-        //==============
+        // =============
 
         /** @brief Constructs an uninitialized default `Texture`. */
         Texture() = default;

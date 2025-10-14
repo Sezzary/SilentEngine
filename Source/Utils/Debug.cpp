@@ -44,7 +44,7 @@ namespace Silent::Utils::Debug
             input.UpdateText("Test");
             Message(input.GetText("Test").c_str());
 
-            //=====================================
+            // ====================================
 
             auto& renderer = g_App.GetRenderer();
 

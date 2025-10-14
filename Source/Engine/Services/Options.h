@@ -200,9 +200,9 @@ namespace Silent::Services
         /** @brief Sets all system options, excluding debug, to defaults. */
         void SetDefaultSystemOptions();
 
-        //===========
+        // ==========
         // Utilities
-        //===========
+        // ==========
 
         /** @brief Initializes the options configurations to startup defaults, taking the build mode into account. */
         void Initialize();
@@ -213,17 +213,17 @@ namespace Silent::Services
         /** @brief Loads the options configuration from a JSON file on the user system's game work folder. */
         void Load();
 
-        //===========
+        // ==========
         // Operators
-        //===========
+        // ==========
 
         const Options* operator->() const; /** Accesses the internal options object. */
         Options*       operator->();       /** Accesses the internal options object. */
 
     private:
-        //=========
+        // ========
         // Helpers
-        //=========
+        // ========
 
         /** @brief Resets all configuration options, excluding debug, to defaults. */
         void SetDefaultOptions();

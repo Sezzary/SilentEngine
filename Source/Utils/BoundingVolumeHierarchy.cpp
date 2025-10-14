@@ -261,7 +261,7 @@ namespace Silent::Utils
             float cost       = mergedArea * 2;
 
             // Calculate cost of descending into left child.
-            float leftCost = INFINITY;
+            float leftCost = FLT_MAX;
             if (leftChildId != NO_VALUE)
             {
                 const auto& leftChild = _nodes[leftChildId];
@@ -272,7 +272,7 @@ namespace Silent::Utils
             }
 
             // Calculate cost of descending into right child.
-            float rightCost = INFINITY;
+            float rightCost = FLT_MAX;
             if (rightChildId != NO_VALUE)
             {
                 const auto& rightChild = _nodes[rightChildId];
@@ -695,7 +695,7 @@ namespace Silent::Utils
                     return bestSplit;
                 }
 
-                float bestCost = INFINITY;
+                float bestCost = FLT_MAX;
                 int   range    = (strategy == BvhBuildStrategy::Balanced) ? BALANCED_STRAT_SPLIT_RANGE_MAX : (end - start);
 
                 // Balanced or accurate strategy: surface area heuristic.

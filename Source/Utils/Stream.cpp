@@ -62,9 +62,4 @@ namespace Silent::Utils
         _stream.read((byte*)&val, sizeof(float));
         return val;
     }
-
-    void Stream::ReadData(void* dest, uint dataSize, uint count)
-    {
-        _stream.read((byte*)dest, count * dataSize);
-    }
 }

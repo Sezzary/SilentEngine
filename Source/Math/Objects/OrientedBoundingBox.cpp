@@ -99,8 +99,8 @@ namespace Silent::Math
                 auto axis = glm::normalize(glm::cross(rotMat0[i], rotMat1[j]));
 
                 // Project all vertices of both OBBs onto axis.
-                float proj0 = -INFINITY;
-                float proj1 = INFINITY;
+                float proj0 = -FLT_MAX;
+                float proj1 = FLT_MAX;
                 
                 // Project OBB 0 vertices.
                 for (const auto& corner : GetCorners())
@@ -111,8 +111,8 @@ namespace Silent::Math
                 }
 
                 // Project OBB 1 vertices.
-                float proj3 = -INFINITY;
-                float proj4 = INFINITY;
+                float proj3 = -FLT_MAX;
+                float proj4 = FLT_MAX;
                 for (const auto& corner : obb.GetCorners())
                 {
                     float proj = Vector3::Dot(corner, axis);

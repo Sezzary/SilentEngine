@@ -261,7 +261,7 @@ namespace Silent::Renderer
         auto shaderInfo = SDL_GPUShaderCreateInfo
         {
             .code_size            = codeSize,
-            .code                 = (const byte*)code,
+            .code                 = (const uint8*)code,
             .entrypoint           = entryPoint,
             .format               = formatFlag,
             .stage                = stage,

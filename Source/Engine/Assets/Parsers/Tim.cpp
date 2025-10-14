@@ -107,9 +107,6 @@ namespace Silent::Assets
             }
         }
 
-        // Define color depth.
-        uint colorDepth = 1 << (flags & BPP_MASK);
-
         // Define image width coefficient based on BPP.
         int  widthCoeff = 1;
         switch (bpp)
@@ -138,7 +135,6 @@ namespace Silent::Assets
         // Create asset.
         auto asset = TimAsset
         {
-            .ColorDepth = colorDepth,
             .Resolution = res,
             .Pixels     = std::vector<byte>((res.x * res.y) * 4)
         };

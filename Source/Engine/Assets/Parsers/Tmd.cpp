@@ -22,7 +22,7 @@ namespace Silent::Assets
         auto file = std::ifstream(filename, std::ios::binary);
         if (!file.is_open())
         {
-            throw std::runtime_error("Couldn't open TMD `" + filename.string() + "`.");
+            throw std::runtime_error("Failed to open TMD `" + filename.string() + "`.");
         }
 
         // Read version (unused).

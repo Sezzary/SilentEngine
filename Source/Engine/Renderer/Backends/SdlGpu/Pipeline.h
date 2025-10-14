@@ -66,7 +66,7 @@ namespace Silent::Renderer
          */
         void Initialize(SDL_Window& window, SDL_GPUDevice& device);
 
-        /** @brief Binds a graphics pipeline for use in rendering.
+        /** @brief Binds the graphics pipeline for use in rendering.
          *
          * @param renderPass Render pass used in rendering to bind the pipeline to.
          * @param pipelineType Pipeline to bind.
@@ -78,21 +78,21 @@ namespace Silent::Renderer
         // Helpers
         // ========
 
-        /** @brief Initializes a graphics pipeline with vertex and fragment shaders.
+        /** @brief Initializes the graphics pipeline with vertex and fragment shaders.
          *
          * @param window App window.
          * @param config Pipeline configuration details.
          */
         void InitializeGraphicsPipeline(SDL_Window& window, const PipelineConfig& config);
 
-        /** @brief Loads a shader.
+        /** @brief Loads a vertex or fragment shader.
          *
          * @param filename Shader filename. Suffix must be `.vert` or `.frag`.
          * @param samplerCount Sampler count.
          * @param uniBufferCount Uniform buffer count.
-         * @param stroageBufferCount StorageBuffer count.
+         * @param storageBufferCount Storage buffer count.
          * @param storageTexCount Storage texture count.
-         * @return Compiled GPU shader.
+         * @return Compiled vertex or fragment shader.
          */
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint storageTexCount, uint storageBufferCount, uint uniBufferCount);
     };

@@ -22,21 +22,21 @@ namespace Silent::Input
     /** @brief Input binding profile IDs. */
     enum class BindingProfileId
     {
-        // Keyboard/mouse
+        /** Keyboard/mouse */
 
         KeyboardMouseType1,
         KeyboardMouseType2,
         KeyboardMouseType3,
         KeyboardMouseCustom,
 
-        // Gamepad
+        /** Gamepad */
 
         GamepadType1,
         GamepadType2,
         GamepadType3,
         GamepadCustom,
 
-        // Raw
+        /** Raw */
 
         RawKeyboard,
         RawMouse,

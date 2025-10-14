@@ -3,7 +3,7 @@
 
 namespace Silent::Utils
 {
-    Stream::Stream(const std::filesystem::path&  filename)
+    Stream::Stream(const std::filesystem::path& filename)
     {
         _stream = std::ifstream(filename, std::ios::binary);
     }

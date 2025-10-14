@@ -161,10 +161,10 @@ namespace Silent::Input
         // Utilities
         // ==========
 
-        /** @brief Initialized the input manager. */
+        /** @brief Initializes the input manager. */
         void Initialize();
 
-        /** @brief Gracefully deinitialized the input manager by disconnecting the connected gamepad. */
+        /** @brief Gracefully deinitializes the input manager by disconnecting the connected gamepad. */
         void Deinitialize();
 
         /** @brief Updates the input system for the current tick.
@@ -174,13 +174,13 @@ namespace Silent::Input
          */
         void Update(SDL_Window& window, const Vector2& mouseWheelAxis);
 
-        /** @brief Attempts to connect a gamepad.
+        /** @brief Attempts to connect a gamepad if not already connected.
          *
          * @param deviceId Device ID of the gamepad to connect.
          */
         void ConnectGamepad(int deviceId);
 
-        /** @brief Disconnects a gamepad.
+        /** @brief Disconnects a gamepad if connected.
          *
          * @param deviceId Device ID of the gamepad to disconnect.
          */

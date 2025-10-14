@@ -5,7 +5,7 @@ namespace Silent::Input
     /** @brief Input event IDs for input devices. */
     enum class EventId
     {
-        // Keyboard
+        /** Keyboard */
 
         A,
         B,
@@ -101,7 +101,7 @@ namespace Silent::Input
         Shift,
         Alt,
 
-        // Mouse
+        /** Mouse */
 
         MouseClickLeft,
         MouseClickMiddle,
@@ -115,7 +115,7 @@ namespace Silent::Input
         MouseLeft,
         MouseRight,
 
-        // Gamepad
+        /** Gamepad */
 
         GamepadSouth,
         GamepadEast,
@@ -173,9 +173,9 @@ namespace Silent::Input
     extern const std::vector<SDL_GamepadAxis>   VALID_GAMEPAD_STICK_AXIS_CODES;
     extern const std::vector<SDL_GamepadAxis>   VALID_GAMEPAD_TRIGGER_AXIS_CODES;
 
-    /** @brief Gets the name of the given input event ID.
+    /** @brief Gets the name of a given input event ID.
      *
-     * @param eventId Input event ID.
+     * @param eventId Input event ID to get the name for.
      * @return Input event name.
      */
     const std::string& GetEventName(EventId eventId);

@@ -93,12 +93,12 @@ namespace Silent::Services
     /** @brief User options configuration data. */
     struct Options
     {
-        // Graphics (internal)
+        /** Graphics (internal) */
 
         Vector2i WindowedSize    = Vector2i::Zero;
         bool     EnableMaximized = false;
 
-        // Graphics (user)
+        /** Graphics (user) */
 
         bool              EnableFullscreen   = false;
         int               BrightnessLevel    = 0;
@@ -111,7 +111,7 @@ namespace Silent::Services
         bool              EnableCrtFilter    = false;
         bool              EnableVertexJitter = false;
 
-        // Gameplay
+        /** Gameplay */
 
         bool           EnableAutoLoad  = false;
         bool           EnableSubtitles = false;
@@ -122,17 +122,17 @@ namespace Silent::Services
         BloodColorType BloodColor      = BloodColorType::Normal;
         int            BulletAdjust    = 0;
 
-        // Input (keyboard/mouse bindings)
+        /** Input (keyboard/mouse bindings) */
 
         BindingProfile   KeyboardMouseBindings        = {};
         BindingProfileId ActiveKeyboardMouseProfileId = BindingProfileId::KeyboardMouseType1;
 
-        // Input (gamepad bindings)
+        /** Input (gamepad bindings) */
 
         BindingProfile   GamepadBindings        = {};
         BindingProfileId ActiveGamepadProfileId = BindingProfileId::GamepadType1;
 
-        // Input (controls)
+        /** Input (controls) */
 
         bool                 EnableVibration    = false;
         int                  MouseSensitivity   = 0;
@@ -143,16 +143,16 @@ namespace Silent::Services
         bool                 DisableAutoAiming  = false;
         ViewMode             ViewMode           = ViewMode::Normal;
 
-        // Enhancements
+        /** Enhancements */
 
         DialogPauseType DialogPause = DialogPauseType::Classic;
 
-        // System (internal)
+        /** System (internal) */
 
         bool EnableDebugMode = true;
         bool EnableDebugGui  = false;
 
-        // System (user)
+        /** System (user) */
 
         bool EnableToasts      = false;
         bool EnableParallelism = false;
@@ -173,6 +173,7 @@ namespace Silent::Services
         // Constructors
         // =============
 
+        /** @brief Constructs an uninitialized default `OptionsManager`. */
         OptionsManager() = default;
 
         // ========
@@ -225,7 +226,10 @@ namespace Silent::Services
         // Helpers
         // ========
 
-        /** @brief Resets all configuration options, excluding debug, to defaults. */
+        /** @brief Resets all configuration options to defaults.
+         *
+         * @note Excludes debug options.
+         */
         void SetDefaultOptions();
 
         /** @brief Parses a JSON containing the options configuration to an internal options object.

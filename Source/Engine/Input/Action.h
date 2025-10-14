@@ -162,14 +162,14 @@ namespace Silent::Input
         // Inquirers
         // ==========
 
-        /** @brief Checks if the action has been clicked/debounced for the current tick.
+        /** @brief Checks if the action is clicked/debounced for the current tick.
          *
          * @param stateMin Minimum analog state for a click to be registered, range `[0.0f, 1.0f]`.
          * @return `true` if clicked, `false` otherwise.
          */
         bool IsClicked(float stateMin = 0.0f) const;
 
-        /** @brief Checks if the action has been held/throttled for the current tick.
+        /** @brief Checks if the action is held/throttled for the current tick.
          *
          * @param delaySec Seconds to delay while held before a hold can be registered.
          * @param stateMin Minimum analog state for a hold to be registered, range `[0.0f, 1.0f]`
@@ -177,7 +177,7 @@ namespace Silent::Input
          */
         bool IsHeld(float delaySec = 0.0f, float stateMin = 0.0f) const;
 
-        /** @brief Checks if the action has been pulsed for the current tick.
+        /** @brief Checks if the action is pulsed for the current tick.
          *
          * @note To avoid a stutter on the second pulse, `initialDelaySec` must be a multiple of `delaySec`.
          * 
@@ -188,9 +188,9 @@ namespace Silent::Input
          */
         bool IsPulsed(float delaySec, float initialDelaySec = 0.0f, float stateMin = 0.0f) const;
 
-        /** @brief Checks if the action has been released/debounced for the current tick.
+        /** @brief Checks if the action is released/debounced for the current tick.
          *
-         * @param delaySecMax Maximum seconds allowed to hold for a release to be registered.
+         * @param delaySecMax Maximum seconds allowed to hold before releasing for a release to be registered.
          * @param stateMin Minimum analog state for a release to be registered, range `[0.0f, 1.0f]`
          * @return `true` if released, `false` otherwise.
          */

@@ -1,4 +1,4 @@
-# Silent Math
+# Silent Engine (tentative name)
 
 ## Track decompilation progress
 

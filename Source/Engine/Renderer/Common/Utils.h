@@ -12,15 +12,6 @@ namespace Silent::Renderer
      */
     Vector2 GetAspectCorrectScreenPosition(const Vector2 pos, ScaleMode scaleMode);
 
-    /** @brief Gets a screen position in percent corrected according to the aspect ratio of the screen.
-     *
-     * @todo Buggy!
-     *
-     * @param pos Screen position in percent.
-     * @return Screen position in percent corrected for the screen aspect ratio.
-     */
-    Vector2 GetAspectCorrectScreenPosition(const Vector2& pos);
-
     /** @brief Converts a screen position in percent to normalized device coordinates.
      *
      * @param pos Screen position in percent with components in the range `[0.0f, 100.0f]`.

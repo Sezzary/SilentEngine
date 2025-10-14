@@ -9,8 +9,6 @@ namespace Silent::Renderer
 {
     Vector2 GetAspectCorrectScreenPosition(const Vector2 pos, ScaleMode scaleMode)
     {
-        constexpr float RETRO_SCREEN_SPACE_ASPECT = RETRO_SCREEN_SPACE_RES.x / RETRO_SCREEN_SPACE_RES.y;
-
         if (scaleMode == ScaleMode::Stretch)
         {
             return pos;
@@ -18,9 +16,8 @@ namespace Silent::Renderer
 
         const auto& renderer = g_App.GetRenderer();
 
-        auto  screenRes        = renderer.GetScreenResolution().ToVector2();
-        float screenResAspect  = screenRes.x / screenRes.y;
-        float retroAspectDelta = screenResAspect / RETRO_SCREEN_SPACE_ASPECT; // @todo Need to consider some weird consequences with using this.
+        auto  screenRes       = renderer.GetScreenResolution().ToVector2();
+        float screenResAspect = screenRes.x / screenRes.y;
         
         // Compute aspect correction.
         auto aspectCorrection = Vector2::One;
@@ -35,7 +32,7 @@ namespace Silent::Renderer
                 }
                 else
                 {
-                    aspectCorrection.y = screenResAspect;
+                    aspectCorrection.y = 1.0f / (1.0f / screenResAspect);
                 }
                 break;
             }
@@ -49,29 +46,8 @@ namespace Silent::Renderer
             }
         }
 
+        // @todo Needs another adjustment.
         return pos * aspectCorrection;
-    }
-
-    Vector2 GetAspectCorrectScreenPosition(const Vector2& pos)
-    {
-        constexpr float RETRO_SCREEN_SPACE_ASPECT = RETRO_SCREEN_SPACE_RES.x / RETRO_SCREEN_SPACE_RES.y;
-
-        const auto& renderer = g_App.GetRenderer();
-
-        auto  screenRes       = renderer.GetScreenResolution().ToVector2();
-        float screenResAspect = screenRes.x / screenRes.y;
-        float aspectDelta     = screenResAspect - RETRO_SCREEN_SPACE_ASPECT;
-
-        auto correctedPos = pos;
-        if (aspectDelta > EPSILON)
-        {
-            correctedPos.x *= 1.0f - (aspectDelta / 2.0f);
-        }
-        else if (aspectDelta < -EPSILON)
-        {
-            correctedPos.y *= 1.0f - (aspectDelta / 2.0f);
-        }
-        return correctedPos;
     }
 
     Vector2 ConvertScreenPositionToNdc(const Vector2& pos)

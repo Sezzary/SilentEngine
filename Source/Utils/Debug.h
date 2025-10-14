@@ -109,7 +109,8 @@ namespace Silent::Utils::Debug
      */
     void CreateGui(std::function<void()> drawFunc);
 
-    /** @brief Creates a 3D line edge with additive blending and submits it to the renderer for drawing.
+    /** @brief Creates a 3D line with additive blending and submits it to the renderer for drawing.
+     * Used to construct more complex geometry.
      *
      * @param from Start point.
      * @param to End point.
@@ -119,12 +120,13 @@ namespace Silent::Utils::Debug
     void CreateLine(const Vector3& from, const Vector3& to, const Color& color, DebugPage page = DebugPage::None);
 
     /** @brief Creates a 3D triangle polygon with additive blending and submits it to the renderer for drawing.
+     * Used to construct more complex geometry.
      *
      * @param vert0 First vertex.
      * @param vert1 Second vertex.
      * @param vert2 Third vertex.
      * @param color Triangle color.
-     * @param page Debug page in which the target will be visible.
+     * @param page Debug page in which the triangle will be visible.
      */
     void CreateTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page = DebugPage::None);
 
@@ -179,4 +181,16 @@ namespace Silent::Utils::Debug
      * @param page Debug page in which the cone will be visible.
      */
     void CreateCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe = true, DebugPage page = DebugPage::None);
+
+    /** @brief Creates a 3D diamond with additive blending and submits it to the renderer for drawing.
+     *
+     * @param center Center position.
+     * @param rot Rotation in space.
+     * @param radius Circle radius.
+     * @param length Vertical length.
+     * @param color Diamond color.
+     * @param isWireframe If the diamond should be wireframe or solid.
+     * @param page Debug page in which the diamond will be visible.
+     */
+    void CreateDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe = true, DebugPage page = DebugPage::None);
 }

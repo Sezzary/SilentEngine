@@ -88,7 +88,7 @@ namespace Silent::Utils
         /** @brief Reads an array from the data stream and increments the file pointer.
          *
          * @tparam T Data type.
-         * @param dest Destination.
+         * @param[out] dest Destination.
          * @param count Number of data elements.
          */
         template <typename T>

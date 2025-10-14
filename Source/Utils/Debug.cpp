@@ -849,4 +849,10 @@ namespace Silent::Utils::Debug
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugCone(center, rot, radius, length, color, isWireframe, page);
     }
+
+    void CreateDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    {
+        auto& renderer = g_App.GetRenderer();
+        renderer.SubmitDebugDiamond(center, rot, radius, length, color, isWireframe, page);
+    }
 }

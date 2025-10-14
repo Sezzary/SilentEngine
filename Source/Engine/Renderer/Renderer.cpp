@@ -5,6 +5,8 @@
 #include "Engine/Renderer/Common/Objects/Primitive2d.h"
 #include "Engine/Renderer/Common/Objects/Primitive3d.h"
 #include "Engine/Renderer/Common/Objects/Sprite2d.h"
+#include "Engine/Renderer/Common/Objects/Vertex2d.h"
+#include "Engine/Renderer/Common/Objects/Vertex3d.h"
 #include "Engine/Renderer/Backends/OpenGl/OpenGl.h"
 #include "Engine/Renderer/Backends/SdlGpu/SdlGpu.h"
 
@@ -34,7 +36,7 @@ namespace Silent::Renderer
         auto res = g_App.GetWindowResolution();
         return res;
 
-        // @todo Not sure how to do this.
+        // @todo Render scale should be a post-process instead?
         switch (options->RenderScale)
         {
             case RenderScaleType::Native:
@@ -69,6 +71,9 @@ namespace Silent::Renderer
     void RendererBase::ClearFrameData()
     {
         _primitives2d.clear();
+        _sprites2d.clear();
+        _debugPrimitives3d.clear();
+        _debugGuiDrawCalls.clear();
     }
 
     void RendererBase::SubmitDebugGui(std::function<void()> drawFunc)
@@ -90,13 +95,8 @@ namespace Silent::Renderer
             return;
         }
 
-        /*auto line = Line
-        {
-            .From = from,
-            .To   = to,
-            .Col  = color
-        };
-        _debugLines.push_back(line);*/
+        auto line = Primitive3d::CreateDebugLine(from, to, color);
+        _debugPrimitives3d.push_back(line);
     }
 
     void RendererBase::SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page)
@@ -107,17 +107,8 @@ namespace Silent::Renderer
             return;
         }
 
-        /*auto tri = Triangle
-        {
-            .Vertices =
-            {
-                vert0,
-                vert1,
-                vert2
-            },
-            .Col = color
-        };
-        _debugTriangles.push_back(tri);*/
+        auto tri = Primitive3d::CreateDebugTriangle(vert0, vert1, vert2, color);
+        _debugPrimitives3d.push_back(tri);
     }
 
     void RendererBase::SubmitDebugTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, DebugPage page)

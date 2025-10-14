@@ -5,6 +5,7 @@
 
 namespace Silent::Renderer
 {
+    // @todo Can use primitive internally.
     struct Sprite2d
     {
         int                                     AssetIdx = 0;

@@ -63,7 +63,6 @@ namespace Silent::Renderer
         void Update() override;
         void RefreshTextureFilter() override;
         void SaveScreenshot() const override;
-        void LogError(const std::string& msg) const override;
 
         void Submit2dPrimitive(const Primitive2d& prim) override;
         void SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,

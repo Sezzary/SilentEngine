@@ -277,11 +277,6 @@ namespace Silent::Renderer
         SDL_UnlockSurface(surface);
     }
 
-    void SdlGpuRenderer::LogError(const std::string& msg) const
-    {
-        // Not needed?
-    }
-
     void SdlGpuRenderer::Submit2dPrimitive(const Primitive2d& prim)
     {
         if (_primitives2d.size() >= PRIMITIVE_2D_COUNT_MAX)
@@ -391,7 +386,6 @@ namespace Silent::Renderer
         const auto& options = g_App.GetOptions();
         if (!options->EnableDebugGui)
         {
-            _debugGuiDrawCalls.clear();
             return;
         }
 
@@ -405,7 +399,6 @@ namespace Silent::Renderer
         {
             drawCall();
         }
-        _debugGuiDrawCalls.clear();
 
         // Prepare render data.
         ImGui::Render();

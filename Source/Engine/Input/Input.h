@@ -80,13 +80,13 @@ namespace Silent::Input
         // Fields
         // =======
 
-        Gamepad                              _gamepad    = {};
-        BindingManager                       _bindings   = BindingManager();
-        TextManager                          _text       = TextManager();
-        States                               _states     = {};
-        Rumble                               _rumble     = {};
-        std::unordered_map<ActionId, Action> _actions    = {};
-        std::vector<Vector2>                 _analogAxes = {}; /** Index = `AnalogAxisId`. */
+        Gamepad              _gamepad    = {};
+        BindingManager       _bindings   = BindingManager();
+        TextManager          _text       = TextManager();
+        States               _states     = {};
+        Rumble               _rumble     = {};
+        std::vector<Action>  _actions    = {};
+        std::vector<Vector2> _analogAxes = {}; /** Index = `AnalogAxisId`. */
 
     public:
         // =============

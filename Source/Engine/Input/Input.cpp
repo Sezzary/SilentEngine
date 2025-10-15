@@ -19,7 +19,7 @@ namespace Silent::Input
 {
     const Action& InputManager::GetAction(ActionId actionId) const
     {
-        return _actions.at(actionId);
+        return _actions[(int)actionId];
     }
 
     const Vector2& InputManager::GetAnalogAxis(AnalogAxisId axisId) const
@@ -89,7 +89,7 @@ namespace Silent::Input
         for (int i = 0; i < (int)ActionId::Count; i++)
         {
             auto actionId = (ActionId)i;
-            _actions.insert({ actionId, Action(actionId) });
+            _actions.push_back(Action(actionId));
         }
 
         // Initialize bindings.
@@ -503,7 +503,7 @@ namespace Silent::Input
                 const auto& actionIds = ACTION_ID_GROUPS.at(actionGroupId);
                 for (auto actionId : actionIds)
                 {
-                    auto& action = _actions.at(actionId);
+                    auto& action = _actions[(int)actionId];
                     float state  = 0.0f;
 
                     // Get max gamepad event state.
@@ -540,7 +540,7 @@ namespace Silent::Input
                 const auto& profile = _bindings.GetBindingProfile(profileId);
                 for (auto& [keyActionId, eventIds] : profile)
                 {
-                    auto& action = _actions.at(keyActionId);
+                    auto& action = _actions[(int)keyActionId];
                     float state  = 0.0f;
 
                     for (auto eventId : eventIds)

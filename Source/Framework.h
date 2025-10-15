@@ -1,7 +1,7 @@
 #pragma once
 
 // ==========
-// LIBRARIES
+// Libraries
 // ==========
 
 // Standard
@@ -91,7 +91,7 @@ using json = nlohmann::json;
 #include <stb_image_write.h>
 
 // ==========
-// RESOURCES
+// Resources
 // ==========
 
 #include "Types.h"

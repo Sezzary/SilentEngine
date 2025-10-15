@@ -68,6 +68,32 @@ namespace Silent::Renderer
         _isResized = true;
     }
 
+    void RendererBase::Submit2dPrimitive(const Primitive2d& prim)
+    {
+        if (_primitives2d.size() >= PRIMITIVE_2D_COUNT_MAX)
+        {
+            Log("Attampted to add 2D primitive to full container.", LogLevel::Warning, LogMode::Debug);
+            return;
+        }
+
+        _primitives2d.push_back(prim);
+    }
+
+    void RendererBase::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
+                                          const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode)
+    {
+        auto& assets = g_App.GetAssets();
+
+        const auto asset = assets.GetAsset(assetIdx);
+        if (asset->Type != AssetType::Tim)
+        {
+            Log("Attempted to submit non-image asset as screen sprite.", LogLevel::Warning, LogMode::Debug);
+            return;
+        }
+
+        // @todo
+    }
+
     void RendererBase::SubmitDebugGui(std::function<void()> drawFunc)
     {
         const auto& options = g_App.GetOptions();

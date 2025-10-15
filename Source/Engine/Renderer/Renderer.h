@@ -82,6 +82,29 @@ namespace Silent::Renderer
         /** @brief Signals a viewport resize. */
         void SignalResize();
 
+        /** @brief Submits a 2D primitive for drawing.
+         *
+         * @param prim 2D primitive to draw.
+         */
+        void Submit2dPrimitive(const Primitive2d& prim);
+
+        /** @brief Submits a screen sprite for drawing.
+         *
+         * @param assedIdx Asset index containing the sprite to draw.
+         * @param uvMin Minimum UV position as alpha (top-left).
+         * @param uvMax Maximum UV position as alpha (bottom-right).
+         * @param pos Screen position in percent.
+         * @param rot Sprite rotation.
+         * @param scale Sprite scale.
+         * @param color Tint color and opacity.
+         * @param depth Draw priority. Lower values take precedence.
+         * @param alignMode Sprite align mode relative to the screen aspect ratio.
+         * @param scaleMode Sprite scale mode relative to the screen aspect ratio.
+         * @param blendMode Draw blend mode.
+         */
+        void SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
+                                const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode);
+
         /** @brief Initializes the renderer and its subsystems.
          *
          * @param window Window to claim as the render surface.
@@ -98,29 +121,6 @@ namespace Silent::Renderer
 
         /** @brief Saves a screenshot of the active render surface to the designated `Screenshots` folder on the system. */
         virtual void SaveScreenshot() const = 0;
-
-        /** @brief Submits a 2D primitive for drawing.
-         *
-         * @param prim 2D primitive to draw.
-         */
-        virtual void Submit2dPrimitive(const Primitive2d& prim) = 0;
-
-        /** @brief Submits a screen sprite for drawing.
-         *
-         * @param assedIdx Asset index containing the sprite to draw.
-         * @param uvMin Minimum UV position as alpha (top-left).
-         * @param uvMax Maximum UV position as alpha (bottom-right).
-         * @param pos Screen position in percent.
-         * @param rot Sprite rotation.
-         * @param scale Sprite scale.
-         * @param color Tint color and opacity.
-         * @param depth Draw priority. Lower values take precedence.
-         * @param alignMode Sprite align mode relative to the screen aspect ratio.
-         * @param scaleMode Sprite scale mode relative to the screen aspect ratio.
-         * @param blendMode Draw blend mode.
-         */
-        virtual void SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
-                                        const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode) = 0;
 
         // ======
         // Debug

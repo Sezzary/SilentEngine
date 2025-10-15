@@ -278,23 +278,6 @@ namespace Silent::Renderer
         SDL_UnlockSurface(surface);
     }
 
-    void SdlGpuRenderer::Submit2dPrimitive(const Primitive2d& prim)
-    {
-        if (_primitives2d.size() >= PRIMITIVE_2D_COUNT_MAX)
-        {
-            Log("Attampted to add 2D primitive to full container.", LogLevel::Warning, LogMode::Debug);
-            return;
-        }
-
-        _primitives2d.push_back(prim);
-    }
-
-    void SdlGpuRenderer::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
-                                            const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode)
-    {
-        // @todo
-    }
-
     void SdlGpuRenderer::Draw3dScene()
     {
         // Begin render pass.

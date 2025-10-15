@@ -183,26 +183,6 @@ namespace Silent::Renderer
         Log("Failed to save screenshot.", LogLevel::Warning, LogMode::DebugRelease, true);
     }
 
-    void OpenGlRenderer::Submit2dPrimitive(const Primitive2d& prim)
-    {
-        // @todo
-    }
-
-    void OpenGlRenderer::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
-                                            const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode)
-    {
-        auto& assets = g_App.GetAssets();
-
-        const auto asset = assets.GetAsset(assetIdx);
-        if (asset->Type != AssetType::Tim)
-        {
-            Log("Attempted to submit non-image asset as screen sprite.", LogLevel::Warning, LogMode::Debug);
-            return;
-        }
-
-        // @todo
-    }
-
     void OpenGlRenderer::UpdateViewport()
     {
         // Set wireframe mode.

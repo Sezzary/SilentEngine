@@ -1,19 +1,23 @@
 #pragma once
 
 #include "Engine/Renderer/Common/Enums.h"
-#include "Engine/Renderer/Common/Objects/Primitive2d.h"
 
 namespace Silent::Renderer
 {
-    // @todo Can use primitive internally.
+    /** @brief 2D screen sprite. */
     struct Sprite2d
     {
-        Primitive2d Primitive = {};
-        int         AssetIdx  = 0;
+        int       AssetIdx = 0;
+        Vector2   Position = Vector2::Zero;
+        float     Rotation = 0.0f;
+        Vector2   Scale    = Vector2::Zero;
+        Color     Col      = Color::Black;
+        uint      Depth    = 0;
+        AlignMode AlignM   = AlignMode::Center;
+        ScaleMode ScaleM   = ScaleMode::Fit;
+        BlendMode BlendM   = BlendMode::Opaque;
 
         static Sprite2d CreateSprite2d(int assetIdx, const Vector2& pos, float rot, const Vector2& scale, const Color& color,
-                                       int depth, BlendMode blendMode, ScaleMode scaleMode);
-
-        static Sprite2d CreateSprite2d(const Vector2i& pos);
+                                       uint depth = 0, AlignMode alignMode = AlignMode::Center, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
     };
 }

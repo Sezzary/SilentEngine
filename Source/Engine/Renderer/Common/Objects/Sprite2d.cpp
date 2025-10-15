@@ -8,32 +8,21 @@
 
 namespace Silent::Renderer
 {
+    
     Sprite2d Sprite2d::CreateSprite2d(int assetIdx, const Vector2& pos, float rot, const Vector2& scale, const Color& color,
-                                      int depth, BlendMode blendMode, ScaleMode scaleMode)
+                                      uint depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode)
     {
-        // Transformed sprite. Primitive2d can also have this?
-
-        auto rotMat = Matrix::CreateRotationZ(rot);
-        auto points = std::array<Vector2, QUAD_VERTEX_COUNT>
+        return Sprite2d
         {
-            Vector2::Transform(pos + SCREEN_SPACE_RES, rotMat),
-            Vector2::Transform(pos + SCREEN_SPACE_RES, rotMat),
-            Vector2::Transform(pos + SCREEN_SPACE_RES, rotMat),
-            Vector2::Transform(pos + SCREEN_SPACE_RES, rotMat)
+            .AssetIdx = assetIdx,
+            .Position = pos,
+            .Rotation = rot,
+            .Scale    = scale,
+            .Col      = color,
+            .Depth    = depth,
+            .AlignM   = alignMode,
+            .ScaleM   = scaleMode,
+            .BlendM   = blendMode,
         };
-
-        // etc etc
-
-        return {};
-        /*return Sprite2d
-        {
-            Primitive2d::CreateQuad(),
-            .AssetIdx = assetIdx
-        };*/
     }
-
-    /*Sprite2d Sprite2d::CreateSprite2d(const Vector2i& pos)
-    {
-        return CreateSprite2d(pos );
-    }*/
 }

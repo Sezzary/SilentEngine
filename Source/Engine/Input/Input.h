@@ -202,24 +202,23 @@ namespace Silent::Input
          */
         std::string GetGamepadVendorName(GamepadVendorId vendorId) const;
 
-        /** @brief Reads keyboard data and updates raw input states for the current tick.
-         * Called first in a sequence of function calls which read device data. Superceded by `ReadMouse`.
+        /** @brief Reads keyboard data and captures keyboard event states for the current tick, incrementing `eventStateIdx` with each read.
+         * Called before `ReadMouse`.
          *
-         * @param eventStateIdx Reference input event state index. Incremented as keyboard data is read and passed on to `ReadMouse`.
+         * @param eventStateIdx Reference input event state index.
          */
         void ReadKeyboard(int& eventStateIdx);
 
-        /** @brief Reads mouse data and updates raw input states for the current tick.
-         * Called second in a sequence of function calls which read device data. Preceeded by `ReadKeyboard`, succeeded by `ReadGamepad`.
+        /** @brief Reads mouse data and captures mouse event states for the current tick, incrementing `eventStateIdx` with each read.
+         * Called before `ReadGamepad`.
          *
-         * @param eventStateIdx Reference input event state index. Incremented as mouse data is read and passed on to `ReadGamepad`.
+         * @param eventStateIdx Reference input event state index.
          */
         void ReadMouse(int& eventStateIdx, SDL_Window& window, const Vector2& wheelAxis);
 
-        /** @brief Reads mouse data and updates raw input states for the current tick.
-         * Called third in a sequence of function calls which read device data. Preceeded by `ReadMouse`.
+        /** @brief Reads mouse data and captures gamepad event states for the current tick, incrementing `eventStateIdx` with each read.
          *
-         * @param eventStateIdx Reference input event state index. Incremented as gamepad data is read.
+         * @param eventStateIdx Reference input event state index.
          */
         void ReadGamepad(int& eventStateIdx);
 

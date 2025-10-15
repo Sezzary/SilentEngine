@@ -68,14 +68,6 @@ namespace Silent::Renderer
         _isResized = true;
     }
 
-    void RendererBase::ClearFrameData()
-    {
-        _primitives2d.clear();
-        _sprites2d.clear();
-        _debugPrimitives3d.clear();
-        _debugGuiDrawCalls.clear();
-    }
-
     void RendererBase::SubmitDebugGui(std::function<void()> drawFunc)
     {
         const auto& options = g_App.GetOptions();
@@ -301,6 +293,21 @@ namespace Silent::Renderer
         {
             // @todo
         }
+    }
+
+    void RendererBase::PrepareFrameData()
+    {
+        // @todo Intermediate data -> renderer-ready data. At later stages, outside this method, renderer-ready data -> GPU copy-ready data.
+    }
+
+    void RendererBase::ClearFrameData()
+    {
+        _drawCallCount = 0;
+
+        _primitives2d.clear();
+        _sprites2d.clear();
+        _debugPrimitives3d.clear();
+        _debugGuiDrawCalls.clear();
     }
 
     std::unique_ptr<RendererBase> CreateRenderer(RendererType type)

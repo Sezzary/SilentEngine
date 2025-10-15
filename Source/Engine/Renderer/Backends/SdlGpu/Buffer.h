@@ -85,7 +85,7 @@ namespace Silent::Renderer
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = size * sizeof(T)/* + (sizeof(uint16) * 6)*/
+            .size  = size * sizeof(T)/* + (sizeof(uint16) * 6)*/ // @todo Texture test. Remove later.
         };
 
         // Create transfer buffer.

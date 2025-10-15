@@ -1,19 +1,13 @@
 #pragma once
 
+#include "Engine/Renderer/Common/Constants.h"
 #include "Engine/Renderer/Common/Objects/Primitive2d.h"
 #include "Engine/Renderer/Common/Objects/Primitive3d.h"
 #include "Engine/Renderer/Common/Objects/Sprite2d.h"
+#include "Engine/Renderer/Common/View.h"
 
 namespace Silent::Renderer
 {
-    constexpr auto SCREEN_SPACE_RES           = Vector2(100.0f);
-    constexpr auto RETRO_SCREEN_SPACE_RES     = Vector2(320.0f, 240.0f);
-    constexpr char SCREENSHOT_FILENAME_BASE[] = "Screenshot_";
-
-    constexpr uint PRIMITIVE_2D_COUNT_MAX = 256;
-    constexpr uint SPRITE_2D_COUNT_MAX    = 256;
-    constexpr uint PRIMITIVE_3D_COUNT_MAX = 256;
-
     /** @brief Renderer backend types. */
     enum class RendererType
     {
@@ -30,13 +24,12 @@ namespace Silent::Renderer
 
         RendererType _type          = RendererType::SdlGpu;
         SDL_Window*  _window        = nullptr;
-        bool         _isResized     = false;
+        View         _view          = View();
+        Color        _clearColor    = Color::Black;
         uint         _drawCallCount = 0;
-
-        Color _clearColor = Color::Black;
-
-        std::vector<Primitive3d> _primitives3d = {};
-
+        bool         _isResized     = false;
+        
+        std::vector<Primitive3d>           _primitives3d      = {};
         std::vector<Primitive2d>           _primitives2d      = {};
         std::vector<Sprite2d>              _sprites2d         = {};
         std::vector<Primitive3d>           _debugPrimitives3d = {};
@@ -88,9 +81,6 @@ namespace Silent::Renderer
 
         /** @brief Signals a viewport resize. */
         void SignalResize();
-
-        /** @brief Clears renderer data used for the previous frame. */
-        void ClearFrameData();
 
         /** @brief Initializes the renderer and its subsystems.
          *
@@ -227,10 +217,16 @@ namespace Silent::Renderer
          */
         void SubmitDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page);
 
-    private:
+    protected:
         // ========
         // Helpers
         // ========
+
+        /** @brief Prepares renderer data used for the current frame. Called at the start of `Update`. */
+        void PrepareFrameData();
+
+        /** @brief Clears renderer data used for the previous frame. Called at the end of `Update`. */
+        void ClearFrameData();
 
         /** @brief Draws a 3D scene. Called before `Draw2dScene`. */
         virtual void Draw3dScene() = 0;

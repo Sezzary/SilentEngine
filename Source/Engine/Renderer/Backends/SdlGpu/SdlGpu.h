@@ -4,7 +4,6 @@
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 #include "Engine/Renderer/Common/Objects/Vertex2d.h"
 #include "Engine/Renderer/Common/Objects/Vertex3d.h"
-#include "Engine/Renderer/Common/View.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
@@ -42,7 +41,6 @@ namespace Silent::Renderer
         std::vector<SDL_GPUSampler*> _samplers         = {};                /** Texture samplers. */
         BufferData                   _buffers          = {};                /** Vertex, index, and indirect buffers. */
         PipelineManager              _pipelines        = PipelineManager(); /** Pipeline handler. */
-        View                         _view             = View();            /** Camera view. */
 
         std::unordered_map<SDL_GPUTexture*, int> _textureCache = {}; /** Key = texture, value = asset ID. */
 

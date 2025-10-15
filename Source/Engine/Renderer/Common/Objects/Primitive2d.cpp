@@ -1,9 +1,9 @@
 #include "Framework.h"
 #include "Engine/Renderer/Common/Objects/Primitive2d.h"
 
+#include "Engine/Renderer/Common/Constants.h"
 #include "Engine/Renderer/Common/Enums.h"
 #include "Engine/Renderer/Common/Objects/Vertex2d.h"
-#include "Engine/Renderer/Renderer.h" // @todo Should create constants file and remove this.
 
 namespace Silent::Renderer
 {

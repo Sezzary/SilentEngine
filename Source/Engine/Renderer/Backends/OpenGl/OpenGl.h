@@ -7,7 +7,6 @@
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexArray.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexBuffer.h"
-#include "Engine/Renderer/Common/View.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
@@ -24,7 +23,6 @@ namespace Silent::Renderer
         // Fields
 
         SDL_GLContext                                  _context              = nullptr;
-        View                                           _view                 = View();
         std::unordered_map<std::string, ShaderProgram> _shaderPrograms       = {};
 
         FramebufferObject                              _2dframebuffer        = FramebufferObject();

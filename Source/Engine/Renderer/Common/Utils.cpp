@@ -2,6 +2,7 @@
 #include "Engine/Renderer/Common/Utils.h"
 
 #include "Engine/Application.h"
+#include "Engine/Renderer/Common/Constants.h"
 #include "Engine/Renderer/Common/Enums.h"
 #include "Engine/Renderer/Renderer.h"
 

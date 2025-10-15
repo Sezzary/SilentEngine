@@ -6,8 +6,10 @@
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 #include "Engine/Renderer/Backends/SdlGpu/Texture.h"
 #include "Engine/Renderer/Common/Utils.h"
-#include "Engine/Renderer/Common/View.h"
+#include "Engine/Renderer/Common/View.h" // @todo Not used yet.
+#include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Filesystem.h"
+#include "Engine/Services/Options.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Services;
@@ -28,18 +30,16 @@ namespace Silent::Renderer
     SDL_Surface* LoadImage(const char* imageFilename, int desiredChannels)
     {
         char fullPath[256];
-        SDL_Surface* result;
-        SDL_PixelFormat format;
-
         SDL_snprintf(fullPath, sizeof(fullPath), "%s.bmp", (std::string(SDL_GetBasePath()) + "/" + std::string(imageFilename)).c_str());
 
-        result = SDL_LoadBMP(fullPath);
+        auto* result = SDL_LoadBMP(fullPath);
         if (result == NULL)
         {
             SDL_Log("Failed to load BMP: %s", SDL_GetError());
             return NULL;
         }
 
+        auto format = SDL_PIXELFORMAT_UNKNOWN;
         if (desiredChannels == 4)
         {
             format = SDL_PIXELFORMAT_ABGR8888;
@@ -50,9 +50,10 @@ namespace Silent::Renderer
             SDL_DestroySurface(result);
             return NULL;
         }
+
         if (result->format != format)
         {
-            SDL_Surface* next = SDL_ConvertSurface(result, format);
+            auto* next = SDL_ConvertSurface(result, format);
             SDL_DestroySurface(result);
             result = next;
         }
@@ -130,10 +131,11 @@ namespace Silent::Renderer
         };
         ImGui_ImplSDLGPU3_Init(&initInfo);
 
+        // Texture test.
         // ===================================
         
-        SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(_device);
-        SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
+        SDL_GPUCommandBuffer* uploadCmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
+        SDL_GPUCopyPass*      copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
 
         // Load the image
         SDL_Surface* imageData = LoadImage("derg", 4);
@@ -155,29 +157,30 @@ namespace Silent::Renderer
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size = (uint)(imageData->w * imageData->h * 4)
+            .size  = (uint)((imageData->w * imageData->h) * 4)
         };
-        SDL_GPUTransferBuffer* textureTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
+        auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
 
-        byte* textureTransferPtr = (byte*)SDL_MapGPUTransferBuffer(_device, textureTransferBuffer, false);
+        byte* textureTransferPtr = (byte*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
         SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
-        SDL_UnmapGPUTransferBuffer(_device, textureTransferBuffer);
+        SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
 
         auto texTransferInfo = SDL_GPUTextureTransferInfo
         {
-            .transfer_buffer = textureTransferBuffer,
+            .transfer_buffer = texTransferBuffer,
             .offset = 0
         };
         auto texRegion = SDL_GPUTextureRegion
         {
             .texture = Tex,
-            .w = (uint)imageData->w,
-            .h = (uint)imageData->h,
-            .d = 1
+            .w       = (uint)imageData->w,
+            .h       = (uint)imageData->h,
+            .d       = 1
         };
         SDL_UploadToGPUTexture(copyPass, &texTransferInfo, &texRegion, false);
+
 	    SDL_EndGPUCopyPass(copyPass);
-	    SDL_ReleaseGPUTransferBuffer(_device, textureTransferBuffer);
+	    SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
     }
 
     // @todo Has errors.
@@ -195,8 +198,8 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Update()
     {
-        // Reset.
-        _drawCallCount = 0;
+        // Frame setup.
+        PrepareFrameData();
 
         // Acquire command buffer.
         _commandBuffer = SDL_AcquireGPUCommandBuffer(_device);
@@ -222,10 +225,8 @@ namespace Silent::Renderer
             DrawDebugGui();
         }
 
-        // Submit command buffer to GPU.
+        // Submit command buffer to GPU and clear.
         SDL_SubmitGPUCommandBuffer(_commandBuffer);
-
-        // Clear previous frame data.
         ClearFrameData();
     }
 

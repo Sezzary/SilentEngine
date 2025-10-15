@@ -154,6 +154,10 @@ namespace Silent::Input
         Count
     };
 
+    constexpr auto START_KEYBOARD_EVENT_ID = EventId::A;
+    constexpr auto START_MOUSE_EVENT_ID    = EventId::MouseClickLeft;
+    constexpr auto START_GAMEPAD_EVENT_ID  = EventId::GamepadSouth;
+
     extern const std::vector<SDL_Scancode>      VALID_KEYBOARD_SCAN_CODES;
     extern const std::vector<int>               VALID_KEYBOARD_MODIFIER_CODES;
     extern const std::vector<int>               VALID_MOUSE_BUTTON_CODES;

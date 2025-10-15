@@ -1,8 +1,6 @@
-# Silent Engine (tentative name)
+# Silent Engine
 
-## Track decompilation progress
-
-https://github.com/Vatuu/silent-hill-decomp
+Track decompilation progress here: https://github.com/Vatuu/silent-hill-decomp
 
 ## Current foundations
 

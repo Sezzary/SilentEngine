@@ -183,7 +183,6 @@ namespace Silent::Math
         auto thisMax = Center + Extents;
         auto aabbMin = aabb.Center - aabb.Extents;
         auto aabbMax = aabb.Center + aabb.Extents;
-
         if (aabbMin.x >= thisMin.x && aabbMax.x <= thisMax.x &&
             aabbMin.y >= thisMin.y && aabbMax.y <= thisMax.y &&
             aabbMin.z >= thisMin.z && aabbMax.z <= thisMax.z)

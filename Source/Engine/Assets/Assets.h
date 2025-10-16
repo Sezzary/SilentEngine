@@ -77,7 +77,6 @@ namespace Silent::Assets
         std::unordered_map<int, std::future<void>> _loadFutures  = {}; /** Key = asset index, value = load future. */
         std::atomic<uint>                          _loadingCount = 0;  /** Number of currently loading assets. */
 
-
     public:
         // =============
         // Constructors

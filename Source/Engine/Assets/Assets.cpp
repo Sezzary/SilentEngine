@@ -169,7 +169,7 @@ namespace Silent::Assets
         }
         auto& asset = _assets[assetIdx];
 
-        // Check if loading or already loaded.
+        // Check if loading or loaded.
         if (asset->State == AssetState::Loading || asset->State == AssetState::Loaded)
         {
             return _loadFutures[assetIdx];

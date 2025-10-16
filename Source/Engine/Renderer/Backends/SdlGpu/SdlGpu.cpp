@@ -134,11 +134,11 @@ namespace Silent::Renderer
         // Texture test.
         // ===================================
         
-        SDL_GPUCommandBuffer* uploadCmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
-        SDL_GPUCopyPass*      copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
+        auto* uploadCmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
+        auto* copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
 
-        // Load the image
-        SDL_Surface* imageData = LoadImage("derg", 4);
+        // Load image.
+        auto* imageData = LoadImage("derg", 4);
 
         auto texInfo = SDL_GPUTextureCreateInfo
         {
@@ -153,7 +153,7 @@ namespace Silent::Renderer
         Tex = SDL_CreateGPUTexture(_device, &texInfo);
         SDL_SetGPUTextureName(_device, Tex, "Derg");
         
-        // Set up texture data
+        // Set up texture data.
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
@@ -161,8 +161,8 @@ namespace Silent::Renderer
         };
         auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
 
-        byte* textureTransferPtr = (byte*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
-        SDL_memcpy(textureTransferPtr, imageData->pixels, imageData->w * imageData->h * 4);
+        byte* mappedTexTransferData = (byte*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
+        SDL_memcpy(mappedTexTransferData, imageData->pixels, imageData->w * imageData->h * 4);
         SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
 
         auto texTransferInfo = SDL_GPUTextureTransferInfo

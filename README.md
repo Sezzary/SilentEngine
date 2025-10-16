@@ -1,4 +1,4 @@
-# Silent Engine
+# <img src="https://github.com/Sezzary/SilentMath/blob/icon/Icon.png" alt="Icon" width="64" height="64"/> Silent Engine
 
 Track decompilation progress here: https://github.com/Vatuu/silent-hill-decomp
 

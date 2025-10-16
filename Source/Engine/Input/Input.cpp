@@ -126,6 +126,11 @@ namespace Silent::Input
         UpdateRumble();
         UpdateActions();
         HandleHotkeyActions();
+
+        // Clear data.
+        _states.HasKeyboardInput = false;
+        _states.HasMouseInput    = false;
+        _states.HasGamepadInput  = false;
     }
 
     void InputManager::ConnectGamepad(int deviceId)

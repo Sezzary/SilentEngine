@@ -23,43 +23,6 @@ namespace Silent::Renderer
     };
 
     static auto UniformBuffer = TimeUniform{};
-    static auto TexQuadTex    = Texture();
-
-    static SDL_GPUTexture* Tex = nullptr;
-
-    SDL_Surface* LoadImage(const char* imageFilename, int desiredChannels)
-    {
-        char fullPath[256];
-        SDL_snprintf(fullPath, sizeof(fullPath), "%s.bmp", (std::string(SDL_GetBasePath()) + "/" + std::string(imageFilename)).c_str());
-
-        auto* result = SDL_LoadBMP(fullPath);
-        if (result == NULL)
-        {
-            SDL_Log("Failed to load BMP: %s", SDL_GetError());
-            return NULL;
-        }
-
-        auto format = SDL_PIXELFORMAT_UNKNOWN;
-        if (desiredChannels == 4)
-        {
-            format = SDL_PIXELFORMAT_ABGR8888;
-        }
-        else
-        {
-            SDL_assert(!"Unexpected desiredChannels");
-            SDL_DestroySurface(result);
-            return NULL;
-        }
-
-        if (result->format != format)
-        {
-            auto* next = SDL_ConvertSurface(result, format);
-            SDL_DestroySurface(result);
-            result = next;
-        }
-
-        return result;
-    }
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
@@ -111,8 +74,6 @@ namespace Silent::Renderer
 
         // Initialize vertex, index, and indirect buffers.
         _buffers.Primitives2d = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, (PRIMITIVE_2D_COUNT_MAX * 2) * TRIANGLE_VERTEX_COUNT, "2d primitive triangle vertices");
-        _buffers.TexQuad      = Buffer<BufferTexVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, 20, "Textured quad vertices");
-        _buffers.TexQuadIdxs  = Buffer<uint16>(*_device, SDL_GPU_BUFFERUSAGE_INDEX, 20, "Textured quad indices");
 
         // Reserve memory.
         _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
@@ -130,57 +91,6 @@ namespace Silent::Renderer
             .MSAASamples       = SDL_GPU_SAMPLECOUNT_1
         };
         ImGui_ImplSDLGPU3_Init(&initInfo);
-
-        // Texture test.
-        // ===================================
-        
-        auto* uploadCmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
-        auto* copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
-
-        // Load image.
-        auto* imageData = LoadImage("derg", 4);
-
-        auto texInfo = SDL_GPUTextureCreateInfo
-        {
-            .type                 = SDL_GPU_TEXTURETYPE_2D,
-            .format               = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
-            .usage                = SDL_GPU_TEXTUREUSAGE_SAMPLER,
-            .width                = (uint)imageData->w,
-            .height               = (uint)imageData->h,
-            .layer_count_or_depth = 1,
-            .num_levels           = 1
-        };
-        Tex = SDL_CreateGPUTexture(_device, &texInfo);
-        SDL_SetGPUTextureName(_device, Tex, "Derg");
-        
-        // Set up texture data.
-        auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
-        {
-            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = (uint)((imageData->w * imageData->h) * 4)
-        };
-        auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
-
-        byte* mappedTexTransferData = (byte*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
-        SDL_memcpy(mappedTexTransferData, imageData->pixels, imageData->w * imageData->h * 4);
-        SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
-
-        auto texTransferInfo = SDL_GPUTextureTransferInfo
-        {
-            .transfer_buffer = texTransferBuffer,
-            .offset = 0
-        };
-        auto texRegion = SDL_GPUTextureRegion
-        {
-            .texture = Tex,
-            .w       = (uint)imageData->w,
-            .h       = (uint)imageData->h,
-            .d       = 1
-        };
-        SDL_UploadToGPUTexture(copyPass, &texTransferInfo, &texRegion, false);
-
-	    SDL_EndGPUCopyPass(copyPass);
-	    SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
     }
 
     // @todo Has errors.
@@ -294,32 +204,10 @@ namespace Silent::Renderer
         SDL_EndGPURenderPass(&renderPass);
     }
 
-    static auto TexVerts = std::vector<BufferTexVertex>
-    {
-        { Vector3(-1,  1, 0), Vector2(0, 0) },
-        { Vector3( 1,  1, 0), Vector2(4, 0) },
-        { Vector3( 1, -1, 0), Vector2(4, 4) },
-        { Vector3(-1, -1, 0), Vector2(0, 4) }
-    };
-    static auto TexVertIdxs = std::vector<uint16>
-    {
-        0, 1, 2,
-        0, 2, 3
-    };
-
     void SdlGpuRenderer::Draw2dScene()
     {
         // Process copy pass.
         auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
-
-        static bool isFirstTime = true;
-        //if (isFirstTime)
-        //{
-        //    isFirstTime = false;
-            //TexQuadTex  = Texture(*_device, *copyPass, 7);
-            _buffers.TexQuad.Update(*copyPass, ToSpan(TexVerts), 0);
-            _buffers.TexQuadIdxs.Update(*copyPass, ToSpan(TexVertIdxs), 0);
-        //}
 
         auto bufferVerts = std::vector<BufferVertex>{};
         Copy2dPrimitives(*copyPass, bufferVerts);
@@ -345,22 +233,6 @@ namespace Silent::Renderer
 
         // Process render pass.
         SDL_DrawGPUPrimitives(&renderPass, bufferVerts.size(), sizeof(bufferVerts) / sizeof(BufferVertex), 0, 0);
-
-
-        _pipelines.Bind(renderPass, PipelineType::Primitive2dTextured);
-        _buffers.TexQuad.Bind(renderPass, 0);
-        _buffers.TexQuadIdxs.BindIndex(renderPass, 0);
-
-        auto texSamplerBinding = SDL_GPUTextureSamplerBinding
-        {
-            .texture = Tex,
-            .sampler = _samplers[0]
-        };
-        SDL_BindGPUFragmentSamplers(&renderPass, 0, &texSamplerBinding, 1);
-        //TexQuadTex.Bind(renderPass, *_samplers[0]);
-        SDL_DrawGPUIndexedPrimitives(&renderPass, 6, 1, 0, 0, 0);
-
-
         SDL_EndGPURenderPass(&renderPass);
     }
 

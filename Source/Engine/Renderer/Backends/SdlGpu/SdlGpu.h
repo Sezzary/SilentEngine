@@ -21,10 +21,7 @@ namespace Silent::Renderer
 
     struct BufferData
     {
-        Buffer<BufferVertex>    Primitives2d = Buffer<BufferVertex>();
-        Buffer<BufferTexVertex> TexQuad      = Buffer<BufferTexVertex>();
-        Buffer<uint16>          TexQuadIdxs  = Buffer<uint16>();
-
+        Buffer<BufferVertex> Primitives2d = Buffer<BufferVertex>();
         Buffer<Vertex2d>     Sprites2d    = Buffer<Vertex2d>();
     };
 

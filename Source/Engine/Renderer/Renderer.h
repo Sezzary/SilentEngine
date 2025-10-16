@@ -3,7 +3,7 @@
 #include "Engine/Renderer/Common/Constants.h"
 #include "Engine/Renderer/Common/Objects/Primitive2d.h"
 #include "Engine/Renderer/Common/Objects/Primitive3d.h"
-#include "Engine/Renderer/Common/Objects/Sprite2d.h"
+#include "Engine/Renderer/Common/Objects/Scene/Sprite2d.h"
 #include "Engine/Renderer/Common/View.h"
 
 namespace Silent::Renderer

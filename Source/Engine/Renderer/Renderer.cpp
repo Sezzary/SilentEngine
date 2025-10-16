@@ -2,11 +2,11 @@
 #include "Engine/Renderer/Renderer.h"
 
 #include "Engine/Application.h"
+#include "Engine/Renderer/Common/Objects/Primitive/Vertex2d.h"
+#include "Engine/Renderer/Common/Objects/Primitive/Vertex3d.h"
 #include "Engine/Renderer/Common/Objects/Primitive2d.h"
 #include "Engine/Renderer/Common/Objects/Primitive3d.h"
-#include "Engine/Renderer/Common/Objects/Sprite2d.h"
-#include "Engine/Renderer/Common/Objects/Vertex2d.h"
-#include "Engine/Renderer/Common/Objects/Vertex3d.h"
+#include "Engine/Renderer/Common/Objects/Scene/Sprite2d.h"
 #include "Engine/Renderer/Backends/OpenGl/OpenGl.h"
 #include "Engine/Renderer/Backends/SdlGpu/SdlGpu.h"
 

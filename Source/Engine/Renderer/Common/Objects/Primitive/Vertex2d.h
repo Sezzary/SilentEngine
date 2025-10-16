@@ -2,10 +2,10 @@
 
 namespace Silent::Renderer
 {
-    struct Vertex3d
+    /** @brief 2D screen space vertex. */
+    struct Vertex2d
     {
-        Vector3 Position = Vector3::Zero;
-        Vector3 Normal   = Vector3::Zero;
+        Vector2 Position = Vector2::Zero;
         Color   Col      = Color::Black;
         Vector2 Uv       = Vector2::Zero;
     };

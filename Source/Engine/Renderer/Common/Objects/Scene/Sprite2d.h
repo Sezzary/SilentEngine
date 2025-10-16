@@ -8,6 +8,8 @@ namespace Silent::Renderer
     struct Sprite2d
     {
         int       AssetIdx = 0;
+        Vector2   UvMin    = Vector2::Zero;
+        Vector2   UvMax    = Vector2::Zero;
         Vector2   Position = Vector2::Zero;
         float     Rotation = 0.0f;
         Vector2   Scale    = Vector2::Zero;
@@ -17,7 +19,11 @@ namespace Silent::Renderer
         ScaleMode ScaleM   = ScaleMode::Fit;
         BlendMode BlendM   = BlendMode::Opaque;
 
-        static Sprite2d CreateSprite2d(int assetIdx, const Vector2& pos, float rot, const Vector2& scale, const Color& color,
+        static Sprite2d CreateSprite2d(int assetIdx, const Vector2& uvMin, const Vector2& uvMax,
+                                       const Vector2& pos, float rot, const Vector2& scale, const Color& color,
+                                       uint depth = 0, AlignMode alignMode = AlignMode::Center, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
+
+        static Sprite2d CreateSprite2d(int assetIdx, const Vector2i& uvMin, const Vector2i& uvMax,
                                        uint depth = 0, AlignMode alignMode = AlignMode::Center, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
     };
 }

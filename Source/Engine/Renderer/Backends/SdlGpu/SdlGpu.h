@@ -2,8 +2,8 @@
 
 #include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
-#include "Engine/Renderer/Common/Objects/Vertex2d.h"
-#include "Engine/Renderer/Common/Objects/Vertex3d.h"
+#include "Engine/Renderer/Common/Objects/Primitive/Vertex2d.h"
+#include "Engine/Renderer/Common/Objects/Primitive/Vertex3d.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer

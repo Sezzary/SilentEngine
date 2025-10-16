@@ -54,9 +54,12 @@ namespace Silent::Assets
         // Fields
         // =======
 
-        std::vector<std::shared_ptr<Asset>>  _assets       = {}; /** Registered assets. */
-        std::unordered_map<std::string, int> _assetIdxs    = {}; /** Key = asset name, value = asset index. */
-        std::atomic<uint>                    _loadingCount = 0;  /** Number of currently loading assets. */
+        std::vector<std::shared_ptr<Asset>>        _assets       = {}; /** Registered assets. */
+        std::unordered_map<std::string, int>       _idxs         = {}; /** Key = asset name, value = asset index. */
+        std::unordered_map<int, std::string>       _names        = {}; /** Key = asset index, value = asset name. */
+        std::unordered_map<int, std::future<void>> _loadFutures  = {}; /** Key = asset index, value = load future. */ // @todo Should try executing this idea.
+        std::atomic<uint>                          _loadingCount = 0;  /** Number of currently loading assets. */
+
 
     public:
         // =============
@@ -69,25 +72,32 @@ namespace Silent::Assets
         // Getters
         // ========
 
-        /** @brief Gets a loaded asset via a file index.
+        /** Gets an asset's name by index.
          *
          * @param assetIdx Asset file index.
-         * @return Pointer to an `Asset` object if the asset is loaded, `nullptr` otherwise.
+         * @return Asset name.
          */
-        const std::shared_ptr<Asset> GetAsset(int assetIdx) const;
-
-        /** @brief Gets a loaded asset via a filename.
-         *
-         * @param assetName Asset filename.
-         * @return Pointer to an `Asset` object if the asset is loaded, `nullptr` otherwise.
-         */
-        const std::shared_ptr<Asset> GetAsset(const std::string& assetName) const;
+        const std::string& GetAssetName(int assetIdx) const;
 
         /** @brief Gets a vector containing the names of all loaded assets.
          *
          * @return Vector of all loaded asset names.
          */
         std::vector<std::string> GetLoadedAssetNames() const;
+
+        /** @brief Gets a loaded asset via a file index.
+         *
+         * @param assetIdx Asset file index.
+         * @return Pointer to an `Asset` object if the asset is loaded, `nullptr` otherwise.
+         */
+        const std::shared_ptr<Asset> GetAsset(int assetIdx);
+
+        /** @brief Gets a loaded asset via a filename.
+         *
+         * @param assetName Asset filename.
+         * @return Pointer to an `Asset` object if the asset is loaded, `nullptr` otherwise.
+         */
+        const std::shared_ptr<Asset> GetAsset(const std::string& assetName);
 
         // ==========
         // Inquirers

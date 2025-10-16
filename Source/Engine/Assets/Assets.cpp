@@ -24,7 +24,7 @@ namespace Silent::Assets
         { ".DAT", AssetType::Dat },
         { ".KDT", AssetType::Kdt },
         { ".CMP", AssetType::Cmp },
-        { "",     AssetType::Xa }   // @todo Should be given .XA extension when exporting from ROM.
+        { "",     AssetType::Xa  } // @todo Should be given .XA extension when exporting from ROM.
     };
 
     static const auto PARSER_FUNCS = std::unordered_map<AssetType, std::function<std::shared_ptr<void>(const std::filesystem::path& file)>>
@@ -33,36 +33,22 @@ namespace Silent::Assets
         { AssetType::Tmd, ParseTmd }
     };
 
-    const std::shared_ptr<Asset> AssetManager::GetAsset(int assetIdx) const
+    const std::string& AssetManager::GetAssetName(int assetIdx) const
     {
         // Get asset.
         if (assetIdx < 0 || assetIdx >= _assets.size())
         {
-            Log("Attempted to get invalid asset " + std::to_string(assetIdx) + ".", LogLevel::Warning, LogMode::Debug);
-            return nullptr;
+            Log("Attempted to get name of invalid asset " + std::to_string(assetIdx) + ".", LogLevel::Warning, LogMode::Debug);
+            return {};
         }
         const auto asset = _assets[assetIdx];
 
-        return asset;
-    }
-
-    const std::shared_ptr<Asset> AssetManager::GetAsset(const std::string& assetName) const
-    {
-        // Check if asset exists.
-        auto it = _assetIdxs.find(assetName);
-        if (it == _assetIdxs.end())
-        {
-            Log("Attempted to get unregistered asset '" + assetName + "'.", LogLevel::Warning, LogMode::Debug);
-            return nullptr;
-        }
-
-        // Get asset by index.
-        const auto& [keyName, assetIdx] = *it;
-        return GetAsset(assetIdx);
+        return asset->Name;
     }
 
     std::vector<std::string> AssetManager::GetLoadedAssetNames() const
     {
+        // Run through registered assets.
         auto names = std::vector<std::string>{};
         for (const auto asset : _assets)
         {
@@ -73,6 +59,47 @@ namespace Silent::Assets
         }
 
         return names;
+    }
+
+    const std::shared_ptr<Asset> AssetManager::GetAsset(int assetIdx)
+    {
+        // Get asset.
+        if (assetIdx < 0 || assetIdx >= _assets.size())
+        {
+            Log("Attempted to get invalid asset " + std::to_string(assetIdx) + ".", LogLevel::Warning, LogMode::Debug);
+            return nullptr;
+        }
+        const auto asset = _assets[assetIdx];
+
+        // Load if not preloaded.
+        if (asset->State != AssetState::Loaded)
+        {
+            Log("Getting non-preloaded asset `" + GetAssetName(assetIdx) + "`. Loading in place as failsafe.", LogLevel::Warning, LogMode::Debug);
+            LoadAsset(assetIdx).wait();
+        }
+
+        // Check if loading failed.
+        if (asset->State == AssetState::Error)
+        {
+            Log("Failed to get asset `" + GetAssetName(assetIdx) + "`.", LogLevel::Error, LogMode::Debug);
+            return nullptr;
+        }
+        return asset;
+    }
+
+    const std::shared_ptr<Asset> AssetManager::GetAsset(const std::string& assetName)
+    {
+        // Check if asset exists.
+        auto it = _idxs.find(assetName);
+        if (it == _idxs.end())
+        {
+            Log("Attempted to get invalid asset '" + assetName + "'.", LogLevel::Warning, LogMode::Debug);
+            return nullptr;
+        }
+
+        // Get asset by index.
+        const auto& [keyName, assetIdx] = *it;
+        return GetAsset(assetIdx);
     }
 
     bool AssetManager::IsBusy() const
@@ -121,8 +148,9 @@ namespace Silent::Assets
             asset->State = AssetState::Unloaded;
             asset->Data  = nullptr;
 
-            // Add to asset index map.
-            _assetIdxs[asset->Name] = i;
+            // Add asset index and name to maps.
+            _idxs[asset->Name] = i;
+            _names[i]          = asset->Name;
         }
 
         Log("Registered " + std::to_string(_assets.size()) + " assets.", LogLevel::Info, LogMode::Debug);
@@ -138,18 +166,24 @@ namespace Silent::Assets
         }
         auto& asset = _assets[assetIdx];
 
-        // @todo Should be able to wait until loaded. Could maybe store futures of loading assets.
         // Check if already loading or loaded.
-        if (asset->State == AssetState::Loading || asset->State == AssetState::Loaded)
+        if (asset->State == AssetState::Loaded)
         {
-            Log("Attempted to load already loaded asset `" + asset->Name + "`.", LogLevel::Warning, LogMode::Debug);
+            Log("Attempted to load loaded asset `" + asset->Name + "`.", LogLevel::Warning, LogMode::Debug);
+            return GenerateReadyFuture();
+        }
+        else if (asset->State == AssetState::Loading)
+        {
+            // @todo Although an edge case, if an asset is already in the process of loading, it should be possible to somehow wait until it's loaded.
+            // Maybe a `std::unordered_map` should be created to associate asset loads with futures?
+            Log("Attempted to load loading asset `" + asset->Name + "`.", LogLevel::Warning, LogMode::Debug);
             return GenerateReadyFuture();
         }
 
         // Check if file is valid.
         if (!std::filesystem::exists(asset->File))
         {
-            Log("Attempted to load asset " + std::to_string(assetIdx) + " from invalid file '" + asset->File.string() + "'.", LogLevel::Error);
+            Log("Attempted to load asset `" + asset->Name + "` from invalid file '" + asset->File.string() + "'.", LogLevel::Error, LogMode::Debug);
 
             asset->State = AssetState::Error;
             return GenerateReadyFuture();
@@ -166,10 +200,10 @@ namespace Silent::Assets
             auto parserFuncIt = PARSER_FUNCS.find(asset->Type);
             if (parserFuncIt == PARSER_FUNCS.end())
             {
-                Log("Attempted to load asset " + std::to_string(assetIdx) + " with no parser function for asset type " + std::to_string((int)asset->Type) + ".",
+                Log("Attempted to load asset `" + asset->Name + "` with no parser function for asset type " + std::to_string((int)asset->Type) + ".",
                     LogLevel::Error);
 
-                asset->State = AssetState::Error;
+                asset->State = AssetState::Unloaded;
                 _loadingCount--;
                 return;
             }
@@ -181,13 +215,14 @@ namespace Silent::Assets
                 asset->Data  = parserFunc(asset->File);
                 asset->State = AssetState::Loaded;
 
-                Log("Loaded asset " + std::to_string(assetIdx) + ".", LogLevel::Info, LogMode::Debug);
+                Log("Loaded asset `" + asset->Name + "`.", LogLevel::Info, LogMode::Debug);
             }
             catch (const std::exception& ex)
             {
-                Log("Failed to parse file for asset " + std::to_string(assetIdx) + ": " + ex.what(), LogLevel::Error);
-
+                asset->Data  = nullptr;
                 asset->State = AssetState::Error;
+
+                Log("Failed to parse file for asset `" + asset->Name + "`: " + ex.what(), LogLevel::Error);
             }
             _loadingCount--;
         });
@@ -196,8 +231,8 @@ namespace Silent::Assets
     std::future<void> AssetManager::LoadAsset(const std::string& assetName)
     {
         // Check if asset exists.
-        auto it = _assetIdxs.find(assetName);
-        if (it == _assetIdxs.end())
+        auto it = _idxs.find(assetName);
+        if (it == _idxs.end())
         {
             Log("Attempted to load unregistered asset '" + assetName + "'.", LogLevel::Warning, LogMode::Debug);
             return GenerateReadyFuture();
@@ -221,7 +256,7 @@ namespace Silent::Assets
         // Check if already unloaded.
         if (asset->State == AssetState::Unloaded)
         {
-            Log("Attempted to unload already unloaded asset " + std::to_string(assetIdx) + ".", LogLevel::Warning, LogMode::Debug);
+            Log("Attempted to unload already unloaded asset `" + GetAssetName(assetIdx) + "`.", LogLevel::Warning, LogMode::Debug);
             return;
         }
 
@@ -229,14 +264,14 @@ namespace Silent::Assets
         asset->State = AssetState::Unloaded;
         asset->Data  = nullptr;
 
-        Log("Unloaded asset " + std::to_string(assetIdx) + ".", LogLevel::Info, LogMode::Debug);
+        Log("Unloaded asset `" + GetAssetName(assetIdx) + "`.", LogLevel::Info, LogMode::Debug);
     }
 
     void AssetManager::UnloadAsset(const std::string& assetName)
     {
         // Check if asset exists.
-        auto it = _assetIdxs.find(assetName);
-        if (it == _assetIdxs.end())
+        auto it = _idxs.find(assetName);
+        if (it == _idxs.end())
         {
             Log("Attempted to unload unregistered asset '" + assetName + "'.", LogLevel::Warning, LogMode::Debug);
             return;

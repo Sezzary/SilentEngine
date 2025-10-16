@@ -28,7 +28,7 @@ namespace Silent::Renderer
             .Depth    = depth,
             .AlignM   = alignMode,
             .ScaleM   = scaleMode,
-            .BlendM   = blendMode,
+            .BlendM   = blendMode
         };
     }
 
@@ -38,11 +38,6 @@ namespace Silent::Renderer
         auto& assets = g_App.GetAssets();
 
         const auto asset = assets.GetAsset(assetIdx);
-        if (asset->State != AssetState::Loaded)
-        {
-            assets.LoadAsset(assetIdx).wait();
-        }
-
         if (asset->Type != AssetType::Tim)
         {
             throw std::runtime_error("Attempted to use non-image asset " + std::to_string(assetIdx) + "as 2D sprite texture.");

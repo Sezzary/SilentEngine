@@ -57,7 +57,7 @@ namespace Silent::Assets
         std::vector<std::shared_ptr<Asset>>        _assets       = {}; /** Registered assets. */
         std::unordered_map<std::string, int>       _idxs         = {}; /** Key = asset name, value = asset index. */
         std::unordered_map<int, std::string>       _names        = {}; /** Key = asset index, value = asset name. */
-        std::unordered_map<int, std::future<void>> _loadFutures  = {}; /** Key = asset index, value = load future. */ // @todo Should try executing this idea.
+        std::unordered_map<int, std::future<void>> _loadFutures  = {}; /** Key = asset index, value = load future. */
         std::atomic<uint>                          _loadingCount = 0;  /** Number of currently loading assets. */
 
 
@@ -124,14 +124,14 @@ namespace Silent::Assets
          * @param assetIdx Index of the asset to load.
          * @return `std::future` of the asset's load status.
          */
-        std::future<void> LoadAsset(int assetIdx);
+        const std::future<void>& LoadAsset(int assetIdx);
 
         /** @brief Loads an asset by name.
          *
          * @param assetName Name of the asset to load.
          * @return `std::future` of the asset's load status.
          */
-        std::future<void> LoadAsset(const std::string& assetName);
+        const std::future<void>& LoadAsset(const std::string& assetName);
 
         /** @brief Unloads an asset by index.
          *

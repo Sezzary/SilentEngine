@@ -153,31 +153,26 @@ namespace Silent::Assets
             _names[i]          = asset->Name;
         }
 
+        // Create fallback ready future.
+        _loadFutures[NO_VALUE] = GenerateReadyFuture();
+
         Log("Registered " + std::to_string(_assets.size()) + " assets.", LogLevel::Info, LogMode::Debug);
     }
 
-    std::future<void> AssetManager::LoadAsset(int assetIdx)
+    const std::future<void>& AssetManager::LoadAsset(int assetIdx)
     {
         // Get asset.
         if (assetIdx < 0 || assetIdx >= _assets.size())
         {
             Log("Attempted to load invalid asset " + std::to_string(assetIdx) + ".", LogLevel::Warning, LogMode::Debug);
-            return GenerateReadyFuture();
+            return _loadFutures[NO_VALUE];
         }
         auto& asset = _assets[assetIdx];
 
-        // Check if already loading or loaded.
-        if (asset->State == AssetState::Loaded)
+        // Check if loading or already loaded.
+        if (asset->State == AssetState::Loading || asset->State == AssetState::Loaded)
         {
-            Log("Attempted to load loaded asset `" + asset->Name + "`.", LogLevel::Warning, LogMode::Debug);
-            return GenerateReadyFuture();
-        }
-        else if (asset->State == AssetState::Loading)
-        {
-            // @todo Although an edge case, if an asset is already in the process of loading, it should be possible to somehow wait until it's loaded.
-            // Maybe a `std::unordered_map` should be created to associate asset loads with futures?
-            Log("Attempted to load loading asset `" + asset->Name + "`.", LogLevel::Warning, LogMode::Debug);
-            return GenerateReadyFuture();
+            return _loadFutures[assetIdx];
         }
 
         // Check if file is valid.
@@ -186,7 +181,7 @@ namespace Silent::Assets
             Log("Attempted to load asset `" + asset->Name + "` from invalid file '" + asset->File.string() + "'.", LogLevel::Error, LogMode::Debug);
 
             asset->State = AssetState::Error;
-            return GenerateReadyFuture();
+            return _loadFutures[assetIdx];
         }
 
         // Set loading state.
@@ -194,7 +189,7 @@ namespace Silent::Assets
         _loadingCount++;
 
         // Load asynchronously.
-        return g_Executor.AddTask([&]()
+        _loadFutures[assetIdx] = g_Executor.AddTask([&]()
         {
             // Get parser function.
             auto parserFuncIt = PARSER_FUNCS.find(asset->Type);
@@ -226,16 +221,18 @@ namespace Silent::Assets
             }
             _loadingCount--;
         });
+
+        return _loadFutures[assetIdx];
     }
 
-    std::future<void> AssetManager::LoadAsset(const std::string& assetName)
+    const std::future<void>& AssetManager::LoadAsset(const std::string& assetName)
     {
         // Check if asset exists.
         auto it = _idxs.find(assetName);
         if (it == _idxs.end())
         {
             Log("Attempted to load unregistered asset '" + assetName + "'.", LogLevel::Warning, LogMode::Debug);
-            return GenerateReadyFuture();
+            return _loadFutures[NO_VALUE];
         }
 
         // Load asset by index.
@@ -256,13 +253,15 @@ namespace Silent::Assets
         // Check if already unloaded.
         if (asset->State == AssetState::Unloaded)
         {
-            Log("Attempted to unload already unloaded asset `" + GetAssetName(assetIdx) + "`.", LogLevel::Warning, LogMode::Debug);
             return;
         }
 
         // Unload.
         asset->State = AssetState::Unloaded;
         asset->Data  = nullptr;
+
+        // Remove load future.
+        _loadFutures.erase(assetIdx);
 
         Log("Unloaded asset `" + GetAssetName(assetIdx) + "`.", LogLevel::Info, LogMode::Debug);
     }
@@ -280,5 +279,24 @@ namespace Silent::Assets
         // Unload asset by index.
         const auto& [keyName, assetIdx] = *it;
         UnloadAsset(assetIdx);
+    }
+
+    void AssetManager::UnloadAllAssets()
+    {
+        // Run through registered assets.
+        for (auto& asset : _assets)
+        {
+            if (asset->State == AssetState::Unloaded)
+            {
+                continue;
+            }
+
+            // Unload.
+            asset->State = AssetState::Unloaded;
+            asset->Data  = nullptr;
+
+            // Remove load future.
+            _loadFutures.erase(_idxs[asset->Name]);
+        }
     }
 }

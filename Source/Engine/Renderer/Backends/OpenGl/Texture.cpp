@@ -63,7 +63,7 @@ namespace Silent::Renderer
 
             // Get asset data.
             const auto& asset = assets.GetAsset(name);
-            auto data         = GetAssetData<TimAsset>(asset->Data);
+            auto data         = asset->GetData<TimAsset>();
 
             // Assign image to texture object.
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data->Resolution.x, data->Resolution.y, 0, format, pixelType, data->Pixels.data());

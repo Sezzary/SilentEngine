@@ -44,6 +44,23 @@ namespace Silent::Assets
 
         std::atomic<AssetState> State = AssetState::Unloaded; /** Thread-safe load state. */
         std::shared_ptr<void>   Data  = nullptr;              /** Parsed data. */
+
+        /** @brief Gets the typed asset data. The asset must be loaded before calling.
+         *
+         * @tparam T Loaded asset type to cast the asset data to.
+         * @return Typed loaded asset data.
+         * @throws `std::runtime_error` if `data` is `nullptr`.
+         */
+        template <typename T>
+        std::shared_ptr<T> GetData()
+        {
+            if (Data == nullptr)
+            {
+                throw std::runtime_error("Attempted to get data for unloaded asset.");
+            }
+
+            return std::reinterpret_pointer_cast<T>(Data);
+        }
     };
 
     /** @brief Central manager for asset streaming. */
@@ -148,22 +165,4 @@ namespace Silent::Assets
         /** @brief Unloads all currently loaded assets. */
         void UnloadAllAssets();
     };
-
-    /** @brief Gets the typed data of a loaded asset.
-     *
-     * @tparam T Loaded asset type to cast the asset data to.
-     * @param data Data to retrieve.
-     * @return Typed loaded asset data.
-     * @throws `std::runtime_error` if `data` is `nullptr`.
-     */
-    template <typename T>
-    std::shared_ptr<T> GetAssetData(std::shared_ptr<void> data)
-    {
-        if (data == nullptr)
-        {
-            throw std::runtime_error("Attempted to get data for unloaded asset.");
-        }
-
-        return std::reinterpret_pointer_cast<T>(data);
-    }
 }

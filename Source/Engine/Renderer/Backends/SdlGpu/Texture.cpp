@@ -27,14 +27,8 @@ namespace Silent::Renderer
 
         _device = &device;
 
-        // Wait until loaded. @todo Load wait mechanism needs revision.
-        if (asset->State != AssetState::Loaded)
-        {
-            assets.LoadAsset(assetIdx).wait();
-        }
-
         // Get TIM image asset data.
-        auto data = GetAssetData<TimAsset>(asset->Data);
+        auto data = asset->GetData<TimAsset>();
 
         // Create texture.
         auto texInfo = SDL_GPUTextureCreateInfo

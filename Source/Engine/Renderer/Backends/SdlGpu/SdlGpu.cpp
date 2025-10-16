@@ -24,6 +24,11 @@ namespace Silent::Renderer
 
     static auto UniformBuffer = TimeUniform{};
 
+    // Texture test.
+    static SDL_GPUBuffer*  VertexBuffer = nullptr;
+    static SDL_GPUBuffer*  IndexBuffer  = nullptr;
+    static SDL_GPUTexture* Texture      = nullptr;
+
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
         Log("Using SDL_gpu renderer.");

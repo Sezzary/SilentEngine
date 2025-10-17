@@ -2,10 +2,12 @@
 #include "Engine/Services/Toasts.h"
 
 #include "Engine/Application.h"
+#include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Options.h"
 #include "Engine/Services/Time.h"
 #include "Utils/Utils.h"
 
+using namespace Silent::Renderer;
 using namespace Silent::Utils;
 
 namespace Silent::Services
@@ -36,6 +38,7 @@ namespace Silent::Services
             return toast.Life <= 0;
         });
 
+        // Submit for rendering.
         Render();
     }
 
@@ -63,7 +66,6 @@ namespace Silent::Services
         _toasts.push_back(toast);
     }
 
-    // @todo
     void ToastManager::Render()
     {
         constexpr float ROW_OFFSET = 2.0f;

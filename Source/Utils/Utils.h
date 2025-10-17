@@ -24,27 +24,6 @@ namespace Silent::Utils
      */
     char* CopyString(const char src[], uint size);
 
-    /** @brief Gets a screen position in percent corrected according to the aspect ratio of the screen.
-     *
-     * @param pos Screen position in percent.
-     * @return Screen position in percent corrected for the screen aspect ratio.
-     */
-    Vector2 GetAspectCorrectScreenPosition(const Vector2& pos);
-
-    /** @brief Converts a screen position in percent to normalized device coordinates.
-     *
-     * @param pos Screen position in percent with components in the range `[0.0f, 100.0f]`.
-     * @return Normalized device coordinates with components in the range `[-1.0f, 1.0f]`.
-     */
-    Vector2 ConvertScreenPositionToNdc(const Vector2& pos);
-
-    /** @brief Converts normalized device coordinates to a screen position in percent.
-     *
-     * @param ndc Normalized device coordinates with components in the range `[-1.0f, 1.0f]`.
-     * @return Screen position in percent with components in the range `[0.0f, 100.0f]`.
-     */
-    Vector2 ConvertNdcToScreenPosition(const Vector2& ndc);
-
     /** @brief Gets the sign of a value.
      *
      * @tparam T Numeric type.
@@ -86,30 +65,60 @@ namespace Silent::Utils
         cont.erase(std::remove_if(cont.begin(), cont.end(), pred), cont.end());
     }
 
+    /** @brief Converts a raw array to a read-only span.
+     *
+     * @param rawArray Raw array.
+     * @param size Array size.
+     * @return Read-only `std::span` representing the raw array.
+     */
     template<typename T>
     std::span<const T> ToSpan(const T* rawArray, uint size)
     {
         return std::span<const T>(rawArray, size);
     }
 
+    /** @brief Converts a raw array to a writable span.
+     *
+     * @param rawArray Raw array.
+     * @param size Array size.
+     * @return Writable `std::span` representing the raw array.
+     */
     template<typename T>
     std::span<T> ToSpan(T* rawArray, uint size)
     {
         return std::span<T>(rawArray, size);
     }
 
+    /** @brief Converts a C array to a span.
+     *
+     * @param cArray C array.
+     * @param size Array size.
+     * @return `std::span` representing the C array.
+     */
     template <typename T, uint size>
     std::span<T> ToSpan(T(&cArray)[size])
     {
         return std::span<T>(cArray, size);
     }
 
+    /** @brief Converts a container to a read-only span.
+     *
+     * @tparam T Container type.
+     * @param cont Container.
+     * @return Read-only `std::span` representing the container.
+     */
     template<typename T>
     std::span<const typename T::value_type> ToSpan(const T& cont)
     {
         return std::span<const typename T::value_type>(std::begin(cont), std::end(cont));
     }
 
+    /** @brief Converts a container to a writable span.
+     *
+     * @tparam T Container type.
+     * @param cont Container.
+     * @return Writable `std::span` representing the container.
+     */
     template<typename T>
     std::span<typename T::value_type> ToSpan(T& cont)
     {

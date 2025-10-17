@@ -173,7 +173,6 @@ namespace Silent::Input
         return _ticksActive >= delayTicks;
     }
 
-    // NOTE: To avoid stutter on second pulse, ensure `initialDelaySec` is `delaySec` multiple.
     bool Action::IsPulsed(float delaySec, float initialDelaySec, float stateMin) const
     {
         if (IsClicked(stateMin))
@@ -196,7 +195,7 @@ namespace Silent::Input
 
     bool Action::IsReleased(float delaySecMax, float stateMin) const
     {
-        uint delayTicksMax = (delaySecMax == INFINITY) ? UINT_MAX : SEC_TO_TICK(delaySecMax);
+        uint delayTicksMax = (delaySecMax == FLT_MAX) ? UINT_MAX : SEC_TO_TICK(delaySecMax);
         return _state <= stateMin && _prevState > stateMin && _ticksActive <= delayTicksMax;
     }
 

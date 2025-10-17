@@ -44,10 +44,14 @@ namespace Silent::Input
     /** @brief Raw input state data. */
     struct States
     {
-        bool               IsUsingGamepad     = false;
-        std::vector<float> Events             = {}; /** Index = `EventId`. */
+        std::vector<float> Events             = {}; /** Index = `EventId`, value = event state. */
         Vector2            CursorPosition     = {};
         Vector2            PrevCursorPosition = {};
+
+        bool IsUsingGamepad     = false;
+        bool HasKeyboardInput   = false;
+        bool HasMouseInput      = false;
+        bool HasGamepadInput    = false;
     };
 
     /** @brief Connected gamepad data. */
@@ -76,13 +80,13 @@ namespace Silent::Input
         // Fields
         // =======
 
-        Gamepad                              _gamepad    = {};
-        BindingManager                       _bindings   = BindingManager();
-        TextManager                          _text       = TextManager();
-        States                               _states     = {};
-        Rumble                               _rumble     = {};
-        std::unordered_map<ActionId, Action> _actions    = {};
-        std::vector<Vector2>                 _analogAxes = {}; /** Index = `AnalogAxisId`. */
+        Gamepad              _gamepad    = {};
+        BindingManager       _bindings   = BindingManager();
+        TextManager          _text       = TextManager();
+        States               _states     = {};
+        Rumble               _rumble     = {};
+        std::vector<Action>  _actions    = {};
+        std::vector<Vector2> _analogAxes = {}; /** Index = `AnalogAxisId`. */
 
     public:
         // =============
@@ -151,7 +155,7 @@ namespace Silent::Input
         bool IsGamepadConnected() const;
 
         /** @brief Checks if a gamepad is being currently being used. The condition will be `true` if one of the inputs
-         * registered on the current tick came from a gamepad.
+         * registered for the current tick came from a gamepad.
          *
          * @return `true` if a gamepad is being used, `false` otherwise.
          */
@@ -161,26 +165,26 @@ namespace Silent::Input
         // Utilities
         // ==========
 
-        /** @brief Initialized the input manager. */
+        /** @brief Initializes the input manager. */
         void Initialize();
 
-        /** @brief Gracefully deinitialized the input manager by disconnecting the connected gamepad. */
+        /** @brief Gracefully deinitializes the input manager by disconnecting the connected gamepad. */
         void Deinitialize();
 
-        /** @brief Updates the input system for the current tick.
+        /** @brief Updates the input system state for the current tick.
          *
          * @param window Application window.
          * @param mouseWheelAxis Raw mouse wheel axis data for the current tick.
          */
         void Update(SDL_Window& window, const Vector2& mouseWheelAxis);
 
-        /** @brief Attempts to connect a gamepad.
+        /** @brief Attempts to connect a gamepad if not already connected.
          *
          * @param deviceId Device ID of the gamepad to connect.
          */
         void ConnectGamepad(int deviceId);
 
-        /** @brief Disconnects a gamepad.
+        /** @brief Disconnects a gamepad if connected.
          *
          * @param deviceId Device ID of the gamepad to disconnect.
          */
@@ -202,26 +206,14 @@ namespace Silent::Input
          */
         std::string GetGamepadVendorName(GamepadVendorId vendorId) const;
 
-        /** @brief Reads keyboard data and updates raw input states for the current tick.
-         * Called first in a sequence of function calls which read device data. Superceded by `ReadMouse`.
-         *
-         * @param eventStateIdx Reference input event state index. Incremented as keyboard data is read and passed on to `ReadMouse`.
-         */
-        void ReadKeyboard(int& eventStateIdx);
+        /** @brief Reads keyboard data and captures keyboard event states for the current tick. Called before `ReadMouse`. */
+        void ReadKeyboard();
 
-        /** @brief Reads mouse data and updates raw input states for the current tick.
-         * Called second in a sequence of function calls which read device data. Preceeded by `ReadKeyboard`, succeeded by `ReadGamepad`.
-         *
-         * @param eventStateIdx Reference input event state index. Incremented as mouse data is read and passed on to `ReadGamepad`.
-         */
-        void ReadMouse(int& eventStateIdx, SDL_Window& window, const Vector2& wheelAxis);
+        /** @brief Reads mouse data and captures mouse event states for the current tick. Called before `ReadGamepad`. */
+        void ReadMouse(SDL_Window& window, const Vector2& wheelAxis);
 
-        /** @brief Reads mouse data and updates raw input states for the current tick.
-         * Called third in a sequence of function calls which read device data. Preceeded by `ReadMouse`.
-         *
-         * @param eventStateIdx Reference input event state index. Incremented as gamepad data is read.
-         */
-        void ReadGamepad(int& eventStateIdx);
+        /** @brief Reads mouse data and captures gamepad event states for the current tick. */
+        void ReadGamepad();
 
         /** @brief Updates rumble data for the current tick if a rumble is active. */
         void UpdateRumble();

@@ -1,8 +1,6 @@
-# Silent Math
+# <img src="https://github.com/Sezzary/SilentMath/blob/master/Icon.png" alt="Icon" width="64" height="64"/> Silent Engine
 
-## Track decompilation progress
-
-https://github.com/Vatuu/silent-hill-decomp
+Track decompilation progress here: https://github.com/Vatuu/silent-hill-decomp
 
 ## Current foundations
 

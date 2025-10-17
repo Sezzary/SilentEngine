@@ -28,12 +28,13 @@ namespace Silent::Renderer
          * @param device GPU device.
          * @param usageFlags Buffer usage flags.
          * @param size Static buffer size.
+         * @param name Buffer name.
          */
-        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size);
+        Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size, const std::string& name);
 
-        //===========
+        // ==========
         // Utilities
-        //===========
+        // ==========
 
         /** @brief Uploads data to the GPU buffer.
          *
@@ -50,10 +51,13 @@ namespace Silent::Renderer
          * @param startIdx 
          */
         void Bind(SDL_GPURenderPass& renderPass, uint startIdx);
+
+        // temp
+        void BindIndex(SDL_GPURenderPass& renderPass, uint startIdx);
     };
 
     template <typename T>
-    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size)
+    Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size, const std::string& name)
     {
         if (!(usageFlags & (SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_INDEX | SDL_GPU_BUFFERUSAGE_INDIRECT)))
         {
@@ -75,10 +79,13 @@ namespace Silent::Renderer
             Log("Failed to create buffer: " + std::string(SDL_GetError()), LogLevel::Error);
         }
 
+        // Set buffer name.
+        SDL_SetGPUBufferName(_device, _buffer, name.c_str());
+
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = size * sizeof(T)
+            .size  = size * sizeof(T)/* + (sizeof(uint16) * 6)*/ // @todo Texture test. Remove later.
         };
 
         // Create transfer buffer.
@@ -119,5 +126,16 @@ namespace Silent::Renderer
         bufferBindings[0].offset = startIdx * sizeof(T);
 
         SDL_BindGPUVertexBuffers(&renderPass, 0, bufferBindings.data(), bufferBindings.size());
+    }
+
+    template <typename T>
+    void Buffer<T>::BindIndex(SDL_GPURenderPass& renderPass, uint startIdx)
+    {
+        auto bufferBindings = SDL_GPUBufferBinding
+        {
+            .buffer = _buffer,
+            .offset = startIdx * sizeof(T)
+        };
+        SDL_BindGPUIndexBuffer(&renderPass, &bufferBindings, SDL_GPU_INDEXELEMENTSIZE_16BIT);
     }
 };

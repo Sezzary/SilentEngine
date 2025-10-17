@@ -9,8 +9,7 @@ namespace Silent::Renderer
         FastAlpha,
         Add,
         Subtract,
-        Multiply,
-        LumaMultiply // @todo Not a blend mode, just a shader.
+        Multiply
     };
 
     enum class AlignMode

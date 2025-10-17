@@ -254,7 +254,7 @@ namespace Silent::Services
             Log(std::string("Failed to get glyph UVs from unloaded asset `") + FONT_8_X_8_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
         }
-        auto data = GetAssetData<TimAsset>(asset);
+        auto data = asset->GetData<TimAsset>();
 
         // Get glyph coords in atlas.
         auto coordsIt = FONT_8_X_8_GLYPH_COORDS.find(charCode);
@@ -295,7 +295,7 @@ namespace Silent::Services
             Log("Failed to get glyph UVs for char `" + std::string(1, charCode) + "` from unloaded asset + `" + FONT_12_X_16_ASSET_NAME + "`.", LogLevel::Warning);
             return {};
         }
-        auto data = GetAssetData<TimAsset>(asset);
+        auto data = asset->GetData<TimAsset>();
 
         // Get glyph coords in atlas.
         auto coordsIt = FONT_12_X_16_GLYPH_COORDS.find(charCode);

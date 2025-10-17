@@ -104,9 +104,9 @@ namespace Silent::Utils
      */
     uint GetCoreCount();
 
-    /** @brief Generates a ready dummy future. Used when a task future is required but cannot be created due to an early function exit.
+    /** @brief Generates a ready future.
      *
-     * @return Ready dummy future.
+     * @return Ready future.
      */
     std::future<void> GenerateReadyFuture();
 }

@@ -4,8 +4,12 @@
 #include "Engine/Application.h"
 #include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
-#include "Engine/Renderer/Common/View.h"
+#include "Engine/Renderer/Backends/SdlGpu/Texture.h"
+#include "Engine/Renderer/Common/Utils.h"
+#include "Engine/Renderer/Common/View.h" // @todo Not used yet.
+#include "Engine/Renderer/Renderer.h"
 #include "Engine/Services/Filesystem.h"
+#include "Engine/Services/Options.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Services;
@@ -19,6 +23,11 @@ namespace Silent::Renderer
     };
 
     static auto UniformBuffer = TimeUniform{};
+
+    // Texture test.
+    static SDL_GPUBuffer*  VertexBuffer = nullptr;
+    static SDL_GPUBuffer*  IndexBuffer  = nullptr;
+    static SDL_GPUTexture* Texture      = nullptr;
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
@@ -69,7 +78,7 @@ namespace Silent::Renderer
         _samplers.push_back(SDL_CreateGPUSampler(_device, &linearSamplerInfo));
 
         // Initialize vertex, index, and indirect buffers.
-        _buffers.Primitives2d = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, (PRIMITIVE_2D_COUNT_MAX * 2) * TRIANGLE_VERTEX_COUNT);
+        _buffers.Primitives2d = Buffer<BufferVertex>(*_device, SDL_GPU_BUFFERUSAGE_VERTEX, (PRIMITIVE_2D_COUNT_MAX * 2) * TRIANGLE_VERTEX_COUNT, "2d primitive triangle vertices");
 
         // Reserve memory.
         _primitives2d.reserve(PRIMITIVE_2D_COUNT_MAX);
@@ -104,8 +113,8 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Update()
     {
-        // Reset.
-        _drawCallCount = 0;
+        // Frame setup.
+        PrepareFrameData();
 
         // Acquire command buffer.
         _commandBuffer = SDL_AcquireGPUCommandBuffer(_device);
@@ -131,10 +140,8 @@ namespace Silent::Renderer
             DrawDebugGui();
         }
 
-        // Submit command buffer to GPU.
+        // Submit command buffer to GPU and clear.
         SDL_SubmitGPUCommandBuffer(_commandBuffer);
-
-        // Clear previous frame data.
         ClearFrameData();
     }
 
@@ -184,28 +191,6 @@ namespace Silent::Renderer
         }
 
         SDL_UnlockSurface(surface);
-    }
-
-    void SdlGpuRenderer::LogError(const std::string& msg) const
-    {
-        // Not needed?
-    }
-
-    void SdlGpuRenderer::Submit2dPrimitive(const Primitive2d& prim)
-    {
-        if (_primitives2d.size() >= PRIMITIVE_2D_COUNT_MAX)
-        {
-            Log("Attampted to add 2D primitive to full container.", LogLevel::Warning, LogMode::Debug);
-            return;
-        }
-
-        _primitives2d.push_back(prim);
-    }
-
-    void SdlGpuRenderer::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
-                                            const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode)
-    {
-        // @todo
     }
 
     void SdlGpuRenderer::Draw3dScene()
@@ -262,7 +247,6 @@ namespace Silent::Renderer
         const auto& options = g_App.GetOptions();
         if (!options->EnableDebugGui)
         {
-            _debugGuiDrawCalls.clear();
             return;
         }
 
@@ -276,7 +260,6 @@ namespace Silent::Renderer
         {
             drawCall();
         }
-        _debugGuiDrawCalls.clear();
 
         // Prepare render data.
         ImGui::Render();
@@ -308,10 +291,11 @@ namespace Silent::Renderer
             {
                 for (const auto& vert : prim.Vertices)
                 {
-                    auto pos = ConvertNdcToScreenPosition(Vector2(vert.Position.x, vert.Position.y));
+                    auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
+                    auto ndc = ConvertScreenPositionToNdc(pos);
                     bufferVerts.push_back(BufferVertex
                     {
-                        .Position = Vector3(pos.x, pos.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                        .Position = Vector3(ndc.x, ndc.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
                         .Col      = vert.Col
                     });
                 }
@@ -323,10 +307,11 @@ namespace Silent::Renderer
                 {
                     const auto& vert = prim.Vertices[i];
 
-                    auto pos = ConvertScreenPositionToNdc(Vector2(vert.Position.x, vert.Position.y));
+                    auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
+                    auto ndc = ConvertScreenPositionToNdc(pos);
                     bufferVerts.push_back(BufferVertex
                     {
-                        .Position = Vector3(pos.x, pos.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
+                        .Position = Vector3(ndc.x, ndc.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
                         .Col      = vert.Col
                     });
                 }

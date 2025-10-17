@@ -7,7 +7,6 @@
 #include "Engine/Renderer/Backends/OpenGl/Texture.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexArray.h"
 #include "Engine/Renderer/Backends/OpenGl/VertexBuffer.h"
-#include "Engine/Renderer/Common/View.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Silent::Renderer
@@ -24,7 +23,6 @@ namespace Silent::Renderer
         // Fields
 
         SDL_GLContext                                  _context              = nullptr;
-        View                                           _view                 = View();
         std::unordered_map<std::string, ShaderProgram> _shaderPrograms       = {};
 
         FramebufferObject                              _2dframebuffer        = FramebufferObject();
@@ -57,11 +55,7 @@ namespace Silent::Renderer
         void Update() override;
         void RefreshTextureFilter() override;
         void SaveScreenshot() const override;
-        void LogError(const std::string& msg) const override;
 
-        void Submit2dPrimitive(const Primitive2d& prim) override;
-        void SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
-                                const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode) override;
     private:
         // Utilities
     
@@ -72,5 +66,7 @@ namespace Silent::Renderer
         void DrawDebugGui() override;
 
         void CreateShaderProgram();
+
+        void LogError(const std::string& msg) const;
     };
 }

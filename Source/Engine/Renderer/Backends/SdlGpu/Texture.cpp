@@ -27,14 +27,8 @@ namespace Silent::Renderer
 
         _device = &device;
 
-        // Wait until loaded. @todo Load wait mechanism needs revision.
-        if (asset->State != AssetState::Loaded)
-        {
-            assets.LoadAsset(assetIdx).wait();
-        }
-
         // Get TIM image asset data.
-        auto data = GetAssetData<TimAsset>(asset->Data);
+        auto data = asset->GetData<TimAsset>();
 
         // Create texture.
         auto texInfo = SDL_GPUTextureCreateInfo
@@ -52,7 +46,7 @@ namespace Silent::Renderer
         // Set texture name.
         SDL_SetGPUTextureName(_device, _texture, asset->Name.c_str());
 
-        // Create texture transfer buffer.
+        // Create transfer buffer.
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
@@ -60,8 +54,8 @@ namespace Silent::Renderer
         };
         auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
 
-        byte* mappedTransferData = (byte*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
-        memcpy(mappedTransferData, data->Pixels.data(), (data->Resolution.x * data->Resolution.y) * 4);
+        byte* mappedTexTransferData = (byte*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
+        memcpy(mappedTexTransferData, data->Pixels.data(), (data->Resolution.x * data->Resolution.y) * 4);
         SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
 
         // Upload texture data.
@@ -84,5 +78,15 @@ namespace Silent::Renderer
     Texture::~Texture()
     {
         SDL_ReleaseGPUTexture(_device, _texture);
+    }
+
+    void Texture::Bind(SDL_GPURenderPass& renderPass, SDL_GPUSampler& sampler)
+    {
+        auto texSamplerBinding = SDL_GPUTextureSamplerBinding
+        {
+            .texture = _texture,
+            .sampler = &sampler
+        };
+        SDL_BindGPUFragmentSamplers(&renderPass, 0, &texSamplerBinding, 1);
     }
 }

@@ -33,7 +33,7 @@ namespace Silent::Assets
 
         // Confirm TIM format magic.
         uint32 magic = 0;
-        file.read((char*)&magic, 4);
+        file.read((byte*)&magic, 4);
         if (magic != HEADER_MAGIC)
         {
             throw std::runtime_error("Invalid TIM `" + filename.string() + "`.");
@@ -41,7 +41,7 @@ namespace Silent::Assets
 
         // Read CLUT and BPP flags.
         uint32 flags = 0;
-        file.read((char*)&flags, 4);
+        file.read((byte*)&flags, 4);
 
         // Read CLUT.
         auto clut = std::vector<uint16>{};
@@ -49,41 +49,41 @@ namespace Silent::Assets
         {
             // Read size.
             uint32 clutSize = 0;
-            file.read((char*)&clutSize, 4);
+            file.read((byte*)&clutSize, 4);
 
-            // Read frame ebuffer coordinates (unused).
+            // Read frame buffer coordinates (unused).
             uint16 clutX = 0;
             uint16 clutY = 0;
-            file.read((char*)&clutX, 2);
-            file.read((char*)&clutY, 2);
+            file.read((byte*)&clutX, 2);
+            file.read((byte*)&clutY, 2);
 
             // Read dimensions.
             uint16 clutW = 0;
             uint16 clutH = 0;
-            file.read((char*)&clutW, 2);
-            file.read((char*)&clutH, 2);
+            file.read((byte*)&clutW, 2);
+            file.read((byte*)&clutH, 2);
 
             // Read color values.
             uint clutCount = clutW * clutH;
             clut.resize(clutCount);
-            file.read((char*)clut.data(), clutCount * 2);
+            file.read((byte*)clut.data(), clutCount * 2);
         }
 
         // Read image data header (unused).
         uint32 imageSize = 0;
-        file.read((char*)&imageSize, 4);
+        file.read((byte*)&imageSize, 4);
 
         // Read frame buffer coordinates (unused).
         uint16 imageX = 0;
         uint16 imageY = 0;
-        file.read((char*)&imageX, 2);
-        file.read((char*)&imageY, 2);
+        file.read((byte*)&imageX, 2);
+        file.read((byte*)&imageY, 2);
 
         // Read image dimensions.
         uint16 imageW = 0;
         uint16 imageH = 0;
-        file.read((char*)&imageW, 2);
-        file.read((char*)&imageH, 2);
+        file.read((byte*)&imageW, 2);
+        file.read((byte*)&imageH, 2);
 
         // Define BPP.
         auto bpp = BitsPerPixel::Bpp4;
@@ -106,9 +106,6 @@ namespace Silent::Assets
                 break;
             }
         }
-
-        // Definte color depth.
-        uint colorDepth = 1 << (flags & BPP_MASK);
 
         // Define image width coefficient based on BPP.
         int  widthCoeff = 1;
@@ -138,7 +135,6 @@ namespace Silent::Assets
         // Create asset.
         auto asset = TimAsset
         {
-            .ColorDepth = colorDepth,
             .Resolution = res,
             .Pixels     = std::vector<byte>((res.x * res.y) * 4)
         };
@@ -146,11 +142,11 @@ namespace Silent::Assets
         auto setPixelColor = [&](int x, int y, uint16 color)
         {
             // Collect extracted RGBA components.
-            uchar* out = &asset.Pixels[((y * res.x) + x) * 4];
-            out[0]     = (color & 0x1F)         << 3; // B.
-            out[1]     = ((color >> 5) & 0x1F)  << 3; // G.
-            out[2]     = ((color >> 10) & 0x1F) << 3; // R.
-            out[3]     = (color & 0x8000) ? 0 : 255;  // A.
+            byte* out = &asset.Pixels[((y * res.x) + x) * 4];
+            out[0]    = (color & 0x1F)         << 3; // B.
+            out[1]    = ((color >> 5) & 0x1F)  << 3; // G.
+            out[2]    = ((color >> 10) & 0x1F) << 3; // R.
+            out[3]    = (color & 0x8000) ? 0 : 255;  // A.
 
             // Key out black as transparent.
             if (out[0] == 0 && out[1] == 0 && out[2] == 0)
@@ -170,19 +166,19 @@ namespace Silent::Assets
                     case BitsPerPixel::Bpp4:
                     {
                         // Read color data.
-                        uint8 byte = 0;
-                        file.read((char*)&byte, 1);
+                        byte colors = 0;
+                        file.read((byte*)&colors, 1);
 
                         // Decode values from byte.
-                        uint val0 = byte & 0xF;
-                        uint val1 = byte >> 4;
+                        uint val0 = colors & 0xF;
+                        uint val1 = colors >> 4;
 
                         for (int i = 0; i < 2 && x < res.x; i++, x++)
                         {
                             // Set pixel.
                             if (clut.empty())
                             {
-                                // Grayscale color [0, 15].
+                                // Grayscale color `[0, 15]`.
                                 uint16 color = ((i == 0) ? val0 : val1) * (0xFFFF / 0xF);
                                 setPixelColor(x, y, color);
                             }
@@ -199,12 +195,12 @@ namespace Silent::Assets
                     {
                         // Read color data.
                         uint idx = 0;
-                        file.read((char*)&idx, 1);
+                        file.read((byte*)&idx, 1);
                         
                         // Set pixel.
                         if (clut.empty())
                         {
-                            // Grayscale color [0, 255].
+                            // Grayscale color `[0, 255]`.
                             uint16 color = idx * (0xFFFF / 0xFF);
                             setPixelColor(x, y, 0xFFFF);
                         }
@@ -222,7 +218,7 @@ namespace Silent::Assets
                     {
                         // Read color.
                         uint16 color = 0;
-                        file.read((char*)&color, 2);
+                        file.read((byte*)&color, 2);
 
                         // Set pixel.
                         setPixelColor(x, y, color);

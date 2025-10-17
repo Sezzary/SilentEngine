@@ -33,7 +33,9 @@ namespace Silent::Services
 
     void TimeManager::Initialize()
     {
-        _baseMicrosec = GetEpochMicrosec();
+        _ticks              = 0;
+        _prevUptimeMicrosec = 0;
+        _baseMicrosec       = GetEpochMicrosec();
     }
 
     void TimeManager::Update()

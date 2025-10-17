@@ -199,10 +199,7 @@ namespace Silent
             renderer.SetClearColor(Color::Black);
 
             // Load `1ST/2ZANKO_E.TIM` ("There are violent and disturbing images...").
-            if (assets.GetAsset(e_FsFile::FILE_1ST_2ZANKO_E_TIM)->State == AssetState::Unloaded)
-            {
-                assets.LoadAsset(e_FsFile::FILE_1ST_2ZANKO_E_TIM).wait();
-            }
+            assets.LoadAsset(e_FsFile::FILE_1ST_2ZANKO_E_TIM).wait();
 
             // Fade in `1ST/2ZANKO_E.TIM` with luma-multiply blending.
             static int fade = 0;
@@ -215,7 +212,7 @@ namespace Silent
                 // @todo Non-functioning call. Submit fullscreen sprite with luma-multiply blending.
                 auto color = Color(1.0f, 1.0f, 1.0f, (float)fade / (float)FP_COLOR(1.0f));
                 renderer.SubmitScreenSprite(e_FsFile::FILE_1ST_2ZANKO_E_TIM, Vector2::Zero, Vector2::One, SCREEN_SPACE_RES / 2.0f, FP_ANGLE(0.0f), Vector2::One,
-                                            color, 0, AlignMode::Center, ScaleMode::Fit, BlendMode::LumaMultiply);
+                                            color, 0, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
 
                 g_FullscreenAlphaBlend = (float)fade / (float)FP_COLOR(1.0f); // TEMP.
 
@@ -223,10 +220,7 @@ namespace Silent
             }
 
             // Load `1ST/FONT8NOC.TIM` (8x8 font).
-            if (assets.GetAsset(e_FsFile::FILE_1ST_FONT8NOC_TIM)->State == AssetState::Unloaded)
-            {
-                assets.LoadAsset(e_FsFile::FILE_1ST_FONT8NOC_TIM).wait();
-            }
+            assets.LoadAsset(e_FsFile::FILE_1ST_FONT8NOC_TIM).wait();
         }
     }
 }

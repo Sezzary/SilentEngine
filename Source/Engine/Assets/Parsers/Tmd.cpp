@@ -22,39 +22,39 @@ namespace Silent::Assets
         auto file = std::ifstream(filename, std::ios::binary);
         if (!file.is_open())
         {
-            throw std::runtime_error("Couldn't open TMD `" + filename.string() + "`.");
+            throw std::runtime_error("Failed to open TMD `" + filename.string() + "`.");
         }
 
         // Read version (unused).
         uint32 ver = 0;
-        file.read((char*)&ver, 4);
+        file.read((byte*)&ver, 4);
 
         // Read flags.
         uint32 flags = 0;
-        file.read((char*)&flags, 4);
+        file.read((byte*)&flags, 4);
 
         // Read mesh count.
         uint16 meshCount = 0;
-        file.read((char*)&meshCount, 2);
+        file.read((byte*)&meshCount, 2);
 
         // Read mesh metadatas.
         auto metadatas = std::vector<MeshMetadata>(meshCount);
         for (auto& metadata : metadatas)
         {
             // Read vertex data.
-            file.read((char*)&metadata.VertexOffset, 4);
-            file.read((char*)&metadata.VertexCount, 4);
+            file.read((byte*)&metadata.VertexOffset, 4);
+            file.read((byte*)&metadata.VertexCount, 4);
 
             // Read normal data.
-            file.read((char*)&metadata.NormalOffset, 4);
-            file.read((char*)&metadata.NormalCount, 4);
+            file.read((byte*)&metadata.NormalOffset, 4);
+            file.read((byte*)&metadata.NormalCount, 4);
 
             // Read primitive data.
-            file.read((char*)&metadata.PrimitiveOffset, 4);
-            file.read((char*)&metadata.PrimitiveCount, 4);
+            file.read((byte*)&metadata.PrimitiveOffset, 4);
+            file.read((byte*)&metadata.PrimitiveCount, 4);
 
             // Read scale.
-            file.read((char*)&metadata.Scale, 4);
+            file.read((byte*)&metadata.Scale, 4);
 
             if (!(flags & FIXP_FLAG))
             {
@@ -83,10 +83,10 @@ namespace Silent::Assets
                 int16 y   = 0;
                 int16 z   = 0;
                 int16 pad = 0;
-                file.read((char*)&x, 2);
-                file.read((char*)&y, 2);
-                file.read((char*)&z, 2);
-                file.read((char*)&pad, 2);
+                file.read((byte*)&x, 2);
+                file.read((byte*)&y, 2);
+                file.read((byte*)&z, 2);
+                file.read((byte*)&pad, 2);
 
                 // Collect vertex.
                 mesh.Vertices.push_back(Vector3(x, y, z));
@@ -101,10 +101,10 @@ namespace Silent::Assets
                 int16 y   = 0;
                 int16 z   = 0;
                 int16 pad = 0;
-                file.read((char*)&x, 2);
-                file.read((char*)&y, 2);
-                file.read((char*)&z, 2);
-                file.read((char*)&pad, 2);
+                file.read((byte*)&x, 2);
+                file.read((byte*)&y, 2);
+                file.read((byte*)&z, 2);
+                file.read((byte*)&pad, 2);
 
                 // Collect normal.
                 auto normal = Vector3::Normalize((Vector3(x, y, z) / 4096.0f));
@@ -120,10 +120,10 @@ namespace Silent::Assets
                 int8 ilen  = 0;
                 int8 flags = 0;
                 int8 mode  = 0;
-                file.read((char*)&olen, 1);
-                file.read((char*)&ilen, 1);
-                file.read((char*)&flags, 1);
-                file.read((char*)&mode, 1);
+                file.read((byte*)&olen, 1);
+                file.read((byte*)&ilen, 1);
+                file.read((byte*)&flags, 1);
+                file.read((byte*)&mode, 1);
 
                 //????
 
@@ -132,17 +132,17 @@ namespace Silent::Assets
                 /*uint16 vertIdx0 = 0;
                 uint16 vertIdx1 = 0;
                 uint16 vertIdx2 = 0;
-                file.read((char*)&vertIdx0, 2);
-                file.read((char*)&vertIdx1, 2);
-                file.read((char*)&vertIdx2, 2);
+                file.read((byte*)&vertIdx0, 2);
+                file.read((byte*)&vertIdx1, 2);
+                file.read((byte*)&vertIdx2, 2);
 
                 // Read normal indices.
                 uint16 normalIdx0 = 0;
                 uint16 normalIdx1 = 0;
                 uint16 normalIdx2 = 0;
-                file.read((char*)&normalIdx0, 2);
-                file.read((char*)&normalIdx1, 2);
-                file.read((char*)&normalIdx2, 2);
+                file.read((byte*)&normalIdx0, 2);
+                file.read((byte*)&normalIdx1, 2);
+                file.read((byte*)&normalIdx2, 2);
 
                 // Collect triangle;
                 mesh.Triangles.push_back(TmdAsset::Triangle

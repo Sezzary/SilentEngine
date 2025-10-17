@@ -183,84 +183,6 @@ namespace Silent::Renderer
         Log("Failed to save screenshot.", LogLevel::Warning, LogMode::DebugRelease, true);
     }
 
-    void OpenGlRenderer::LogError(const std::string& msg) const
-    {
-        if constexpr (IS_DEBUG_BUILD)
-        {
-            uint errorCode = glGetError();
-            while (errorCode != GL_NO_ERROR)
-            {
-                auto error = std::string();
-                switch (errorCode)
-                {
-                    default:
-                    case GL_NO_ERROR:
-                    {
-                        return;
-                    }
-                    case GL_INVALID_ENUM:
-                    {    
-                        error = "INVALID ENUM";
-                        break;
-                    }
-                    case GL_INVALID_VALUE:
-                    {    
-                        error = "INVALID VALUE";
-                        break;
-                    }
-                    case GL_INVALID_OPERATION:
-                    {    
-                        error = "INVALID OPERATION";
-                        break;
-                    }
-                    case GL_STACK_OVERFLOW:
-                    {    
-                        error = "STACK OVERFLOW";
-                        break;
-                    }
-                    case GL_STACK_UNDERFLOW:
-                    {    
-                        error = "STACK UNDERFLOW";
-                        break;
-                    }
-                    case GL_OUT_OF_MEMORY:
-                    {    
-                        error = "OUT OF MEMORY";
-                        break;
-                    }
-                    case GL_INVALID_FRAMEBUFFER_OPERATION:
-                    {    
-                        error = "INVALID FRAMEBUFFER OPERATION";
-                        break;
-                    }
-                }
-
-                Log("OpenGL " + std::to_string(errorCode) + ": " + msg + " | " + __FILE__ + "(" + std::to_string(__LINE__) + ")", LogLevel::Error, LogMode::Debug);
-                uint errorCode = glGetError();
-            }
-        }
-    }
-
-    void OpenGlRenderer::Submit2dPrimitive(const Primitive2d& prim)
-    {
-        // @todo
-    }
-
-    void OpenGlRenderer::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
-                                            const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode)
-    {
-        auto& assets = g_App.GetAssets();
-
-        const auto asset = assets.GetAsset(assetIdx);
-        if (asset->Type != AssetType::Tim)
-        {
-            Log("Attempted to submit non-image asset as screen sprite.", LogLevel::Warning, LogMode::Debug);
-            return;
-        }
-
-        // @todo
-    }
-
     void OpenGlRenderer::UpdateViewport()
     {
         // Set wireframe mode.
@@ -369,7 +291,6 @@ namespace Silent::Renderer
         const auto& options = g_App.GetOptions();
         if (!options->EnableDebugGui)
         {
-            _debugGuiDrawCalls.clear();
             return;
         }
 
@@ -382,7 +303,6 @@ namespace Silent::Renderer
         {
             drawCall();
         }
-        _debugGuiDrawCalls.clear();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -393,5 +313,63 @@ namespace Silent::Renderer
         // Generate shader program.
         _shaderPrograms.emplace("Default", ShaderProgram("Default"));
         _shaderPrograms.emplace("FullscreenQuad", ShaderProgram("FullscreenQuad"));
+    }
+
+    void OpenGlRenderer::LogError(const std::string& msg) const
+    {
+        if constexpr (IS_DEBUG_BUILD)
+        {
+            uint errorCode = glGetError();
+            while (errorCode != GL_NO_ERROR)
+            {
+                auto error = std::string();
+                switch (errorCode)
+                {
+                    default:
+                    case GL_NO_ERROR:
+                    {
+                        return;
+                    }
+                    case GL_INVALID_ENUM:
+                    {    
+                        error = "INVALID ENUM";
+                        break;
+                    }
+                    case GL_INVALID_VALUE:
+                    {    
+                        error = "INVALID VALUE";
+                        break;
+                    }
+                    case GL_INVALID_OPERATION:
+                    {    
+                        error = "INVALID OPERATION";
+                        break;
+                    }
+                    case GL_STACK_OVERFLOW:
+                    {    
+                        error = "STACK OVERFLOW";
+                        break;
+                    }
+                    case GL_STACK_UNDERFLOW:
+                    {    
+                        error = "STACK UNDERFLOW";
+                        break;
+                    }
+                    case GL_OUT_OF_MEMORY:
+                    {    
+                        error = "OUT OF MEMORY";
+                        break;
+                    }
+                    case GL_INVALID_FRAMEBUFFER_OPERATION:
+                    {    
+                        error = "INVALID FRAMEBUFFER OPERATION";
+                        break;
+                    }
+                }
+
+                Log("OpenGL " + std::to_string(errorCode) + ": " + msg + " | " + __FILE__ + "(" + std::to_string(__LINE__) + ")", LogLevel::Error, LogMode::Debug);
+                uint errorCode = glGetError();
+            }
+        }
     }
 }

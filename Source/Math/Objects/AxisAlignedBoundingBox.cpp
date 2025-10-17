@@ -14,8 +14,8 @@ namespace Silent::Math
 {
     AxisAlignedBoundingBox::AxisAlignedBoundingBox(const std::span<const Vector3>& points)
     {
-        auto pointMin = Vector3(INFINITY);
-        auto pointMax = Vector3(-INFINITY);
+        auto pointMin = Vector3(FLT_MAX);
+        auto pointMax = Vector3(-FLT_MAX);
 
         // Compute min and max AABB points.
         for (const auto& point : points)
@@ -183,7 +183,6 @@ namespace Silent::Math
         auto thisMax = Center + Extents;
         auto aabbMin = aabb.Center - aabb.Extents;
         auto aabbMax = aabb.Center + aabb.Extents;
-
         if (aabbMin.x >= thisMin.x && aabbMax.x <= thisMax.x &&
             aabbMin.y >= thisMin.y && aabbMax.y <= thisMax.y &&
             aabbMin.z >= thisMin.z && aabbMax.z <= thisMax.z)

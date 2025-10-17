@@ -2,9 +2,11 @@
 #include "Engine/Renderer/Renderer.h"
 
 #include "Engine/Application.h"
+#include "Engine/Renderer/Common/Objects/Primitive/Vertex2d.h"
+#include "Engine/Renderer/Common/Objects/Primitive/Vertex3d.h"
 #include "Engine/Renderer/Common/Objects/Primitive2d.h"
 #include "Engine/Renderer/Common/Objects/Primitive3d.h"
-#include "Engine/Renderer/Common/Objects/Sprite2d.h"
+#include "Engine/Renderer/Common/Objects/Scene/Sprite2d.h"
 #include "Engine/Renderer/Backends/OpenGl/OpenGl.h"
 #include "Engine/Renderer/Backends/SdlGpu/SdlGpu.h"
 
@@ -34,7 +36,7 @@ namespace Silent::Renderer
         auto res = g_App.GetWindowResolution();
         return res;
 
-        // @todo Not sure how to do this.
+        // @todo Render scale should be a post-process instead?
         switch (options->RenderScale)
         {
             case RenderScaleType::Native:
@@ -66,9 +68,30 @@ namespace Silent::Renderer
         _isResized = true;
     }
 
-    void RendererBase::ClearFrameData()
+    void RendererBase::Submit2dPrimitive(const Primitive2d& prim)
     {
-        _primitives2d.clear();
+        if (_primitives2d.size() >= PRIMITIVE_2D_COUNT_MAX)
+        {
+            Log("Attampted to add 2D primitive to full container.", LogLevel::Warning, LogMode::Debug);
+            return;
+        }
+
+        _primitives2d.push_back(prim);
+    }
+
+    void RendererBase::SubmitScreenSprite(int assetIdx, const Vector2& uvMin, const Vector2& uvMax, const Vector2& pos, short rot, const Vector2& scale,
+                                          const Color& color, int depth, AlignMode alignMode, ScaleMode scaleMode, BlendMode blendMode)
+    {
+        auto& assets = g_App.GetAssets();
+
+        const auto asset = assets.GetAsset(assetIdx);
+        if (asset->Type != AssetType::Tim)
+        {
+            Log("Attempted to submit non-image asset as screen sprite.", LogLevel::Warning, LogMode::Debug);
+            return;
+        }
+
+        // @todo
     }
 
     void RendererBase::SubmitDebugGui(std::function<void()> drawFunc)
@@ -90,13 +113,8 @@ namespace Silent::Renderer
             return;
         }
 
-        /*auto line = Line
-        {
-            .From = from,
-            .To   = to,
-            .Col  = color
-        };
-        _debugLines.push_back(line);*/
+        auto line = Primitive3d::CreateDebugLine(from, to, color);
+        _debugPrimitives3d.push_back(line);
     }
 
     void RendererBase::SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page)
@@ -107,17 +125,8 @@ namespace Silent::Renderer
             return;
         }
 
-        /*auto tri = Triangle
-        {
-            .Vertices =
-            {
-                vert0,
-                vert1,
-                vert2
-            },
-            .Col = color
-        };
-        _debugTriangles.push_back(tri);*/
+        auto tri = Primitive3d::CreateDebugTriangle(vert0, vert1, vert2, color);
+        _debugPrimitives3d.push_back(tri);
     }
 
     void RendererBase::SubmitDebugTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, DebugPage page)
@@ -310,6 +319,21 @@ namespace Silent::Renderer
         {
             // @todo
         }
+    }
+
+    void RendererBase::PrepareFrameData()
+    {
+        // @todo Intermediate data -> renderer-ready data. At later stages, outside this method, renderer-ready data -> GPU copy-ready data.
+    }
+
+    void RendererBase::ClearFrameData()
+    {
+        _drawCallCount = 0;
+
+        _primitives2d.clear();
+        _sprites2d.clear();
+        _debugPrimitives3d.clear();
+        _debugGuiDrawCalls.clear();
     }
 
     std::unique_ptr<RendererBase> CreateRenderer(RendererType type)

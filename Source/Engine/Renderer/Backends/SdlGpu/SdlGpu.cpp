@@ -187,10 +187,10 @@ namespace Silent::Renderer
         auto* bufferTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
 
         auto* transferData = (PositionTextureVertex*)SDL_MapGPUTransferBuffer(_device, bufferTransferBuffer, false);
-        transferData[0]    = PositionTextureVertex{ -1,  1, 0, 0, 0 };
-        transferData[1]    = PositionTextureVertex{  1,  1, 0, 4, 0 };
-        transferData[2]    = PositionTextureVertex{  1, -1, 0, 4, 4 };
-        transferData[3]    = PositionTextureVertex{ -1, -1, 0, 0, 4 };
+        transferData[0]    = PositionTextureVertex{ -1.0f,  1.0f, 0.0f, 0.0f, 0.0f };
+        transferData[1]    = PositionTextureVertex{  1.0f,  1.0f, 0.0f, 1.0f, 0.0f };
+        transferData[2]    = PositionTextureVertex{  1.0f, -1.0f, 0.0f, 1.0f, 1.0f };
+        transferData[3]    = PositionTextureVertex{ -1.0f, -1.0f, 0.0f, 0.0f, 1.0f };
 
         uint16* idxData = (uint16*)&transferData[4];
         idxData[0]      = 0;
@@ -395,18 +395,6 @@ namespace Silent::Renderer
         };
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
-        // Bind.
-        _pipelines.Bind(renderPass, PipelineType::Primitive2d);
-        _buffers.Primitives2d.Bind(renderPass, 0);
-
-        // Upload uniform data.
-        UniformBuffer.Time = SDL_GetTicksNS() / 1e9f;
-        SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
-
-        // Process render pass.
-        SDL_DrawGPUPrimitives(&renderPass, bufferVerts.size(), sizeof(bufferVerts) / sizeof(BufferVertex), 0, 0);
-        //SDL_EndGPURenderPass(&renderPass);
-
         // Texture test.
         // ===========================
 
@@ -418,10 +406,23 @@ namespace Silent::Renderer
         bufferBinding = SDL_GPUBufferBinding{ .buffer = IndexBuffer, .offset = 0 };
         SDL_BindGPUIndexBuffer(&renderPass, &bufferBinding, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
-        auto texSamplerBinding = SDL_GPUTextureSamplerBinding{ .texture = Texture, .sampler = _samplers[0] };
+        auto texSamplerBinding = SDL_GPUTextureSamplerBinding{ .texture = Texture, .sampler = _samplers[1] };
         SDL_BindGPUFragmentSamplers(&renderPass, 0, &texSamplerBinding, 1);
 
         SDL_DrawGPUIndexedPrimitives(&renderPass, 6, 1, 0, 0, 0);
+
+        //===============================
+
+        // Bind.
+        _pipelines.Bind(renderPass, PipelineType::Primitive2d);
+        _buffers.Primitives2d.Bind(renderPass, 0);
+
+        // Upload uniform data.
+        UniformBuffer.Time = SDL_GetTicksNS() / 1e9f;
+        SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
+
+        // Process render pass.
+        SDL_DrawGPUPrimitives(&renderPass, bufferVerts.size(), sizeof(bufferVerts) / sizeof(BufferVertex), 0, 0);
 
         SDL_EndGPURenderPass(&renderPass);
     }

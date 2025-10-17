@@ -14,10 +14,10 @@ namespace Silent::Renderer
         Vector3 Position = Vector3::Zero;
         Color   Col      = Color::Black;
     };
-    struct BufferTexVertex
+    struct BufferPositionTextureVertex
     {
-        Vector3 Position = Vector3::Zero;
-        Vector2 Uv       = Vector2::Zero;
+        float x, y, z;
+        float u, v;
     };
 
     PipelineManager::~PipelineManager()
@@ -98,7 +98,7 @@ namespace Silent::Renderer
             SDL_GPUVertexBufferDescription
             {
                 .slot               = 0,
-                .pitch              = sizeof(BufferVertex),
+                .pitch              = sizeof(BufferPositionTextureVertex),
                 .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
                 .instance_step_rate = 0
             }

@@ -24,10 +24,51 @@ namespace Silent::Renderer
 
     static auto UniformBuffer = TimeUniform{};
 
+    struct PositionTextureVertex
+    {
+        float x, y, z;
+        float u, v;
+    };
+
     // Texture test.
     static SDL_GPUBuffer*  VertexBuffer = nullptr;
     static SDL_GPUBuffer*  IndexBuffer  = nullptr;
     static SDL_GPUTexture* Texture      = nullptr;
+
+    static SDL_Surface* LoadImage(const char* imageFilename, int desiredChannels)
+    {
+        const auto& fs = g_App.GetFilesystem();
+
+        char fullPath[256];
+        SDL_snprintf(fullPath, sizeof(fullPath), "%s", (fs.GetAppDirectory() / imageFilename).string().c_str());
+
+        auto* result = SDL_LoadBMP(fullPath);
+        if (result == NULL)
+        {
+            SDL_Log("Failed to load BMP: %s", SDL_GetError());
+            return NULL;
+        }
+
+        auto format = SDL_PIXELFORMAT_UNKNOWN;
+        if (desiredChannels == 4)
+        {
+            format = SDL_PIXELFORMAT_ABGR8888;
+        }
+        else
+        {
+            SDL_assert(!"Unexpected desiredChannels");
+            SDL_DestroySurface(result);
+            return NULL;
+        }
+        if (result->format != format)
+        {
+            SDL_Surface *next = SDL_ConvertSurface(result, format);
+            SDL_DestroySurface(result);
+            result = next;
+        }
+
+        return result;
+    }
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
@@ -96,6 +137,132 @@ namespace Silent::Renderer
             .MSAASamples       = SDL_GPU_SAMPLECOUNT_1
         };
         ImGui_ImplSDLGPU3_Init(&initInfo);
+
+        // Texture test.
+        // ======================
+
+        // Load image.
+        auto* imageData = LoadImage("Derg.bmp", 4);
+        if (imageData == NULL)
+        {
+            SDL_Log("Could not load image data.");
+            return;
+        }
+
+        // Create GPU resources.
+        auto vertBufferInfo = SDL_GPUBufferCreateInfo
+        {
+            .usage = SDL_GPU_BUFFERUSAGE_VERTEX,
+            .size  = sizeof(PositionTextureVertex) * 4
+        };
+        VertexBuffer = SDL_CreateGPUBuffer(_device, &vertBufferInfo);
+        SDL_SetGPUBufferName(_device, VertexBuffer, "Derg Vertex Buffer");
+
+        auto idxBufferInfo = SDL_GPUBufferCreateInfo
+        {
+            .usage = SDL_GPU_BUFFERUSAGE_INDEX,
+            .size  = sizeof(uint16) * 6
+        };
+        IndexBuffer = SDL_CreateGPUBuffer(_device, &idxBufferInfo);
+
+        auto texInfo = SDL_GPUTextureCreateInfo
+        {
+            .type                 = SDL_GPU_TEXTURETYPE_2D,
+            .format               = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+            .usage                = SDL_GPU_TEXTUREUSAGE_SAMPLER,
+            .width                = (uint)imageData->w,
+            .height               = (uint)imageData->h,
+            .layer_count_or_depth = 1,
+            .num_levels           = 1
+        };
+        Texture = SDL_CreateGPUTexture(_device, &texInfo);
+        SDL_SetGPUTextureName(_device, Texture, "Derg Texture");
+
+        // Set up buffer data.
+        auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
+        {
+            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+            .size  = (sizeof(PositionTextureVertex) * 4) + (sizeof(uint16) * 6)
+        };
+        auto* bufferTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
+
+        auto* transferData = (PositionTextureVertex*)SDL_MapGPUTransferBuffer(_device, bufferTransferBuffer, false);
+        transferData[0]    = PositionTextureVertex{ -1,  1, 0, 0, 0 };
+        transferData[1]    = PositionTextureVertex{  1,  1, 0, 4, 0 };
+        transferData[2]    = PositionTextureVertex{  1, -1, 0, 4, 4 };
+        transferData[3]    = PositionTextureVertex{ -1, -1, 0, 0, 4 };
+
+        uint16* idxData = (uint16*)&transferData[4];
+        idxData[0]      = 0;
+        idxData[1]      = 1;
+        idxData[2]      = 2;
+        idxData[3]      = 0;
+        idxData[4]      = 2;
+        idxData[5]      = 3;
+
+        SDL_UnmapGPUTransferBuffer(_device, bufferTransferBuffer);
+
+        // Set up texture data.
+        transferBufferInfo = SDL_GPUTransferBufferCreateInfo
+        {
+            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+            .size  = (uint)((imageData->w * imageData->h) * 4)
+        };
+        auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
+
+        uint8* mappedTexTransferData = (uint8*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
+        memcpy(mappedTexTransferData, imageData->pixels, (imageData->w * imageData->h) * 4);
+        SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
+
+        // Upload transfer data to GPU resources.
+        auto* uploadCmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
+        auto* copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
+
+        auto transferBufferLoc = SDL_GPUTransferBufferLocation
+        {
+            .transfer_buffer = bufferTransferBuffer,
+            .offset          = 0
+        };
+        auto bufferRegion = SDL_GPUBufferRegion
+        {
+            .buffer = VertexBuffer,
+            .offset = 0,
+            .size   = sizeof(PositionTextureVertex) * 4
+        };
+        SDL_UploadToGPUBuffer(copyPass, &transferBufferLoc, &bufferRegion, false);
+
+        transferBufferLoc = SDL_GPUTransferBufferLocation
+        {
+            .transfer_buffer = bufferTransferBuffer,
+            .offset          = sizeof(PositionTextureVertex) * 4
+        };
+        bufferRegion = SDL_GPUBufferRegion
+        {
+            .buffer = IndexBuffer,
+            .offset = 0,
+            .size   = sizeof(uint16) * 6
+        };
+        SDL_UploadToGPUBuffer(copyPass, &transferBufferLoc, &bufferRegion, false);
+
+        auto texTransferInfo = SDL_GPUTextureTransferInfo
+        {
+            .transfer_buffer = texTransferBuffer,
+            .offset          = 0
+        };
+        auto texRegion = SDL_GPUTextureRegion
+        {
+            .texture = Texture,
+            .w       = (uint)imageData->w,
+            .h       = (uint)imageData->h,
+            .d       = 1
+        };
+        SDL_UploadToGPUTexture(copyPass, &texTransferInfo, &texRegion, false);
+
+        SDL_EndGPUCopyPass(copyPass);
+        SDL_SubmitGPUCommandBuffer(uploadCmdBuffer);
+        SDL_DestroySurface(imageData);
+        SDL_ReleaseGPUTransferBuffer(_device, bufferTransferBuffer);
+        SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
     }
 
     // @todo Has errors.

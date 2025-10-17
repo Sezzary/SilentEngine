@@ -405,6 +405,24 @@ namespace Silent::Renderer
 
         // Process render pass.
         SDL_DrawGPUPrimitives(&renderPass, bufferVerts.size(), sizeof(bufferVerts) / sizeof(BufferVertex), 0, 0);
+        //SDL_EndGPURenderPass(&renderPass);
+
+        // Texture test.
+        // ===========================
+
+        _pipelines.Bind(renderPass, PipelineType::Primitive2dTextured);
+
+        auto bufferBinding = SDL_GPUBufferBinding{ .buffer = VertexBuffer, .offset = 0 };
+        SDL_BindGPUVertexBuffers(&renderPass, 0, &bufferBinding, 1);
+
+        bufferBinding = SDL_GPUBufferBinding{ .buffer = IndexBuffer, .offset = 0 };
+        SDL_BindGPUIndexBuffer(&renderPass, &bufferBinding, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+
+        auto texSamplerBinding = SDL_GPUTextureSamplerBinding{ .texture = Texture, .sampler = _samplers[0] };
+        SDL_BindGPUFragmentSamplers(&renderPass, 0, &texSamplerBinding, 1);
+
+        SDL_DrawGPUIndexedPrimitives(&renderPass, 6, 1, 0, 0, 0);
+
         SDL_EndGPURenderPass(&renderPass);
     }
 

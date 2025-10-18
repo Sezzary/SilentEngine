@@ -108,8 +108,55 @@ namespace Silent::Renderer
         // Texture test.
         // ======================
 
+        // Upload transfer data to GPU resources.
+        auto* uploadCmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
+        auto* copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
+
+//=======================
+
         const auto asset     = g_App.GetAssets().GetAsset(textTexId);
         const auto assetData = asset->GetData<TimAsset>();
+
+        auto texInfo = SDL_GPUTextureCreateInfo
+        {
+            .type                 = SDL_GPU_TEXTURETYPE_2D,
+            .format               = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+            .usage                = SDL_GPU_TEXTUREUSAGE_SAMPLER,
+            .width                = (uint)assetData->Resolution.x,
+            .height               = (uint)assetData->Resolution.y,
+            .layer_count_or_depth = 1,
+            .num_levels           = 1
+        };
+        _textureCache[textTexId] = SDL_CreateGPUTexture(_device, &texInfo);
+        SDL_SetGPUTextureName(_device, _textureCache[textTexId], "Derg Texture");
+
+        // Set up texture data.
+        auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
+        {
+            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+            .size  = (uint)((assetData->Resolution.x * assetData->Resolution.y) * 4)
+        };
+        auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
+
+        uint8* mappedTexTransferData = (uint8*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
+        memcpy(mappedTexTransferData, assetData->Pixels.data(), (assetData->Resolution.x * assetData->Resolution.y) * 4);
+        SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
+
+        auto texTransferInfo = SDL_GPUTextureTransferInfo
+        {
+            .transfer_buffer = texTransferBuffer,
+            .offset          = 0
+        };
+        auto texRegion = SDL_GPUTextureRegion
+        {
+            .texture = _textureCache[textTexId],
+            .w       = (uint)assetData->Resolution.x,
+            .h       = (uint)assetData->Resolution.y,
+            .d       = 1
+        };
+        SDL_UploadToGPUTexture(copyPass, &texTransferInfo, &texRegion, false);
+        SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
+//=======================
 
         // Create GPU resources.
         auto vertBufferInfo = SDL_GPUBufferCreateInfo
@@ -127,26 +174,13 @@ namespace Silent::Renderer
         };
         IndexBuffer = SDL_CreateGPUBuffer(_device, &idxBufferInfo);
 
-        auto texInfo = SDL_GPUTextureCreateInfo
-        {
-            .type                 = SDL_GPU_TEXTURETYPE_2D,
-            .format               = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
-            .usage                = SDL_GPU_TEXTUREUSAGE_SAMPLER,
-            .width                = (uint)assetData->Resolution.x,
-            .height               = (uint)assetData->Resolution.y,
-            .layer_count_or_depth = 1,
-            .num_levels           = 1
-        };
-        _textureCache[textTexId] = SDL_CreateGPUTexture(_device, &texInfo);
-        SDL_SetGPUTextureName(_device, _textureCache[textTexId], "Derg Texture");
-
         // Set up buffer data.
-        auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
+        auto transferBufferInfo2 = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
             .size  = (sizeof(PositionTextureVertex) * 4) + (sizeof(uint16) * 6)
         };
-        auto* bufferTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
+        auto* bufferTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo2);
 
         auto* transferData = (PositionTextureVertex*)SDL_MapGPUTransferBuffer(_device, bufferTransferBuffer, false);
         transferData[0]    = PositionTextureVertex{ -1.0f,  1.0f, 0.0f, 0.0f, 0.0f };
@@ -163,22 +197,6 @@ namespace Silent::Renderer
         idxData[5]      = 3;
 
         SDL_UnmapGPUTransferBuffer(_device, bufferTransferBuffer);
-
-        // Set up texture data.
-        transferBufferInfo = SDL_GPUTransferBufferCreateInfo
-        {
-            .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = (uint)((assetData->Resolution.x * assetData->Resolution.y) * 4)
-        };
-        auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
-
-        uint8* mappedTexTransferData = (uint8*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
-        memcpy(mappedTexTransferData, assetData->Pixels.data(), (assetData->Resolution.x * assetData->Resolution.y) * 4);
-        SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
-
-        // Upload transfer data to GPU resources.
-        auto* uploadCmdBuffer = SDL_AcquireGPUCommandBuffer(_device);
-        auto* copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
 
         auto transferBufferLoc = SDL_GPUTransferBufferLocation
         {
@@ -205,25 +223,10 @@ namespace Silent::Renderer
             .size   = sizeof(uint16) * 6
         };
         SDL_UploadToGPUBuffer(copyPass, &transferBufferLoc, &bufferRegion, false);
-
-        auto texTransferInfo = SDL_GPUTextureTransferInfo
-        {
-            .transfer_buffer = texTransferBuffer,
-            .offset          = 0
-        };
-        auto texRegion = SDL_GPUTextureRegion
-        {
-            .texture = _textureCache[textTexId],
-            .w       = (uint)assetData->Resolution.x,
-            .h       = (uint)assetData->Resolution.y,
-            .d       = 1
-        };
-        SDL_UploadToGPUTexture(copyPass, &texTransferInfo, &texRegion, false);
+        SDL_ReleaseGPUTransferBuffer(_device, bufferTransferBuffer);
 
         SDL_EndGPUCopyPass(copyPass);
         SDL_SubmitGPUCommandBuffer(uploadCmdBuffer);
-        SDL_ReleaseGPUTransferBuffer(_device, bufferTransferBuffer);
-        SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
     }
 
     // @todo Has errors.

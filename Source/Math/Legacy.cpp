@@ -1,7 +1,11 @@
 #include "Framework.h"
-#include "Utils/Compatibility.h"
+#include "Math/Legacy.h"
 
-namespace Silent::Utils::Compatibility
+#include "Math/Objects/EulerAngles.h"
+#include "Math/Objects/Matrix.h"
+#include "Math/Objects/Vector3i.h"
+
+namespace Silent::Math
 {
     constexpr float Q4_SCALE  = 1.0f / (float)FP_TO(1, Q4_SHIFT);
     constexpr float Q8_SCALE  = 1.0f / (float)FP_TO(1, Q8_SHIFT);

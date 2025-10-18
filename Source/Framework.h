@@ -100,8 +100,6 @@ using json = nlohmann::json;
 using namespace Silent;
 using namespace Silent::Math;
 
-#include "Utils/Compatibility.h"
 #include "Utils/Debug.h"
 
-using namespace Silent::Utils::Compatibility;
 using namespace Silent::Utils::Debug;

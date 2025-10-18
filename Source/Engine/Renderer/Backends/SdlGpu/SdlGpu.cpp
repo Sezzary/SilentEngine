@@ -33,9 +33,9 @@ namespace Silent::Renderer
     };
 
     // Texture test.
-    static SDL_GPUBuffer*  VertexBuffer = nullptr;
-    static SDL_GPUBuffer*  IndexBuffer  = nullptr;
-    static SDL_GPUTexture* Texture      = nullptr;
+    static SDL_GPUBuffer* VertexBuffer = nullptr;
+    static SDL_GPUBuffer* IndexBuffer  = nullptr;
+    int textTexId = 1;
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
@@ -108,10 +108,8 @@ namespace Silent::Renderer
         // Texture test.
         // ======================
 
-        const auto asset     = g_App.GetAssets().GetAsset(1);
+        const auto asset     = g_App.GetAssets().GetAsset(textTexId);
         const auto assetData = asset->GetData<TimAsset>();
-        stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / "Test.png").string().c_str(),
-                       assetData->Resolution.x, assetData->Resolution.y, 4, assetData->Pixels.data(), assetData->Resolution.x * 4);
 
         // Create GPU resources.
         auto vertBufferInfo = SDL_GPUBufferCreateInfo
@@ -139,8 +137,8 @@ namespace Silent::Renderer
             .layer_count_or_depth = 1,
             .num_levels           = 1
         };
-        Texture = SDL_CreateGPUTexture(_device, &texInfo);
-        SDL_SetGPUTextureName(_device, Texture, "Derg Texture");
+        _textureCache[textTexId] = SDL_CreateGPUTexture(_device, &texInfo);
+        SDL_SetGPUTextureName(_device, _textureCache[textTexId], "Derg Texture");
 
         // Set up buffer data.
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
@@ -215,7 +213,7 @@ namespace Silent::Renderer
         };
         auto texRegion = SDL_GPUTextureRegion
         {
-            .texture = Texture,
+            .texture = _textureCache[textTexId],
             .w       = (uint)assetData->Resolution.x,
             .h       = (uint)assetData->Resolution.y,
             .d       = 1
@@ -369,7 +367,7 @@ namespace Silent::Renderer
         bufferBinding = SDL_GPUBufferBinding{ .buffer = IndexBuffer, .offset = 0 };
         SDL_BindGPUIndexBuffer(&renderPass, &bufferBinding, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
-        auto texSamplerBinding = SDL_GPUTextureSamplerBinding{ .texture = Texture, .sampler = _samplers[0] };
+        auto texSamplerBinding = SDL_GPUTextureSamplerBinding{ .texture = _textureCache[textTexId], .sampler = _samplers[0] };
         SDL_BindGPUFragmentSamplers(&renderPass, 0, &texSamplerBinding, 1);
 
         SDL_DrawGPUIndexedPrimitives(&renderPass, 6, 1, 0, 0, 0);

@@ -39,7 +39,7 @@ namespace Silent::Renderer
         BufferData                   _buffers          = {};                /** Vertex, index, and indirect buffers. */
         PipelineManager              _pipelines        = PipelineManager(); /** Pipeline handler. */
 
-        std::unordered_map<SDL_GPUTexture*, int> _textureCache = {}; /** Key = texture, value = asset ID. */
+        std::unordered_map<int, SDL_GPUTexture*> _textureCache = {}; /** Key = asset index, value = texture. */
 
     public:
         // =============

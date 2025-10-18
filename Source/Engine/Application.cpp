@@ -110,6 +110,9 @@ namespace Silent
             throw std::runtime_error("Failed to create window: " + std::string(SDL_GetError()));
         }
 
+        // Assets.
+        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory());
+
         // Renderer.
         _work.Renderer = CreateRenderer(RendererType::SdlGpu);
         if (_work.Renderer == nullptr)
@@ -117,9 +120,6 @@ namespace Silent
             throw std::runtime_error("Failed to create renderer.");
         }
         _work.Renderer->Initialize(*_window);
-
-        // Assets.
-        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory());
 
         // Audio.
         _work.Audio.Initialize();

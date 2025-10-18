@@ -2,6 +2,7 @@
 #include "Engine/Renderer/Backends/SdlGpu/SdlGpu.h"
 
 #include "Engine/Application.h"
+#include "Engine/Assets/Assets.h"
 #include "Engine/Renderer/Backends/SdlGpu/Buffer.h"
 #include "Engine/Renderer/Backends/SdlGpu/Pipeline.h"
 #include "Engine/Renderer/Backends/SdlGpu/Texture.h"
@@ -12,6 +13,7 @@
 #include "Engine/Services/Options.h"
 #include "Utils/Utils.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Services;
 using namespace Silent::Utils;
 
@@ -148,6 +150,10 @@ namespace Silent::Renderer
             SDL_Log("Could not load image data.");
             return;
         }
+
+        const auto asset     = g_App.GetAssets().GetAsset(1);
+        const auto assetData = asset->GetData<TimAsset>();
+        stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / "Test.png").string().c_str(), assetData->Resolution.x, assetData->Resolution.y, 3, imageData, assetData->Resolution.x * 3);
 
         // Create GPU resources.
         auto vertBufferInfo = SDL_GPUBufferCreateInfo

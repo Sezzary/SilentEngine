@@ -37,41 +37,6 @@ namespace Silent::Renderer
     static SDL_GPUBuffer*  IndexBuffer  = nullptr;
     static SDL_GPUTexture* Texture      = nullptr;
 
-    static SDL_Surface* LoadImage(const char* imageFilename, int desiredChannels)
-    {
-        const auto& fs = g_App.GetFilesystem();
-
-        char fullPath[256];
-        SDL_snprintf(fullPath, sizeof(fullPath), "%s", (fs.GetAppDirectory() / imageFilename).string().c_str());
-
-        auto* result = SDL_LoadBMP(fullPath);
-        if (result == NULL)
-        {
-            SDL_Log("Failed to load BMP: %s", SDL_GetError());
-            return NULL;
-        }
-
-        auto format = SDL_PIXELFORMAT_UNKNOWN;
-        if (desiredChannels == 4)
-        {
-            format = SDL_PIXELFORMAT_ABGR8888;
-        }
-        else
-        {
-            SDL_assert(!"Unexpected desiredChannels");
-            SDL_DestroySurface(result);
-            return NULL;
-        }
-        if (result->format != format)
-        {
-            SDL_Surface *next = SDL_ConvertSurface(result, format);
-            SDL_DestroySurface(result);
-            result = next;
-        }
-
-        return result;
-    }
-
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
         Log("Using SDL_gpu renderer.");
@@ -143,17 +108,10 @@ namespace Silent::Renderer
         // Texture test.
         // ======================
 
-        // Load image.
-        auto* imageData = LoadImage("Derg.bmp", 4);
-        if (imageData == NULL)
-        {
-            SDL_Log("Could not load image data.");
-            return;
-        }
-
         const auto asset     = g_App.GetAssets().GetAsset(1);
         const auto assetData = asset->GetData<TimAsset>();
-        stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / "Test.png").string().c_str(), assetData->Resolution.x, assetData->Resolution.y, 3, imageData, assetData->Resolution.x * 3);
+        stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / "Test.png").string().c_str(),
+                       assetData->Resolution.x, assetData->Resolution.y, 4, assetData->Pixels.data(), assetData->Resolution.x * 4);
 
         // Create GPU resources.
         auto vertBufferInfo = SDL_GPUBufferCreateInfo
@@ -176,8 +134,8 @@ namespace Silent::Renderer
             .type                 = SDL_GPU_TEXTURETYPE_2D,
             .format               = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
             .usage                = SDL_GPU_TEXTUREUSAGE_SAMPLER,
-            .width                = (uint)imageData->w,
-            .height               = (uint)imageData->h,
+            .width                = (uint)assetData->Resolution.x,
+            .height               = (uint)assetData->Resolution.y,
             .layer_count_or_depth = 1,
             .num_levels           = 1
         };
@@ -212,12 +170,12 @@ namespace Silent::Renderer
         transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = (uint)((imageData->w * imageData->h) * 4)
+            .size  = (uint)((assetData->Resolution.x * assetData->Resolution.y) * 4)
         };
         auto* texTransferBuffer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
 
         uint8* mappedTexTransferData = (uint8*)SDL_MapGPUTransferBuffer(_device, texTransferBuffer, false);
-        memcpy(mappedTexTransferData, imageData->pixels, (imageData->w * imageData->h) * 4);
+        memcpy(mappedTexTransferData, assetData->Pixels.data(), (assetData->Resolution.x * assetData->Resolution.y) * 4);
         SDL_UnmapGPUTransferBuffer(_device, texTransferBuffer);
 
         // Upload transfer data to GPU resources.
@@ -258,15 +216,14 @@ namespace Silent::Renderer
         auto texRegion = SDL_GPUTextureRegion
         {
             .texture = Texture,
-            .w       = (uint)imageData->w,
-            .h       = (uint)imageData->h,
+            .w       = (uint)assetData->Resolution.x,
+            .h       = (uint)assetData->Resolution.y,
             .d       = 1
         };
         SDL_UploadToGPUTexture(copyPass, &texTransferInfo, &texRegion, false);
 
         SDL_EndGPUCopyPass(copyPass);
         SDL_SubmitGPUCommandBuffer(uploadCmdBuffer);
-        SDL_DestroySurface(imageData);
         SDL_ReleaseGPUTransferBuffer(_device, bufferTransferBuffer);
         SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
     }
@@ -412,7 +369,7 @@ namespace Silent::Renderer
         bufferBinding = SDL_GPUBufferBinding{ .buffer = IndexBuffer, .offset = 0 };
         SDL_BindGPUIndexBuffer(&renderPass, &bufferBinding, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
-        auto texSamplerBinding = SDL_GPUTextureSamplerBinding{ .texture = Texture, .sampler = _samplers[1] };
+        auto texSamplerBinding = SDL_GPUTextureSamplerBinding{ .texture = Texture, .sampler = _samplers[0] };
         SDL_BindGPUFragmentSamplers(&renderPass, 0, &texSamplerBinding, 1);
 
         SDL_DrawGPUIndexedPrimitives(&renderPass, 6, 1, 0, 0, 0);

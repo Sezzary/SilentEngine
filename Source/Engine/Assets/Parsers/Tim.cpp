@@ -3,6 +3,8 @@
 
 namespace Silent::Assets
 {
+    constexpr int TRANSPARENT_COLOR_FLAG = 1 << 15;
+
     /** @brief Bits per pixel types. */
     enum class BitsPerPixel
     {
@@ -89,7 +91,6 @@ namespace Silent::Assets
         auto bpp = BitsPerPixel::Bpp4;
         switch ((TimFlags)(flags & BPP_MASK))
         {
-            default:
             case TimFlags::Bpp4:
             {
                 bpp = BitsPerPixel::Bpp4;
@@ -108,10 +109,9 @@ namespace Silent::Assets
         }
 
         // Define image width coefficient based on BPP.
-        int  widthCoeff = 1;
+        int widthCoeff = 1;
         switch (bpp)
         {
-            default:
             case BitsPerPixel::Bpp4:
             {
                 widthCoeff = 4;
@@ -143,16 +143,10 @@ namespace Silent::Assets
         {
             // Collect extracted RGBA components.
             byte* out = &asset.Pixels[((y * res.x) + x) * 4];
-            out[0]    = (color & 0x1F)         << 3; // B.
-            out[1]    = ((color >> 5) & 0x1F)  << 3; // G.
-            out[2]    = ((color >> 10) & 0x1F) << 3; // R.
-            out[3]    = (color & 0x8000) ? 0 : 255;  // A.
-
-            // Key out black as transparent.
-            if (out[0] == 0 && out[1] == 0 && out[2] == 0)
-            {
-                out[3] = 0;
-            }
+            out[0]    = (color & 0x1F) << 3;                        // B.
+            out[1]    = ((color >> 5) & 0x1F) << 3;                 // G.
+            out[2]    = ((color >> 10) & 0x1F) << 3;                // R.
+            out[3]    = (color & TRANSPARENT_COLOR_FLAG) ? 255 : 0; // A.
         };
 
         // Read pixels.
@@ -165,27 +159,20 @@ namespace Silent::Assets
                     default:
                     case BitsPerPixel::Bpp4:
                     {
-                        // Read color data.
-                        byte colors = 0;
-                        file.read((byte*)&colors, 1);
+                        uint16 colors = 0;
+                        file.read((byte*)&colors, 2);
 
-                        // Decode values from byte.
-                        uint val0 = colors & 0xF;
-                        uint val1 = colors >> 4;
-
-                        for (int i = 0; i < 2 && x < res.x; i++, x++)
+                        for (int i = 0; i < 4 && x < res.x; i++, x++)
                         {
-                            // Set pixel.
+                            uint idx = (colors >> (i * 4)) & 0xF;
                             if (clut.empty())
                             {
-                                // Grayscale color `[0, 15]`.
-                                uint16 color = ((i == 0) ? val0 : val1) * (0xFFFF / 0xF);
+                                uint16 color = idx * (0xFFFF / 0xF);
                                 setPixelColor(x, y, color);
                             }
                             else
                             {
-                                // CLUT color.
-                                uint16 color = clut[(i == 0) ? val0 : val1];
+                                uint16 color = clut[idx];
                                 setPixelColor(x, y, color);
                             }
                         }
@@ -202,7 +189,7 @@ namespace Silent::Assets
                         {
                             // Grayscale color `[0, 255]`.
                             uint16 color = idx * (0xFFFF / 0xFF);
-                            setPixelColor(x, y, 0xFFFF);
+                            setPixelColor(x, y, color);
                         }
                         else
                         {

@@ -8,7 +8,7 @@ using namespace Silent::Assets;
 
 namespace Silent::Renderer
 {
-    Texture::Texture(SDL_GPUDevice& device, SDL_GPUCopyPass& copyPass, int assetIdx)
+    void Texture::Initialize(SDL_GPUDevice& device, SDL_GPUCopyPass& copyPass, int assetIdx)
     {
         auto& assets = g_App.GetAssets();
 
@@ -19,7 +19,7 @@ namespace Silent::Renderer
             throw std::runtime_error("Attempted to initialize invalid asset " + std::to_string(assetIdx) + " as texture.");
         }
 
-        // Check if asset is a TIM image.
+        // Check if asset is TIM image.
         if (asset->Type != AssetType::Tim)
         {
             throw std::runtime_error("Attempted to initialize non-image asset " + std::to_string(assetIdx) + " as texture.");
@@ -72,6 +72,7 @@ namespace Silent::Renderer
             .d       = 1
         };
         SDL_UploadToGPUTexture(&copyPass, &texTransferInfo, &texRegion, false);
+
 	    SDL_ReleaseGPUTransferBuffer(_device, texTransferBuffer);
     }
 

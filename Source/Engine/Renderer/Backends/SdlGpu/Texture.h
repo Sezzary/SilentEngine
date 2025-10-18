@@ -21,16 +21,17 @@ namespace Silent::Renderer
         /** @brief Constructs an uninitialized default `Texture`. */
         Texture() = default;
 
-        /** @brief Constructs a `Texture` and uploads it to the GPU.
+        /** @brief Initializes the texture and uploads it to the GPU.
          * If the TIM asset isn't already loaded, it will be loaded as a preliminary step.
          *
          * @param device GPU device.
          * @param copyPass Copy pass.
          * @param assetIdx TIM asset index.
+         * @exception `std::runtime_error` if the asset is invalid.
          */
-        Texture(SDL_GPUDevice& device, SDL_GPUCopyPass& copyPass, int assetIdx);
+        void Initialize(SDL_GPUDevice& device, SDL_GPUCopyPass& copyPass, int assetIdx);
 
-        /** @brief Gracefully destroys the `Texture`, and frees GPU resources. */
+        /** @brief Gracefully destroys the `Texture` and frees GPU resources. */
         ~Texture();
 
         void Bind(SDL_GPURenderPass& renderPass, SDL_GPUSampler& sampler);

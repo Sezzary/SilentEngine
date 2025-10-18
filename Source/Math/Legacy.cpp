@@ -1,6 +1,7 @@
 #include "Framework.h"
 #include "Math/Legacy.h"
 
+#include "Math/Constants.h"
 #include "Math/Objects/EulerAngles.h"
 #include "Math/Objects/Matrix.h"
 #include "Math/Objects/Vector3i.h"
@@ -8,6 +9,7 @@
 namespace Silent::Math
 {
     constexpr float Q4_SCALE  = 1.0f / (float)FP_TO(1, Q4_SHIFT);
+    constexpr float Q6_SCALE  = 1.0f / (float)FP_TO(1, Q6_SHIFT);
     constexpr float Q8_SCALE  = 1.0f / (float)FP_TO(1, Q8_SHIFT);
     constexpr float Q12_SCALE = 1.0f / (float)FP_TO(1, Q12_SHIFT);
 
@@ -51,5 +53,35 @@ namespace Silent::Math
         mat[3][2] = t[2] * Q12_SCALE;
 
         return mat;
+    }
+
+    Vector3 VECTOR3::ToVector3(QType qType) const
+    {
+        float scale = 0.0f;
+        switch (qType)
+        {
+            case QType::Q4:
+            {
+                scale = Q4_SCALE;
+                break;
+            }
+            case QType::Q6:
+            {
+                scale = Q6_SCALE;
+                break;
+            }
+            case QType::Q8:
+            {
+                scale = Q8_SCALE;
+                break;
+            }
+            case QType::Q12:
+            {
+                scale = Q12_SCALE;
+                break;
+            }
+        }
+
+        return Vector3((float)x, (float)y, (float)z) * scale;
     }
 }

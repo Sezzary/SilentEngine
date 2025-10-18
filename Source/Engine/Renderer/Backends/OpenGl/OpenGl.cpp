@@ -123,6 +123,7 @@ namespace Silent::Renderer
         // Draw frame.
         Draw3dScene();
         Draw2dScene();
+        DrawFullscreenQuad();
         DrawDebugGui();
 
         // Swap buffers.
@@ -255,6 +256,33 @@ namespace Silent::Renderer
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }*/
+    }
+
+    float FullscreenQuadVertices[] =
+    {
+        // Positions // UVs
+        -1, -1,      0, 1,
+         1, -1,      1, 1,
+        -1,  1,      0, 0,
+         1,  1,      1, 0
+    };
+    uint FullscreenQuadIdxs[] = { 0, 1, 2, 1, 3, 2 };
+    void OpenGlRenderer::DrawFullscreenQuad()
+    {
+        glDisable(GL_DEPTH_TEST);
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_COLOR, GL_ONE);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glBlendEquation(GL_FUNC_SUBTRACT);
+
+        auto& shaderProg = _shaderPrograms.at("FullscreenQuad");
+        shaderProg.Activate();
+        shaderProg.SetFloat("blendAlpha", 1.0f - g_FullscreenAlphaBlend);
+
+        _fsqTexture.Bind();
+        _fsqVao.Bind();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        _drawCallCount++;
     }
 
     void OpenGlRenderer::Draw2dScene()

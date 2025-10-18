@@ -36,6 +36,8 @@ namespace Silent::Renderer
         VertexBufferObject                             _vertexCubeBuffer     = VertexBufferObject();
         ElementBufferObject                            _elementBuffer        = ElementBufferObject();
 
+        Texture                                        _texture0             = Texture();
+        Texture                                        _texture1             = Texture();
         std::unordered_map<std::string, Texture> _textures     = {}; // Key = texture name, value = texture.
 
         VertexArrayObject   _fsqVao     = VertexArrayObject();
@@ -62,6 +64,7 @@ namespace Silent::Renderer
         void UpdateViewport();
 
         void Draw3dScene() override;
+        void DrawFullscreenQuad();
         void Draw2dScene() override;
         void DrawDebugGui() override;
 

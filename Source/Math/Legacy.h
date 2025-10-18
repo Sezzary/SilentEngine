@@ -6,6 +6,15 @@
 
 namespace Silent::Math
 {
+    /** @brief Fixed-point Q types. */
+    enum class QType
+    {
+        Q4,
+        Q6,
+        Q8,
+        Q12
+    };
+
     /** @brief PsyQ matrix. */
     struct MATRIX
     {
@@ -17,7 +26,7 @@ namespace Silent::Math
         Matrix ToMatrix() const;
     };
 
-    /** @brief PsyQ `short`-based XYZ vector. */
+    /** @brief PsyQ `short`-based XYZ vector. @todo Not always used as Euler angles. */
     struct SVECTOR3 : EulerAngles
     {
         short& vx;
@@ -36,6 +45,8 @@ namespace Silent::Math
         int& vz;
 
         VECTOR3(int x, int y, int z) : Vector3i(x, y, z), vx(this->x), vy(this->y), vz(this->z) {}
+
+        Vector3 ToVector3(QType qType) const;
     };
     using VECTOR = VECTOR3;
 

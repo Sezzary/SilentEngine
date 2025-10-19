@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Silent::Utils::Debug
+namespace Silent::Debug
 {
 #ifdef _DEBUG
     constexpr bool IS_DEBUG_BUILD = true;

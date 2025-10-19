@@ -1,5 +1,5 @@
 #include "Framework.h"
-#include "Utils/Debug.h"
+#include "Debug.h"
 
 #include "Application.h"
 #include "Input/Input.h"
@@ -18,7 +18,7 @@ using namespace Silent::Utils;
 
 #endif
 
-namespace Silent::Utils::Debug
+namespace Silent::Debug
 {
     constexpr char LOGGER_NAME[]     = "Logger";
     constexpr uint MESSAGE_COUNT_MAX = 128;

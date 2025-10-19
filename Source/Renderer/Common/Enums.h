@@ -2,6 +2,7 @@
 
 namespace Silent::Renderer
 {
+    /** @brief Blending modes. */
     enum class BlendMode
     {
         Opaque,
@@ -12,6 +13,7 @@ namespace Silent::Renderer
         Multiply
     };
 
+    /** @brief 2D sprite and shape align modes. */
     enum class AlignMode
     {
         Center,
@@ -25,6 +27,7 @@ namespace Silent::Renderer
         BottomRight
     };
 
+    /** @brief 2D sprite and shape scale modes relative to the display aspect ratio. */
     enum class ScaleMode
     {
         Fit,

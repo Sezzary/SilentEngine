@@ -7,6 +7,7 @@
 #include "Renderer/Common/Objects/Primitive2d.h"
 #include "Renderer/Common/Objects/Primitive3d.h"
 #include "Renderer/Common/Objects/Scene/Sprite2d.h"
+#include "Renderer/Common/Objects/Scene/Text.h"
 #include "Renderer/Backends/OpenGl/OpenGl.h"
 #include "Renderer/Backends/SdlGpu/SdlGpu.h"
 
@@ -91,6 +92,11 @@ namespace Silent::Renderer
             return;
         }
 
+        // @todo
+    }
+
+    void RendererBase::SubmitDebugText(const std::string& msg, const Vector2& pos, const Color& color, TextAlignMode alignMode)
+    {
         // @todo
     }
 

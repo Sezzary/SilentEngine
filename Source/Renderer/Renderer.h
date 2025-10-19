@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Renderer/Common/Constants.h"
+#include "Renderer/Common/Enums.h"
 #include "Renderer/Common/Objects/Primitive2d.h"
 #include "Renderer/Common/Objects/Primitive3d.h"
 #include "Renderer/Common/Objects/Scene/Sprite2d.h"
+#include "Renderer/Common/Objects/Scene/Text.h"
 #include "Renderer/Common/View.h"
 
 namespace Silent::Renderer
@@ -125,6 +127,15 @@ namespace Silent::Renderer
         // ======
         // Debug
         // ======
+
+        /** @brief Submits a debug message for drawing.
+         *
+         * @param msg Message string.
+         * @param pos Screen position in percent.
+         * @param color Color.
+         * @param alignMode Align mode.
+         */
+        void SubmitDebugText(const std::string& msg, const Vector2& pos, const Color& color, TextAlignMode alignMode = TextAlignMode::Left);
 
         /** @brief Submits a function used to construct an ImGui debug GUI for drawing.
          *

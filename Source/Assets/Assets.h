@@ -52,7 +52,7 @@ namespace Silent::Assets
          * @throws `std::runtime_error` if `data` is `nullptr`.
          */
         template <typename T>
-        std::shared_ptr<T> GetData()
+        std::shared_ptr<T> GetData() const
         {
             if (Data == nullptr)
             {

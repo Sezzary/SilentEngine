@@ -2,7 +2,6 @@
 #include "Renderer/Backends/SdlGpu/SdlGpu.h"
 
 #include "Application.h"
-#include "Assets/Assets.h"
 #include "Renderer/Backends/SdlGpu/Buffer.h"
 #include "Renderer/Backends/SdlGpu/Pipeline.h"
 #include "Renderer/Backends/SdlGpu/Texture.h"
@@ -13,7 +12,6 @@
 #include "Services/Options.h"
 #include "Utils/Utils.h"
 
-using namespace Silent::Assets;
 using namespace Silent::Services;
 using namespace Silent::Utils;
 

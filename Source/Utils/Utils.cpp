@@ -1,8 +1,8 @@
 #include "Framework.h"
 #include "Utils/Utils.h"
 
-#include "Engine/Application.h"
-#include "Engine/Renderer/Renderer.h"
+#include "Application.h"
+#include "Renderer/Renderer.h"
 
 using namespace Silent::Renderer;
 

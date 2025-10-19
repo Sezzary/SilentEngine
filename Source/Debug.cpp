@@ -256,26 +256,26 @@ namespace Silent::Debug
                         const auto& input = g_App.GetInput();
 
                         // Collect action statuses.
-                        int  bfSize           = (int)ACTION_ID_GROUPS.at(USER_ACTION_GROUP_IDS.back()).back();
-                        auto clickedActionBf  = BitField(bfSize);
-                        auto heldActionBf     = BitField(bfSize);
-                        auto releasedActionBf = BitField(bfSize);
-                        for (int i = 0; i < bfSize; i++)
+                        int  flagCount           = (int)ACTION_ID_GROUPS.at(USER_ACTION_GROUP_IDS.back()).back();
+                        auto clickedActionFlags  = BitField(flagCount);
+                        auto heldActionFlags     = BitField(flagCount);
+                        auto releasedActionFlags = BitField(flagCount);
+                        for (int i = 0; i < flagCount; i++)
                         {
                             auto actionId = (ActionId)i;
                             const auto& action = input.GetAction(actionId);
 
                             if (action.IsClicked())
                             {
-                                clickedActionBf.Set(i);
+                                clickedActionFlags.Set(i);
                             }
                             if (action.IsHeld())
                             {
-                                heldActionBf.Set(i);
+                                heldActionFlags.Set(i);
                             }
                             if (action.IsReleased())
                             {
-                                releasedActionBf.Set(i);
+                                releasedActionFlags.Set(i);
                             }
                         }
 
@@ -286,21 +286,21 @@ namespace Silent::Debug
                         ImGui::TableSetColumnIndex(0);
                         ImGui::Text("Clicked:", 0, 0);
                         ImGui::TableSetColumnIndex(1);
-                        ImGui::Text(clickedActionBf.ToString().c_str(), 0, 1);*/
+                        ImGui::Text(clickedActionFlags.ToString().c_str(), 0, 1);*/
 
                         // `Held` info.
                         /*ImGui::TableNextRow();
                         ImGui::TableSetColumnIndex(0);
                         ImGui::Text("Held:", 1, 0);
                         ImGui::TableSetColumnIndex(1);
-                        ImGui::Text(heldActionBf.ToString().c_str(), 1, 1);*/
+                        ImGui::Text(heldActionFlags.ToString().c_str(), 1, 1);*/
 
                         // `Released` info.
                         /*ImGui::TableNextRow();
                         ImGui::TableSetColumnIndex(0);
                         ImGui::Text("Released:", 2, 0);
                         ImGui::TableSetColumnIndex(1);
-                        ImGui::Text(releasedActionBf.ToString().c_str(), 2, 1);*/
+                        ImGui::Text(releasedActionFlags.ToString().c_str(), 2, 1);*/
                     }
 
                     // `Analog Axes` section.

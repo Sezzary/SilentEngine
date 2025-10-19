@@ -256,8 +256,7 @@ namespace Silent
                 {
                     // Ignore if fullscreen or maximized.
                     auto windowFlags = SDL_GetWindowFlags(_window);
-                    if (windowFlags & SDL_WINDOW_FULLSCREEN ||
-                        windowFlags & SDL_WINDOW_MAXIMIZED)
+                    if (windowFlags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MAXIMIZED))
                     {
                         break;
                     }
@@ -306,7 +305,6 @@ namespace Silent
                 }
                 case SDL_EVENT_MOUSE_WHEEL:
                 {
-                    // @todo Handle this a better way. `SDL_GetMouseState` doesn't capture the mouse wheel.
                     _mouseWheelAxis = Vector2(event.wheel.x, event.wheel.y);
                     break;
                 }

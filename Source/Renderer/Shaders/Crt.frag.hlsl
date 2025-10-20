@@ -29,10 +29,6 @@ float4 main(float2 fragCoord : SV_Position) : SV_Target
     // Adjust color.
     color = clamp((color * 0.6f) + (((0.4f * color) * color) * 1.0f), 0.0f, 1.0f);
 
-    // Optionally apply vignette.
-    float vignette = (((16.0f * uv.x) * uv.y) * (1.0f - uv.x)) * (1.0f - uv.y);
-    color         *= (HasVignette * pow(vignette, 0.3f)) + (1.0f - HasVignette);
-
     // Apply scan lines.
     float scanLineIntensity = clamp(0.35f + (0.35f * sin(3.5f + ((uv.y * Resolution.y) * 1.5f))), 0.0f, 1.0f);
     float scanLineEffect    = pow(scanLineIntensity, 1.7f);

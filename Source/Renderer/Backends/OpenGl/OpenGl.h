@@ -55,8 +55,9 @@ namespace Silent::Renderer
         void Initialize(SDL_Window& window) override;
         void Deinitialize() override;
         void Update() override;
-        void RefreshTextureFilter() override;
         void SaveScreenshot() const override;
+
+        void RefreshTextureFilter();
 
     private:
         // Utilities
@@ -66,6 +67,7 @@ namespace Silent::Renderer
         void Draw3dScene() override;
         void DrawFullscreenQuad();
         void Draw2dScene() override;
+        void DrawPostProcess() override;
         void DrawDebugGui() override;
 
         void CreateShaderProgram();

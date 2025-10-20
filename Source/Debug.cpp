@@ -423,7 +423,6 @@ namespace Silent::Debug
                         if (ImGui::Combo("Texture filter", &texFilter, TEX_FILTER_ITEMS, IM_ARRAYSIZE(TEX_FILTER_ITEMS)))
                         {
                             options->TextureFilter = (TextureFilterType)texFilter;
-                            renderer.RefreshTextureFilter();
                             isOptChanged = true;
                         }
 

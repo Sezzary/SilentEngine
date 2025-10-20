@@ -206,6 +206,7 @@ namespace Silent::Renderer
         if (_commandBuffer == nullptr)
         {
             Log("Failed to acquire command buffer: " + std::string(SDL_GetError()), LogLevel::Error);
+            ClearFrameData();
             return;
         }
 
@@ -213,7 +214,8 @@ namespace Silent::Renderer
         _swapchainTexture = nullptr;
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(_commandBuffer, _window, &_swapchainTexture, nullptr, nullptr))
         {
-            Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Error);
+            Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Warning, LogMode::Debug);
+            ClearFrameData();
             return;
         }
 
@@ -222,17 +224,15 @@ namespace Silent::Renderer
         {
             Draw3dScene();
             Draw2dScene();
+            DrawPostProcess();
             DrawDebugGui();
         }
 
-        // Submit command buffer to GPU and clear.
+        // Submit command buffer to GPU.
         SDL_SubmitGPUCommandBuffer(_commandBuffer);
-        ClearFrameData();
-    }
 
-    void SdlGpuRenderer::RefreshTextureFilter()
-    {
-        // @todo Not necessary for this backend.
+        // Clear frame setup.
+        ClearFrameData();
     }
 
     void SdlGpuRenderer::SaveScreenshot() const
@@ -341,6 +341,23 @@ namespace Silent::Renderer
         // Process render pass.
         SDL_DrawGPUPrimitives(&renderPass, bufferVerts.size(), sizeof(bufferVerts) / sizeof(BufferVertex), 0, 0);
 
+        SDL_EndGPURenderPass(&renderPass);
+    }
+
+    void SdlGpuRenderer::DrawPostProcess()
+    {
+        // Begin render pass.
+        auto colorTargetInfo = SDL_GPUColorTargetInfo
+        {
+            .texture  = _swapchainTexture,
+            .load_op  = SDL_GPU_LOADOP_LOAD,
+            .store_op = SDL_GPU_STOREOP_STORE
+        };
+        auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
+
+        // @todo
+
+        // Process render pass.
         SDL_EndGPURenderPass(&renderPass);
     }
 

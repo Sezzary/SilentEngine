@@ -124,6 +124,7 @@ namespace Silent::Renderer
         Draw3dScene();
         Draw2dScene();
         DrawFullscreenQuad();
+        DrawPostProcess();
         DrawDebugGui();
 
         // Swap buffers.
@@ -136,12 +137,6 @@ namespace Silent::Renderer
 
         // Clear primitives
         _primitives2d.clear();
-    }
-
-    void OpenGlRenderer::RefreshTextureFilter()
-    {
-        //_texture0.RefreshFilter();
-        //_texture1.RefreshFilter();
     }
 
     void OpenGlRenderer::SaveScreenshot() const
@@ -182,6 +177,12 @@ namespace Silent::Renderer
         }
 
         Log("Failed to save screenshot.", LogLevel::Warning, LogMode::DebugRelease, true);
+    }
+
+    void OpenGlRenderer::RefreshTextureFilter()
+    {
+        //_texture0.RefreshFilter();
+        //_texture1.RefreshFilter();
     }
 
     void OpenGlRenderer::UpdateViewport()
@@ -311,6 +312,11 @@ namespace Silent::Renderer
 */
         glDepthMask(true);
         _2dframebuffer.Unbind();
+    }
+
+    void OpenGlRenderer::DrawPostProcess()
+    {
+        // @todo
     }
 
     void OpenGlRenderer::DrawDebugGui()

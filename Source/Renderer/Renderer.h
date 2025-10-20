@@ -119,8 +119,6 @@ namespace Silent::Renderer
         /** @brief Prepares all GPU data and draws to the render surface. */
         virtual void Update() = 0;
 
-        virtual void RefreshTextureFilter() = 0;
-
         /** @brief Saves a screenshot of the active render surface to the designated `Screenshots` folder on the system. */
         virtual void SaveScreenshot() const = 0;
 

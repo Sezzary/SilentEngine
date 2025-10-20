@@ -2,6 +2,8 @@
 
 namespace Silent::Utils
 {
+    // @todo Writer methods.
+
     /** @brief Binary file data stream. */
     class Stream
     {
@@ -10,18 +12,24 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::ifstream _stream = {};
+        std::fstream _stream = {};
+        int          _mode   = 0;
 
     public:
         // =============
         // Constructors
         // =============
 
-        /** @brief Constructs a binary file data `Stream`.
+        /** @brief Constructs a binary file data `Stream` which can be read from or written to.
          *
          * @param filename Full file path.
+         * @param read Allow reading from the file.
+         * @param write Allow writing to the file.
          */
-        Stream(const std::filesystem::path& filename);
+        Stream(const std::filesystem::path& filename, bool read, bool write);
+
+        /** @brief Gracefully destroys the `Stream` and closes the file. */
+        ~Stream();
 
         // ==========
         // Inquirers
@@ -33,15 +41,37 @@ namespace Silent::Utils
          */
         bool IsOpen() const;
 
+        /** @brief Checks if the end of the file has been reached.
+         *
+         * @return `true` if the end of the file has been reached, `false` otherwise.
+         */
+        bool IsEndOfFile() const;
+
         // ==========
         // Utilities
         // ==========
+
+        /** @brief Closes the file. */
+        void Close();
+
+        /** @brief Reads buffer data from the data stream and increments the file pointer.
+         *
+         * @param[out] buffer Output buffer.
+         * @param size Buffer size in bytes.
+         */
+        void Read(void* buffer, uint size);
 
         /** @brief Reads a byte from the data stream and increments the file pointer.
          *
          * @return `byte` data.
          */
         byte ReadByte();
+
+        /** @brief Reads a boolean from the data stream and increments the file pointer.
+         *
+         * @return `bool` data.
+         */
+        bool ReadBool();
 
         /** @brief Reads a 16-bit integer from the data stream and increments the file pointer.
          *
@@ -85,16 +115,53 @@ namespace Silent::Utils
          */
         float ReadFloat();
 
+        /** @brief Reads a string from the data stream and increments the file pointer.
+         *
+         * @return `std::string` data.
+         */
+        std::string ReadString();
+
+        /** @brief Reads an integer-based XYZ vector from the data stream and increments the file pointer.
+         *
+         * @return `Vector2i` data.
+         */
+        Vector2i ReadVector2i();
+
+        /** @brief Reads a float-based XYZ vector from the data stream and increments the file pointer.
+         *
+         * @return `Vector2` data.
+         */
+        Vector2 ReadVector2();
+
+        /** @brief Reads an integer-based XYZ vector from the data stream and increments the file pointer.
+         *
+         * @return `Vector3i` data.
+         */
+        Vector3i ReadVector3i();
+
+        /** @brief Reads a float-based XYZ vector from the data stream and increments the file pointer.
+         *
+         * @return `Vector3` data.
+         */
+        Vector3 ReadVector3();
+
         /** @brief Reads an array from the data stream and increments the file pointer.
          *
-         * @tparam T Data type.
-         * @param[out] dest Destination.
-         * @param count Number of data elements.
+         * @tparam T Array data type.
+         * @param[out] dest Destination array.
+         * @param size Destination size. If `NO_VALUE`, the size of `dest` will be used.
          */
         template <typename T>
-        void ReadArray(std::span<T> dest, uint count = NO_VALUE)
+        void ReadData(std::span<T> dest, uint size = NO_VALUE)
         {
-            _stream.read((byte*)dest.data(), ((count != NO_VALUE) ? count : dest.size()) * sizeof(T));
+            Read((byte*)dest.data(), ((size != NO_VALUE) ? size : dest.size()) * sizeof(T));
         }
+
+        /** @brief Writes buffer data to the data stream and increments the file pointer.
+         *
+         * @param buffer Input buffer.
+         * @param size Buffer size in bytes.
+         */
+        void Write(const void* buffer, uint size);
     };
 }

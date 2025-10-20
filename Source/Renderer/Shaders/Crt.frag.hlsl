@@ -27,7 +27,7 @@ float4 main(float2 FragCoord : SV_Position) : SV_Target
     // Adjust color.
     color = clamp((color * 0.6f) + (((0.4f * color) * color) * 1.0f), 0.0f, 1.0f);
 
-    // Add scan line effect.
+    // Add horizontal scan line effect.
     float scanLine = clamp(0.35f + (0.35f * sin(3.5f + ((uv.y * Resolution.y) * 1.5f))), 0.0f, 1.0f);
     scanLine       = pow(scanLineIntensity, 1.7f);
     color         *= (0.4f + (0.7f * scanLineEffect)) * 2.8f;

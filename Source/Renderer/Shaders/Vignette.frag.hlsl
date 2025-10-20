@@ -1,11 +1,21 @@
-Texture2D    Channel0      : register(t0);
-SamplerState SamplerState0 : register(s0);
-
-float4 main(float2 uv : TEXCOORD0) : SV_Target
+cbuffer UniformBlock : register(b0, space3)
 {
-    float  vignette = (((16.0f * uv.x) * uv.y) * (1.0f - uv.x)) * (1.0f - uv.y);
-    float3 color    = Channel0.Sample(SamplerState0, uv).xyz;
-    color          *= pow(vignette, 0.3f);
+    float2 Resolution;
+}
 
+Texture2D<float4> Texture : register(t0, space2);
+SamplerState      Sampler : register(s0, space2);
+
+float4 main(float2 FragCoord : SV_Position) : SV_Target0
+{
+    // Compute UV coordinates.
+    float2 uv = FragCoord.xy / Resolution.xy;
+
+    // Compute vignette effect.
+    float vignette = (((16.0f * uv.x) * uv.y) * (1.0f - uv.x)) * (1.0f - uv.y);
+
+    // Apply vignette to texture color.
+    float3 color = Texture.Sample(Sampler, uv).xyz;
+    color       *= pow(vignette, 0.3f);
     return float4(color, 1.0f);
 }

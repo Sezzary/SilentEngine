@@ -207,6 +207,15 @@ namespace Silent
         }
     }
 
+    void ApplicationManager::ToggleDebugGui()
+    {
+        _work.Options->EnableDebugGui = !_work.Options->EnableDebugGui;
+        g_DebugData.Page              = _work.Options->EnableDebugGui ? DebugPage::Renderer : DebugPage::None;
+        ToggleCursor();
+
+        Log("Toggled debug mode.", LogLevel::Info, LogMode::DebugRelease, true);
+    }
+
     void ApplicationManager::Update()
     {
         // Poll events and input.

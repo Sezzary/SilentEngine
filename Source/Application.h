@@ -95,13 +95,24 @@ namespace Silent
         /** @brief Toggles the mouse cursor on and off. */
         void ToggleCursor();
 
+        /** @brief Toggles the debug GUI on and off. */
+        void ToggleDebugGui();
+
     private:
         // ========
         // Helpers
         // ========
 
+        /** @brief Updates the game application at a fixed timestep. */
         void Update();
+
+        /** @brief Renders the application scene. */
         void Render();
+
+        /** @brief Polls window events to handle quitting, window resizing, toggling fullscreen mode, and connecting or disconnecting a gamepad.
+         *
+         * @note Additionally polls mouse wheel input as a workaround to input device query limitations.
+         */
         void PollEvents();
     };
 

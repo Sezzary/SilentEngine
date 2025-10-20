@@ -242,10 +242,13 @@ namespace Silent::Renderer
         /** @brief Draws a 3D scene. Called before `Draw2dScene`. */
         virtual void Draw3dScene() = 0;
 
-        /** @brief Draws a 2D scene on top of the 3D scene. Called after `Draw3dScene` and before `DrawDebugGui`. */
+        /** @brief Draws a 2D scene on top of the 3D scene. Called after `Draw3dScene` and before `DrawPostProcess`. */
         virtual void Draw2dScene() = 0;
 
-        /** @brief Draws a debug GUI on top of the 3D and 2D scenes. Called after Draw2dScene. */
+        /** @brief Draws post-process effects on top of the 3D and 2D scene. Called after `Draw2dScene` and before `DrawDebugGui`. */
+        virtual void DrawPostProcess() = 0;
+
+        /** @brief Draws a debug GUI on top of the post-processed 3D and 2D scenes. Called after `DrawPostProcess`. */
         virtual void DrawDebugGui() = 0;
     };
 

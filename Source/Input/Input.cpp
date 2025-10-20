@@ -249,13 +249,11 @@ namespace Silent::Input
 
     void InputManager::ReadKeyboard()
     {
-        int         keyboardStateCount = 0;
-        const bool* keyboardState      = SDL_GetKeyboardState(&keyboardStateCount);
-        auto        modState           = SDL_GetModState();
-
         int eventIdx = (int)START_KEYBOARD_EVENT_ID;
 
         // Set keyboard key event states.
+        int        keyboardStateCount = 0;
+        const auto keyboardState      = ToSpan(SDL_GetKeyboardState(&keyboardStateCount), SDL_SCANCODE_COUNT);
         for (auto scanCode : VALID_KEYBOARD_SCAN_CODES)
         {
             if (scanCode < keyboardStateCount)
@@ -273,6 +271,7 @@ namespace Silent::Input
         }
 
         // Set keyboard modifier event states.
+        auto modState = SDL_GetModState();
         for (int modCode : VALID_KEYBOARD_MODIFIER_CODES)
         {
             bool state = modState & modCode;
@@ -427,7 +426,7 @@ namespace Silent::Input
             _states.Events[eventIdx + (i + 1)] = (axis.x > 0.0f) ? abs(axis.x) : 0.0f;
             _states.Events[eventIdx + (i + 2)] = (axis.y < 0.0f) ? abs(axis.y) : 0.0f;
             _states.Events[eventIdx + (i + 3)] = (axis.y > 0.0f) ? abs(axis.y) : 0.0f;
-            _analogAxes[i]                          = axis;
+            _analogAxes[i]                     = axis;
             eventIdx                          += Vector2::AXIS_COUNT * 2;
         }
 
@@ -594,11 +593,7 @@ namespace Silent::Input
             static bool dbDebugGui = true;
             if (_states.Events[(int)EventId::Grave] && dbDebugGui)
             {
-                options->EnableDebugGui = !options->EnableDebugGui;
-                g_App.ToggleCursor();
-                g_DebugData.Page = options->EnableDebugGui ? DebugPage::Renderer : DebugPage::None;
-
-                Log("Toggled debug mode.", LogLevel::Info, LogMode::DebugRelease, true);
+                g_App.ToggleDebugGui();
             }
             dbDebugGui = !_states.Events[(int)EventId::Grave];
         }

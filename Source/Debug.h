@@ -12,9 +12,9 @@ namespace Silent::Debug
     enum class LogLevel
     {
         Info,    /** Noteworthy information. */
-        Warning, /** Soft execution error accounted for with a failsafe. */
-        Error,   /** Error execution unaccounted for which will lead to further issues. */
-        Critical /** Critical execution error. Must terminate. */
+        Warning, /** Soft execution error with a failsafe. */
+        Error,   /** Execution error. May lead to further problems. */
+        Critical /** Critical execution error. Leads to a crash. */
     };
 
     /** @brief Log build modes. */

@@ -8,6 +8,10 @@ namespace Silent::Renderer
         Primitive2d,
         Primitive2dTextured,
 
+        /** Post-process */
+
+        Vignette,
+
         Count
     };
 

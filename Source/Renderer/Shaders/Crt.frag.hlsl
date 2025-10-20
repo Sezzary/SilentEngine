@@ -1,102 +1,54 @@
-// Sampler
-sampler2D TexSampler : register(s0);
+// Reference: https://www.shadertoy.com/view/Ms23DR
 
-// TextureSize
-float2 TextureSize : register(c0);
+cbuffer PostProcessUniforms : register(b0)
+{
+    float2 Resolution;
+    float  Time;
+    bool   HasVignette;
+}
 
-// Brightness factor for darker scanlines
-float BrightnessFactorRow2 : register(c1);
-float BrightnessFactorRow3 : register(c2);
+Texture2D    Channel0        : register(t0);
+SamplerState Channel0Sampler : register(s0);
 
-// Overspill from the primary colors
-float Overspill : register(c3);
+float4 main(float2 fragCoord : SV_Position) : SV_Target
+{
+    float2 uv = fragCoord.xy / Resolution.xy;
+    float  x  = 0.0f;
+    
+    // Add color variation.
+    float3 color;
+    color.r = Channel0.Sample(Channel0Sampler, float2((x + uv.x) + 0.001f, uv.y + 0.001f)).x + 0.05f;
+    color.g = Channel0.Sample(Channel0Sampler, float2((x + uv.x),          uv.y - 0.002f)).y + 0.05f;
+    color.b = Channel0.Sample(Channel0Sampler, float2((x + uv.x) - 0.002f, uv.y)).z          + 0.05f;
 
-// Diagonal or vertical raster
-float Diagonal : register(c4);
+    // Add color variation.
+    color.r += 0.08f * Channel0.Sample(Channel0Sampler, (0.75f * float2(x + 0.025f, -0.027f)) + float2(uv.x + 0.001f, uv.y + 0.001f)).x;
+    color.g += 0.05f * Channel0.Sample(Channel0Sampler, (0.75f * float2(x - 0.022f, -0.02f))  + float2(uv.x + 0.000f, uv.y - 0.002f)).y;
+    color.b += 0.08f * Channel0.Sample(Channel0Sampler, (0.75f * float2(x - 0.02f,  -0.018f)) + float2(uv.x - 0.002f, uv.y + 0.000f)).z;
 
-float4 main(float2 texCoord : TEXCOORD) : SV_Target
-{    
-    // Scale to int texture size. Row and col are the current coordinates in the bitmap from
-    // the upper left corner.
-    int row = (int)(texCoord.y * TextureSize.y);
-    int col = (int)(texCoord.x * TextureSize.x);
+    // Adjust color.
+    color = clamp((color * 0.6f) + (((0.4f * color) * color) * 1.0f), 0.0f, 1.0f);
 
-    // Pick up the color at the current position and add some brightness.
-    float4 color = tex2D(TexSampler, texCoord) + 0.1f;
+    // Optionally apply vignette.
+    float vignette = (((16.0f * uv.x) * uv.y) * (1.0f - uv.x)) * (1.0f - uv.y);
+    color         *= (HasVignette * pow(vignette, 0.3f)) + (1.0f - HasVignette);
 
-    float4 outColor   = float4(0.0f, 0.0f, 0.0f, 1.0f);
-    float4 multiplier = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    // Apply scan lines.
+    float scanLineIntensity = clamp(0.35f + (0.35f * sin(3.5f + ((uv.y * Resolution.y) * 1.5f))), 0.0f, 1.0f);
+    float scanLineEffect    = pow(scanLineIntensity, 1.7f);
+    color                  *= 0.4f + (0.7f * scanLineEffect);
+    color                  *= 2.8f;
 
-    // Get the pixel position within a 3 x 3 matrix.
-    int rowCheck = row % 3;
-    int colCheck = col % 3;
-
-    // The pixel color is handled by setting a R/G/B multiplier vector.
-    // First check if a diagonal raster should be implemented.
-    if (Diagonal == 1)
+    // Apply subtle color flicker.
+    color *= 1.0f + (0.01f * sin(110.0f * Time));
+    if (uv.x < 0.0f || uv.x > 1.0f ||
+        uv.y < 0.0f || uv.y > 1.0f)
     {
-        // Process the pixels, shifting the colors one step to the right for every row
-        // within the 3 x 3 matrix.
-        if (rowCheck == colCheck)
-        {
-            multiplier.r = 1.0f; 
-            multiplier.g = Overspill;
-            multiplier.b = Overspill;
-        }
-        else if ((rowCheck == 0 && colCheck == 1) || (rowCheck == 1 && colCheck == 2) || (rowCheck == 2 && colCheck == 0))
-        {
-            multiplier.g = 1.0f; 
-            multiplier.b = Overspill;
-            multiplier.r = Overspill;
-        }
-        else
-        {
-            multiplier.b = 1.0f; 
-            multiplier.r = Overspill;
-            multiplier.g = Overspill;
-        }
-    }
-    else
-    {
-        // For a vertical raster, process pixels without shifting.
-        if (colCheck == 0)
-        {
-            multiplier.r = 1.0f; 
-            multiplier.g = Overspill;
-            multiplier.b = Overspill;
-        }
-        else if (colCheck == 1)
-        {
-            multiplier.g = 1.0f; 
-            multiplier.b = Overspill;
-            multiplier.r = Overspill;
-        }
-        else
-        {
-            multiplier.b = 1.0f; 
-            multiplier.r = Overspill;
-            multiplier.g = Overspill;
-        }
+        color *= 0.0f;
     }
 
-    // Add scanlines.
-    if (rowCheck == 1)
-    {
-        // Make the second of the three rows a bit darker to simulate a scan line.
-        multiplier *= BrightnessFactorRow2;
-    }
+    // Add vertical lines.
+    color *= 1.0f - (0.65f * (float3(clamp((fmod(fragCoord.x, 2.0f) - 1.0f) * 2.0f, 0.0f, 1.0f))));
 
-    if (rowCheck == 2)
-    {
-        // Make the last of the three rows a bit darker to simulate a scan line.
-        multiplier *= BrightnessFactorRow3;
-    }
-
-    // Apply the multiplier to set the final color.
-    outColor = color * multiplier;
-
-    // The Alpha channel needs to be restored to 1 after all operations.
-    outColor.a = 1.0f;
-
-    return outColor;
+    return float4(color, 1.0f);
 }

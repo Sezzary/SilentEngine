@@ -7,14 +7,15 @@ namespace Silent::Utils
     {
         if (read)
         {
-            _mode |= std::fstream::in;
+            _flags |= std::fstream::in;
         }
         if (write)
         {
-            _mode |= std::fstream::out | std::fstream::trunc;
+            _flags |= std::fstream::out | std::fstream::trunc;
+            std::filesystem::create_directories(filename.parent_path());
         }
 
-        _stream.open(filename, _mode);
+        _stream.open(filename, _flags);
     }
 
     Stream::~Stream()
@@ -40,26 +41,25 @@ namespace Silent::Utils
 
     void Stream::Read(void* buffer, uint size)
     {
-        if (!_stream.good() && !(_mode & std::fstream::in))
+        if (!TestRead())
         {
-            Log("Failed to read from binary file data stream.", LogLevel::Warning);
             return;
         }
 
         _stream.read((byte*)buffer, size);
     }
 
-    byte Stream::ReadByte()
-    {
-        byte val = 0;
-        Read((byte*)&val, sizeof(byte));
-        return val;
-    }
-
     bool Stream::ReadBool()
     {
         bool val = false;
         Read((byte*)&val, sizeof(bool));
+        return val;
+    }
+
+    byte Stream::ReadByte()
+    {
+        byte val = 0;
+        Read((byte*)&val, sizeof(byte));
         return val;
     }
 
@@ -149,12 +149,104 @@ namespace Silent::Utils
 
     void Stream::Write(const void* buffer, uint size)
     {
-        if (!_stream.good() && !(_mode & std::fstream::out))
+        if (!_stream.good() && !(_flags & std::fstream::out))
         {
             Log("Failed to write to binary file data stream.", LogLevel::Warning);
             return;
         }
 
         _stream.write((const byte*)buffer, size);
+    }
+
+    void Stream::WriteByte(byte val)
+    {
+        Write((byte*)&val, sizeof(bool));
+    }
+
+    void Stream::WriteBool(bool val)
+    {
+        Write((byte*)&val, sizeof(bool));
+    }
+
+    void Stream::WriteInt16(int16 val)
+    {
+        Write((byte*)&val, sizeof(int16));
+    }
+
+    void Stream::WriteInt32(int32 val)
+    {
+        Write((byte*)&val, sizeof(int32));
+    }
+
+    void Stream::WriteInt64(int64 val)
+    {
+        Write((byte*)&val, sizeof(int64));
+    }
+
+    void Stream::WriteUint16(uint16 val)
+    {
+        Write((byte*)&val, sizeof(uint16));
+    }
+
+    void Stream::WriteUint32(uint32 val)
+    {
+        Write((byte*)&val, sizeof(uint32));
+    }
+
+    void Stream::WriteUint64(uint64 val)
+    {
+        Write((byte*)&val, sizeof(uint64));
+    }
+
+    void Stream::WriteFloat(float val)
+    {
+        Write((byte*)&val, sizeof(float));
+    }
+
+    void Stream::WriteString(const std::string& val)
+    {
+        Write((byte*)val.data(), val.size());
+    }
+
+    void Stream::WriteVector2i(const Vector2i& val)
+    {
+        Write((byte*)&val, sizeof(Vector2i));
+    }
+    
+    void Stream::WriteVector2(const Vector2& val)
+    {
+        Write((byte*)&val, sizeof(Vector2));
+    }
+    
+    void Stream::WriteVector3i(const Vector3i& val)
+    {
+        Write((byte*)&val, sizeof(Vector3i));
+    }
+    
+    void Stream::WriteVector3(const Vector3& val)
+    {
+        Write((byte*)&val, sizeof(Vector3));
+    }
+
+    bool Stream::TestRead() const
+    {
+        if (!_stream.good() && !(_flags & std::fstream::in))
+        {
+            Log("Failed to read from binary file data stream.", LogLevel::Warning);
+            return false;
+        }
+
+        return true;
+    }
+
+    bool Stream::TestWrite() const
+    {
+        if (!_stream.good() && !(_flags & std::fstream::out))
+        {
+            Log("Failed to write binary file data stream.", LogLevel::Warning);
+            return false;
+        }
+
+        return true;
     }
 }

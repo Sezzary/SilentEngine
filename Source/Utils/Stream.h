@@ -13,7 +13,7 @@ namespace Silent::Utils
         // =======
 
         std::fstream _stream = {};
-        int          _mode   = 0;
+        int          _flags  = 0;
 
     public:
         // =============
@@ -61,17 +61,17 @@ namespace Silent::Utils
          */
         void Read(void* buffer, uint size);
 
-        /** @brief Reads a byte from the data stream and increments the file pointer.
-         *
-         * @return `byte` data.
-         */
-        byte ReadByte();
-
         /** @brief Reads a boolean from the data stream and increments the file pointer.
          *
          * @return `bool` data.
          */
         bool ReadBool();
+
+        /** @brief Reads a byte from the data stream and increments the file pointer.
+         *
+         * @return `byte` data.
+         */
+        byte ReadByte();
 
         /** @brief Reads a 16-bit integer from the data stream and increments the file pointer.
          *
@@ -163,5 +163,48 @@ namespace Silent::Utils
          * @param size Buffer size in bytes.
          */
         void Write(const void* buffer, uint size);
+
+        void WriteByte(byte val);
+
+        void WriteBool(bool val);
+
+        void WriteInt16(int16 val);
+
+        void WriteInt32(int32 val);
+
+        void WriteInt64(int64 val);
+
+        void WriteUint16(uint16 val);
+
+        void WriteUint32(uint32 val);
+
+        void WriteUint64(uint64 val);
+
+        void WriteFloat(float val);
+
+        void WriteString(const std::string& val);
+
+        void WriteVector2i(const Vector2i& val);
+        
+        void WriteVector2(const Vector2& val);
+        
+        void WriteVector3i(const Vector3i& val);
+        
+        void WriteVector3(const Vector3& val);
+        
+        template <typename T>
+        void WriteData(std::span<const T> src, uint size = NO_VALUE)
+        {
+            Write((byte*)src.data(), ((size != NO_VALUE) ? size : src.size()) * sizeof(T));
+        }
+
+    private:
+        // ========
+        // Helpers
+        // ========
+
+        bool TestRead() const;
+
+        bool TestWrite() const;
     };
 }

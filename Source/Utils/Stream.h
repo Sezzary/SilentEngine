@@ -167,10 +167,7 @@ namespace Silent::Utils
          * @param[out] dest Destination container.
          */
         template <typename T>
-        void ReadArray(std::span<T> dest)
-        {
-            Read((byte*)dest.data(), dest.size() * sizeof(T));
-        }
+        void ReadArray(std::span<T> dest);
 
         /** @brief Writes buffer data to the data stream and increments the file pointer.
          *
@@ -275,10 +272,7 @@ namespace Silent::Utils
          * @param val Array data.
          */
         template <typename T>
-        void WriteArray(std::span<const T> val)
-        {
-            Write((byte*)val.data(), val.size() * sizeof(T));
-        }
+        void WriteArray(std::span<const T> val);
 
     private:
         // ========
@@ -297,4 +291,16 @@ namespace Silent::Utils
          */
         bool TestWrite() const;
     };
+
+    template <typename T>
+    void Stream::ReadArray(std::span<T> dest)
+    {
+        Read((byte*)dest.data(), dest.size() * sizeof(T));
+    }
+
+    template <typename T>
+    void Stream::WriteArray(std::span<const T> val)
+    {
+        Write((byte*)val.data(), val.size() * sizeof(T));
+    }
 }

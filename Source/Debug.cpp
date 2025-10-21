@@ -446,6 +446,12 @@ namespace Silent::Debug
                             isOptChanged = true;
                         }
 
+                        // `Enable vignette` checkbox.
+                        if (ImGui::Checkbox("Enable vignette", &options->EnableVignette))
+                        {
+                            isOptChanged = true;
+                        }
+
                         // `Enable vertex jitter` checkbox.
                         if (ImGui::Checkbox("Enable vertex jitter", &options->EnableVertexJitter))
                         {

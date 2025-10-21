@@ -109,6 +109,7 @@ namespace Silent::Services
         LightingType      Lighting           = LightingType::PerVertex;
         bool              EnableDithering    = false;
         bool              EnableCrtFilter    = false;
+        bool              EnableVignette     = false;
         bool              EnableVertexJitter = false;
 
         /** Gameplay */

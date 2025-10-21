@@ -31,6 +31,7 @@ namespace Silent::Services
     constexpr char KEY_LIGHTING[]                                 = "Lighting";
     constexpr char KEY_ENABLE_DITHERING[]                         = "EnableDithering";
     constexpr char KEY_ENABLE_CRT_FILTER[]                        = "EnableCrtFilter";
+    constexpr char KEY_ENABLE_VIGNETTE[]                          = "EnableVignette";
     constexpr char KEY_ENABLE_VERTEX_JITTER[]                     = "EnableVertexJitter";
     constexpr char KEY_ENABLE_AUTO_LOAD[]                         = "EnableAutoLoad";
     constexpr char KEY_ENABLE_SUBTITLES[]                         = "EnableSubtitles";
@@ -67,6 +68,7 @@ namespace Silent::Services
     constexpr auto DEFAULT_LIGHTING                                 = LightingType::PerVertex;
     constexpr bool DEFAULT_ENABLE_DITHERING                         = true;
     constexpr bool DEFAULT_ENABLE_CRT_FILTER                        = false;
+    constexpr bool DEFAULT_ENABLE_VIGNETTE                          = false;
     constexpr bool DEFAULT_ENABLE_VERTEX_JITTER                     = false;
     constexpr bool DEFAULT_ENABLE_AUTO_LOAD                         = false;
     constexpr bool DEFAULT_ENABLE_SUBTITLES                         = true;
@@ -102,6 +104,7 @@ namespace Silent::Services
         _options.Lighting           = DEFAULT_LIGHTING;
         _options.EnableDithering    = DEFAULT_ENABLE_DITHERING;
         _options.EnableCrtFilter    = DEFAULT_ENABLE_CRT_FILTER;
+        _options.EnableVignette     = DEFAULT_ENABLE_VIGNETTE;
         _options.EnableVertexJitter = DEFAULT_ENABLE_VERTEX_JITTER;
     }
 
@@ -236,6 +239,7 @@ namespace Silent::Services
         options.Lighting           = graphicsJson.value(KEY_LIGHTING,             DEFAULT_LIGHTING);
         options.EnableDithering    = graphicsJson.value(KEY_ENABLE_DITHERING,     DEFAULT_ENABLE_DITHERING);
         options.EnableCrtFilter    = graphicsJson.value(KEY_ENABLE_CRT_FILTER,    DEFAULT_ENABLE_CRT_FILTER);
+        options.EnableVignette     = graphicsJson.value(KEY_ENABLE_VIGNETTE,      DEFAULT_ENABLE_VIGNETTE);
         options.EnableVertexJitter = graphicsJson.value(KEY_ENABLE_VERTEX_JITTER, DEFAULT_ENABLE_VERTEX_JITTER);
 
         // Load gameplay options.
@@ -312,10 +316,9 @@ namespace Silent::Services
             }
         }
 
-        // @todo Crashes.
         // Load enhancements options.
-        /*const auto& enhancementsJson = optionsJson[KEY_ENHANCEMENTS];
-        options.DialogPause          = enhancementsJson.value(KEY_DIALOG_PAUSE, DEFAULT_DIALOG_PAUSE);*/
+        const auto& enhancementsJson = optionsJson[KEY_ENHANCEMENTS];
+        options.DialogPause          = enhancementsJson.value(KEY_DIALOG_PAUSE, DEFAULT_DIALOG_PAUSE);
 
         // Load system options.
         const auto& systemJson    = optionsJson[KEY_SYSTEM];
@@ -369,49 +372,50 @@ namespace Silent::Services
             {
                 KEY_GRAPHICS,
                 {
-                    { KEY_WINDOWED_SIZE_X,      options.WindowedSize.x },
-                    { KEY_WINDOWED_SIZE_Y,      options.WindowedSize.y },
-                    { KEY_ENABLE_MAXIMIZED,     options.EnableMaximized },
-                    { KEY_ENABLE_FULLSCREEN,    options.EnableFullscreen },
-                    { KEY_BRIGHTNESS_LEVEL,     options.BrightnessLevel },
-                    { KEY_FRAME_RATE,           options.FrameRate },
-                    { KEY_RENDER_SCALE,         options.RenderScale },
-                    { KEY_ASPECT_RATIO,         options.AspectRatio },
-                    { KEY_TEXTURE_FILTER,       options.TextureFilter },
-                    { KEY_LIGHTING,             options.Lighting },
-                    { KEY_ENABLE_DITHERING,     options.EnableDithering },
-                    { KEY_ENABLE_CRT_FILTER,    options.EnableCrtFilter },
+                    { KEY_WINDOWED_SIZE_X,      options.WindowedSize.x     },
+                    { KEY_WINDOWED_SIZE_Y,      options.WindowedSize.y     },
+                    { KEY_ENABLE_MAXIMIZED,     options.EnableMaximized    },
+                    { KEY_ENABLE_FULLSCREEN,    options.EnableFullscreen   },
+                    { KEY_BRIGHTNESS_LEVEL,     options.BrightnessLevel    },
+                    { KEY_FRAME_RATE,           options.FrameRate          },
+                    { KEY_RENDER_SCALE,         options.RenderScale        },
+                    { KEY_ASPECT_RATIO,         options.AspectRatio        },
+                    { KEY_TEXTURE_FILTER,       options.TextureFilter      },
+                    { KEY_LIGHTING,             options.Lighting           },
+                    { KEY_ENABLE_DITHERING,     options.EnableDithering    },
+                    { KEY_ENABLE_CRT_FILTER,    options.EnableCrtFilter    },
+                    { KEY_ENABLE_VIGNETTE,      options.EnableVignette     },
                     { KEY_ENABLE_VERTEX_JITTER, options.EnableVertexJitter }
                 }
             },
             {
                 KEY_GAMEPLAY,
                 {
-                    { KEY_ENABLE_AUTO_LOAD, options.EnableAutoLoad },
+                    { KEY_ENABLE_AUTO_LOAD, options.EnableAutoLoad  },
                     { KEY_ENABLE_SUBTITLES, options.EnableSubtitles },
-                    { KEY_LANGUAGE,         options.Language },
-                    { KEY_SOUND,            options.Sound },
-                    { KEY_BGM_VOLUME,       options.BgmVolume },
-                    { KEY_SE_VOLUME,        options.SeVolume },
-                    { KEY_BLOOD_COLOR,      options.BloodColor },
-                    { KEY_BULLET_ADJUST,    options.BulletAdjust }
+                    { KEY_LANGUAGE,         options.Language        },
+                    { KEY_SOUND,            options.Sound           },
+                    { KEY_BGM_VOLUME,       options.BgmVolume       },
+                    { KEY_SE_VOLUME,        options.SeVolume        },
+                    { KEY_BLOOD_COLOR,      options.BloodColor      },
+                    { KEY_BULLET_ADJUST,    options.BulletAdjust    }
                 }
             },
             {
                 KEY_INPUT,
                 {
-                    { KEY_KEYBOARD_MOUSE_BINDINGS,                  kmBindsJson },
+                    { KEY_KEYBOARD_MOUSE_BINDINGS,                  kmBindsJson                          },
                     { KEY_ACTIVE_KEYBOARD_MOUSE_BINDING_PROFILE_ID, options.ActiveKeyboardMouseProfileId },
-                    { KEY_GAMEPAD_BINDINGS,                         gamepadBindsJson },
-                    { KEY_ACTIVE_GAMEPAD_BINDING_PROFILE_ID,        options.ActiveGamepadProfileId },
-                    { KEY_ENABLE_VIBRATION,                         options.EnableVibration },
-                    { KEY_MOUSE_SENSITIVITY,                        options.MouseSensitivity },
-                    { KEY_WEAPON_CONTROL,                           options.WeaponControl },
-                    { KEY_VIEW_CONTROL,                             options.ViewControl },
-                    { KEY_RETREAT_TURN_CONTROL,                     options.RetreatTurnControl },
-                    { KEY_WALK_RUN_CONTROL,                         options.WalkRunControl },
-                    { KEY_DISABLE_AUTO_AIMING,                      options.DisableAutoAiming },
-                    { KEY_VIEW_MODE,                                options.ViewMode }
+                    { KEY_GAMEPAD_BINDINGS,                         gamepadBindsJson                     },
+                    { KEY_ACTIVE_GAMEPAD_BINDING_PROFILE_ID,        options.ActiveGamepadProfileId       },
+                    { KEY_ENABLE_VIBRATION,                         options.EnableVibration              },
+                    { KEY_MOUSE_SENSITIVITY,                        options.MouseSensitivity             },
+                    { KEY_WEAPON_CONTROL,                           options.WeaponControl                },
+                    { KEY_VIEW_CONTROL,                             options.ViewControl                  },
+                    { KEY_RETREAT_TURN_CONTROL,                     options.RetreatTurnControl           },
+                    { KEY_WALK_RUN_CONTROL,                         options.WalkRunControl               },
+                    { KEY_DISABLE_AUTO_AIMING,                      options.DisableAutoAiming            },
+                    { KEY_VIEW_MODE,                                options.ViewMode                     }
                 }
             },
             {

@@ -48,12 +48,7 @@ namespace Silent::Utils
         auto testColl = [&](const Node& node)
         {
             auto intersectDist = ray.Intersects(node.Aabb);
-            if (!intersectDist.has_value())
-            {
-                return false;
-            }
-            
-            return *intersectDist <= dist;
+            return intersectDist.has_value() ? (*intersectDist <= dist) : false;
         };
 
         return GetBoundedObjectIds(testColl);

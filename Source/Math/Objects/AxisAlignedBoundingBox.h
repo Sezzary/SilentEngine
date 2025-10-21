@@ -30,7 +30,7 @@ namespace Silent::Math
         // Constructors
         // =============
     
-        /** @brief Constructs an uninitialized default `AxisAlignedBoundingBox`. */
+        /** @brief Constructs a default `AxisAlignedBoundingBox`. */
         constexpr AxisAlignedBoundingBox() = default;
 
         /** @brief Constructs an `AxisAlignedBoundingBox` from a center and extents.

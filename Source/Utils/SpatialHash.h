@@ -1,21 +1,5 @@
 #pragma once
 
-namespace std
-{
-    template <>
-    struct hash<Vector3i>
-    {
-        size_t operator()(const Vector3i& vec) const
-        {
-            size_t seed = 0;
-            seed ^= hash<int>()(vec.x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            seed ^= hash<int>()(vec.y) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            seed ^= hash<int>()(vec.z) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            return seed;
-        }
-    };
-}
-
 namespace Silent::Utils
 {
     /** @brief 3D spatial hash. */

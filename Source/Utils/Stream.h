@@ -121,13 +121,13 @@ namespace Silent::Utils
          */
         std::string ReadString();
 
-        /** @brief Reads an integer-based XYZ vector from the data stream and increments the file pointer.
+        /** @brief Reads an integer-based XY vector from the data stream and increments the file pointer.
          *
          * @return `Vector2i` data.
          */
         Vector2i ReadVector2i();
 
-        /** @brief Reads a float-based XYZ vector from the data stream and increments the file pointer.
+        /** @brief Reads a float-based XY vector from the data stream and increments the file pointer.
          *
          * @return `Vector2` data.
          */
@@ -164,34 +164,96 @@ namespace Silent::Utils
          */
         void Write(const void* buffer, uint size);
 
-        void WriteByte(byte val);
-
+        /** @brief Writes a boolean to the data stream and increments the file pointer.
+         *
+         * @param val `bool` data to write.
+         */
         void WriteBool(bool val);
 
+        /** @brief Writes a byte to the data stream and increments the file pointer.
+         *
+         * @param val `byte` data to write.
+         */
+        void WriteByte(byte val);
+
+        /** @brief Writes a 16-bit integer to the data stream and increments the file pointer.
+         *
+         * @param val `int16` data to write.
+         */
         void WriteInt16(int16 val);
 
+        /** @brief Writes a 32-bit integer to the data stream and increments the file pointer.
+         *
+         * @param val `int32` data to write.
+         */
         void WriteInt32(int32 val);
 
+        /** @brief Writes a 64-bit integer to the data stream and increments the file pointer.
+         *
+         * @param val `int64` data to write.
+         */
         void WriteInt64(int64 val);
 
+        /** @brief Writes a 16-bit unsigned integer to the data stream and increments the file pointer.
+         *
+         * @param val `uint16` data to write.
+         */
         void WriteUint16(uint16 val);
 
+        /** @brief Writes a 32-bit unsigned integer to the data stream and increments the file pointer.
+         *
+         * @param val `uint32` data to write.
+         */
         void WriteUint32(uint32 val);
 
+        /** @brief Writes a 64-bit unsigned integer to the data stream and increments the file pointer.
+         *
+         * @param val `uint64` data to write.
+         */
         void WriteUint64(uint64 val);
 
+        /** @brief Writes a 32-bit float to the data stream and increments the file pointer.
+         *
+         * @param val `float` data to write.
+         */
         void WriteFloat(float val);
 
+        /** @brief Writes a string to the data stream and increments the file pointer.
+         *
+         * @param val `std::string` data to write.
+         */
         void WriteString(const std::string& val);
 
+        /** @brief Writes an integer-based XY vector to the data stream and increments the file pointer.
+         *
+         * @param val `Vector2i` data.
+         */
         void WriteVector2i(const Vector2i& val);
         
+        /** @brief Writes a float-based XY vector to the data stream and increments the file pointer.
+         *
+         * @param val `Vector2` data.
+         */
         void WriteVector2(const Vector2& val);
         
+        /** @brief Writes an integer-based XYZ vector to the data stream and increments the file pointer.
+         *
+         * @param val `Vector3i` data.
+         */
         void WriteVector3i(const Vector3i& val);
         
+        /** @brief Writes a float-based XYZ vector to the data stream and increments the file pointer.
+         *
+         * @param val `Vector3` data.
+         */
         void WriteVector3(const Vector3& val);
         
+        /** @brief Writes an array to the data stream and increments the file pointer.
+         *
+         * @tparam T Array data type.
+         * @param src Source array.
+         * @param size Source size. If `NO_VALUE`, the size of `src` will be used.
+         */
         template <typename T>
         void WriteData(std::span<const T> src, uint size = NO_VALUE)
         {
@@ -203,8 +265,16 @@ namespace Silent::Utils
         // Helpers
         // ========
 
+        /** @brief Checks if the data stream can be read from.
+         *
+         * @return `true` if the file can be read from, `false` otherwise.
+         */
         bool TestRead() const;
 
+        /** @brief Checks if the data stream can be written to.
+         *
+         * @return `true` if the file can be written to, `false` otherwise.
+         */
         bool TestWrite() const;
     };
 }

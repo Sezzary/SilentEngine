@@ -158,14 +158,14 @@ namespace Silent::Utils
         _stream.write((const byte*)buffer, size);
     }
 
-    void Stream::WriteByte(byte val)
+    void Stream::WriteBool(bool val)
     {
         Write((byte*)&val, sizeof(bool));
     }
 
-    void Stream::WriteBool(bool val)
+    void Stream::WriteByte(byte val)
     {
-        Write((byte*)&val, sizeof(bool));
+        Write((byte*)&val, sizeof(byte));
     }
 
     void Stream::WriteInt16(int16 val)

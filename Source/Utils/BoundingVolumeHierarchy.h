@@ -48,22 +48,30 @@ namespace Silent::Utils
         // Constructors
         // =============
 
+        /** @brief Constructs an uninitialized default `BoundingVolumeHierarchy`. */
         BoundingVolumeHierarchy() = default;
+
+        /** @brief Statically constructs a `BoundingVolumeHierarchy` with tight bounds.
+         *
+         * @param objectIds Object IDs to contain.
+         * @param aabbs AABBs containing the object IDs.
+         * @param strategy Build strategy.
+         */
         BoundingVolumeHierarchy(const std::vector<int>& objectIds, const std::vector<AxisAlignedBoundingBox>& aabbs, BvhBuildStrategy strategy = BvhBuildStrategy::Balanced);
 
         // ========
         // Getters
         // ========
 
-        /** @brief Gets the number of objects in the tree.
+        /** @brief Gets the number of objects bounded in the tree.
          *
-         * @return Number of objects in the tree.
+         * @return Object count.
          */
         uint GetSize() const;
 
         /** @brief Gets all object IDs in the tree.
          *
-         * @return `std::vector` containing all the object IDs in the tree.
+         * @return All object IDs in the tree.
          */
         std::vector<int> GetBoundedObjectIds() const;
 
@@ -71,28 +79,28 @@ namespace Silent::Utils
          *
          * @param ray Collision ray.
          * @param dist Ray distance.
-         * @return `std::vector` containing object IDs which collide with the ray.
+         * @return Object IDs whose bounds collide with the ray.
          */
         std::vector<int> GetBoundedObjectIds(const Ray& ray, float dist) const;
 
         /** @brief Gets all object IDs of nodes which collide with an input sphere.
          *
          * @param sphere Collision sphere.
-         * @return `std::vector` containing object IDs which collide with the sphere.
+         * @return Object IDs whose bounds collide with the sphere.
          */
         std::vector<int> GetBoundedObjectIds(const BoundingSphere& sphere) const;
 
         /** @brief Gets all object IDs of nodes which collide with an input AABB.
          *
          * @param aabb Collision AABB.
-         * @return `std::vector` containing object IDs which collide with the AABB.
+         * @return Object IDs whose bounds collide with the AABB.
          */
         std::vector<int> GetBoundedObjectIds(const AxisAlignedBoundingBox& aabb) const;
 
         /** @brief Gets all object IDs of nodes which collide with an input OBB.
          *
          * @param obb Collision OBB.
-         * @return `std::vector` containing object IDs which collide with the OBB.
+         * @return Object IDs whose bounds collide with the OBB.
          */
         std::vector<int> GetBoundedObjectIds(const OrientedBoundingBox& obb) const;
 

@@ -91,16 +91,10 @@ namespace Silent::Debug
      */
     void Assert(bool cond, const std::string& msg);
 
-    /** @brief Starts the debug timer used to test code execution time.
-     *
-     * @note Placed before the relevant code block.
-     */
+    /** @brief Starts the debug timer used to test code execution time. Placed before the relevant code block. */
     void StartTimer();
 
-    /** @brief Stops the debug timer and prints the execution time using in microseconds via a `Message` call.
-     *
-     * @note Placed after the relevant code block.
-     */
+    /** @brief Stops the debug timer and prints the execution time in microseconds via a `Message` call. Placed after the relevant code block. */
     void EndTimer();
 
     /** @brief Creates a debug GUI and submits it to the renderer for drawing.

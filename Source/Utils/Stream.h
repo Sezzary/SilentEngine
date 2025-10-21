@@ -31,6 +31,16 @@ namespace Silent::Utils
         /** @brief Gracefully destroys the `Stream` and closes the file. */
         ~Stream();
 
+        // ========
+        // Getters
+        // ========
+
+        /** @brief Gets the size of the file data stream in bytes.
+         *
+         * @return Size in bytes.
+         */
+        uint GetSize();
+
         // ==========
         // Inquirers
         // ==========
@@ -145,16 +155,21 @@ namespace Silent::Utils
          */
         Vector3 ReadVector3();
 
+        /** @brief Reads the data stream as a parsed JSON and increments the file pointer to the end.
+         *
+         * @return `json` data.
+         */
+        json ReadJson();
+
         /** @brief Reads an array from the data stream and increments the file pointer.
          *
          * @tparam T Array data type.
-         * @param[out] dest Destination array.
-         * @param size Destination size. If `NO_VALUE`, the size of `dest` will be used.
+         * @param[out] dest Destination container.
          */
         template <typename T>
-        void ReadData(std::span<T> dest, uint size = NO_VALUE)
+        void ReadArray(std::span<T> dest)
         {
-            Read((byte*)dest.data(), ((size != NO_VALUE) ? size : dest.size()) * sizeof(T));
+            Read((byte*)dest.data(), dest.size() * sizeof(T));
         }
 
         /** @brief Writes buffer data to the data stream and increments the file pointer.
@@ -247,17 +262,22 @@ namespace Silent::Utils
          * @param val `Vector3` data.
          */
         void WriteVector3(const Vector3& val);
+
+        /** @brief Writes a JSON to the data stream and increments the file pointer.
+         *
+         * @param val `json` data.
+         */
+        void WriteJson(const json& val);
         
         /** @brief Writes an array to the data stream and increments the file pointer.
          *
          * @tparam T Array data type.
-         * @param src Source array.
-         * @param size Source size. If `NO_VALUE`, the size of `src` will be used.
+         * @param val Array data.
          */
         template <typename T>
-        void WriteData(std::span<const T> src, uint size = NO_VALUE)
+        void WriteArray(std::span<const T> val)
         {
-            Write((byte*)src.data(), ((size != NO_VALUE) ? size : src.size()) * sizeof(T));
+            Write((byte*)val.data(), val.size() * sizeof(T));
         }
 
     private:

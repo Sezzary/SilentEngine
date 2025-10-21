@@ -5,6 +5,7 @@
 #include "Input/Input.h"
 #include "Services/Filesystem.h"
 #include "Utils/Parallel.h"
+#include "Utils/Stream.h"
 
 using namespace Silent::Input;
 using namespace Silent::Utils;
@@ -167,28 +168,19 @@ namespace Silent::Services
         // Create options JSON.
         auto optionsJson = ToOptionsJson(_options);
 
-        // Ensure directory exists.
-        auto path = fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT);
-        std::filesystem::create_directories(path.parent_path());
-
         // Write options JSON file.
-        auto outputFile = std::ofstream(path);
-        if (outputFile.is_open())
-        {
-            outputFile << optionsJson.dump(JSON_INDENT_SIZE);
-            outputFile.close();
-        }
+        auto stream = Stream(fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT), false, true);
+        stream.WriteJson(optionsJson);
+        stream.Close();
     }
 
     void OptionsManager::Load()
     {
         const auto& fs = g_App.GetFilesystem();
-
-        auto path = fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT);
         
         // Open options JSON file.
-        auto inputFile = std::ifstream(path);
-        if (!inputFile.is_open())
+        auto stream = Stream(fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT), true, false);
+        if (!stream.IsOpen())
         {
             Log("No options file found. Creating file.", LogLevel::Info);
 
@@ -198,8 +190,7 @@ namespace Silent::Services
         }
 
         // Parse file into JSON object.
-        auto optionsJson = json();
-        inputFile >> optionsJson;
+        auto optionsJson = stream.ReadJson();
 
         // Read options JSON.
         _options = FromOptionsJson(optionsJson);

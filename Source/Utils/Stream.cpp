@@ -1,6 +1,10 @@
 #include "Framework.h"
 #include "Utils/Stream.h"
 
+#include "Services/Filesystem.h"
+
+using namespace Silent::Services;
+
 namespace Silent::Utils
 {
     Stream::Stream(const std::filesystem::path& filename, bool read, bool write)
@@ -21,6 +25,23 @@ namespace Silent::Utils
     Stream::~Stream()
     {
         _stream.close();
+    }
+
+    uint Stream::GetSize()
+    {
+        if (!IsOpen())
+        {
+            return 0;
+        }
+
+        // Store current position.
+        auto curPos = _stream.tellg();
+
+        // Get size from file end and return to current position.
+        _stream.seekg(0, std::fstream::end);
+        uint size = (uint)_stream.tellg();
+        _stream.seekg(curPos);
+        return size;
     }
 
     bool Stream::IsOpen() const
@@ -147,6 +168,26 @@ namespace Silent::Utils
         return Vector3(x, y, z);
     }
 
+    json Stream::ReadJson()
+    {
+        if (!TestRead())
+        {
+            return json();
+        }
+
+        try
+        {
+            auto val = json::parse(_stream);
+            _stream.seekg(0, std::fstream::end);
+            return val;
+        }
+        catch (const json::parse_error& ex)
+        {
+            Log("Failed to read JSON from binary file data stream.", LogLevel::Warning);
+            return json();
+        }
+    }
+
     void Stream::Write(const void* buffer, uint size)
     {
         if (!_stream.good() && !(_flags & std::fstream::out))
@@ -226,6 +267,17 @@ namespace Silent::Utils
     void Stream::WriteVector3(const Vector3& val)
     {
         Write((byte*)&val, sizeof(Vector3));
+    }
+
+    void Stream::WriteJson(const json& val)
+    {
+        if (!TestWrite())
+        {
+            return;
+        }
+
+        _stream << val.dump(JSON_INDENT_SIZE);
+        _stream.seekg(0, std::fstream::end);
     }
 
     bool Stream::TestRead() const

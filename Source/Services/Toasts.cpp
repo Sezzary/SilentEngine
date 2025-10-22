@@ -33,7 +33,7 @@ namespace Silent::Services
         }
 
         // Erase inactive toasts.
-        EraseIf(_toasts, [](const Toast& toast)
+        Erase(_toasts, [](const Toast& toast)
         {
             return toast.Life <= 0;
         });

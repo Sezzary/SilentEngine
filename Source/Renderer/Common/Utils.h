@@ -25,4 +25,11 @@ namespace Silent::Renderer
      * @return Screen position in percent with components in the range `[0.0f, 100.0f]`.
      */
     Vector2 ConvertNdcToScreenPosition(const Vector2& ndc);
+
+    /** @brief Normalizes retro screen coordinates for negative values, which are offsets from the center.
+     *
+     * @param pos Retro screen coordinates (320x240).
+     * @return Retro screen coordinates normalized for negative values.
+     */
+    Vector2i NormalizeRetroScreenPosition(const Vector2i pos);
 }

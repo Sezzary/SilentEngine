@@ -335,7 +335,7 @@ namespace Silent::Renderer
         _buffers.Primitives2d.Bind(renderPass, 0);
 
         // Upload uniform data.
-        UniformBuffer.Time = SDL_GetTicksNS() / 1e9f;
+        UniformBuffer.Time = 1.0f;//SDL_GetTicksNS() / 1e9f;
         SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
 
         // Process render pass.

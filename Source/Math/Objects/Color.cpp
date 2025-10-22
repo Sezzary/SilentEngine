@@ -69,7 +69,7 @@ namespace Silent::Math
         return FP_COLOR(A());
     }
 
-    Color From8Bit(uchar r, uchar g, uchar b, uchar a)
+    Color Color::From8Bit(uchar r, uchar g, uchar b, uchar a)
     {
         return Color(r / (float)FP_COLOR(1.0f),
                      g / (float)FP_COLOR(1.0f),

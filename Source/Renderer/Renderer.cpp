@@ -10,6 +10,10 @@
 #include "Renderer/Common/Objects/Scene/Text.h"
 #include "Renderer/Backends/OpenGl/OpenGl.h"
 #include "Renderer/Backends/SdlGpu/SdlGpu.h"
+#include "Utils/Parallel.h"
+#include "Utils/Utils.h"
+
+using namespace Silent::Utils;
 
 namespace Silent::Renderer
 {
@@ -329,6 +333,19 @@ namespace Silent::Renderer
 
     void RendererBase::PrepareFrameData()
     {
+        auto sortTasks = ParallelTasks
+        {
+            // Sort 2D primitives by depth.
+            [&]()
+            {
+                Sort(_primitives2d, [](const Primitive2d& prim0, const Primitive2d& prim1)
+                {
+                    return prim0.Depth > prim1.Depth; // @todo Weird reverse order necessary here.
+                });
+            }
+        };
+        g_Executor.AddTasks(sortTasks).wait();
+
         // @todo Intermediate data -> renderer-ready data. At later stages, outside this method, renderer-ready data -> GPU copy-ready data.
     }
 

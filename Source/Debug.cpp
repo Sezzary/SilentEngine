@@ -97,8 +97,34 @@ namespace Silent::Debug
             renderer.Submit2dPrimitive(quad);
             renderer.Submit2dPrimitive(line0);
             renderer.Submit2dPrimitive(line1);
-            renderer.Submit2dPrimitive(line2);
+            //renderer.Submit2dPrimitive(line2);
             renderer.Submit2dPrimitive(line3);
+
+            for (int i = 0; i < 8; i++)
+            {
+                auto quadB0 = Primitive2d::CreateQuad(
+                                                    Vector2i(-108, -55 + i * 16),
+                                                    Vector2i(-108, -43 + i * 16),
+                                                    Vector2i(-120, -55 + i * 16),
+                                                    Vector2i(-120, -43 + i * 16),
+                                                    Color::From8Bit(255, 255, 255),
+                                                    Color::From8Bit(160, 128, 64),
+                                                    Color::From8Bit(160, 128, 64),
+                                                    Color::From8Bit(255, 255, 255),
+                                                    0);
+                auto quadB1 = Primitive2d::CreateQuad(
+                                                    Vector2i(-121, -56 + i * 16),
+                                                    Vector2i(-121, -42 + i * 16),
+                                                    Vector2i(-107, -56 + i * 16),
+                                                    Vector2i(-107, -42 + i * 16),
+                                                    Color::From8Bit(255, 255, 255),
+                                                    Color::From8Bit(160, 128, 64),
+                                                    Color::From8Bit(160, 128, 64),
+                                                    Color::From8Bit(64, 64, 64),
+                                                    1);
+                renderer.Submit2dPrimitive(quadB1);
+                renderer.Submit2dPrimitive(quadB0);
+            }
         }
     }
 

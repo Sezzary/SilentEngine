@@ -100,31 +100,47 @@ namespace Silent::Debug
             //renderer.Submit2dPrimitive(line2);
             renderer.Submit2dPrimitive(line3);
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 11; i++)
             {
+                auto line3 = Primitive2d::CreateLine(Vector2i(39,  82 + (i * 16)),
+                                                     Vector2i(200, 82 + (i * 16)),
+                                                     Color::From8Bit(176, 176, 176),
+                                                     Color::From8Bit(160, 128, 64),
+                                                     0);
                 auto quadB0 = Primitive2d::CreateQuad(
-                                                    Vector2i(-108, -55 + i * 16),
-                                                    Vector2i(-108, -43 + i * 16),
-                                                    Vector2i(-120, -55 + i * 16),
-                                                    Vector2i(-120, -43 + i * 16),
+                                                    Vector2i(52, 69 + (i * 16)),
+                                                    Vector2i(52, 81 + (i * 16)),
+                                                    Vector2i(40, 69 + (i * 16)),
+                                                    Vector2i(40, 81 + (i * 16)),
                                                     Color::From8Bit(255, 255, 255),
                                                     Color::From8Bit(160, 128, 64),
                                                     Color::From8Bit(160, 128, 64),
                                                     Color::From8Bit(255, 255, 255),
                                                     0);
                 auto quadB1 = Primitive2d::CreateQuad(
-                                                    Vector2i(-121, -56 + i * 16),
-                                                    Vector2i(-121, -42 + i * 16),
-                                                    Vector2i(-107, -56 + i * 16),
-                                                    Vector2i(-107, -42 + i * 16),
+                                                    Vector2i(39, 68 + (i * 16)),
+                                                    Vector2i(39, 82 + (i * 16)),
+                                                    Vector2i(53, 68 + (i * 16)),
+                                                    Vector2i(53, 82 + (i * 16)),
                                                     Color::From8Bit(255, 255, 255),
                                                     Color::From8Bit(160, 128, 64),
                                                     Color::From8Bit(160, 128, 64),
-                                                    Color::From8Bit(64, 64, 64),
+                                                    Color::From8Bit(64,  64,  64),
                                                     1);
+                renderer.Submit2dPrimitive(line3);
                 renderer.Submit2dPrimitive(quadB1);
                 renderer.Submit2dPrimitive(quadB0);
             }
+
+            auto tri = Primitive2d::CreateTriangle(
+                                                   Vector2i(8, 84),
+                                                   Vector2i(16, 76),
+                                                   Vector2i(16, 92),
+                                                   Color::From8Bit(48, 255, 255),
+                                                   Color::From8Bit(48, 255, 128),
+                                                   Color::From8Bit(48, 255, 128),
+                                                   0);
+            renderer.Submit2dPrimitive(tri);
         }
     }
 

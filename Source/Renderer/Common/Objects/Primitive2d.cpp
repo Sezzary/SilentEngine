@@ -37,8 +37,10 @@ namespace Silent::Renderer
                                         const Color& colorFrom, const Color& colorTo,
                                         uint depth, ScaleMode scaleMode, BlendMode blendMode)
     {
-        return Primitive2d::CreateLine((from.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                       (to.ToVector2()   / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+        auto normFrom = NormalizeRetroScreenPosition(from);
+        auto normTo   = NormalizeRetroScreenPosition(to);
+        return Primitive2d::CreateLine((normFrom.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                       (normTo.ToVector2()   / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                        colorFrom, colorTo,
                                        depth, scaleMode, blendMode);
     }
@@ -61,13 +63,17 @@ namespace Silent::Renderer
         };
     }
 
-    Primitive2d CreateTriangle(const Vector2i& vert0, const Vector2i& vert1, const Vector2i& vert2,
-                               const Color& color0, const Color& color1, const Color& color2,
-                               uint depth, ScaleMode scaleMode, BlendMode blendMode)
+    Primitive2d Primitive2d::CreateTriangle(const Vector2i& vert0, const Vector2i& vert1, const Vector2i& vert2,
+                                            const Color& color0, const Color& color1, const Color& color2,
+                                            uint depth, ScaleMode scaleMode, BlendMode blendMode)
     {
-        return Primitive2d::CreateTriangle((vert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                           (vert1.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                           (vert2.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+        auto normVert0 = NormalizeRetroScreenPosition(vert0);
+        auto normVert1 = NormalizeRetroScreenPosition(vert1);
+        auto normVert2 = NormalizeRetroScreenPosition(vert2);
+
+        return Primitive2d::CreateTriangle((normVert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                           (normVert1.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                           (normVert2.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                            color0, color1, color2,
                                            depth, scaleMode, blendMode);
     }

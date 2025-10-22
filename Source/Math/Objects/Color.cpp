@@ -83,8 +83,8 @@ namespace Silent::Math
 
         return Color((float)((packedRgba >> 24) & BIT_MASK) / (float)BIT_MASK,
                      (float)((packedRgba >> 16) & BIT_MASK) / (float)BIT_MASK,
-                     (float)((packedRgba >> 8) & BIT_MASK) / (float)BIT_MASK,
-                     (float)(packedRgba & BIT_MASK) / (float)BIT_MASK);
+                     (float)((packedRgba >>  8) & BIT_MASK) / (float)BIT_MASK,
+                     (float)(packedRgba         & BIT_MASK) / (float)BIT_MASK);
     }
 
     Color Color::Lerp(const Color& color0, const Color& color1, float alpha)

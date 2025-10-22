@@ -11,9 +11,14 @@ using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
+    void Options_Selection_HighlightDraw(const s_Line2d& line, bool hasShadow, bool invertGradient)
+    {
+        // @todo
+    }
+
     void Options_Selection_ArrowDraw(const s_Triangle2d& arrow, bool isFlashing, bool resetColor)
     {
-        constexpr auto COLOR_FLASH_BASE = Color::From8Bit(0, 0, 255);
+        constexpr auto COLOR_FLASH_BASE = Color::From8Bit(0, 112, 255);
         constexpr auto COLOR_CYAN       = Color::From8Bit(0, 240, 240);
 
         auto& renderer = g_App.GetRenderer();
@@ -73,9 +78,9 @@ namespace Silent::Game
         // Set flashing blue-cyan color.
         if (isFlashing)
         {
-            color0 = Color::From8Bit(COLOR_FLASH_BASE.R8(), colorEnd, COLOR_FLASH_BASE.B8());
+            color0 = Color::From8Bit(COLOR_FLASH_BASE.R8(), COLOR_FLASH_BASE.R8() + colorEnd, colorEnd, COLOR_FLASH_BASE.B8());
             color1 =
-            color2 = Color::From8Bit(COLOR_FLASH_BASE.R8(), colorStart, COLOR_FLASH_BASE.B8());
+            color2 = Color::From8Bit(COLOR_FLASH_BASE.R8(), COLOR_FLASH_BASE.R8() + colorStart, COLOR_FLASH_BASE.B8());
         }
         // Set solid cyan color.
         else
@@ -85,11 +90,11 @@ namespace Silent::Game
             color2 = COLOR_CYAN;
         }
 
-        // Submit triangle.
-        auto tri = Primitive2d::CreateTriangle(arrow.vertex0, arrow.vertex1, arrow.vertex2,
-                                               color0, color1, color2,
-                                               DEPTH_40);
-        renderer.Submit2dPrimitive(tri);
+        // Submit triangle primitive.
+        auto prim = Primitive2d::CreateTriangle(arrow.vertex0, arrow.vertex1, arrow.vertex2,
+                                                color0, color1, color2,
+                                                DEPTH_40);
+        renderer.Submit2dPrimitive(prim);
     }
 
     void Options_Selection_BulletPointDraw(const s_Quad2d& quad, bool isBorder, bool isInactive)
@@ -129,10 +134,10 @@ namespace Silent::Game
             color3 = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
         }
         
-        // Submit triangle.
-        auto tri = Primitive2d::CreateQuad(quad.vertex0, quad.vertex1, quad.vertex2, quad.vertex3,
-                                           color0, color1, color2, color3,
-                                           DEPTH_24);
-        renderer.Submit2dPrimitive(tri);
+        // Submit quad primitive.
+        auto prim = Primitive2d::CreateQuad(quad.vertex0, quad.vertex1, quad.vertex2, quad.vertex3,
+                                            color0, color1, color2, color3,
+                                            DEPTH_24);
+        renderer.Submit2dPrimitive(prim);
     }
 }

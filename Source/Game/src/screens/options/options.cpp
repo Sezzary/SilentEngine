@@ -12,11 +12,18 @@ namespace Silent::Game
     constexpr uint LAYER_36   = 36;
     constexpr uint LAYER_8148 = 8148;
 
+    s32 g_Options_SelectionHighlightTimer = 0;
+
     int  g_MainOptionsMenu_SelectedEntry      = 0;
     int  g_ExtraOptionsMenu_SelectedEntry     = 0;
     int  g_MainOptionsMenu_PrevSelectedEntry  = 0;
     int  g_ExtraOptionsMenu_PrevSelectedEntry = 0;
     bool g_ScreenPosMenu_InvertBackgroundFade = false;
+
+    DVECTOR g_MainOptions_SelectionHighlightFrom  = DVECTOR{ 0, 0 };
+    DVECTOR g_MainOptions_SelectionHighlightTo    = DVECTOR{ 0, 0 };
+    DVECTOR g_ExtraOptions_SelectionHighlightFrom = DVECTOR{ 0, 0 };
+    DVECTOR g_ExtraOptions_SelectionHighlightTo   = DVECTOR{ 0, 0 };
 
     void GameState_Options_Update(void)
     {

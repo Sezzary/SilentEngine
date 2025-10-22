@@ -87,8 +87,8 @@ namespace Silent::Debug
                                                  Color(1.0f, 1.0f, 0.0f, 1.0f),
                                                  Color(1.0f, 1.0f, 0.0f, 1.0f),
                                                  0);
-            auto line3 = Primitive2d::CreateLine(Vector2i(1, 0),
-                                                 Vector2i(319, 0),
+            auto line3 = Primitive2d::CreateLine(Vector2i(319, 0),
+                                                 Vector2i(1, 0),
                                                  Color(1.0f, 1.0f, 0.0f, 1.0f),
                                                  Color(1.0f, 1.0f, 0.0f, 1.0f),
                                                  0);

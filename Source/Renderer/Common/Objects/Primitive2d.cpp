@@ -14,7 +14,8 @@ namespace Silent::Renderer
         constexpr float WIDTH = SCREEN_SPACE_RES.y / RETRO_SCREEN_SPACE_RES.y;
 
         // @todo May have to offset in the opposite direction for certain rotations.
-        auto  dir    = Vector2::Normalize(to - from);
+        auto  dir    = Vector2::Normalize(Vector2(std::max(from.x, to.x), std::max(from.y, to.y)) -
+                                          Vector2(std::min(from.x, to.x), std::min(from.y, to.y)));
         auto  offset = Vector2(dir.y, dir.x) * WIDTH;
 
         return Primitive2d

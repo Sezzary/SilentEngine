@@ -78,15 +78,172 @@ namespace Silent::Game
             // Active selection bullet point.
             if (i == g_MainOptionsMenu_SelectedEntry)
             {
-                //Options_Selection_BulletPointDraw(&bulletQuads[0], false, false);
-                //Options_Selection_BulletPointDraw(&bulletQuads[1], true,  false);
+                Options_Selection_BulletPointDraw(&bulletQuads[0], false, false);
+                Options_Selection_BulletPointDraw(&bulletQuads[1], true,  false);
             }
             // Inactive selection bullet point.
             else
             {
-                //Options_Selection_BulletPointDraw(&bulletQuads[0], false, true);
-                //Options_Selection_BulletPointDraw(&bulletQuads[1], true,  true);
+                Options_Selection_BulletPointDraw(&bulletQuads[0], false, true);
+                Options_Selection_BulletPointDraw(&bulletQuads[1], true,  true);
             }
+        }
+    }
+
+    void Options_Selection_ArrowDraw(const s_Triangle2d* arrow, bool isFlashing, bool resetColor)
+    {
+        // Fade start color.
+        int colorFade = 0;//g_SysWork.timer_1C & 0x7F;
+
+        int colorStart = 0;
+        if (colorFade >= 32)
+        {
+            colorStart = 32;
+            if (colorFade < 64)
+            {
+                colorStart = 32;
+            }
+            else if (colorFade < 96)
+            {
+                colorStart = 96 - colorFade;
+            }
+            else
+            {
+                colorStart = 0;
+            }
+        }
+        else
+        {
+            colorStart = colorFade;
+        }
+
+        // Fade end color.
+        int colorEnd = 0;
+        if (colorFade >= 32)
+        {
+            if (colorFade < 64)
+            {
+                colorEnd = colorFade - 32;
+            }
+            else if (colorFade >= 96)
+            {
+                colorEnd = 128 - colorFade;
+            }
+            else
+            {
+                colorEnd = 32;
+            }
+        }
+        else
+        {
+            colorEnd = 0;
+        }
+
+        // Draw blue arrow.
+        //arrowPoly = (POLY_G3*)GsOUT_PACKET_P;
+        //setPolyG3(arrowPoly);
+
+        // Flash color from blue to cyan.
+        if (isFlashing)
+        {
+            // 48, 255, colorEnd
+            // 48, 255, colorStart
+            // 48, 255, colorStart
+        }
+        // Set solid cyan color.
+        else
+        {
+            //setRGBC0(arrowPoly, 0, 240, 240);
+            //setRGBC1(arrowPoly, 0, 240, 240);
+            //setRGBC2(arrowPoly, 0, 240, 240);
+        }
+
+        //setXY0Fast(arrowPoly, arrow->vertex0_0.vx, arrow->vertex0_0.vy);
+        //setXY1Fast(arrowPoly, arrow->vertex1_4.vx, arrow->vertex1_4.vy);
+        //setXY2Fast(arrowPoly, arrow->vertex2_8.vx, arrow->vertex2_8.vy);
+        //addPrim((u8*)ot->org + LAYER_40, arrowPoly);
+        //GsOUT_PACKET_P = (u8*)arrowPoly + sizeof(POLY_G3);
+    }
+
+    void Options_Selection_BulletPointDraw(const s_Quad2d* quad, bool isCenter, bool isInactive)
+    {
+        constexpr uint QUAD_COUNT = 2;
+
+        // Draw quads as triangles with diagonal gradient.
+        for (int i = 0; i < QUAD_COUNT; i++)
+        {
+            //poly = (POLY_G3*)GsOUT_PACKET_P;
+            //setPolyG3(poly);
+
+            // Center quad.
+            if (isCenter)
+            {
+                // Set color.
+                switch (isInactive)
+                {
+                    case false:
+                        //setRGBC0(poly, 255, 255, 255, 0x30);
+                        //setRGBC1(poly, 160, 128, 64, 0x30);
+                        //setRGBC2(poly, 64, 64, 64, 0x30);
+                        break;
+
+                    case true:
+                        //setRGBC0(poly, 128, 128, 128, 0x30);
+                        //setRGBC1(poly, 40, 32, 16, 0x30);
+                        //setRGBC2(poly, 16, 16, 16, 0x30);
+                        break;
+                }
+
+                // Draw triangle.
+                if (i != 0)
+                {
+                    //setXY0Fast(poly, quad->vertex0_0.vx, quad->vertex0_0.vy);
+                    //setXY1Fast(poly, quad->vertex1_4.vx, quad->vertex1_4.vy);
+                    //setXY2Fast(poly, quad->vertex3_C.vx, quad->vertex3_C.vy);
+                }
+                else
+                {
+                    //setXY0Fast(poly, quad->vertex0_0.vx, quad->vertex0_0.vy);
+                    //setXY1Fast(poly, quad->vertex2_8.vx, quad->vertex2_8.vy);
+                    //setXY2Fast(poly, quad->vertex3_C.vx, quad->vertex3_C.vy);
+                }
+            }
+            // Border quad.
+            else
+            {
+                // Set color.
+                switch (isInactive)
+                {
+                    case false:
+                        //setRGBC0(poly, 160, 128, 64, 0x30);
+                        //setRGBC1(poly, 255, 255, 255, 0x30);
+                        //setRGBC2(poly, 255, 255, 255, 0x30);
+                        break;
+
+                    case true:
+                        //setRGBC0(poly, 80, 64, 32, 0x30);
+                        //setRGBC1(poly, 160, 160, 160, 0x30);
+                        //setRGBC2(poly, 160, 160, 160, 0x30);
+                        break;
+                }
+
+                // Draw triangle.
+                if (i != 0)
+                {
+                    //setXY0Fast(poly, quad->vertex3_C.vx, quad->vertex3_C.vy);
+                    //setXY1Fast(poly, quad->vertex1_4.vx, quad->vertex1_4.vy);
+                    //setXY2Fast(poly, quad->vertex2_8.vx, quad->vertex2_8.vy);
+                }
+                else
+                {
+                    //setXY0Fast(poly, quad->vertex0_0.vx, quad->vertex0_0.vy);
+                    //setXY1Fast(poly, quad->vertex1_4.vx, quad->vertex1_4.vy);
+                    //setXY2Fast(poly, quad->vertex2_8.vx, quad->vertex2_8.vy);
+                }
+            }
+
+            //addPrim((u8*)ot->org + LAYER_24, poly);
+            //GsOUT_PACKET_P = (u8*)poly + sizeof(POLY_G3);
         }
     }
 }

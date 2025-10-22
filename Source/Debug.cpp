@@ -82,17 +82,23 @@ namespace Silent::Debug
                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
                                                 0);
-            auto line2 = Primitive2d::CreateLine(Vector2i(10, 220),
-                                                Vector2i(50, 220),
-                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                                0);
+            auto line2 = Primitive2d::CreateLine(Vector2i(0, 1),
+                                                 Vector2i(0, 239),
+                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                 0);
+            auto line3 = Primitive2d::CreateLine(Vector2i(1, 0),
+                                                 Vector2i(319, 0),
+                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                 0);
             //renderer.Submit2dPrimitive(tri0);
             //renderer.Submit2dPrimitive(tri1);
             renderer.Submit2dPrimitive(quad);
             renderer.Submit2dPrimitive(line0);
             renderer.Submit2dPrimitive(line1);
             renderer.Submit2dPrimitive(line2);
+            renderer.Submit2dPrimitive(line3);
         }
     }
 

@@ -15,7 +15,7 @@ namespace Silent::Renderer
 
         // @todo May have to offset in the opposite direction for certain rotations.
         auto  dir    = Vector2::Normalize(to - from);
-        auto  offset = Vector2(-dir.y, dir.x) * WIDTH;
+        auto  offset = Vector2(dir.y, dir.x) * WIDTH;
 
         return Primitive2d
         {

@@ -411,8 +411,8 @@ namespace Silent::Renderer
             {
                 for (const auto& vert : prim.Vertices)
                 {
-                    auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
-                    auto ndc = ConvertScreenPositionToNdc(pos);
+                    //auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
+                    auto ndc = ConvertScreenPositionToNdc(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
                         .Position = Vector3(ndc.x, ndc.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
@@ -427,8 +427,8 @@ namespace Silent::Renderer
                 {
                     const auto& vert = prim.Vertices[i];
 
-                    auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
-                    auto ndc = ConvertScreenPositionToNdc(pos);
+                    //auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
+                    auto ndc = ConvertScreenPositionToNdc(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
                         .Position = Vector3(ndc.x, ndc.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),

@@ -20,28 +20,28 @@ namespace Silent::Game
         // 12x12 quad.
         static const auto BULLET_QUAD_FRONT = s_Quad2d
         {
-            .vertex0_0 = { 40, 65 },
-            .vertex1_4 = { 40, 77 },
-            .vertex2_8 = { 52, 65 },
-            .vertex3_C = { 52, 77 }
+            .vertex0 = Vector2i(40, 65),
+            .vertex1 = Vector2i(40, 77),
+            .vertex2 = Vector2i(52, 65),
+            .vertex3 = Vector2i(52, 77)
         };
 
         // 14x14 quad.
         static const auto BULLET_QUAD_BACK = s_Quad2d
         {
-            .vertex0_0 = { 39, 64 },
-            .vertex1_4 = { 39, 76 },
-            .vertex2_8 = { 51, 64 },
-            .vertex3_C = { 51, 76 }
+            .vertex0 = Vector2i(39, 64),
+            .vertex1 = Vector2i(39, 76),
+            .vertex2 = Vector2i(51, 64),
+            .vertex3 = Vector2i(51, 76)
         };
 
         // Set active selection highlight position references.
         if (g_Options_SelectionHighlightTimer == 0)
         {
-            g_MainOptions_SelectionHighlightFrom.vx = SELECTION_HIGHLIGHT_WIDTHS[g_MainOptionsMenu_PrevSelectedEntry] + HIGHLIGHT_OFFSET_X;
-            g_MainOptions_SelectionHighlightFrom.vy = (g_MainOptionsMenu_PrevSelectedEntry * LINE_OFFSET_Y)           - HIGHLIGHT_OFFSET_Y;
-            g_MainOptions_SelectionHighlightTo.vx   = SELECTION_HIGHLIGHT_WIDTHS[g_MainOptionsMenu_SelectedEntry]     + HIGHLIGHT_OFFSET_X;
-            g_MainOptions_SelectionHighlightTo.vy   = (g_MainOptionsMenu_SelectedEntry * LINE_OFFSET_Y)               - HIGHLIGHT_OFFSET_Y;
+            g_MainOptions_SelectionHighlightFrom.x = SELECTION_HIGHLIGHT_WIDTHS[g_MainOptionsMenu_PrevSelectedEntry] + HIGHLIGHT_OFFSET_X;
+            g_MainOptions_SelectionHighlightFrom.y = (g_MainOptionsMenu_PrevSelectedEntry * LINE_OFFSET_Y)           - HIGHLIGHT_OFFSET_Y;
+            g_MainOptions_SelectionHighlightTo.x   = SELECTION_HIGHLIGHT_WIDTHS[g_MainOptionsMenu_SelectedEntry]     + HIGHLIGHT_OFFSET_X;
+            g_MainOptions_SelectionHighlightTo.y   = (g_MainOptionsMenu_SelectedEntry * LINE_OFFSET_Y)               - HIGHLIGHT_OFFSET_Y;
         }
 
         // Compute sine-based interpolation alpha.
@@ -49,13 +49,13 @@ namespace Silent::Game
 
         // Draw active selection highlight.
         auto highlightLine = s_Line2d{};
-        //highlightLine.vertex0_0.vx = HIGHLIGHT_OFFSET_X;
-        //highlightLine.vertex1_4.vx = g_MainOptions_SelectionHighlightFrom.vx +
-        //                             FP_FROM((g_MainOptions_SelectionHighlightTo.vx - g_MainOptions_SelectionHighlightFrom.vx) * interpAlpha, Q12_SHIFT);
-        //highlightLine.vertex1_4.vy = g_MainOptions_SelectionHighlightFrom.vy +
-        //                             FP_FROM((g_MainOptions_SelectionHighlightTo.vy - g_MainOptions_SelectionHighlightFrom.vy) * interpAlpha, Q12_SHIFT) +
-        //                             LINE_OFFSET_Y;
-        //highlightLine.vertex0_0.vy = highlightLine.vertex1_4.vy;
+        //highlightLine.vertex0.x = HIGHLIGHT_OFFSET_X;
+        //highlightLine.vertex1.x = g_MainOptions_SelectionHighlightFrom.x +
+        //                          FP_FROM((g_MainOptions_SelectionHighlightTo.x - g_MainOptions_SelectionHighlightFrom.x) * interpAlpha, Q12_SHIFT);
+        //highlightLine.vertex1.y = g_MainOptions_SelectionHighlightFrom.y +
+        //                          FP_FROM((g_MainOptions_SelectionHighlightTo.y - g_MainOptions_SelectionHighlightFrom.y) * interpAlpha, Q12_SHIFT) +
+        //                          LINE_OFFSET_Y;
+        //highlightLine.vertex0.y = highlightLine.vertex1.y;
         //Options_Selection_HighlightDraw(&highlightLine, true, false);
 
         // Draw selection bullet points.
@@ -69,10 +69,10 @@ namespace Silent::Game
             };
             for (auto& quad : bulletQuads)
             {
-                quad.vertex0_0.vy += i * LINE_OFFSET_Y;
-                quad.vertex1_4.vy += i * LINE_OFFSET_Y;
-                quad.vertex2_8.vy += i * LINE_OFFSET_Y;
-                quad.vertex3_C.vy += i * LINE_OFFSET_Y;
+                quad.vertex0.y += i * LINE_OFFSET_Y;
+                quad.vertex1.y += i * LINE_OFFSET_Y;
+                quad.vertex2.y += i * LINE_OFFSET_Y;
+                quad.vertex3.y += i * LINE_OFFSET_Y;
             }
 
             // Active selection bullet point.
@@ -158,9 +158,9 @@ namespace Silent::Game
             //setRGBC2(arrowPoly, 0, 240, 240);
         }
 
-        //setXY0Fast(arrowPoly, arrow->vertex0_0.vx, arrow->vertex0_0.vy);
-        //setXY1Fast(arrowPoly, arrow->vertex1_4.vx, arrow->vertex1_4.vy);
-        //setXY2Fast(arrowPoly, arrow->vertex2_8.vx, arrow->vertex2_8.vy);
+        //setXY0Fast(arrowPoly, arrow->vertex0.x, arrow->vertex0.y);
+        //setXY1Fast(arrowPoly, arrow->vertex1.x, arrow->vertex1.y);
+        //setXY2Fast(arrowPoly, arrow->vertex2.x, arrow->vertex2.y);
         //addPrim((u8*)ot->org + LAYER_40, arrowPoly);
         //GsOUT_PACKET_P = (u8*)arrowPoly + sizeof(POLY_G3);
     }
@@ -197,15 +197,15 @@ namespace Silent::Game
                 // Draw triangle.
                 if (i != 0)
                 {
-                    //setXY0Fast(poly, quad->vertex0_0.vx, quad->vertex0_0.vy);
-                    //setXY1Fast(poly, quad->vertex1_4.vx, quad->vertex1_4.vy);
-                    //setXY2Fast(poly, quad->vertex3_C.vx, quad->vertex3_C.vy);
+                    //setXY0Fast(poly, quad->vertex0.x, quad->vertex0.y);
+                    //setXY1Fast(poly, quad->vertex1.x, quad->vertex1.y);
+                    //setXY2Fast(poly, quad->vertex3.x, quad->vertex3.y);
                 }
                 else
                 {
-                    //setXY0Fast(poly, quad->vertex0_0.vx, quad->vertex0_0.vy);
-                    //setXY1Fast(poly, quad->vertex2_8.vx, quad->vertex2_8.vy);
-                    //setXY2Fast(poly, quad->vertex3_C.vx, quad->vertex3_C.vy);
+                    //setXY0Fast(poly, quad->vertex0.x, quad->vertex0.y);
+                    //setXY1Fast(poly, quad->vertex2.x, quad->vertex2.y);
+                    //setXY2Fast(poly, quad->vertex3.x, quad->vertex3.y);
                 }
             }
             // Border quad.
@@ -230,15 +230,15 @@ namespace Silent::Game
                 // Draw triangle.
                 if (i != 0)
                 {
-                    //setXY0Fast(poly, quad->vertex3_C.vx, quad->vertex3_C.vy);
-                    //setXY1Fast(poly, quad->vertex1_4.vx, quad->vertex1_4.vy);
-                    //setXY2Fast(poly, quad->vertex2_8.vx, quad->vertex2_8.vy);
+                    //setXY0Fast(poly, quad->vertex3_C.x, quad->vertex3_C.y);
+                    //setXY1Fast(poly, quad->vertex1_4.x, quad->vertex1_4.y);
+                    //setXY2Fast(poly, quad->vertex2_8.x, quad->vertex2_8.y);
                 }
                 else
                 {
-                    //setXY0Fast(poly, quad->vertex0_0.vx, quad->vertex0_0.vy);
-                    //setXY1Fast(poly, quad->vertex1_4.vx, quad->vertex1_4.vy);
-                    //setXY2Fast(poly, quad->vertex2_8.vx, quad->vertex2_8.vy);
+                    //setXY0Fast(poly, quad->vertex0_0.x, quad->vertex0_0.y);
+                    //setXY1Fast(poly, quad->vertex1_4.x, quad->vertex1_4.y);
+                    //setXY2Fast(poly, quad->vertex2_8.x, quad->vertex2_8.y);
                 }
             }
 

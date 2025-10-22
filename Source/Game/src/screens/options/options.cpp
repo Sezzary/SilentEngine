@@ -20,10 +20,10 @@ namespace Silent::Game
     int  g_ExtraOptionsMenu_PrevSelectedEntry = 0;
     bool g_ScreenPosMenu_InvertBackgroundFade = false;
 
-    DVECTOR g_MainOptions_SelectionHighlightFrom  = DVECTOR{ 0, 0 };
-    DVECTOR g_MainOptions_SelectionHighlightTo    = DVECTOR{ 0, 0 };
-    DVECTOR g_ExtraOptions_SelectionHighlightFrom = DVECTOR{ 0, 0 };
-    DVECTOR g_ExtraOptions_SelectionHighlightTo   = DVECTOR{ 0, 0 };
+    Vector2i g_MainOptions_SelectionHighlightFrom  = Vector2i::Zero;
+    Vector2i g_MainOptions_SelectionHighlightTo    = Vector2i::Zero;
+    Vector2i g_ExtraOptions_SelectionHighlightFrom = Vector2i::Zero;
+    Vector2i g_ExtraOptions_SelectionHighlightTo   = Vector2i::Zero;
 
     void GameState_Options_Update(void)
     {

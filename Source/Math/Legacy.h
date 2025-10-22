@@ -2,6 +2,7 @@
 
 #include "Math/Objects/EulerAngles.h"
 #include "Math/Objects/Matrix.h"
+#include "Math/Objects/Vector2i.h"
 #include "Math/Objects/Vector3i.h"
 
 using namespace Silent;
@@ -90,32 +91,32 @@ using namespace Silent::Math;
     
     struct s_Line2d
     {
-        DVECTOR vertex0_0;
-        DVECTOR vertex1_4;
+        Vector2i vertex0;
+        Vector2i vertex1;
     };
 
     struct s_Triangle2d
     {
-        DVECTOR vertex0_0;
-        DVECTOR vertex1_4;
-        DVECTOR vertex2_8;
+        Vector2i vertex0;
+        Vector2i vertex1;
+        Vector2i vertex2;
     };
 
     struct s_Quad2d
     {
-        DVECTOR vertex0_0;
-        DVECTOR vertex1_4;
-        DVECTOR vertex2_8;
-        DVECTOR vertex3_C;
+        Vector2i vertex0;
+        Vector2i vertex1;
+        Vector2i vertex2;
+        Vector2i vertex3;
     };
 
     struct s_ColoredLine2d
     {
-        s_Line2d line_0;
-        ushort    r_8;
-        ushort    g_A;
-        ushort    b_C;
-        ushort    __pad_E; // Maybe 4th component of a RGB+code struct?
+        s_Line2d line;
+        ushort   r;
+        ushort   g;
+        ushort   b;
+        ushort   __pad_E; // Maybe 4th component of a RGB+code struct?
     };
 
     struct s_LineBorder

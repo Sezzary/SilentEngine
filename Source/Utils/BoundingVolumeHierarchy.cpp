@@ -10,7 +10,8 @@ namespace Silent::Utils
 
     BoundingVolumeHierarchy::BoundingVolumeHierarchy(const std::vector<int>& objectIds, const std::vector<AxisAlignedBoundingBox>& aabbs, BvhBuildStrategy strategy)
     {
-        Assert(objectIds.size() == aabbs.size(), "BVH: Object ID and AABB counts unequal in static constructor.");
+        Assert(objectIds.size() == aabbs.size(), "BVH object ID and AABB counts unequal in static constructor.");
+
         if (objectIds.empty() && aabbs.empty())
         {
             return;
@@ -47,12 +48,7 @@ namespace Silent::Utils
         auto testColl = [&](const Node& node)
         {
             auto intersectDist = ray.Intersects(node.Aabb);
-            if (!intersectDist.has_value())
-            {
-                return false;
-            }
-            
-            return *intersectDist <= dist;
+            return intersectDist.has_value() ? (*intersectDist <= dist) : false;
         };
 
         return GetBoundedObjectIds(testColl);
@@ -95,18 +91,17 @@ namespace Silent::Utils
 
     void BoundingVolumeHierarchy::Insert(int objectId, const AxisAlignedBoundingBox& aabb, float boundary)
     {
-        // FAILSAFE: Find leaf containing object ID.
+        // Find leaf containing object ID.
         auto it = _leafIdMap.find(objectId);
         if (it != _leafIdMap.end())
         {
-            Log("BVH: Attempted to insert leaf with existing object ID " + std::to_string(objectId) + ".",
-                LogLevel::Warning, LogMode::Debug, true);
+            Log("BVH attempted to insert leaf with existing object ID " + std::to_string(objectId) + ".", LogLevel::Warning, LogMode::Debug, true);
             return;
         }
 
         // Allocate new leaf.
-        int  leafId = GetNewNodeId();
-        auto& leaf  = _nodes[leafId];
+        int   leafId = GetNewNodeId();
+        auto& leaf   = _nodes[leafId];
 
         // Set initial parameters.
         leaf.ObjectId = objectId;
@@ -123,20 +118,19 @@ namespace Silent::Utils
         auto it = _leafIdMap.find(objectId);
         if (it == _leafIdMap.end())
         {
-            Log("BVH: Attempted to move missing leaf with object ID " + std::to_string(objectId) + ".",
-                LogLevel::Warning, LogMode::Debug, true);
+            Log("BVH attempted to move missing leaf with object ID " + std::to_string(objectId) + ".", LogLevel::Warning, LogMode::Debug, true);
             return;
         }
 
         // Get leaf.
         const auto& [keyObjectId, leafId] = *it;
-        auto& leaf = _nodes[leafId];
+        auto&       leaf                  = _nodes[leafId];
 
         // Test if object AABB is inside node AABB.
         if (leaf.Aabb.Contains(aabb) == ContainmentType::Contains)
         {
             auto  deltaExtents = leaf.Aabb.Extents - aabb.Extents;
-            float threshold    = boundary * 2;
+            float threshold    = boundary * 2.0f;
 
             // Test if object AABB is significantly smaller than node AABB.
             if (deltaExtents.x < threshold &&
@@ -158,8 +152,7 @@ namespace Silent::Utils
         auto it = _leafIdMap.find(objectId);
         if (it == _leafIdMap.end())
         {
-            Log("BVH: Attempted to remove missing leaf with object ID " + std::to_string(objectId) + ".",
-                LogLevel::Warning, LogMode::Debug, true);
+            Log("BVH attempted to remove missing leaf with object ID " + std::to_string(objectId) + ".", LogLevel::Warning, LogMode::Debug, true);
             return;
         }
 
@@ -253,12 +246,12 @@ namespace Silent::Utils
             int         leftChildId  = sibling.LeftChildId;
             int         rightChildId = sibling.RightChildId;
 
-            float inheritCost = leaf.Aabb.GetSurfaceArea() * 2;
+            float inheritCost = leaf.Aabb.GetSurfaceArea() * 2.0f;
 
             // Calculate cost of creating new parent for sibling and new leaf.
             auto  mergedAabb = AxisAlignedBoundingBox::Merge(sibling.Aabb, leaf.Aabb);
             float mergedArea = mergedAabb.GetSurfaceArea();
-            float cost       = mergedArea * 2;
+            float cost       = mergedArea * 2.0f;
 
             // Calculate cost of descending into left child.
             float leftCost = FLT_MAX;
@@ -292,7 +285,7 @@ namespace Silent::Utils
             siblingId = (leftCost < rightCost) ? leftChildId : rightChildId;
             if (siblingId == NO_VALUE)
             {
-                Log("BVH: Sibling leaf search failed.", LogLevel::Warning);
+                Log("BVH sibling leaf search failed.", LogLevel::Warning);
                 break;
             }
         }
@@ -342,9 +335,8 @@ namespace Silent::Utils
         }
         else
         {
-            auto& prevParent = _nodes[prevParentId];
-
             // Update previous parent's child reference.
+            auto& prevParent = _nodes[prevParentId];
             if (prevParent.LeftChildId == siblingId)
             {
                 prevParent.LeftChildId = parentId;
@@ -366,7 +358,7 @@ namespace Silent::Utils
 
     void BoundingVolumeHierarchy::RemoveLeaf(int leafId)
     {
-        int nodeId = leafId;
+        int nodeId   = leafId;
         int parentId = _nodes[nodeId].ParentId;
 
         // Remove node.
@@ -378,8 +370,8 @@ namespace Silent::Utils
             auto& parent = _nodes[parentId];
 
             // Check if parent becomes new leaf.
-            int siblingId = (parent.LeftChildId == nodeId) ? parent.RightChildId : parent.LeftChildId;
-            auto& sibling = _nodes[siblingId];
+            int   siblingId = (parent.LeftChildId == nodeId) ? parent.RightChildId : parent.LeftChildId;
+            auto& sibling   = _nodes[siblingId];
 
             // Rearrange nodes local to removal.
             if (parent.LeftChildId == nodeId || parent.RightChildId == nodeId)
@@ -401,7 +393,7 @@ namespace Silent::Utils
                 }
                 else
                 {
-                    // No grandparent; sibling becomes root.
+                    // Sibling becomes root if no grandparent exists.
                     _rootId          = siblingId;
                     sibling.ParentId = NO_VALUE;
                 }
@@ -432,12 +424,12 @@ namespace Silent::Utils
         while (parentId != NO_VALUE)
         {
             // Balance node and get new subtree root.
-            int newParentId = BalanceNode(parentId);
-            auto& parent = _nodes[newParentId];
+            int   newParentId = BalanceNode(parentId);
+            auto& parent      = _nodes[newParentId];
 
             if (parent.LeftChildId != NO_VALUE && parent.RightChildId != NO_VALUE)
             {
-                const auto& leftChild = _nodes[parent.LeftChildId];
+                const auto& leftChild  = _nodes[parent.LeftChildId];
                 const auto& rightChild = _nodes[parent.RightChildId];
 
                 parent.Aabb   = AxisAlignedBoundingBox::Merge(leftChild.Aabb, rightChild.Aabb);
@@ -564,7 +556,7 @@ namespace Silent::Utils
                 nodeA.Height = std::max(nodeB.Height, nodeF.Height) + 1;
                 nodeC.Height = std::max(nodeA.Height, nodeG.Height) + 1;
 
-                nodeF.ParentId = nodeId;
+                nodeF.ParentId     = nodeId;
                 nodeC.RightChildId = nodeIdG;
                 nodeA.RightChildId = nodeIdF;
             }
@@ -621,8 +613,8 @@ namespace Silent::Utils
             }
             else
             {
-                nodeA.Aabb  = AxisAlignedBoundingBox::Merge(nodeC.Aabb, nodeD.Aabb);
-                nodeB.Aabb  = AxisAlignedBoundingBox::Merge(nodeA.Aabb, nodeE.Aabb);
+                nodeA.Aabb   = AxisAlignedBoundingBox::Merge(nodeC.Aabb, nodeD.Aabb);
+                nodeB.Aabb   = AxisAlignedBoundingBox::Merge(nodeA.Aabb, nodeE.Aabb);
                 nodeA.Height = std::max(nodeC.Height, nodeD.Height) + 1;
                 nodeB.Height = std::max(nodeA.Height, nodeE.Height) + 1;
 
@@ -653,7 +645,7 @@ namespace Silent::Utils
     {
         constexpr auto BALANCED_STRAT_SPLIT_RANGE_MAX = 10;
 
-        // FAILSAFE.
+        // Range safety check.
         if (start >= end)
         {
             return NO_VALUE;
@@ -664,7 +656,7 @@ namespace Silent::Utils
 
         // Combine AABBs.
         node.Aabb = aabbs[start];
-        for (int i = (start + 1); i < end; i++)
+        for (int i = start + 1; i < end; i++)
         {
             node.Aabb = AxisAlignedBoundingBox::Merge(node.Aabb, aabbs[i]);
         }
@@ -703,7 +695,7 @@ namespace Silent::Utils
                 {
                     // Calculate AABB 0.
                     auto aabb0 = aabbs[start];
-                    for (int i = (start + 1); i < split; i++)
+                    for (int i = start + 1; i < split; i++)
                     {
                         aabb0 = AxisAlignedBoundingBox::Merge(aabb0, aabbs[i]);
                     }
@@ -724,7 +716,7 @@ namespace Silent::Utils
                     if (cost < bestCost)
                     {
                         bestSplit = split;
-                        bestCost = cost;
+                        bestCost  = cost;
                     }
                 }
 
@@ -734,8 +726,8 @@ namespace Silent::Utils
             int bestSplit = getBestSplit();
 
             // Create children recursively.
-            node.LeftChildId  = Build(objectIds, aabbs, start, bestSplit, strategy);
-            node.RightChildId = Build(objectIds, aabbs, bestSplit, end, strategy);
+            node.LeftChildId  = Build(objectIds, aabbs, start,     bestSplit, strategy);
+            node.RightChildId = Build(objectIds, aabbs, bestSplit, end,       strategy);
 
             // Set parent ID for children.
             int nodeId = (int)_nodes.size();
@@ -749,7 +741,7 @@ namespace Silent::Utils
             }
 
             // Set height.
-            node.Height = std::max((node.LeftChildId != NO_VALUE) ? _nodes[node.LeftChildId].Height : 0, 
+            node.Height = std::max((node.LeftChildId  != NO_VALUE) ? _nodes[node.LeftChildId].Height  : 0, 
                                    (node.RightChildId != NO_VALUE) ? _nodes[node.RightChildId].Height : 0) + 1;
 
             // Add new inner node.
@@ -777,7 +769,7 @@ namespace Silent::Utils
                     }
                 }
 
-                Assert(count == 1, "BVH: Duplicate object IDs contained.");
+                Assert(count == 1, "BVH duplicate object IDs contained.");
             }
         }
     }
@@ -797,45 +789,45 @@ namespace Silent::Utils
             // Validate root.
             if (nodeId == _rootId)
             {
-                Assert(node.ParentId == NO_VALUE, "BVH: Root node cannot have parent.");
+                Assert(node.ParentId == NO_VALUE, "BVH root node cannot have parent.");
             }
 
             // Validate leaf node.
             if (node.IsLeaf())
             {
-                Assert(node.ObjectId != NO_VALUE, "BVH: Leaf node must contain object ID.");
-                Assert(node.Height == 0, "BVH: Leaf node must have height of 0.");
+                Assert(node.ObjectId != NO_VALUE, "BVH leaf node must contain object ID.");
+                Assert(node.Height == 0, "BVH leaf node must have height of 0.");
             }
             // Validate inner node.
             else
             {
-                Assert(node.ObjectId == NO_VALUE, "BVH: Inner node cannot contain object ID.");
-                Assert(node.Height != 0, "BVH: Inner node cannot have height of 0.");
+                Assert(node.ObjectId == NO_VALUE, "BVH inner node cannot contain object ID.");
+                Assert(node.Height != 0, "BVH inner node cannot have height of 0.");
             }
 
             // Validate parent.
             if (nodeId != _rootId)
             {
-                Assert(node.ParentId != NO_VALUE, "BVH: Non-root node must have parent.");
+                Assert(node.ParentId != NO_VALUE, "BVH non-root node must have parent.");
             }
 
             // Validate parent of children.
             if (node.LeftChildId != NO_VALUE)
             {
                 const auto& leftChild = _nodes[node.LeftChildId];
-                Assert(leftChild.ParentId == nodeId, "BVH: Left child has wrong parent.");
+                Assert(leftChild.ParentId == nodeId, "BVH left child has wrong parent.");
             }
             if (node.RightChildId != NO_VALUE)
             {
                 const auto& rightChild = _nodes[node.RightChildId];
-                Assert(rightChild.ParentId == nodeId, "BVH: Right child has wrong parent.");
+                Assert(rightChild.ParentId == nodeId, "BVH right child has wrong parent.");
             }
 
             // Validate height.
             if (nodeId != _rootId)
             {
                 const auto& parent = _nodes[node.ParentId];
-                Assert(node.Height < parent.Height, "BVH: Child height must be less than parent height.");
+                Assert(node.Height < parent.Height, "BVH child height must be less than parent height.");
             }
 
             // Validate recursively.

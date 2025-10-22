@@ -6,6 +6,9 @@ namespace Silent::Math
 {
     class Vector4;
 
+    // @todo Use `Vector4`?
+
+    /** @brief Normalized float-based RGBA color. */
     class Color : glm::vec4
     {
     public:
@@ -23,9 +26,28 @@ namespace Silent::Math
         const float& A() const;
         float&       A();
 
+        /** @brief Gets the red component converted to 8-bit.
+         *
+         * @return 8-bit red component.
+         */
         uchar R8() const;
+
+        /** @brief Gets the green component converted to 8-bit.
+         *
+         * @return 8-bit green component.
+         */
         uchar G8() const;
+
+        /** @brief Gets the blue component converted to 8-bit.
+         *
+         * @return 8-bit blue component.
+         */
         uchar B8() const;
+
+        /** @brief Gets the alpha component converted to 8-bit.
+         *
+         * @return 8-bit alpha component.
+         */
         uchar A8() const;
 
         // Presets

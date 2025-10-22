@@ -32,6 +32,8 @@ All considerations are being made to make this a flexible, readable, and extenda
 
 ## Building (Windows/macOS/Linux)
 
+WIP. Ideally the project will be able to cross-compile between all main development platforms.
+
 ### Install dependencies
 
 The project has the following requirements:

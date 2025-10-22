@@ -5,6 +5,7 @@
 namespace Silent::Math
 {
     constexpr uint Q4_SHIFT       = 4;
+    constexpr uint Q6_SHIFT       = 6;
     constexpr uint Q8_SHIFT       = 8;
     constexpr uint Q12_SHIFT      = 12;
     constexpr uint FP_ANGLE_COUNT = 1 << Q12_SHIFT;

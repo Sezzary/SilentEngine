@@ -1,11 +1,22 @@
 cmake_minimum_required(VERSION 3.31.6)
 
+# @todo
+# - Switch to GCC.
+# - Modules don't work.
+
 # Define project.
 project(SilentEngine)
 
 # Specify C and C++ standards.
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 23)
+
+# Enable modules.
+if(MSVC)
+    add_compile_options(/std:c++20)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    add_compile_options(-fmodules)
+endif()
 
 # Add executable.
 file(GLOB_RECURSE SOURCES "Source/*.cpp")
@@ -34,12 +45,11 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
     $<$<CONFIG:RELEASE>:-O3>
 )
 
-# @todo Switch to GCC.
 # Set compiler warning flags.
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3") # MSVC warning flags.
-else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall") # GCC/Clang warning flags.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 endif()
 
 # Link libraries statically.

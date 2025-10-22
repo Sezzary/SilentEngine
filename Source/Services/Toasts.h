@@ -6,7 +6,7 @@ namespace Silent::Services
     struct Toast
     {
         std::string Message  = {};
-        Color       Col      = Color::Black;
+        Color       Col      = Color::Clear;
         int         Life     = 0;
     };
 

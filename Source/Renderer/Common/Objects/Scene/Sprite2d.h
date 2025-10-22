@@ -13,7 +13,7 @@ namespace Silent::Renderer
         Vector2   Position = Vector2::Zero;
         float     Rotation = 0.0f;
         Vector2   Scale    = Vector2::Zero;
-        Color     Col      = Color::Black;
+        Color     Col      = Color::Clear;
         uint      Depth    = 0;
         AlignMode AlignM   = AlignMode::Center;
         ScaleMode ScaleM   = ScaleMode::Fit;

@@ -136,13 +136,13 @@ namespace Silent::Game
         // Draw flashing left/right arrows.
         for (int i = 0; i < FRONT_ARROWS.size(); i++)
         {
-            //Options_Selection_ArrowDraw(&FRONT_ARROWS[i], true, false);
+            //Options_Selection_ArrowDraw(FRONT_ARROWS[i], true, false);
         }
 
         // Draw border to highlight flashing left/right arrow corresponding to direction of UI navigation.
         for (int i = dir - 1; i < dir; i++)
         {
-            //Options_Selection_ArrowDraw(&BORDER_ARROWS[i], false, false);
+            //Options_Selection_ArrowDraw(BORDER_ARROWS[i], false, false);
         }
     }
 }

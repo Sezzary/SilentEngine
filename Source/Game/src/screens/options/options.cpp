@@ -7,11 +7,6 @@ namespace Silent::Game
 {
     constexpr uint LINE_CURSOR_TIMER_MAX = 8;
 
-    constexpr uint LAYER_24   = 24;
-    constexpr uint LAYER_40   = 40;
-    constexpr uint LAYER_36   = 36;
-    constexpr uint LAYER_8148 = 8148;
-
     s32 g_Options_SelectionHighlightTimer = 0;
 
     int  g_MainOptionsMenu_SelectedEntry      = 0;

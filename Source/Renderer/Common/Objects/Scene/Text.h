@@ -21,6 +21,6 @@ namespace Silent::Renderer
         TextAlignMode AlignMode = TextAlignMode::Left;
         Vector2       Position  = Vector2::Zero;
         float         Scale     = 0.0f;
-        Color         Col       = Color::Black;
+        Color         Col       = Color::Clear;
     };
 }

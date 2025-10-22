@@ -9,6 +9,11 @@
 
 namespace Silent::Game
 {
+    constexpr uint DEPTH_24   = 24;
+    constexpr uint DEPTH_40   = 40;
+    constexpr uint DEPTH_36   = 36;
+    constexpr uint DEPTH_8148 = 8148;
+
     /** @brief Options menu states.
      *
      * When the user navigates an options menu, this facilitates menu switching

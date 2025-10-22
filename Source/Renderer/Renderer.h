@@ -27,7 +27,7 @@ namespace Silent::Renderer
         RendererType _type          = RendererType::SdlGpu;
         SDL_Window*  _window        = nullptr;
         View         _view          = View();
-        Color        _clearColor    = Color::Black;
+        Color        _clearColor    = Color::Clear;
         uint         _drawCallCount = 0;
         bool         _isResized     = false;
         

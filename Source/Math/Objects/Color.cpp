@@ -1,6 +1,8 @@
 #include "Framework.h"
 #include "Math/Objects/Color.h"
 
+#include "Math/Objects/Vector4.h"
+
 namespace Silent::Math
 {
     const Color Color::Clear = Color(0.0f, 0.0f, 0.0f, 0.0f);

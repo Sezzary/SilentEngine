@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Math/Constants.h"
 #include "Math/Objects/Vector3.h"
 
 namespace Silent::Math

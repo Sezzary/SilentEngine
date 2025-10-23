@@ -4,8 +4,8 @@
 #include "Math/Constants.h"
 #include "Math/Objects/BoundingSphere.h"
 #include "Math/Objects/OrientedBoundingBox.h"
-#include "Math/Objects/Vector3.h"
 #include "Math/Objects/Quaternion.h"
+#include "Math/Objects/Vector3.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Utils;

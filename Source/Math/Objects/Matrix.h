@@ -2,6 +2,7 @@
 
 namespace Silent::Math
 {
+    class AxisAngle;
     class EulerAngles;
     class Quaternion;
     class Vector3;

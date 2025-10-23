@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Math/Objects/Vector3.h"
+#include "Math/Objects/Vector4.h"
+
 namespace Silent::Math
 {
     class AxisAngle;
     class EulerAngles;
     class Matrix;
-    class Vector3;
 
     class Quaternion : public glm::quat
     {
@@ -16,10 +18,11 @@ namespace Silent::Math
 
         // Constructors
 
-        constexpr Quaternion()                                   : glm::quat(0.0f, 0.0f, 0.0f, 1.0f) {}
+        constexpr Quaternion()                                   : glm::quat(1.0f, 0.0f, 0.0f, 0.0f) {}
         constexpr Quaternion(const glm::quat& quat)              : glm::quat(quat) {}
-        constexpr Quaternion(float x, float y, float z, float w) : glm::quat(w, x, y, z) {}
+        constexpr Quaternion(const Vector4& vec)                 : glm::quat(vec.ToGlmVec4()) {}
         constexpr Quaternion(const Vector3& vec, float scalar)   : glm::quat(scalar, vec.ToGlmVec3()) {}
+        constexpr Quaternion(float x, float y, float z, float w) : glm::quat(w, x, y, z) {}
 
         Quaternion(const Vector3& dir);
 

@@ -23,7 +23,7 @@ namespace Silent::Math
         constexpr Vector4() = default;
         constexpr Vector4(const glm::vec4& vec)               : glm::vec4(vec) {}
         constexpr Vector4(float x)                            : glm::vec4(x) {}
-        constexpr Vector4(float x, float y, float z, float w) : glm::vec4(w, x, y, z) {}
+        constexpr Vector4(float x, float y, float z, float w) : glm::vec4(x, y, z, w) {}
 
         const glm::vec4& ToGlmVec4() const;
         glm::vec4&       ToGlmVec4();

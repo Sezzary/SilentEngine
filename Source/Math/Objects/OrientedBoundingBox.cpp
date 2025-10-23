@@ -5,6 +5,8 @@
 #include "Math/Objects/AxisAlignedBoundingBox.h"
 #include "Math/Objects/BoundingSphere.h"
 #include "Math/Objects/Matrix.h"
+#include "Math/Objects/Quaternion.h"
+#include "Math/Objects/Vector3.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Utils;

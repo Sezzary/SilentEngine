@@ -1,15 +1,11 @@
 #pragma once
 
-#include "Math/Constants.h"
+#include "Math/Objects/Vector4.h"
 
 namespace Silent::Math
 {
-    class Vector4;
-
-    // @todo Use `Vector4`?
-
     /** @brief Normalized float-based RGBA color. */
-    class Color : glm::vec4
+    class Color : Vector4
     {
     public:
         // ========
@@ -28,10 +24,7 @@ namespace Silent::Math
         // =============
 
         /** @brief Constructs a default `Color`. */
-        constexpr Color() : glm::vec4(0.0f, 0.0f, 0.0f, 1.0f) {}
-
-        // @todo
-        //constexpr Color(const glm::vec4& color) : glm::vec4(color) {}
+        constexpr Color() : Vector4(0.0f, 0.0f, 0.0f, 1.0f) {}
 
         /** @brief Constructs a `Color` from normalized RGBA components.
          *
@@ -40,7 +33,7 @@ namespace Silent::Math
          * @param b Blue component.
          * @param a Alpha component.
          */
-        constexpr Color(float r, float g, float b, float a = 1.0f) : glm::vec4(r, g, b, a) {}
+        constexpr Color(float r, float g, float b, float a = 1.0f) : Vector4(r, g, b, a) {}
 
         /** @brief Constructs a `Color` from 8-bit RGBA components.
          *
@@ -62,7 +55,7 @@ namespace Silent::Math
         {
             return Color::From8Bit((packedRgba >> 24) & FP_COLOR(1.0f),
                                    (packedRgba >> 16) & FP_COLOR(1.0f),
-                                   (packedRgba >>  8) & FP_COLOR(1.0f),
+                                   (packedRgba >> 8)  & FP_COLOR(1.0f),
                                     packedRgba        & FP_COLOR(1.0f));
         }
 

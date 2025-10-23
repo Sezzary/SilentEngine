@@ -6,7 +6,7 @@
 
 namespace Silent::Game
 {
-    void Options_MainOptionsMenu_SelectionHighlightDraw(void)
+    void Options_MainOptionsMenu_SelectionHighlightDraw()
     {
         constexpr uint BULLET_QUAD_COUNT  = 2;
         constexpr int  LINE_OFFSET_Y      = 16;

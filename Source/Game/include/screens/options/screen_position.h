@@ -21,12 +21,12 @@ extern short g_ScreenPosMenu_PositionX;
 extern short g_ScreenPosMenu_PositionY;
 
 /** @brief Controller for the screen position options menu. Handles menu states, user input, SFX, and graphics drawing. */
-void Options_ScreenPosMenu_Control(void);
+void Options_ScreenPosMenu_Control();
 
 /** @brief Draws the arrows at the edges of the screen indicating input directions in the screen position options menu.
  * Called by `Options_ScreenPosMenu_Control`.
  */
-void Options_ScreenPosMenu_ArrowsDraw(void);
+void Options_ScreenPosMenu_ArrowsDraw();
 
 /** @brief Draws the screen position configuration string and its background box. */
-void Options_ScreenPosMenu_ConfigDraw(void);
+void Options_ScreenPosMenu_ConfigDraw();

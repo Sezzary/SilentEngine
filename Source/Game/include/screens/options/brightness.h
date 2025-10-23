@@ -21,14 +21,14 @@ namespace Silent::Game
      *
      * Handles menu states, user input, SFX, and graphics drawing.
      */
-    void Options_BrightnessMenu_Control(void);
+    void Options_BrightnessMenu_Control();
 
     /** @brief Draws the string indicating the light level in the brightness options menu. */
-    void Options_BrightnessMenu_ConfigDraw(void);
+    void Options_BrightnessMenu_ConfigDraw();
 
     /** @brief Draws arrows on the left and right edges of the screen indicating input directions in the brightness options menu.
      *
      * Called by `Options_BrightnessMenu_Control`.
      */
-    void Options_BrightnessMenu_ArrowsDraw(void);
+    void Options_BrightnessMenu_ArrowsDraw();
 }

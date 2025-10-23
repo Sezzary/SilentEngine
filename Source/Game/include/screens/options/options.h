@@ -105,14 +105,14 @@ namespace Silent::Game
     extern int g_ExtraOptionsMenu_BulletMultMax;
 
     /** @brief Options menu game state handler. */
-    void GameState_Options_Update(void);
+    void GameState_Options_Update();
 
     /** @brief Controller for the extra options menu. */
-    void Options_ExtraOptionsMenu_Control(void);
+    void Options_ExtraOptionsMenu_Control();
 
     /** @brief Controller for the main options menu.
      *
      * Handles menu states, user input, and graphics draw calls.
      */
-    void Options_MainOptionsMenu_Control(void);
+    void Options_MainOptionsMenu_Control();
 }

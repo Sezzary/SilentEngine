@@ -58,7 +58,7 @@ extern s_ControllerMenu_SelectedEntries g_ControllerMenu_SelectedEntries;
  *
  * Handles the menu state, user input, SFX, and graphics drawing.
 */
-void Options_ControllerMenu_Control(void);
+void Options_ControllerMenu_Control();
 
 /** @brief Changes the button mapping based on the input and updates the configuration.
  *

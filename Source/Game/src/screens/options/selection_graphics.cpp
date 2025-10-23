@@ -103,13 +103,13 @@ namespace Silent::Game
         constexpr auto COLOR_ACTIVE_CENTER_MIDTONE     = Color::From8Bit(160, 128, 64);
         constexpr auto COLOR_ACTIVE_BORDER_HIGHLIGHT   = Color::From8Bit(255, 255, 255);
         constexpr auto COLOR_ACTIVE_BORDER_MIDTONE     = Color::From8Bit(160, 128, 64);
-        constexpr auto COLOR_ACTIVE_BORDER_SHADOW      = Color::From8Bit(64, 64, 64);
+        constexpr auto COLOR_ACTIVE_BORDER_SHADOW      = Color::From8Bit(64,  64,  64);
 
         constexpr auto COLOR_INACTIVE_CENTER_HIGHLIGHT = Color::From8Bit(160, 160, 160);
-        constexpr auto COLOR_INACTIVE_CENTER_MIDTONE   = Color::From8Bit(80, 64, 32);
+        constexpr auto COLOR_INACTIVE_CENTER_MIDTONE   = Color::From8Bit(80,  64,  32);
         constexpr auto COLOR_INACTIVE_BORDER_HIGHLIGHT = Color::From8Bit(128, 128, 128);
-        constexpr auto COLOR_INACTIVE_BORDER_MIDTONE   = Color::From8Bit(40, 32, 16);
-        constexpr auto COLOR_INACTIVE_BORDER_SHADOW    = Color::From8Bit(16, 16, 16);
+        constexpr auto COLOR_INACTIVE_BORDER_MIDTONE   = Color::From8Bit(40,  32,  16);
+        constexpr auto COLOR_INACTIVE_BORDER_SHADOW    = Color::From8Bit(16,  16,  16);
 
         auto& renderer = g_App.GetRenderer();
 

@@ -53,7 +53,7 @@ namespace Silent::Game
         },
     };*/
 
-    /*void Options_ControllerMenu_Control(void) // 0x801E69BC
+    /*void Options_ControllerMenu_Control() // 0x801E69BC
     {
         int           boundActionIdx = NO_VALUE;
         e_InputAction actionIdx;

@@ -7,7 +7,7 @@
 
 namespace Silent::Game
 {
-    void Options_BrightnessMenu_Control(void)
+    void Options_BrightnessMenu_Control()
     {
         // Handle menu state.
         switch (g_GameWork.gameStateStep_598[1])
@@ -95,7 +95,7 @@ namespace Silent::Game
         Options_BrightnessMenu_ConfigDraw();
     }
 
-    void Options_BrightnessMenu_ConfigDraw(void)
+    void Options_BrightnessMenu_ConfigDraw()
     {
         //Gfx_StringSetColor(StringColorId_White);
         //Gfx_StringSetPosition(SCREEN_POSITION_X(25.0f), SCREEN_POSITION_Y(79.5f));
@@ -103,7 +103,7 @@ namespace Silent::Game
         //Gfx_StringDrawInt(1, g_GameWork.config_0.optBrightness_22);
     }
 
-    void Options_BrightnessMenu_ArrowsDraw(void)
+    void Options_BrightnessMenu_ArrowsDraw()
     {
         static const auto FRONT_ARROWS = std::vector<s_Triangle2d>
         {

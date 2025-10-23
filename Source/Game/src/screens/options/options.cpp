@@ -20,7 +20,7 @@ namespace Silent::Game
     Vector2i g_ExtraOptions_SelectionHighlightFrom = Vector2i::Zero;
     Vector2i g_ExtraOptions_SelectionHighlightTo   = Vector2i::Zero;
 
-    void GameState_Options_Update(void)
+    void GameState_Options_Update()
     {
         if (g_GameWork.gameStatePrev_590 == GameState_InGame)
         {
@@ -231,7 +231,7 @@ namespace Silent::Game
         }
     }
 /*
-    void Options_ExtraOptionsMenu_Control(void)
+    void Options_ExtraOptionsMenu_Control()
     {
         //Options_ExtraOptionsMenu_EntryStringsDraw();
         //Options_ExtraOptionsMenu_ConfigDraw();

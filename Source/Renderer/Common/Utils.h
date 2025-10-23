@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Renderer/Common/Enums.h"
-
 namespace Silent::Renderer
 {
+    enum class ScaleMode;
+
     /** @brief Computes a screen position in percent corrected according to the aspect ratio of the screen and a scale mode.
      *
      * @param pos Screen position in percent.

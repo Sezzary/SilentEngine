@@ -11,15 +11,18 @@ enum e_ScreenPosMenuState
     ScreenPosMenuState_Leave = 3
 };
 
-extern bool  g_ScreenPosMenu_InvertBackgroundFade;
-extern int   g_ScreenPosMenu_BackgroundFade;
-extern short g_ScreenPosMenu_PositionX;
-extern short g_ScreenPosMenu_PositionY;
+extern bool     g_ScreenPosMenu_InvertBackgroundFade;
+extern int      g_ScreenPosMenu_BackgroundFade;
+extern Vector2i g_ScreenPosMenu_Position;
 
-/** @brief Controller for the screen position options menu. Handles menu states, user input, SFX, and graphics drawing. */
+/** @brief Controller for the screen position options menu.
+ *
+ * Handles menu states, user input, SFX, and graphics drawing.
+ */
 void Options_ScreenPosMenu_Control();
 
 /** @brief Draws the arrows at the edges of the screen indicating input directions in the screen position options menu.
+ *
  * Called by `Options_ScreenPosMenu_Control`.
  */
 void Options_ScreenPosMenu_ArrowsDraw();

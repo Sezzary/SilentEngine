@@ -2,6 +2,7 @@
 #include "Math/Legacy.h"
 
 #include "Math/Constants.h"
+#include "Math/FixedPoint.h"
 #include "Math/Objects/EulerAngles.h"
 #include "Math/Objects/Matrix.h"
 #include "Math/Objects/Vector3i.h"

@@ -37,10 +37,8 @@ namespace Silent::Renderer
                                         const Color& colorFrom, const Color& colorTo,
                                         uint depth, ScaleMode scaleMode, BlendMode blendMode)
     {
-        auto normFrom = NormalizeRetroScreenPosition(from);
-        auto normTo   = NormalizeRetroScreenPosition(to);
-        return Primitive2d::CreateLine((normFrom.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                       (normTo.ToVector2()   / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+        return Primitive2d::CreateLine((from.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                       (to.ToVector2()   / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                        colorFrom, colorTo,
                                        depth, scaleMode, blendMode);
     }
@@ -67,13 +65,9 @@ namespace Silent::Renderer
                                             const Color& color0, const Color& color1, const Color& color2,
                                             uint depth, ScaleMode scaleMode, BlendMode blendMode)
     {
-        auto normVert0 = NormalizeRetroScreenPosition(vert0);
-        auto normVert1 = NormalizeRetroScreenPosition(vert1);
-        auto normVert2 = NormalizeRetroScreenPosition(vert2);
-
-        return Primitive2d::CreateTriangle((normVert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                           (normVert1.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                           (normVert2.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+        return Primitive2d::CreateTriangle((vert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                           (vert1.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                           (vert2.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                            color0, color1, color2,
                                            depth, scaleMode, blendMode);
     }
@@ -101,16 +95,11 @@ namespace Silent::Renderer
                                         const Color& color0, const Color& color1, const Color& color2, const Color& color3,
                                         uint depth, ScaleMode scaleMode, BlendMode blendMode)
     {
-        auto normVert0 = NormalizeRetroScreenPosition(vert0);
-        auto normVert1 = NormalizeRetroScreenPosition(vert1);
-        auto normVert2 = NormalizeRetroScreenPosition(vert2);
-        auto normVert3 = NormalizeRetroScreenPosition(vert3);
-
         // @todo Check vertex order in renderer. This order is typical for PSX.
-        return Primitive2d::CreateQuad((normVert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                       (normVert2.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                       (normVert3.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                       (normVert1.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+        return Primitive2d::CreateQuad((vert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                       (vert2.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                       (vert3.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                       (vert1.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                        color0, color2, color3, color1,
                                        depth, scaleMode, blendMode);
     }

@@ -66,6 +66,6 @@ namespace Silent::Renderer
     Vector2i NormalizeRetroScreenPosition(const Vector2i pos)
     {
         return Vector2i((pos.x < 0) ? (((int)RETRO_SCREEN_SPACE_RES.x / 2) + pos.x) : pos.x,
-                        (pos.y < 0) ? (((int)RETRO_SCREEN_SPACE_RES.y / 2) + pos.y) : pos.y); // @todo Not sure about this.
+                        (pos.y < 0) ? (((int)RETRO_SCREEN_SPACE_RES.y / 2) + pos.y) : pos.y);
     }
 }

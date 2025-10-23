@@ -118,7 +118,7 @@ namespace Silent::Game
         auto color2 = Color::Clear;
         auto color3 = Color::Clear;
 
-        // Set color.
+        // Set colors.
         if (isBorder)
         {
             color0 = isInactive ? COLOR_INACTIVE_BORDER_HIGHLIGHT : COLOR_ACTIVE_BORDER_HIGHLIGHT;
@@ -133,7 +133,7 @@ namespace Silent::Game
             color2 = isInactive ? COLOR_INACTIVE_CENTER_HIGHLIGHT : COLOR_ACTIVE_CENTER_HIGHLIGHT;
             color3 = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
         }
-        
+
         // Submit quad primitive.
         auto prim = Primitive2d::CreateQuad(quad.vertex0, quad.vertex1, quad.vertex2, quad.vertex3,
                                             color0, color1, color2, color3,

@@ -24,7 +24,7 @@ namespace Silent::Game
         // Submit line primitive for underline.
         auto underlinePrim = Primitive2d::CreateLine(line.vertex0, line.vertex1,
                                                      COLOR_LINE_START, COLOR_LINE_END,
-                                                     DEPTH_36);
+                                                     DEPTH_36, ScaleMode::Fit, BlendMode::Opaque);
         renderer.Submit2dPrimitive(underlinePrim);
 
         // Submit quad primitive for shadow.
@@ -35,7 +35,7 @@ namespace Silent::Game
         renderer.Submit2dPrimitive(shadowPrim);
     }
 
-    void Options_Selection_ArrowDraw(const s_Triangle2d& arrow, bool isFlashing)
+    void Options_Selection_ArrowDraw(const s_Triangle2d& tri, bool isFlashing)
     {
         constexpr auto COLOR_FLASH_BASE = Color::From8Bit(0, 112, 255);
         constexpr auto COLOR_CYAN       = Color::From8Bit(0, 240, 240);
@@ -110,7 +110,7 @@ namespace Silent::Game
         }
 
         // Submit triangle primitive for arrow.
-        auto arrowPrim = Primitive2d::CreateTriangle(arrow.vertex0, arrow.vertex1, arrow.vertex2,
+        auto arrowPrim = Primitive2d::CreateTriangle(tri.vertex0, tri.vertex1, tri.vertex2,
                                                      color0, color1, color2,
                                                      DEPTH_40);
         renderer.Submit2dPrimitive(arrowPrim);

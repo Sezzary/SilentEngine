@@ -5,11 +5,8 @@
 #include "Math/Objects/Vector2i.h"
 #include "Math/Objects/Vector3i.h"
 
-using namespace Silent;
-using namespace Silent::Math;
-
-//namespace Silent::Math
-//{
+namespace Silent::Math
+{
     constexpr uint LINE_VERTEX_COUNT = 2;
     constexpr uint RECT_VERTEX_COUNT = 4;
     constexpr uint BOX_VERTEX_COUNT  = 8;
@@ -156,4 +153,4 @@ using namespace Silent::Math;
      * @return Cosine in Q19.12, integer range `[0, 4096]`.
      */
     q19_12 Math_Cos(q19_12 angle);
-//}
+}

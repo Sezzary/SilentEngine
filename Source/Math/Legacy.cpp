@@ -7,11 +7,8 @@
 #include "Math/Objects/Matrix.h"
 #include "Math/Objects/Vector3i.h"
 
-using namespace Silent;
-using namespace Silent::Math;
-
-//namespace Silent::Math
-//{
+namespace Silent::Math
+{
     constexpr float Q4_SCALE  = 1.0f / (float)FP_TO(1, Q4_SHIFT);
     constexpr float Q6_SCALE  = 1.0f / (float)FP_TO(1, Q6_SHIFT);
     constexpr float Q8_SCALE  = 1.0f / (float)FP_TO(1, Q8_SHIFT);
@@ -98,4 +95,4 @@ using namespace Silent::Math;
     {
         return Q12(glm::cos(FP_ANGLE_TO_RAD(angle)));
     }
-//}
+}

@@ -48,14 +48,32 @@ namespace Silent::Math
         static Vector3i Translate(const Vector3i& vec, const Vector3& dir, float dist);
         void            Translate(const Vector3& dir, float dist);
 
+        // ===========
         // Converters
+        // ===========
 
-        Vector3 ToVector3() const;
+        /** @brief Converts to a `Vector3` with an optional Q shift if the components are in a fixed-point format.
+         *
+         * @param shift Fixed-point Q shift.
+         * @return `Vector3` conversion result.
+         */
+        Vector3 ToVector3(int shift = NO_VALUE) const;
 
+        /** @brief Converts to the read-only `glm::ivec3` base object.
+         *
+         * @return Ready-only `glm::ivec3` base object.
+         */
         const glm::ivec3& ToGlmVec3i() const;
-        glm::ivec3&       ToGlmVec3i();
 
+        /** @brief Converts to the writable `glm::ivec3` base object.
+         *
+         * @return Writable `glm::ivec3` base object.
+         */
+        glm::ivec3& ToGlmVec3i();
+
+        // ==========
         // Operators
+        // ==========
 
         bool      operator==(const Vector3i& vec) const;
         bool      operator!=(const Vector3i& vec) const;

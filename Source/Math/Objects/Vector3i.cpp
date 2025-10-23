@@ -2,6 +2,7 @@
 #include "Math/Objects/Vector3i.h"
 
 #include "Math/Constants.h"
+#include "Math/FixedPoint.h"
 #include "Math/Objects/Matrix.h"
 #include "Math/Objects/Vector3.h"
 
@@ -97,8 +98,13 @@ namespace Silent::Math
         *this = Vector3i::Translate(*this, Vector3::Normalize(dir), dist);
     }
 
-    Vector3 Vector3i::ToVector3() const
+    Vector3 Vector3i::ToVector3(int shift) const
     {
+        if (shift != NO_VALUE)
+        {
+            return Vector3(FP_FLOAT(x, shift), FP_FLOAT(y, shift), FP_FLOAT(z, shift));
+        }
+
         return Vector3((float)x, (float)y, (float)z);
     }
 

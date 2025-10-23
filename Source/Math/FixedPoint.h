@@ -23,6 +23,12 @@ namespace Silent::Math
         return x >> shift;
     }
 
+    /** @brief Converts an integet from a fixed-point Q format to floating-point. */
+    constexpr float FP_FLOAT(int x, uint shift)
+    {
+        return (float)x / (float)FP_TO(1.0f, shift);
+    }
+
     /** @brief Converts an integer from a scaled fixed-point Q format rounded to the nearest value. */
     /*constexpr int FP_ROUND_SCALED(int x, int scale, uint shift)
     {

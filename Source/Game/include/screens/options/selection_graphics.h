@@ -10,9 +10,8 @@ namespace Silent::Game
      *
      * @param line Reference line for the highlight position and width.
      * @param hasShadow `true` if drawing the highlight with a shadow and a line, `false` for the line only.
-     * @param invertGradient @unused `true` to invert the line gradient, `false` to not invert. Non-functional.
      */
-    void Options_Selection_HighlightDraw(const s_Line2d& line, bool hasShadow, bool invertGradient);
+    void Options_Selection_HighlightDraw(const s_Line2d& line);
 
     /** @brief Draws a blue arrow element used for certain listed entries in the main and extra options menus.
      *
@@ -20,9 +19,8 @@ namespace Silent::Game
      *
      * @param arrow 2D polygon of the arrow element.
      * @param isFlashing `true` if drawing the flashing element with a gradient, `false` if drawing the border.
-     * @param resetColor @unused No meaningful purpose.
     */
-    void Options_Selection_ArrowDraw(const s_Triangle2d& arrow, bool isFlashing, bool resetColor);
+    void Options_Selection_ArrowDraw(const s_Triangle2d& arrow, bool isFlashing);
 
     /** @brief Draws a gold bullet point element used next to listed entries in the main and extra options menus.
      *

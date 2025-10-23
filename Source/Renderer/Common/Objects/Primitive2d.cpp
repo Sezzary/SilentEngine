@@ -95,7 +95,6 @@ namespace Silent::Renderer
                                         const Color& color0, const Color& color1, const Color& color2, const Color& color3,
                                         uint depth, ScaleMode scaleMode, BlendMode blendMode)
     {
-        // @todo Check vertex order in renderer. This order is typical for PSX.
         return Primitive2d::CreateQuad((vert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                        (vert2.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                        (vert3.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,

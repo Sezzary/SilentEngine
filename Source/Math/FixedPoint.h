@@ -66,12 +66,6 @@ namespace Silent::Math
         return FP_MULTIPLY((int64)a, FP_TO(b, shift), shift);
     }
 
-    /** @brief Converts a floating-point alpha in the range `[0.0f, 1.0f]` to a fixed-point alpha in Q3.12 format. */
-    constexpr short FP_ALPHA(float alpha)
-    {
-        return (short)FP_TO(alpha, Q12_SHIFT);
-    }
-
     /** @brief Converts a normalized color value in the range `[0.0f, 1.0f]` to an 8-bit color format in the range `[0, 255]`. */
     constexpr uchar FP_COLOR(float val)
     {
@@ -119,17 +113,5 @@ namespace Silent::Math
     {
         return (((rad < 0.0f) ? (PI + (PI - ABS(rad))) : rad) * ((float)FP_PI / PI)) *
                ((rad < 0.0f || rad >= PI) ? 1.0f : 2.0f);
-    }
-
-    /** @brief Converts floating-point meters to fixed-point world units in Q12.8 format. */
-    constexpr int FP_METER(float met)
-    {
-        return FP_TO(met, Q12_SHIFT);
-    }
-
-    /** @brief Converts floating-point seconds to fixed-point seconds in Q12.19 format. */
-    constexpr int FP_TIME(float sec)
-    {
-        return FP_TO(sec, Q12_SHIFT);
     }
 }

@@ -31,6 +31,7 @@ namespace Silent::Game
             .vertex3 = Vector2i(51, 76)
         };
 
+        // @todo Dynamically retrieve string pixel width instead, allowing for automatic translation support.
         constexpr auto SELECTION_HIGHLIGHT_WIDTHS = std::array<int, MainOptionsMenuEntry_Count>
         {
             59, 169, 174, 156, 104, 112, 75, 129, 112
@@ -49,17 +50,16 @@ namespace Silent::Game
         // Compute sine-based interpolation alpha.
         short interpAlpha = 0;//Math_Sin(g_Options_SelectionHighlightTimer << 7);
 
-        // @todo
         // Draw active selection highlight.
-        auto highlightLine = s_Line2d{};
-        //highlightLine.vertex0.x = HIGHLIGHT_OFFSET_X;
-        //highlightLine.vertex1.x = g_MainOptions_SelectionHighlightFrom.x +
-        //                          FP_FROM((g_MainOptions_SelectionHighlightTo.x - g_MainOptions_SelectionHighlightFrom.x) * interpAlpha, Q12_SHIFT);
-        //highlightLine.vertex1.y = g_MainOptions_SelectionHighlightFrom.y +
-        //                          FP_FROM((g_MainOptions_SelectionHighlightTo.y - g_MainOptions_SelectionHighlightFrom.y) * interpAlpha, Q12_SHIFT) +
-        //                          LINE_OFFSET_Y;
-        //highlightLine.vertex0.y = highlightLine.vertex1.y;
-        //Options_Selection_HighlightDraw(highlightLine, true, false);
+        auto highlightLine      = s_Line2d{};
+        highlightLine.vertex0.x = HIGHLIGHT_OFFSET_X;
+        highlightLine.vertex1.x = g_MainOptions_SelectionHighlightFrom.x +
+                                  FP_FROM((g_MainOptions_SelectionHighlightTo.x - g_MainOptions_SelectionHighlightFrom.x) * interpAlpha, Q12_SHIFT);
+        highlightLine.vertex1.y = g_MainOptions_SelectionHighlightFrom.y +
+                                  FP_FROM((g_MainOptions_SelectionHighlightTo.y - g_MainOptions_SelectionHighlightFrom.y) * interpAlpha, Q12_SHIFT) +
+                                  LINE_OFFSET_Y;
+        highlightLine.vertex0.y = highlightLine.vertex1.y;
+        Options_Selection_HighlightDraw(highlightLine);
 
         // Draw selection bullet points.
         for (int i = 0; i < MainOptionsMenuEntry_Count; i++)

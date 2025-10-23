@@ -121,13 +121,12 @@ namespace Silent::Game
         };
 
         // Determine UI movement direction.
-        int btnInput = g_Controller0.btnsHeld_C;
         int dir      = 0;
-        if (btnInput & ControllerFlag_LStickLeft)
+        if (g_Controller0.btnsHeld_C & ControllerFlag_LStickLeft)
         {
             dir = 1;
         }
-        else if (btnInput & ControllerFlag_LStickRight)
+        else if (g_Controller0.btnsHeld_C & ControllerFlag_LStickRight)
         {
             dir = 2;
         }
@@ -139,13 +138,13 @@ namespace Silent::Game
         // Draw flashing left/right arrows.
         for (int i = 0; i < FRONT_ARROWS.size(); i++)
         {
-            Options_Selection_ArrowDraw(FRONT_ARROWS[i], true, false);
+            Options_Selection_ArrowDraw(FRONT_ARROWS[i], true);
         }
 
         // Draw border to highlight flashing left/right arrow corresponding to direction of UI navigation.
         for (int i = dir - 1; i < dir; i++)
         {
-            Options_Selection_ArrowDraw(BORDER_ARROWS[i], false, false);
+            Options_Selection_ArrowDraw(BORDER_ARROWS[i], false);
         }
     }
 }

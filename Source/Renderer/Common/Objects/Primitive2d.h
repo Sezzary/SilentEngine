@@ -89,7 +89,9 @@ namespace Silent::Renderer
                                       const Color& color0, const Color& color1, const Color& color2, const Color& color3,
                                       uint depth = 0, ScaleMode scaleMode = ScaleMode::Fit, BlendMode blendMode = BlendMode::Alpha);
 
-        /** @brief Constructs a 2D quad primitive.
+        /** @brief Constructs a 2D quad primitive using retro screen coordinates.
+         *
+         * @note Vertex order: top-left, bottom-left, top-right, bottom-right.
          *
          * @param vert0 First vertex position in retro screen coordinates (320x240).
          * @param vert1 Second vertex position in retro screen coordinates (320x240).

@@ -11,12 +11,31 @@ using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
-    void Options_Selection_HighlightDraw(const s_Line2d& line, bool hasShadow, bool invertGradient)
+    void Options_Selection_HighlightDraw(const s_Line2d& line)
     {
-        // @todo
+        constexpr auto COLOR_LINE_START   = Color::From8Bit(176, 176, 176);
+        constexpr auto COLOR_LINE_END     = Color::From8Bit(160, 128, 64);
+        constexpr auto COLOR_SHADOW_START = Color::From8Bit(96,  96,  96);
+        constexpr auto COLOR_SHADOW_END   = Color::From8Bit(0,   0,   0);
+        constexpr int  SHADOW_WIDTH       = 16;
+
+        auto& renderer = g_App.GetRenderer();
+
+        // Submit line primitive for underline.
+        auto underlinePrim = Primitive2d::CreateLine(line.vertex0, line.vertex1,
+                                                     COLOR_LINE_START, COLOR_LINE_END,
+                                                     DEPTH_36);
+        renderer.Submit2dPrimitive(underlinePrim);
+
+        // Submit quad primitive for shadow.
+        auto shadowPrim = Primitive2d::CreateQuad(Vector2i(line.vertex0.x, line.vertex0.y - SHADOW_WIDTH), line.vertex0,
+                                                  Vector2i(line.vertex1.x, line.vertex1.y - SHADOW_WIDTH), line.vertex1,
+                                                  COLOR_SHADOW_END, COLOR_SHADOW_START, COLOR_SHADOW_END, COLOR_SHADOW_START,
+                                                  DEPTH_36, ScaleMode::Fit, BlendMode::Subtract);
+        renderer.Submit2dPrimitive(shadowPrim);
     }
 
-    void Options_Selection_ArrowDraw(const s_Triangle2d& arrow, bool isFlashing, bool resetColor)
+    void Options_Selection_ArrowDraw(const s_Triangle2d& arrow, bool isFlashing)
     {
         constexpr auto COLOR_FLASH_BASE = Color::From8Bit(0, 112, 255);
         constexpr auto COLOR_CYAN       = Color::From8Bit(0, 240, 240);
@@ -90,11 +109,11 @@ namespace Silent::Game
             color2 = COLOR_CYAN;
         }
 
-        // Submit triangle primitive.
-        auto prim = Primitive2d::CreateTriangle(arrow.vertex0, arrow.vertex1, arrow.vertex2,
-                                                color0, color1, color2,
-                                                DEPTH_40);
-        renderer.Submit2dPrimitive(prim);
+        // Submit triangle primitive for arrow.
+        auto arrowPrim = Primitive2d::CreateTriangle(arrow.vertex0, arrow.vertex1, arrow.vertex2,
+                                                     color0, color1, color2,
+                                                     DEPTH_40);
+        renderer.Submit2dPrimitive(arrowPrim);
     }
 
     void Options_Selection_BulletPointDraw(const s_Quad2d& quad, bool isBorder, bool isInactive)
@@ -134,10 +153,10 @@ namespace Silent::Game
             color3 = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
         }
 
-        // Submit quad primitive.
-        auto prim = Primitive2d::CreateQuad(quad.vertex0, quad.vertex1, quad.vertex2, quad.vertex3,
-                                            color0, color1, color2, color3,
-                                            DEPTH_24);
-        renderer.Submit2dPrimitive(prim);
+        // Submit quad primitive for bullet point element.
+        auto elementPrim = Primitive2d::CreateQuad(quad.vertex0, quad.vertex1, quad.vertex2, quad.vertex3,
+                                                   color0, color1, color2, color3,
+                                                   DEPTH_24);
+        renderer.Submit2dPrimitive(elementPrim);
     }
 }

@@ -11,7 +11,18 @@ namespace Silent::Math
     constexpr uint FP_ANGLE_COUNT = 1 << Q12_SHIFT;
     constexpr int  FP_PI          = 0x5000 / 2;
 
-    /** @brief Converts a float to a fixed-point Q format. */
+    // =====================
+    // Arithmetic and Utils
+    // =====================
+
+    /** @brief Converts an integer to a fixed-point Q format.
+     *
+     * @note Deprecated.
+     *
+     * @param x `int` to convert.
+     * @param shift Fixed-point shift.
+     * @return `x` converted to fixed-point.
+     */
     constexpr int FP_TO(float x, uint shift)
     {
         return (int)ROUND(x * (1 << shift));
@@ -29,16 +40,24 @@ namespace Silent::Math
         return (float)x / (float)FP_TO(1.0f, shift);
     }
 
-    /** @brief Converts an integer from a scaled fixed-point Q format rounded to the nearest value. */
-    /*constexpr int FP_ROUND_SCALED(int x, int scale, uint shift)
-    {
-        return (x + ((FP_TO(1.0f, shift) * scale) - 1)) / (FP_TO(1.0f, shift) * scale);
-    }*/
+    /** @brief Converts an integer from a scaled fixed-point Q format rounded to the nearest value.
+     *
+     * @param x Fixed-point value to convert.
+     * @param scale Fixed-point scale.
+     * @param shift Fixed-point shift.
+     * @return `x` rounded and converted from fixed-point.
+     */
+    #define FP_ROUND_SCALED(x, scale, shift) \
+        (((x) + ((FP_TO(1.0f, shift) * (scale)) - 1)) / (FP_TO(1.0f, shift) * (scale)))
 
-    /** @brief Converts an integer from a fixed-point Q format rounded toward 0. */
-    /*#define FP_ROUND_TO_ZERO(x, shift) \
-        ((s32)(FP_FROM(x, (shift)) + ((u32)x >> 31)) >> 1)*/
-
+    /** @brief Converts an integer from a fixed-point Q format rounded toward 0.
+     *
+     * @param x Fixed-point value to convert.
+     * @param shift Fixed-point shift.
+     * @return `x` rounded toward 0 and converted from fixed-point.
+     */
+    #define FP_ROUND_TO_ZERO(x, shift) \
+        ((s32)(FP_FROM(x, shift) + ((u32)(x) >> 31)) >> 1)
 
     /** @brief Multiplies two integers in a fixed-point Q format and converts the result from the fixed-point Q format. */
     constexpr int FP_MULTIPLY(int a, int b, uint shift)
@@ -65,6 +84,122 @@ namespace Silent::Math
     {
         return FP_MULTIPLY((int64)a, FP_TO(b, shift), shift);
     }
+
+    // ==================================
+    // Raw Q Format Conversion and Utils
+    // ==================================
+
+    /** @brief Converts a floating-point value to Q*.4 fixed-point.
+     *
+     * @param x Value to convert (`float`).
+     * @return `x` converted to Q*.4 fixed-point.
+     */
+    #define Q4(x) \
+        FP_TO(x, Q4_SHIFT)
+
+    /** @brief Converts a floating-point value to Q*.8 fixed-point.
+     *
+     * @param x Value to convert (`float`).
+     * @return `x` converted to Q*.8 fixed-point.
+     */
+    #define Q8(x) \
+        FP_TO(x, Q8_SHIFT)
+
+    /** @brief Converts a floating-point value to clamped Q*.8 fixed-point.
+     *
+     * @param x Value to convert (`float`).
+     * @return `x` converted to clamped Q*.8 fixed-point.
+     */
+    #define Q8_CLAMPED(x) \
+        CLAMP(Q8(x), 0, Q8(1.0f) - 1)
+
+    /** @brief Converts a floating-point value to Q*.12 fixed-point.
+     *
+     * @param x Value to convert (`float`).
+     * @return `x` converted to Q*.12 fixed-point.
+     */
+    #define Q12(x) \
+        FP_TO(x, Q12_SHIFT)
+
+    /** @brief Converts a floating-point value to clamped Q*.12 fixed-point.
+     *
+     * @param x Value to convert (`float`).
+     * @return `x` converted to clamped Q*.12 fixed-point.
+     */
+    #define Q12_CLAMPED(x) \
+        CLAMP(Q12(x), 0, Q12(1.0f) - 1)
+
+    /** @brief Converts a fixed-point value from Q*.4 to Q*.8.
+     *
+     * @param x Q*.4 fixed-point value to convert.
+     * @return `x` converted to Q*.8 fixed-point.
+     */
+    #define Q4_TO_Q8(x) \
+        ((x) << 4)
+
+    /** @brief Converts a fixed-point value from Q*.4 to Q*.12.
+     *
+     * @param x Q*.4 fixed-point value to convert.
+     * @return `x` converted to Q*.12 fixed-point.
+     */
+    #define Q4_TO_Q12(x) \
+        ((x) << 8)
+
+    /** @brief Converts a fixed-point value from Q*.6 to Q*.12.
+     *
+     * @param x Q*.6 fixed-point value to convert.
+     * @return `x` converted to Q*.12 fixed-point.
+     */
+    #define Q6_TO_Q12(x) \
+        ((x) << 6)
+
+    /** @brief Converts a fixed-point value from Q*.8 to Q*.12.
+     *
+     * @param x Q*.8 fixed-point value to convert.
+     * @return `x` converted to Q*.12 fixed-point.
+     */
+    #define Q8_TO_Q12(x) \
+        ((x) << 4)
+
+    /** @brief Converts a fixed-point value from Q*.8 to Q*.4.
+     *
+     * @param x Q*.8 fixed-point value to convert.
+     * @return `x` converted to Q*.4 fixed-point.
+     */
+    #define Q8_TO_Q4(x) \
+        ((x) >> 4)
+
+    /** @brief Converts a fixed-point value from Q*.12 to Q*.4.
+     *
+     * @param x Q*.12 fixed-point value to convert.
+     * @return `x` converted to Q*.4 fixed-point.
+     */
+    #define Q12_TO_Q4(x) \
+        ((x) >> 8)
+
+    /** @brief Converts a fixed-point value from Q*.12 to Q*.6.
+     *
+     * @param x Q*.12 fixed-point value to convert.
+     * @return `x` converted to Q*.6 fixed-point.
+     */
+    #define Q12_TO_Q6(x) \
+        ((x) >> 6)
+
+    /** @brief Converts a fixed-point value from Q*.12 to Q*.8.
+     *
+     * @param x Q*.12 fixed-point value to convert.
+     * @return `x` converted to Q*.8 fixed-point.
+     */
+    #define Q12_TO_Q8(x) \
+        ((x) >> 4)
+
+    /** @brief Extracts the fractional part of a value in Q*.12 fixed-point.
+     *
+     * @param x Q*.12 fixed-point value.
+     * @return Fractional part of `x` in Q*.12 fixed-point.
+     */
+    #define Q12_FRACT(x) \
+        ((x) & 0xFFF)
 
     /** @brief Converts a normalized color value in the range `[0.0f, 1.0f]` to an 8-bit color format in the range `[0, 255]`. */
     constexpr uchar FP_COLOR(float val)

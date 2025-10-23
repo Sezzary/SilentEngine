@@ -101,16 +101,10 @@ namespace Silent::Math
         return (float)((int)x + ((x > 0.0f) && x != (int)x));
     }
     
-    /** @brief Converts an integer to a fixed-point Q format. */
-    constexpr int FP_TO(int x, uint shift)
-    {
-        return x << shift;
-    }
-
     /** @brief Converts a float to a fixed-point Q format. */
-    constexpr int FP_FLOAT_TO(float x, uint shift)
+    constexpr int FP_TO(float x, uint shift)
     {
-        return (int)ROUND(x * FP_TO(1, shift));
+        return (int)ROUND(x * (1 << shift));
     }
 
     /** @brief Converts an integer from a fixed-point Q format. */
@@ -122,7 +116,7 @@ namespace Silent::Math
     /** @brief Converts an integer from a scaled fixed-point Q format rounded to the nearest value. */
     /*constexpr int FP_ROUND_SCALED(int x, int scale, uint shift)
     {
-        return (x + ((FP_TO(1, shift) * scale) - 1)) / (FP_TO(1, shift) * scale);
+        return (x + ((FP_TO(1.0f, shift) * scale) - 1)) / (FP_TO(1.0f, shift) * scale);
     }*/
 
     /** @brief Converts an integer from a fixed-point Q format rounded toward 0. */
@@ -147,25 +141,31 @@ namespace Silent::Math
     /** @brief Multiplies an integer by a float converted to fixed-point Q format and converts the result from the fixed-point Q format. */
     constexpr int FP_MULTIPLY_FLOAT(int a, float b, uint shift)
     {
-        return FP_MULTIPLY(a, FP_FLOAT_TO(b, shift), shift);
+        return FP_MULTIPLY(a, FP_TO(b, shift), shift);
     }
 
     /** @brief Multiplies an integer by a float converted to fixed-point Q format, using a 64-bit intermediate for higher precision. */
     constexpr int FP_MULTIPLY_FLOAT_PRECISE(int a, float b, uint shift)
     {
-        return FP_MULTIPLY((int64)a, FP_FLOAT_TO(b, shift), shift);
+        return FP_MULTIPLY((int64)a, FP_TO(b, shift), shift);
     }
 
     /** @brief Converts a floating-point alpha in the range `[0.0f, 1.0f]` to a fixed-point alpha in Q3.12 format. */
     constexpr short FP_ALPHA(float alpha)
     {
-        return (short)FP_FLOAT_TO(alpha, Q12_SHIFT);
+        return (short)FP_TO(alpha, Q12_SHIFT);
     }
 
     /** @brief Converts a normalized color value in the range `[0.0f, 1.0f]` to an 8-bit color format in the range `[0, 255]`. */
     constexpr uchar FP_COLOR(float val)
     {
-        return (uchar)(val * (FP_TO(1, Q8_SHIFT) - 1));
+        return (uchar)(val * (FP_TO(1.0f, Q8_SHIFT) - 1));
+    }
+
+    /** @brief Converts an 8-bit color value in the range `[0, 255]` to a normalized color format in the range `[0.0f, 1.0f]`. */
+    constexpr float FP_COLOR_FROM(uchar val)
+    {
+        return (val == FP_COLOR(1.0f)) ? 1.0f : std::clamp((float)val / (float)FP_TO(1.0f, Q8_SHIFT), 0.0f, 1.0f);
     }
 
     /** @brief Converts floating-point degrees to fixed-point degrees in Q1.15 format. */
@@ -208,12 +208,12 @@ namespace Silent::Math
     /** @brief Converts floating-point meters to fixed-point world units in Q12.8 format. */
     constexpr int FP_METER(float met)
     {
-        return FP_FLOAT_TO(met, Q12_SHIFT);
+        return FP_TO(met, Q12_SHIFT);
     }
 
     /** @brief Converts floating-point seconds to fixed-point seconds in Q12.19 format. */
     constexpr int FP_TIME(float sec)
     {
-        return FP_FLOAT_TO(sec, Q12_SHIFT);
+        return FP_TO(sec, Q12_SHIFT);
     }
 }

@@ -2,11 +2,7 @@
 
 #include "Game/include/common.h"
 
-/** @brief Screen position menu states.
- *
- * When the user navigates the screen position menu, this facilitates menu switching
- * via `s_GameWork::gameStateStep[1]`.
- */
+/** @brief Screen position menu states. Facilitates menu switching via `s_GameWork::gameStateStep[1]`. */
 enum e_ScreenPosMenuState
 {
     ScreenPosMenuState_0     = 0,

@@ -9,6 +9,7 @@ namespace Silent::Game
 {
     void Options_BrightnessMenu_Control()
     {
+        // @todo
         // Handle menu state.
         switch (g_GameWork.gameStateStep_598[1])
         {
@@ -80,6 +81,7 @@ namespace Silent::Game
                 break;
         }
 
+        // @todo
         // Draw graphics.
         if (g_GameWork.gameStatePrev_590 == GameState_MainMenu)
         {
@@ -97,6 +99,7 @@ namespace Silent::Game
 
     void Options_BrightnessMenu_ConfigDraw()
     {
+        // @todo
         //Gfx_StringSetColor(StringColorId_White);
         //Gfx_StringSetPosition(SCREEN_POSITION_X(25.0f), SCREEN_POSITION_Y(79.5f));
         //Gfx_StringDraw("LEVEL_________", 20);
@@ -136,13 +139,13 @@ namespace Silent::Game
         // Draw flashing left/right arrows.
         for (int i = 0; i < FRONT_ARROWS.size(); i++)
         {
-            //Options_Selection_ArrowDraw(FRONT_ARROWS[i], true, false);
+            Options_Selection_ArrowDraw(FRONT_ARROWS[i], true, false);
         }
 
         // Draw border to highlight flashing left/right arrow corresponding to direction of UI navigation.
         for (int i = dir - 1; i < dir; i++)
         {
-            //Options_Selection_ArrowDraw(BORDER_ARROWS[i], false, false);
+            Options_Selection_ArrowDraw(BORDER_ARROWS[i], false, false);
         }
     }
 }

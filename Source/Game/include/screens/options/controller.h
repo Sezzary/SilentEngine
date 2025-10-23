@@ -68,12 +68,12 @@ int Options_ControllerMenu_ConfigUpdate(int actionIdx);
 
 /** @brief Draws entry strings and icons in the controller configuration options menu.
  *
- * @param isOnRightPane `true` if on the right pane, `false` if on the left pane.
- * @param presetsEntryIdx Selected presets pane entry index.
- * @param actionsEntryIdx Selected actions pane entry index.
+ * @param isOnRightPane `true` if on the right pane, `false` if on the left.
+ * @param entryIdx0 Selected entry index in left pane.
+ * @param entryIdx1 Selected entry index in right pane.
  * @param boundActionIdx Index of the newly bound input action.
  */
-void Options_ControllerMenu_EntriesDraw(bool isOnRightPane, int presetsEntryIdx, int actionsEntryIdx, int boundActionIdx);
+void Options_ControllerMenu_EntriesDraw(bool isOnRightPane, int entryIdx0, int entryIdx1, int boundActionIdx);
 
 /** @brief Draws button mapping icons in the controller configuration options menu.
  *

@@ -33,7 +33,7 @@ namespace Silent::Math
         // @todo
         //constexpr Color(const glm::vec4& color) : glm::vec4(color) {}
 
-        /** @brief Constructs a `Color` from `float` RGBA components.
+        /** @brief Constructs a `Color` from normalized RGBA components.
          *
          * @param r Red component.
          * @param g Green component.
@@ -51,10 +51,7 @@ namespace Silent::Math
          */
         static constexpr Color From8Bit(uchar r, uchar g, uchar b, uchar a = FP_COLOR(1.0f))
         {
-            return Color(r / (float)FP_COLOR(1.0f),
-                         g / (float)FP_COLOR(1.0f),
-                         b / (float)FP_COLOR(1.0f),
-                         a / (float)FP_COLOR(1.0f));
+            return Color(FP_COLOR_FROM(r), FP_COLOR_FROM(g), FP_COLOR_FROM(b), FP_COLOR_FROM(a));
         }
 
         /** @brief Constructs a `Color` from packed 8-bit RGBA components.

@@ -4,11 +4,7 @@
 
 namespace Silent::Game
 {
-    /** @brief Brightness menu states.
-     *
-     * When the user navigates the brightness menu, this facilitates menu switching
-     * via `s_GameWork::gameStateStep[1]`.
-     */
+    /** @brief Brightness menu states. Facilitates menu switching via `s_GameWork::gameStateStep[1]` */
     enum e_BrightnessMenuState
     {
         BrightnessMenuState_0     = 0,

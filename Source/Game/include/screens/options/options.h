@@ -14,11 +14,7 @@ namespace Silent::Game
     constexpr uint DEPTH_36   = 36;
     constexpr uint DEPTH_8148 = 8148;
 
-    /** @brief Options menu states.
-     *
-     * When the user navigates an options menu, this facilitates menu switching
-     * via `s_GameWork::gameStateStep[0]`.
-     */
+    /** @brief Options menu states. Facilitates menu switching via `s_GameWork::gameStateStep[0]`. */
     enum e_OptionsMenuState
     {
         OptionsMenuState_EnterMainOptions  = 0,  /** Entering main options menu. */

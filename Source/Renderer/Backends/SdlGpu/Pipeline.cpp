@@ -30,7 +30,7 @@ namespace Silent::Renderer
 
     void PipelineManager::Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType, BlendMode blendMode)
     {
-        int pipelineIdx = GetPipelineIdx(pipelineType, blendMode, g_DebugData.EnableWireframeMode);
+        int pipelineIdx = GetPipelineIdx(pipelineType, g_DebugData.EnableWireframeMode ? BlendMode::Wireframe : blendMode);
         SDL_BindGPUGraphicsPipeline(&renderPass, _pipelines[pipelineIdx]);
     }
 
@@ -55,51 +55,46 @@ namespace Silent::Renderer
         }
 
         // @todo Some pipelines don't need every variant. Use `std::unordedred_map` instead of flat array to accommodate this?
-        // Create pipeline variants for type, blend mode, and fill/wireframe mode.
-        for (int i = 0; i < 2; i++)
+        // Create pipelines with blend mode variants.
+        for (int i = 0; i < (int)BlendMode::Count; i++)
         {
-            for (int j = 0; j < (int)BlendMode::Count; j++)
+            auto colorTargetDescs = config.ColorTargetDescs;
+            colorTargetDescs.push_back(SDL_GPUColorTargetDescription
             {
-                auto colorTargetDescs = config.ColorTargetDescs;
-                colorTargetDescs.push_back(SDL_GPUColorTargetDescription
-                {
-                    .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
-                    .blend_state = PIPELINE_BLEND_MODE_COLOR_TARGETS[j]
-                });
+                .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
+                .blend_state = PIPELINE_BLEND_MODE_COLOR_TARGETS[i]
+            });
 
-                auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
+            auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
+            {
+                .vertex_shader      = vertShader,
+                .fragment_shader    = fragShader,
+                .vertex_input_state =
                 {
-                    .vertex_shader      = vertShader,
-                    .fragment_shader    = fragShader,
-                    .vertex_input_state =
-                    {
-                        .vertex_buffer_descriptions = config.VertBufferDescs.data(),
-                        .num_vertex_buffers         = (uint)config.VertBufferDescs.size(),
-                        .vertex_attributes          = config.VertBufferAttribs.data(),
-                        .num_vertex_attributes      = (uint)config.VertBufferAttribs.size()
-                    },
-                    .primitive_type   = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
-                    .rasterizer_state = SDL_GPURasterizerState
-                    {
-                        .fill_mode = (i == 0) ? SDL_GPU_FILLMODE_FILL : SDL_GPU_FILLMODE_LINE
-                    },
-                    .target_info = SDL_GPUGraphicsPipelineTargetInfo
-                    {
-                        .color_target_descriptions = colorTargetDescs.data(),
-                        .num_color_targets         = (uint)colorTargetDescs.size()
-                    }
-                };
-
-                // Create pipeline variant.
-                int piplindIdx = GetPipelineIdx(config.Type, (BlendMode)j, i);
-                _pipelines[piplindIdx] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
-                if (_pipelines[piplindIdx] == nullptr) 
+                    .vertex_buffer_descriptions = config.VertBufferDescs.data(),
+                    .num_vertex_buffers         = (uint)config.VertBufferDescs.size(),
+                    .vertex_attributes          = config.VertBufferAttribs.data(),
+                    .num_vertex_attributes      = (uint)config.VertBufferAttribs.size()
+                },
+                .primitive_type   = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
+                .rasterizer_state = SDL_GPURasterizerState
                 {
-                    throw std::runtime_error("Failed to create graphics pipeline type " + std::to_string((int)config.Type) +
-                                             ", blend mode " + std::to_string(j) +
-                                             " for " + (g_DebugData.EnableWireframeMode ? "wireframe mode" : "fill mode") +
-                                             ": " + std::string(SDL_GetError()));
+                    .fill_mode = ((BlendMode)i == BlendMode::Wireframe) ? SDL_GPU_FILLMODE_LINE : SDL_GPU_FILLMODE_FILL
+                },
+                .target_info = SDL_GPUGraphicsPipelineTargetInfo
+                {
+                    .color_target_descriptions = colorTargetDescs.data(),
+                    .num_color_targets         = (uint)colorTargetDescs.size()
                 }
+            };
+
+            // Create pipeline variant.
+            int piplineIdx = GetPipelineIdx(config.Type, (BlendMode)i);
+            _pipelines[piplineIdx] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
+            if (_pipelines[piplineIdx] == nullptr) 
+            {
+                throw std::runtime_error("Failed to create graphics pipeline type " + std::to_string((int)config.Type) +
+                                         ", blend mode " + std::to_string(i) + ": " + std::string(SDL_GetError()));
             }
         }
 
@@ -191,8 +186,8 @@ namespace Silent::Renderer
         return shader;
     }
 
-    int PipelineManager::GetPipelineIdx(PipelineType pipelineType, BlendMode blendMode, bool isWireframe)
+    int PipelineManager::GetPipelineIdx(PipelineType pipelineType, BlendMode blendMode)
     {
-        return (((int)pipelineType * (int)BlendMode::Count) * 2) + ((int)blendMode * 2) + (int)isWireframe;
+        return ((int)pipelineType * (int)BlendMode::Count) + (int)blendMode;
     }
 }

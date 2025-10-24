@@ -28,7 +28,7 @@ namespace Silent::Renderer
         // Constants
         // ==========
 
-        static constexpr uint PIPELINE_COUNT = ((int)PipelineType::Count * (int)BlendMode::Count) * 2;
+        static constexpr uint PIPELINE_COUNT = (int)PipelineType::Count * (int)BlendMode::Count;
 
         // =======
         // Fields
@@ -89,13 +89,12 @@ namespace Silent::Renderer
          */
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint storageTexCount, uint storageBufferCount, uint uniBufferCount);
 
-        /** @brief Computes the pipeline index according to the type, blend mode, and wireframe status.
+        /** @brief Computes the pipeline index according to the pipeline type and blend mode.
          *
          * @param pipelineType Pipeline type.
          * @param blendMode Blend mode.
-         * @param isWireframe Wireframe status.
          * @return Pipeline index.
          */
-        int GetPipelineIdx(PipelineType pipelineType, BlendMode blendMode, bool isWireframe);
+        int GetPipelineIdx(PipelineType pipelineType, BlendMode blendMode);
     };
 }

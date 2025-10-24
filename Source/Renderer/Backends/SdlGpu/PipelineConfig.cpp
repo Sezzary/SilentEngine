@@ -13,8 +13,8 @@ namespace Silent::Renderer
     };
     struct BufferPositionTextureVertex
     {
-        float x, y, z;
-        float u, v;
+        Vector3 Position = Vector3::Zero;
+        Vector2 Uv       = Vector2::Zero;
     };
 
     const std::vector<SDL_GPUColorTargetBlendState> PIPELINE_BLEND_MODE_COLOR_TARGETS = 
@@ -83,6 +83,17 @@ namespace Silent::Renderer
             .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
             .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
             .alpha_blend_op        = SDL_GPU_BLENDOP_SUBTRACT,
+            .enable_blend          = true
+        },
+        // Wireframe.
+        SDL_GPUColorTargetBlendState
+        {
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
             .enable_blend          = true
         }
     };

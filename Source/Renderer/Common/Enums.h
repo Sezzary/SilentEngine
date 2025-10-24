@@ -11,6 +11,7 @@ namespace Silent::Renderer
         Multiply,
         Add,
         Subtract,
+        Wireframe,
 
         Count
     };

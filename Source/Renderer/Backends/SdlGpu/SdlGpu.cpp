@@ -296,6 +296,8 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Draw2dScene()
     {
+        const auto& options = g_App.GetOptions();
+
         // Process copy pass.
         auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
 
@@ -324,7 +326,7 @@ namespace Silent::Renderer
         bufferBinding = SDL_GPUBufferBinding{ .buffer = IndexBuffer, .offset = 0 };
         SDL_BindGPUIndexBuffer(&renderPass, &bufferBinding, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
-        TestTexture.Bind(renderPass, *_samplers[0]);
+        TestTexture.Bind(renderPass, *_samplers[(int)options->TextureFilter]);
 
         SDL_DrawGPUIndexedPrimitives(&renderPass, 6, 1, 0, 0, 0);
 

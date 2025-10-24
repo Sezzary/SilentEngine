@@ -77,7 +77,7 @@ namespace Silent::Renderer
     {
         if (_primitives2d.size() >= PRIMITIVE_2D_COUNT_MAX)
         {
-            Log("Attampted to add 2D primitive to full container.", LogLevel::Warning, LogMode::Debug);
+            Debug::Log("Attampted to add 2D primitive to full container.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
 
@@ -92,7 +92,7 @@ namespace Silent::Renderer
         const auto asset = assets.GetAsset(assetIdx);
         if (asset->Type != AssetType::Tim)
         {
-            Log("Attempted to submit non-image asset as screen sprite.", LogLevel::Warning, LogMode::Debug);
+            Debug::Log("Attempted to submit non-image asset as screen sprite.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
 
@@ -115,10 +115,10 @@ namespace Silent::Renderer
         _debugGuiDrawCalls.push_back(drawFunc);
     }
 
-    void RendererBase::SubmitDebugLine(const Vector3& from, const Vector3& to, const Color& color, DebugPage page)
+    void RendererBase::SubmitDebugLine(const Vector3& from, const Vector3& to, const Color& color, Debug::Page page)
     {
         const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != g_DebugData.Page && page != DebugPage::None))
+        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
         {
             return;
         }
@@ -127,10 +127,10 @@ namespace Silent::Renderer
         _debugPrimitives3d.push_back(line);
     }
 
-    void RendererBase::SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page)
+    void RendererBase::SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, Debug::Page page)
     {
         const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != g_DebugData.Page && page != DebugPage::None))
+        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
         {
             return;
         }
@@ -139,10 +139,10 @@ namespace Silent::Renderer
         _debugPrimitives3d.push_back(tri);
     }
 
-    void RendererBase::SubmitDebugTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, DebugPage page)
+    void RendererBase::SubmitDebugTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, Debug::Page page)
     {
         const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != g_DebugData.Page && page != DebugPage::None))
+        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
         {
             return;
         }
@@ -162,10 +162,10 @@ namespace Silent::Renderer
         SubmitDebugLine(from2, to2, color, page);
     }
 
-    void RendererBase::SubmitDebugBox(const OrientedBoundingBox& box, const Color& color, bool isWireframe, DebugPage page)
+    void RendererBase::SubmitDebugBox(const OrientedBoundingBox& box, const Color& color, bool isWireframe, Debug::Page page)
     {
         const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != g_DebugData.Page && page != DebugPage::None))
+        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
         {
             return;
         }
@@ -213,12 +213,12 @@ namespace Silent::Renderer
         }
     }
 
-    void RendererBase::SubmitDebugSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe, DebugPage page)
+    void RendererBase::SubmitDebugSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe, Debug::Page page)
     {
         constexpr uint WIREFRAME_SEGMENT_COUNT = 24;
 
         const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != g_DebugData.Page && page != DebugPage::None))
+        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
         {
             return;
         }
@@ -271,10 +271,10 @@ namespace Silent::Renderer
         }
     }
 
-    void RendererBase::SubmitDebugCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void RendererBase::SubmitDebugCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page)
     {
         const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != g_DebugData.Page && page != DebugPage::None))
+        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
         {
             return;
         }
@@ -291,10 +291,10 @@ namespace Silent::Renderer
         }
     }
 
-    void RendererBase::SubmitDebugCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void RendererBase::SubmitDebugCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page)
     {
         const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != g_DebugData.Page && page != DebugPage::None))
+        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
         {
             return;
         }
@@ -311,10 +311,10 @@ namespace Silent::Renderer
         }
     }
 
-    void RendererBase::SubmitDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void RendererBase::SubmitDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page)
     {
         const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != g_DebugData.Page && page != DebugPage::None))
+        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
         {
             return;
         }

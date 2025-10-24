@@ -85,9 +85,8 @@ namespace Silent
         _work.Filesystem.Initialize();
 
         // Debug.
-        InitializeDebug();
-
-        Log("Starting " + std::string(APP_NAME) + " " + APP_VERSION + "...");
+        Debug::Initialize();
+        Debug::Log("Starting " + std::string(APP_NAME) + " " + APP_VERSION + "...");
 
         // Options.
         _work.Options.Initialize();
@@ -129,12 +128,12 @@ namespace Silent
         _work.Input.Initialize();
 
         // Finish.
-        Log("Startup complete.");
+        Debug::Log("Startup complete.");
     }
 
     void ApplicationManager::Deinitialize()
     {
-        Log("Shutting down...");
+        Debug::Log("Shutting down...");
 
         // Workspace.
         _work.Audio.Deinitialize();
@@ -148,7 +147,7 @@ namespace Silent
         SDL_Quit();
 
         // Finish.
-        Log("Shutdown complete.");
+        Debug::Log("Shutdown complete.");
     }
 
     void ApplicationManager::Run()
@@ -176,11 +175,11 @@ namespace Silent
     {
         if (SDL_SetWindowFullscreen(_window, !_work.Options->EnableFullscreen))
         {
-            Log("Toggled fullscreen mode.", LogLevel::Info, LogMode::DebugRelease, true);
+            Debug::Log("Toggled fullscreen mode.", Debug::LogLevel::Info, Debug::LogMode::DebugRelease, true);
             return;
         }
 
-        Log("Failed to toggle fullscreen mode: " + std::string(SDL_GetError()), LogLevel::Warning);
+        Debug::Log("Failed to toggle fullscreen mode: " + std::string(SDL_GetError()), Debug::LogLevel::Warning);
     }
 
     void ApplicationManager::ToggleCursor()
@@ -190,7 +189,7 @@ namespace Silent
         {
             if (!SDL_ShowCursor())
             {
-                Log("Failed to show cursor: " + std::string(SDL_GetError()), LogLevel::Warning);
+                Debug::Log("Failed to show cursor: " + std::string(SDL_GetError()), Debug::LogLevel::Warning);
             }
 
             // Move cursor to window center.
@@ -202,18 +201,23 @@ namespace Silent
         {
             if (!SDL_HideCursor())
             {
-                Log("Failed to hide cursor: " + std::string(SDL_GetError()), LogLevel::Warning);
+                Debug::Log("Failed to hide cursor: " + std::string(SDL_GetError()), Debug::LogLevel::Warning);
             }
         }
     }
 
     void ApplicationManager::ToggleDebugGui()
     {
+        if (!_work.Options->EnableDebugMode)
+        {
+            return;
+        }
+
         _work.Options->EnableDebugGui = !_work.Options->EnableDebugGui;
-        g_DebugData.Page              = _work.Options->EnableDebugGui ? DebugPage::Renderer : DebugPage::None;
+        Debug::g_Work.Page            = _work.Options->EnableDebugGui ? Debug::Page::Renderer : Debug::Page::None;
         ToggleCursor();
 
-        Log("Toggled debug mode.", LogLevel::Info, LogMode::DebugRelease, true);
+        Debug::Log("Toggled debug mode.", Debug::LogLevel::Info, Debug::LogMode::DebugRelease, true);
     }
 
     void ApplicationManager::Update()
@@ -229,7 +233,7 @@ namespace Silent
         _work.Audio.Update();
 
         // Update debug and toasts.
-        UpdateDebug();
+        Debug::Update();
         _work.Toasts.Update();
     }
 

@@ -13,7 +13,7 @@ using namespace Silent::Renderer;
 using namespace Silent::Services;
 using namespace Silent::Utils;
 
-// Includes for `Scratchpad` function go here.
+// Includes and namespace usings required for `Scratchpad` function go here.
 #ifdef _DEBUG
 
 #endif
@@ -23,10 +23,10 @@ namespace Silent::Debug
     constexpr char LOGGER_NAME[]     = "Logger";
     constexpr uint MESSAGE_COUNT_MAX = 128;
 
-    DebugData g_DebugData = {};
-
     static auto Messages  = std::vector<std::string>{};
     static auto StartTime = std::chrono::high_resolution_clock::time_point{};
+
+    DebugWork g_Work = {};
 
     void Scratchpad()
     {
@@ -144,7 +144,7 @@ namespace Silent::Debug
         }
     }
 
-    void InitializeDebug()
+    void Initialize()
     {
         constexpr char LOG_FILENAME[]   = "Log.txt";
         constexpr char IMGUI_FILENAME[] = "imgui.ini";
@@ -172,12 +172,12 @@ namespace Silent::Debug
         Messages.reserve(MESSAGE_COUNT_MAX);
     }
 
-    void DeinitializeDebug()
+    void Deinitialize()
     {
         spdlog::shutdown();
     }
 
-    void UpdateDebug()
+    void Update()
     {
         Scratchpad();
 
@@ -218,7 +218,7 @@ namespace Silent::Debug
                     if (ImGui::BeginTabItem("Scratchpad"))
                     {
                         // 'Alpha blend' slider.
-                        ImGui::SliderFloat("Alpha Blend", &g_DebugData.BlendAlpha, 0.0f, 1.0f);
+                        ImGui::SliderFloat("Alpha Blend", &g_Work.BlendAlpha, 0.0f, 1.0f);
     
                         ImGui::EndTabItem();
                     }
@@ -252,7 +252,7 @@ namespace Silent::Debug
                 // `Renderer` tab.
                 if (ImGui::BeginTabItem("Renderer"))
                 {
-                    g_DebugData.Page = DebugPage::Renderer;
+                    g_Work.Page = Page::Renderer;
 
                     // `Draw calls` info.
                     /*ImGui::TableNextRow();
@@ -262,7 +262,7 @@ namespace Silent::Debug
                     ImGui::Text("%d", renderer.GetDrawCallCount(), 1, 1);*/
 
                     // `Wireframe mode` checkbox.
-                    ImGui::Checkbox("Wireframe mode", &g_DebugData.EnableWireframeMode);
+                    ImGui::Checkbox("Wireframe mode", &g_Work.EnableWireframeMode);
 
                     ImGui::EndTabItem();
                 }
@@ -270,7 +270,7 @@ namespace Silent::Debug
                 // `Input` tab.
                 if (ImGui::BeginTabItem("Input"))
                 {
-                    g_DebugData.Page = DebugPage::Input;
+                    g_Work.Page = Page::Input;
 
                     const auto& input = g_App.GetInput();
 
@@ -406,10 +406,10 @@ namespace Silent::Debug
                 // `Cheats` tab.
                 if (ImGui::BeginTabItem("Cheats"))
                 {
-                    g_DebugData.Page = DebugPage::Cheats;
+                    g_Work.Page = Page::Cheats;
 
                     // `Freeze mode` checkbox.
-                    ImGui::Checkbox("Freeze mode", &g_DebugData.EnableFreezeMode);
+                    ImGui::Checkbox("Freeze mode", &g_Work.EnableFreezeMode);
 
                     ImGui::EndTabItem();
                 }
@@ -417,7 +417,7 @@ namespace Silent::Debug
                 // `Options` tab.
                 if (ImGui::BeginTabItem("Options"))
                 {
-                    g_DebugData.Page  = DebugPage::Options;
+                    g_Work.Page  = Page::Options;
                     bool isOptChanged = false;
 
                     // `Graphics` section.
@@ -861,49 +861,49 @@ namespace Silent::Debug
         renderer.SubmitDebugGui(drawFunc);
     }
 
-    void CreateLine(const Vector3& from, const Vector3& to, const Color& color, DebugPage page)
+    void CreateLine(const Vector3& from, const Vector3& to, const Color& color, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugLine(from, to, color, page);
     }
 
-    void CreateTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page)
+    void CreateTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugTriangle(vert0, vert1, vert2, color, page);
     }
 
-    void CreateTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, DebugPage page)
+    void CreateTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugTarget(center, rot, radius, color, page);
     }
 
-    void CreateBox(const OrientedBoundingBox& obb, const Color& color, bool isWireframe, DebugPage page)
+    void CreateBox(const OrientedBoundingBox& obb, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugBox(obb, color, isWireframe, page);
     }
 
-    void CreateSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe, DebugPage page)
+    void CreateSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugSphere(sphere, color, isWireframe, page);
     }
 
-    void CreateCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void CreateCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugCylinder(center, rot, radius, length, color, isWireframe, page);
     }
 
-    void CreateCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void CreateCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugCone(center, rot, radius, length, color, isWireframe, page);
     }
 
-    void CreateDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void CreateDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugDiamond(center, rot, radius, length, color, isWireframe, page);

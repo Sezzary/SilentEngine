@@ -76,7 +76,7 @@ namespace Silent::Renderer
         _buffer = SDL_CreateGPUBuffer(&device, &bufferInfo);
         if (_buffer == nullptr)
         {
-            Log("Failed to create buffer: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to create buffer: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
         }
 
         // Set buffer name.
@@ -92,7 +92,7 @@ namespace Silent::Renderer
         _transfer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
         if (_transfer == nullptr)
         {
-            Log("Failed to create transfer buffer: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to create transfer buffer: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
         }
     }
 

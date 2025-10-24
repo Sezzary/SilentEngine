@@ -235,12 +235,12 @@ namespace Silent::Utils
     {
         constexpr auto BOX_COLOR = Color(1.0f, 1.0f, 1.0f, 0.5f);
 
-        Message("=== Spatial Hash Debug ===");
+        Debug::Message("=== Spatial Hash Debug ===");
 
-        Message("Cells: %d", _cells.size());
+        Debug::Message("Cells: %d", _cells.size());
         for (const auto& [key, cell] : _cells)
         {
-            CreateBox(cell.Aabb.ToObb(), BOX_COLOR);
+            Debug::CreateBox(cell.Aabb.ToObb(), BOX_COLOR);
         }
     }
 

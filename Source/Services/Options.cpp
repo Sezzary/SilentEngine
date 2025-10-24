@@ -156,7 +156,7 @@ namespace Silent::Services
 
     void OptionsManager::Initialize()
     {
-        _options.EnableDebugMode = IS_DEBUG_BUILD;
+        _options.EnableDebugMode = Debug::IS_DEBUG_BUILD;
         _options.EnableDebugGui  = false;
         SetDefaultOptions();
     }
@@ -182,7 +182,7 @@ namespace Silent::Services
         auto stream = Stream(fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT), true, false);
         if (!stream.IsOpen())
         {
-            Log("No options file found. Creating file.", LogLevel::Info);
+            Debug::Log("No options file found. Creating file.", Debug::LogLevel::Info);
 
             SetDefaultOptions();
             Save();

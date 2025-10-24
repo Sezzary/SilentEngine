@@ -10,7 +10,7 @@ namespace Silent::Utils
 
     BoundingVolumeHierarchy::BoundingVolumeHierarchy(const std::vector<int>& objectIds, const std::vector<AxisAlignedBoundingBox>& aabbs, BvhBuildStrategy strategy)
     {
-        Assert(objectIds.size() == aabbs.size(), "BVH object ID and AABB counts unequal in static constructor.");
+        Debug::Assert(objectIds.size() == aabbs.size(), "BVH object ID and AABB counts unequal in static constructor.");
 
         if (objectIds.empty() && aabbs.empty())
         {
@@ -95,7 +95,7 @@ namespace Silent::Utils
         auto it = _leafIdMap.find(objectId);
         if (it != _leafIdMap.end())
         {
-            Log("BVH attempted to insert leaf with existing object ID " + std::to_string(objectId) + ".", LogLevel::Warning, LogMode::Debug, true);
+            Debug::Log("BVH attempted to insert leaf with existing object ID " + std::to_string(objectId) + ".", Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
         }
 
@@ -118,7 +118,7 @@ namespace Silent::Utils
         auto it = _leafIdMap.find(objectId);
         if (it == _leafIdMap.end())
         {
-            Log("BVH attempted to move missing leaf with object ID " + std::to_string(objectId) + ".", LogLevel::Warning, LogMode::Debug, true);
+            Debug::Log("BVH attempted to move missing leaf with object ID " + std::to_string(objectId) + ".", Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
         }
 
@@ -152,7 +152,7 @@ namespace Silent::Utils
         auto it = _leafIdMap.find(objectId);
         if (it == _leafIdMap.end())
         {
-            Log("BVH attempted to remove missing leaf with object ID " + std::to_string(objectId) + ".", LogLevel::Warning, LogMode::Debug, true);
+            Debug::Log("BVH attempted to remove missing leaf with object ID " + std::to_string(objectId) + ".", Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
         }
 
@@ -285,7 +285,7 @@ namespace Silent::Utils
             siblingId = (leftCost < rightCost) ? leftChildId : rightChildId;
             if (siblingId == NO_VALUE)
             {
-                Log("BVH sibling leaf search failed.", LogLevel::Warning);
+                Debug::Log("BVH sibling leaf search failed.", Debug::LogLevel::Warning);
                 break;
             }
         }
@@ -752,7 +752,7 @@ namespace Silent::Utils
 
     void BoundingVolumeHierarchy::Validate() const
     {
-        if (IS_DEBUG_BUILD)
+        if (Debug::IS_DEBUG_BUILD)
         {
             Validate(_rootId);
 
@@ -769,14 +769,14 @@ namespace Silent::Utils
                     }
                 }
 
-                Assert(count == 1, "BVH duplicate object IDs contained.");
+                Debug::Assert(count == 1, "BVH duplicate object IDs contained.");
             }
         }
     }
 
     void BoundingVolumeHierarchy::Validate(int nodeId) const
     {
-        if (IS_DEBUG_BUILD)
+        if (Debug::IS_DEBUG_BUILD)
         {
             if (nodeId == NO_VALUE)
             {
@@ -789,45 +789,45 @@ namespace Silent::Utils
             // Validate root.
             if (nodeId == _rootId)
             {
-                Assert(node.ParentId == NO_VALUE, "BVH root node cannot have parent.");
+                Debug::Assert(node.ParentId == NO_VALUE, "BVH root node cannot have parent.");
             }
 
             // Validate leaf node.
             if (node.IsLeaf())
             {
-                Assert(node.ObjectId != NO_VALUE, "BVH leaf node must contain object ID.");
-                Assert(node.Height == 0, "BVH leaf node must have height of 0.");
+                Debug::Assert(node.ObjectId != NO_VALUE, "BVH leaf node must contain object ID.");
+                Debug::Assert(node.Height == 0, "BVH leaf node must have height of 0.");
             }
             // Validate inner node.
             else
             {
-                Assert(node.ObjectId == NO_VALUE, "BVH inner node cannot contain object ID.");
-                Assert(node.Height != 0, "BVH inner node cannot have height of 0.");
+                Debug::Assert(node.ObjectId == NO_VALUE, "BVH inner node cannot contain object ID.");
+                Debug::Assert(node.Height != 0, "BVH inner node cannot have height of 0.");
             }
 
             // Validate parent.
             if (nodeId != _rootId)
             {
-                Assert(node.ParentId != NO_VALUE, "BVH non-root node must have parent.");
+                Debug::Assert(node.ParentId != NO_VALUE, "BVH non-root node must have parent.");
             }
 
             // Validate parent of children.
             if (node.LeftChildId != NO_VALUE)
             {
                 const auto& leftChild = _nodes[node.LeftChildId];
-                Assert(leftChild.ParentId == nodeId, "BVH left child has wrong parent.");
+                Debug::Assert(leftChild.ParentId == nodeId, "BVH left child has wrong parent.");
             }
             if (node.RightChildId != NO_VALUE)
             {
                 const auto& rightChild = _nodes[node.RightChildId];
-                Assert(rightChild.ParentId == nodeId, "BVH right child has wrong parent.");
+                Debug::Assert(rightChild.ParentId == nodeId, "BVH right child has wrong parent.");
             }
 
             // Validate height.
             if (nodeId != _rootId)
             {
                 const auto& parent = _nodes[node.ParentId];
-                Assert(node.Height < parent.Height, "BVH child height must be less than parent height.");
+                Debug::Assert(node.Height < parent.Height, "BVH child height must be less than parent height.");
             }
 
             // Validate recursively.

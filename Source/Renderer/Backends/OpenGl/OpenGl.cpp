@@ -24,7 +24,7 @@ namespace Silent::Renderer
 {
     void OpenGlRenderer::Initialize(SDL_Window& window)
     {
-        Log("Using OpenGL renderer:");
+        Debug::Log("Using OpenGL renderer:");
 
         _type   = RendererType::OpenGl;
         _window = &window;
@@ -62,41 +62,41 @@ namespace Silent::Renderer
 
         auto gpu    = std::string((const char*)glGetString(GL_RENDERER));
         auto vendor = std::string((const char*)glGetString(GL_VENDOR));
-        Log("    GPU: " + gpu + ", " + vendor);
+        Debug::Log("    GPU: " + gpu + ", " + vendor);
 
         auto version = std::string((const char*)glGetString(GL_VERSION));
-        Log("    Version: " + version);
+        Debug::Log("    Version: " + version);
 
         auto shadingLangVersion = std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-        Log("    Shading language version: " + shadingLangVersion);
+        Debug::Log("    Shading language version: " + shadingLangVersion);
 
         int attribCountMax = 0;
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attribCountMax);
-        Log("    " + std::to_string(attribCountMax) + " vertex attributes available.", LogLevel::Info, LogMode::Debug);
+        Debug::Log("    " + std::to_string(attribCountMax) + " vertex attributes available.", Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int varyingVarCountMax = 0;
         glGetIntegerv(GL_MAX_VARYING_VECTORS, &varyingVarCountMax);
-        Log("    " + std::to_string(varyingVarCountMax) + " varying variables available.", LogLevel::Info, LogMode::Debug);
+        Debug::Log("    " + std::to_string(varyingVarCountMax) + " varying variables available.", Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int combinedTexUnitCountMax = 0;
         glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedTexUnitCountMax);
-        Log("    " + std::to_string(combinedTexUnitCountMax) + " combined texture image units available.", LogLevel::Info, LogMode::Debug);
+        Debug::Log("    " + std::to_string(combinedTexUnitCountMax) + " combined texture image units available.", Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int vertTexImageUnitCountMax = 0;
         glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &vertTexImageUnitCountMax);
-        Log("    " + std::to_string(vertTexImageUnitCountMax) + " vertex texture image units available.", LogLevel::Info, LogMode::Debug);
+        Debug::Log("    " + std::to_string(vertTexImageUnitCountMax) + " vertex texture image units available.", Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int texSizeMax = 0;
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSizeMax);
-        Log("    " + std::to_string(texSizeMax)  + " max texture size.", LogLevel::Info, LogMode::Debug);
+        Debug::Log("    " + std::to_string(texSizeMax)  + " max texture size.", Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int uniBlockSizeMax = 0;
         glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &uniBlockSizeMax);
-        Log("    " + std::to_string(uniBlockSizeMax) + " max uniform block size.", LogLevel::Info, LogMode::Debug);
+        Debug::Log("    " + std::to_string(uniBlockSizeMax) + " max uniform block size.", Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int renderBufferSizeMax = 0;
         glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &renderBufferSizeMax);
-        Log("    " + std::to_string(renderBufferSizeMax) + " max renderbuffer size.", LogLevel::Info, LogMode::Debug);
+        Debug::Log("    " + std::to_string(renderBufferSizeMax) + " max renderbuffer size.", Debug::LogLevel::Info, Debug::LogMode::Debug);
     }
 
     void OpenGlRenderer::Deinitialize()
@@ -130,7 +130,7 @@ namespace Silent::Renderer
         // Swap buffers.
         if (!SDL_GL_SwapWindow(_window))
         {
-            Log("Failed to swap render buffer: " + std::string(SDL_GetError()), LogLevel::Warning);
+            Debug::Log("Failed to swap render buffer: " + std::string(SDL_GetError()), Debug::LogLevel::Warning);
         }
 
         // Clear scene. @todo
@@ -172,11 +172,11 @@ namespace Silent::Renderer
         // Write screenshot file.
         if (stbi_write_png(path.string().c_str(), res.x, res.y, COLOR_CHANNEL_COUNT, pixels.data(), res.x * COLOR_CHANNEL_COUNT))
         {
-            Log("Saved screenshot.", LogLevel::Info, LogMode::DebugRelease, true);
+            Debug::Log("Saved screenshot.", Debug::LogLevel::Info, Debug::LogMode::DebugRelease, true);
             return;
         }
 
-        Log("Failed to save screenshot.", LogLevel::Warning, LogMode::DebugRelease, true);
+        Debug::Log("Failed to save screenshot.", Debug::LogLevel::Warning, Debug::LogMode::DebugRelease, true);
     }
 
     void OpenGlRenderer::RefreshTextureFilter()
@@ -188,7 +188,7 @@ namespace Silent::Renderer
     void OpenGlRenderer::UpdateViewport()
     {
         // Set wireframe mode.
-        if (g_DebugData.EnableWireframeMode)
+        if (Debug::g_Work.EnableWireframeMode)
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
@@ -236,7 +236,7 @@ namespace Silent::Renderer
         shaderProg.Activate();
         shaderProg.SetMatrix("modelMat", modelMat);
         shaderProg.SetMatrix("viewMat", _view.GetMatrix(glm::radians(45.0f), aspect, 0.1f, 100.0f));
-        shaderProg.SetFloat("blendAlpha", g_DebugData.BlendAlpha);
+        shaderProg.SetFloat("blendAlpha", Debug::g_Work.BlendAlpha);
 
         // Cubes
 
@@ -303,7 +303,7 @@ namespace Silent::Renderer
         shaderProg.Activate();
         shaderProg.SetMatrix("modelMat", modelMat);
         shaderProg.SetMatrix("viewMat", _view.GetMatrix(glm::radians(45.0f), aspect, 0.1f, 100.0f));
-        shaderProg.SetFloat("blendAlpha", g_DebugData.BlendAlpha);
+        shaderProg.SetFloat("blendAlpha", Debug::g_Work.BlendAlpha);
 
         // Draw the triangle (this goes to the _2dframebuffer's texture)
         /*glBindVertexArray(_triangleVao);
@@ -351,7 +351,7 @@ namespace Silent::Renderer
 
     void OpenGlRenderer::LogError(const std::string& msg) const
     {
-        if constexpr (IS_DEBUG_BUILD)
+        if constexpr (Debug::IS_DEBUG_BUILD)
         {
             uint errorCode = glGetError();
             while (errorCode != GL_NO_ERROR)
@@ -401,7 +401,7 @@ namespace Silent::Renderer
                     }
                 }
 
-                Log("OpenGL " + std::to_string(errorCode) + ": " + msg + " | " + __FILE__ + "(" + std::to_string(__LINE__) + ")", LogLevel::Error, LogMode::Debug);
+                Debug::Log("OpenGL " + std::to_string(errorCode) + ": " + msg + " | " + __FILE__ + "(" + std::to_string(__LINE__) + ")", Debug::LogLevel::Error, Debug::LogMode::Debug);
                 uint errorCode = glGetError();
             }
         }

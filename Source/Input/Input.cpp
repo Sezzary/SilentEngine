@@ -77,7 +77,7 @@ namespace Silent::Input
 
         if (!SDL_Init(SDL_INIT_GAMEPAD))
         {
-            Log("Failed to initialize gamepad subsystem: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to initialize gamepad subsystem: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
         }
 
         // Initialize event states and control axes.
@@ -180,7 +180,7 @@ namespace Silent::Input
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
             toasts.Add("Gamepad connected.");
 
-            Log(GetGamepadVendorName(_gamepad.VendorId) + " gamepad connected.");
+            Debug::Log(GetGamepadVendorName(_gamepad.VendorId) + " gamepad connected.");
         }
     }
 
@@ -199,7 +199,7 @@ namespace Silent::Input
         SDL_CloseGamepad(_gamepad.Device);
         toasts.Add("Gamepad disconnected.");
 
-        Log("Gamepad disconnected.");
+        Debug::Log("Gamepad disconnected.");
     }
 
     void InputManager::InsertText(const std::string& textId, uint lineWidthMax, uint charCountMax)
@@ -330,7 +330,7 @@ namespace Silent::Input
         auto res = Vector2i::Zero;
         if (!SDL_GetWindowSize(&window, &res.x, &res.y))
         {
-            Log("Failed to get window size: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to get window size: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
         }
 
         float sensitivity = (options->MouseSensitivity * 0.1f) + 0.4f;
@@ -485,7 +485,7 @@ namespace Silent::Input
         // Rumble gamepad.
         if (!SDL_RumbleGamepad(_gamepad.Device, freqLow, freqHigh, durationMs))
         {
-            Log("Failed to rumble gamepad: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to rumble gamepad: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
         }
 
         _rumble.Ticks--;

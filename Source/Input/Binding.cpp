@@ -314,7 +314,7 @@ namespace Silent::Input
     {
         // Find binding profile.
         auto profileIt = _bindings.find(profileId);
-        Assert(profileIt != _bindings.end(), "Attempted to get missing binding profile " + std::to_string((int)profileId) + ".");
+        Debug::Assert(profileIt != _bindings.end(), "Attempted to get missing binding profile " + std::to_string((int)profileId) + ".");
 
         // Return binding profile.
         const auto& [keyProfileId, profile] = *profileIt;
@@ -345,10 +345,10 @@ namespace Silent::Input
     {
         if (Contains(_bindings[profileId][actionId], eventId))
         {
-            Log("Attempted to bind existing event " + std::to_string((int)eventId) +
+            Debug::Log("Attempted to bind existing event " + std::to_string((int)eventId) +
                 " to action " + std::to_string((int)actionId) +
                 " in binding profile " + std::to_string((int)profileId) + ".",
-                LogLevel::Warning);
+                Debug::LogLevel::Warning);
             return;
         }
 

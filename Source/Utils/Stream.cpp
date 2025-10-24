@@ -183,7 +183,7 @@ namespace Silent::Utils
         }
         catch (const json::parse_error& ex)
         {
-            Log("Failed to read JSON from binary file data stream.", LogLevel::Warning);
+            Debug::Log("Failed to read JSON from binary file data stream.", Debug::LogLevel::Warning);
             return json();
         }
     }
@@ -192,7 +192,7 @@ namespace Silent::Utils
     {
         if (!_stream.good() && !(_flags & std::fstream::out))
         {
-            Log("Failed to write to binary file data stream.", LogLevel::Warning);
+            Debug::Log("Failed to write to binary file data stream.", Debug::LogLevel::Warning);
             return;
         }
 
@@ -284,7 +284,7 @@ namespace Silent::Utils
     {
         if (!_stream.good() && !(_flags & std::fstream::in))
         {
-            Log("Failed to read from binary file data stream.", LogLevel::Warning);
+            Debug::Log("Failed to read from binary file data stream.", Debug::LogLevel::Warning);
             return false;
         }
 
@@ -295,7 +295,7 @@ namespace Silent::Utils
     {
         if (!_stream.good() && !(_flags & std::fstream::out))
         {
-            Log("Failed to write binary file data stream.", LogLevel::Warning);
+            Debug::Log("Failed to write binary file data stream.", Debug::LogLevel::Warning);
             return false;
         }
 

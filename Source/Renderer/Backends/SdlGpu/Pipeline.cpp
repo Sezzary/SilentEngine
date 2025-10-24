@@ -30,7 +30,7 @@ namespace Silent::Renderer
 
     void PipelineManager::Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType, BlendMode blendMode)
     {
-        int pipelineIdx = GetPipelineIdx(pipelineType, g_DebugData.EnableWireframeMode ? BlendMode::Wireframe : blendMode);
+        int pipelineIdx = GetPipelineIdx(pipelineType, Debug::g_Work.EnableWireframeMode ? BlendMode::Wireframe : blendMode);
         SDL_BindGPUGraphicsPipeline(&renderPass, _pipelines[pipelineIdx]);
     }
 
@@ -117,7 +117,7 @@ namespace Silent::Renderer
         }
         else
         {
-            Log("Invalid shader stage.", LogLevel::Error);
+            Debug::Log("Invalid shader stage.", Debug::LogLevel::Error);
             return nullptr;
         }
 
@@ -149,7 +149,7 @@ namespace Silent::Renderer
         }
         else
         {
-            Log("Unrecognized backend shader format.", LogLevel::Error);
+            Debug::Log("Unrecognized backend shader format.", Debug::LogLevel::Error);
             return nullptr;
         }
 
@@ -158,7 +158,7 @@ namespace Silent::Renderer
         void*  code     = SDL_LoadFile(fullPath, &codeSize);
         if (code == nullptr)
         {
-            Log("Failed to load shader `" + std::string(fullPath) + "`: " + SDL_GetError(), LogLevel::Error);
+            Debug::Log("Failed to load shader `" + std::string(fullPath) + "`: " + SDL_GetError(), Debug::LogLevel::Error);
             return nullptr;
         }
 
@@ -179,7 +179,7 @@ namespace Silent::Renderer
         auto* shader = SDL_CreateGPUShader(_device, &shaderInfo);
         if (shader == nullptr)
         {
-            Log("Failed to create shader: " + std::string(SDL_GetError()));
+            Debug::Log("Failed to create shader: " + std::string(SDL_GetError()));
         }
         SDL_free(code);
 

@@ -150,13 +150,13 @@ namespace Silent::Services
 
         /** System (internal) */
 
-        bool EnableDebugMode = true;
-        bool EnableDebugGui  = false;
+        bool EnableDebugMode   = true;
+        bool EnableDebugGui    = false;
+        bool EnableParallelism = false;
 
         /** System (user) */
 
-        bool EnableToasts      = false;
-        bool EnableParallelism = false;
+        bool EnableToasts = false;
     };
 
     /** @brief Central manager for the user options configuration. */

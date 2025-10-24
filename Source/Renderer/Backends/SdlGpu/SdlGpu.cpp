@@ -37,14 +37,14 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
-        Log("Using SDL_gpu renderer.");
+        Debug::Log("Using SDL_gpu renderer.");
 
         _type   = RendererType::SdlGpu;
         _window = &window;
 
         // Create GPU device.
         int formatFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
-        _device         = SDL_CreateGPUDevice(formatFlags, IS_DEBUG_BUILD, nullptr);
+        _device         = SDL_CreateGPUDevice(formatFlags, Debug::IS_DEBUG_BUILD, nullptr);
         if (_device == nullptr)
         {
             throw std::runtime_error("Failed to create GPU device: " + std::string(SDL_GetError()));
@@ -205,7 +205,7 @@ namespace Silent::Renderer
         _commandBuffer = SDL_AcquireGPUCommandBuffer(_device);
         if (_commandBuffer == nullptr)
         {
-            Log("Failed to acquire command buffer: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to acquire command buffer: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
             ClearFrameData();
             return;
         }
@@ -214,7 +214,7 @@ namespace Silent::Renderer
         _swapchainTexture = nullptr;
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(_commandBuffer, _window, &_swapchainTexture, nullptr, nullptr))
         {
-            Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Warning, LogMode::Debug);
+            Debug::Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             ClearFrameData();
             return;
         }
@@ -254,25 +254,25 @@ namespace Silent::Renderer
         auto* surface = SDL_GetWindowSurface(_window);
         if (surface == nullptr)
         {
-            Log("Failed to save screenshot: " + std::string(SDL_GetError()), LogLevel::Warning, LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::DebugRelease, true);
             return;
         }
 
         // Lock surface to access pixels.
         if (!SDL_LockSurface(surface))
         {
-            Log("Failed to save screenshot: " + std::string(SDL_GetError()), LogLevel::Warning, LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::DebugRelease, true);
             return;
         }
 
         // Write screenshot file.
         if (stbi_write_png(path.string().c_str(), res.x, res.y, COLOR_CHANNEL_COUNT, surface->pixels, res.x * COLOR_CHANNEL_COUNT))
         {
-            Log("Saved screenshot.", LogLevel::Info, LogMode::DebugRelease, true);
+            Debug::Log("Saved screenshot.", Debug::LogLevel::Info, Debug::LogMode::DebugRelease, true);
         }
         else
         {
-            Log("Failed to save screenshot.", LogLevel::Warning, LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot.", Debug::LogLevel::Warning, Debug::LogMode::DebugRelease, true);
         }
 
         SDL_UnlockSurface(surface);

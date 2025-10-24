@@ -101,5 +101,3 @@ using namespace Silent;
 using namespace Silent::Math;
 
 #include "Debug.h"
-
-using namespace Silent::Debug;

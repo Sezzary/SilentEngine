@@ -92,7 +92,7 @@ namespace Silent::Utils
 
     void Bitfield::Set(uint bitIdx)
     {
-        if constexpr (IS_DEBUG_BUILD)
+        if constexpr (Debug::IS_DEBUG_BUILD)
         {
             if (!IsBitIdxValid(bitIdx))
             {
@@ -120,7 +120,7 @@ namespace Silent::Utils
 
     void Bitfield::Clear(uint bitIdx)
     {
-        if constexpr (IS_DEBUG_BUILD)
+        if constexpr (Debug::IS_DEBUG_BUILD)
         {
             if (!IsBitIdxValid(bitIdx))
             {
@@ -148,7 +148,7 @@ namespace Silent::Utils
 
     void Bitfield::Flip(uint bitIdx)
     {
-        if constexpr (IS_DEBUG_BUILD)
+        if constexpr (Debug::IS_DEBUG_BUILD)
         {
             if (!IsBitIdxValid(bitIdx))
             {
@@ -206,7 +206,7 @@ namespace Silent::Utils
 
     bool Bitfield::Test(uint bitIdx) const
     {
-        if constexpr (IS_DEBUG_BUILD)
+        if constexpr (Debug::IS_DEBUG_BUILD)
         {
             if (!IsBitIdxValid(bitIdx))
             {
@@ -451,7 +451,7 @@ namespace Silent::Utils
     {
         if (bitIdx >= _size)
         {
-            Log("Bitfield attempted to access bit at invalid index.", LogLevel::Warning);
+            Debug::Log("Bitfield attempted to access bit at invalid index.", Debug::LogLevel::Warning);
             return false;
         }
 

@@ -161,11 +161,11 @@ namespace Silent::Renderer
     int ShaderProgram::GetUniformLocation(const std::string& uniName) const
     {
         int uniLoc = glGetUniformLocation(_programId, uniName.c_str());
-        if constexpr (IS_DEBUG_BUILD)
+        if constexpr (Debug::IS_DEBUG_BUILD)
         {
             if (uniLoc == NO_VALUE)
             {
-                Log("Attempted to set invalid uniform '" + uniName + "'.", LogLevel::Warning, LogMode::Debug);
+                Debug::Log("Attempted to set invalid uniform '" + uniName + "'.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
             }
         }
 
@@ -183,7 +183,7 @@ namespace Silent::Renderer
         if (!success)
         {
             glGetShaderInfoLog(shaderId, MSG_BUFFER_SIZE, nullptr, msgBuffer);
-            Log("Failed to compile `" + type + "` shader: " + msgBuffer, LogLevel::Error);
+            Debug::Log("Failed to compile `" + type + "` shader: " + msgBuffer, Debug::LogLevel::Error);
         }
     }
 
@@ -198,7 +198,7 @@ namespace Silent::Renderer
         if (!success)
         {
             glGetProgramInfoLog(progId, MSG_BUFFER_SIZE, nullptr, msgBuffer);
-            Log("Failed to create '" + std::to_string(progId) + "' shader program:" + msgBuffer, LogLevel::Error);
+            Debug::Log("Failed to create '" + std::to_string(progId) + "' shader program:" + msgBuffer, Debug::LogLevel::Error);
         }
     }
 }

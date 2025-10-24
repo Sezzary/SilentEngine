@@ -5,7 +5,7 @@
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Services/Time.h"
-#include "Utils/BitField.h"
+#include "Utils/Bitfield.h"
 #include "Utils/Parallel.h"
 #include "Utils/Utils.h"
 
@@ -305,9 +305,9 @@ namespace Silent::Debug
 
                         // Collect action statuses.
                         int  flagCount           = (int)ACTION_ID_GROUPS.at(USER_ACTION_GROUP_IDS.back()).back();
-                        auto clickedActionFlags  = BitField(flagCount);
-                        auto heldActionFlags     = BitField(flagCount);
-                        auto releasedActionFlags = BitField(flagCount);
+                        auto clickedActionFlags  = Bitfield(flagCount);
+                        auto heldActionFlags     = Bitfield(flagCount);
+                        auto releasedActionFlags = Bitfield(flagCount);
                         for (int i = 0; i < flagCount; i++)
                         {
                             auto actionId = (ActionId)i;

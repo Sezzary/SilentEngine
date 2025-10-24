@@ -106,6 +106,10 @@ namespace Silent::Assets
                 bpp = BitsPerPixel::Bpp16;
                 break;
             }
+            default:
+            {
+                std::runtime_error("TIM has no BPP flags.");
+            }
         }
 
         // Define image width coefficient based on BPP.

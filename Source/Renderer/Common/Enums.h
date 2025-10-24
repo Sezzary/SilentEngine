@@ -8,9 +8,11 @@ namespace Silent::Renderer
         Opaque,
         Alpha,
         FastAlpha,
+        Multiply,
         Add,
         Subtract,
-        Multiply
+
+        Count
     };
 
     /** @brief 2D sprite and shape align modes. */

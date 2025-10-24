@@ -1,7 +1,11 @@
 #pragma once
 
+#include "Renderer/Common/Enums.h"
+
 namespace Silent::Renderer
 {
+    enum class BlendMode;
+
     /** @brief Pipeline types. */
     enum class PipelineType
     {
@@ -34,19 +38,25 @@ namespace Silent::Renderer
 
         std::vector<SDL_GPUVertexBufferDescription> VertBufferDescs   = {};
         std::vector<SDL_GPUVertexAttribute>         VertBufferAttribs = {};
-        std::vector<SDL_GPUColorTargetDescription>  ColorTargetDescs  = {};
+        std::vector<SDL_GPUColorTargetDescription>  ColorTargetDescs  = {}; // @todo Maybe not needed except for special cases. Filled automatically.
     };
 
     /** @brief Central pipeline manager. */
     class PipelineManager
     {
     private:
+        // ==========
+        // Constants
+        // ==========
+
+        static constexpr uint PIPELINE_COUNT = ((int)PipelineType::Count * (int)BlendMode::Count) * 2;
+
         // =======
         // Fields
         // =======
 
-        SDL_GPUDevice*                                                 _device    = nullptr; /** GPU device. */
-        std::array<SDL_GPUGraphicsPipeline*, (int)PipelineType::Count> _pipelines = {};      /** Available pipelines. */
+        SDL_GPUDevice*                                       _device    = nullptr; /** GPU device. */
+        std::array<SDL_GPUGraphicsPipeline*, PIPELINE_COUNT> _pipelines = {};      /** Available pipelines. */
 
     public:
         // =============
@@ -75,7 +85,7 @@ namespace Silent::Renderer
          * @param renderPass Render pass used in rendering to bind the pipeline to.
          * @param pipelineType Pipeline to bind.
          */
-        void Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType);
+        void Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType, BlendMode blendMode);
 
     private:
         // ========
@@ -99,5 +109,14 @@ namespace Silent::Renderer
          * @return Compiled vertex or fragment shader.
          */
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint storageTexCount, uint storageBufferCount, uint uniBufferCount);
+
+        /** @brief Computes the pipeline index according to the type, blend mode, and wireframe status.
+         *
+         * @param pipelineType Pipeline type.
+         * @param blendMode Blend mode.
+         * @param isWireframe Wireframe status.
+         * @return Pipeline index.
+         */
+        int GetPipelineIdx(PipelineType pipelineType, BlendMode blendMode, bool isWireframe);
     };
 }

@@ -316,7 +316,7 @@ namespace Silent::Renderer
         // Texture test.
         // ===========================
 
-        _pipelines.Bind(renderPass, PipelineType::Primitive2dTextured);
+        _pipelines.Bind(renderPass, PipelineType::Primitive2dTextured, BlendMode::Opaque);
 
         auto bufferBinding = SDL_GPUBufferBinding{ .buffer = VertexBuffer, .offset = 0 };
         SDL_BindGPUVertexBuffers(&renderPass, 0, &bufferBinding, 1);
@@ -331,7 +331,7 @@ namespace Silent::Renderer
         //===============================
 
         // Bind.
-        _pipelines.Bind(renderPass, PipelineType::Primitive2d);
+        _pipelines.Bind(renderPass, PipelineType::Primitive2d, BlendMode::Alpha);
         _buffers.Primitives2d.Bind(renderPass, 0);
 
         // Upload uniform data.

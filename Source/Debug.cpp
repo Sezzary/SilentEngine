@@ -71,7 +71,7 @@ namespace Silent::Debug
                                                 Color(0.0f, 1.0f, 0.0f, 1.0f),
                                                 Color(0.0f, 1.0f, 0.0f, 1.0f),
                                                 Color(0.0f, 0.0f, 0.0f, 0.0f),
-                                                0);
+                                                0, ScaleMode::Fit, BlendMode::Alpha);
             auto line0 = Primitive2d::CreateLine(Vector2i(10, 10),
                                                 Vector2i(50, 10),
                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),

@@ -24,18 +24,12 @@ namespace Silent::Renderer
     class PipelineManager
     {
     private:
-        // ==========
-        // Constants
-        // ==========
-
-        static constexpr uint PIPELINE_COUNT = (int)PipelineType::Count * (int)BlendMode::Count;
-
         // =======
         // Fields
         // =======
 
-        SDL_GPUDevice*                                       _device    = nullptr;
-        std::array<SDL_GPUGraphicsPipeline*, PIPELINE_COUNT> _pipelines = {};
+        SDL_GPUDevice*                                    _device    = nullptr;
+        std::unordered_map<int, SDL_GPUGraphicsPipeline*> _pipelines = {}; /** Key = pipeline hash, value = pipeline. */
 
     public:
         // =============
@@ -89,12 +83,12 @@ namespace Silent::Renderer
          */
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint storageTexCount, uint storageBufferCount, uint uniBufferCount);
 
-        /** @brief Computes the pipeline index according to the pipeline type and blend mode.
+        /** @brief Computes a pipeline hash from a pipeline type and blend mode.
          *
          * @param pipelineType Pipeline type.
          * @param blendMode Blend mode.
-         * @return Pipeline index.
+         * @return Pipeline hash.
          */
-        int GetPipelineIdx(PipelineType pipelineType, BlendMode blendMode);
+        int GetPipelineHash(PipelineType pipelineType, BlendMode blendMode);
     };
 }

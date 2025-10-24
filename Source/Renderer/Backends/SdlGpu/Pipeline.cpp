@@ -12,7 +12,7 @@ namespace Silent::Renderer
 {
     PipelineManager::~PipelineManager()
     {
-        for (auto* pipeline : _pipelines)
+        for (auto [keyHash, pipeline] : _pipelines)
         {
             SDL_ReleaseGPUGraphicsPipeline(_device, pipeline);
         }
@@ -30,8 +30,8 @@ namespace Silent::Renderer
 
     void PipelineManager::Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType, BlendMode blendMode)
     {
-        int pipelineIdx = GetPipelineIdx(pipelineType, Debug::g_Work.EnableWireframeMode ? BlendMode::Wireframe : blendMode);
-        SDL_BindGPUGraphicsPipeline(&renderPass, _pipelines[pipelineIdx]);
+        int pipelineHash = GetPipelineHash(pipelineType, Debug::g_Work.EnableWireframeMode ? BlendMode::Wireframe : blendMode);
+        SDL_BindGPUGraphicsPipeline(&renderPass, _pipelines[pipelineHash]);
     }
 
     void PipelineManager::InitializeGraphicsPipeline(SDL_Window& window, const PipelineConfig& config)
@@ -89,9 +89,9 @@ namespace Silent::Renderer
             };
 
             // Create pipeline variant.
-            int piplineIdx = GetPipelineIdx(config.Type, (BlendMode)i);
-            _pipelines[piplineIdx] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
-            if (_pipelines[piplineIdx] == nullptr) 
+            int piplineHash         = GetPipelineHash(config.Type, (BlendMode)i);
+            _pipelines[piplineHash] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
+            if (_pipelines[piplineHash] == nullptr) 
             {
                 throw std::runtime_error("Failed to create graphics pipeline type " + std::to_string((int)config.Type) +
                                          ", blend mode " + std::to_string(i) + ": " + std::string(SDL_GetError()));
@@ -179,14 +179,14 @@ namespace Silent::Renderer
         auto* shader = SDL_CreateGPUShader(_device, &shaderInfo);
         if (shader == nullptr)
         {
-            Debug::Log("Failed to create shader: " + std::string(SDL_GetError()));
+            Debug::Log("Failed to create shader `" + std::string(fullPath) + "`: " + std::string(SDL_GetError()));
         }
         SDL_free(code);
 
         return shader;
     }
 
-    int PipelineManager::GetPipelineIdx(PipelineType pipelineType, BlendMode blendMode)
+    int PipelineManager::GetPipelineHash(PipelineType pipelineType, BlendMode blendMode)
     {
         return ((int)pipelineType * (int)BlendMode::Count) + (int)blendMode;
     }

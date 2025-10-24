@@ -347,7 +347,7 @@ namespace Silent::Input
         _states.Events[eventIdx + 3] = (moveAxis.y > 0.0f) ? abs(moveAxis.y) : 0.0f;
         eventIdx                    += SQUARE(Vector2::AXIS_COUNT);
 
-        // Set camera axis. NOTE: Right gamepad stick takes priority over mouse.
+        // Set camera axis. Right gamepad stick takes priority over mouse.
         _analogAxes[(int)AnalogAxisId::Camera] = moveAxis;
 
         // Set raw mouse axis.
@@ -430,7 +430,7 @@ namespace Silent::Input
             eventIdx                          += Vector2::AXIS_COUNT * 2;
         }
 
-        // Set camera axis. NOTE: Right gamepad stick takes priority over mouse.
+        // Set camera axis. Right gamepad stick takes priority over mouse.
         if (stickAxes.back() != Vector2::Zero)
         {
             _analogAxes[(int)AnalogAxisId::Camera] = stickAxes.back();

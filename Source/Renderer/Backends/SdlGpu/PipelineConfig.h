@@ -26,5 +26,6 @@ namespace Silent::Renderer
         std::vector<SDL_GPUColorTargetDescription>  ColorTargetDescs  = {}; // @todo Maybe not needed except for special cases. Filled automatically.
     };
 
-    extern const std::vector<PipelineConfig> PIPELINE_CONFIGS;
+    extern const std::vector<SDL_GPUColorTargetBlendState> PIPELINE_BLEND_MODE_COLOR_TARGETS;
+    extern const std::vector<PipelineConfig>               PIPELINE_CONFIGS;
 }

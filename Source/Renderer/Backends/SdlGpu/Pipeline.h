@@ -34,8 +34,8 @@ namespace Silent::Renderer
         // Fields
         // =======
 
-        SDL_GPUDevice*                                       _device    = nullptr; /** GPU device. */
-        std::array<SDL_GPUGraphicsPipeline*, PIPELINE_COUNT> _pipelines = {};      /** Available pipelines. */
+        SDL_GPUDevice*                                       _device    = nullptr;
+        std::array<SDL_GPUGraphicsPipeline*, PIPELINE_COUNT> _pipelines = {};
 
     public:
         // =============

@@ -17,8 +17,79 @@ namespace Silent::Renderer
         float u, v;
     };
 
+    const std::vector<SDL_GPUColorTargetBlendState> PIPELINE_BLEND_MODE_COLOR_TARGETS = 
+    {
+        // Opaque.
+        SDL_GPUColorTargetBlendState
+        {
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .enable_blend          = true
+        },
+        // Alpha.
+        SDL_GPUColorTargetBlendState
+        {
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .enable_blend          = true
+        },
+        // Fast alpha. Requires `IsFastAlpha` shader uniform set to `true`.
+        SDL_GPUColorTargetBlendState
+        {
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .enable_blend          = true
+        },
+        // Multiply.
+        SDL_GPUColorTargetBlendState
+        {
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_COLOR,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .enable_blend          = true
+        },
+        // Add.
+        SDL_GPUColorTargetBlendState
+        {
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
+            .enable_blend          = true
+        },
+        // Subtract.
+        SDL_GPUColorTargetBlendState
+        {
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .color_blend_op        = SDL_GPU_BLENDOP_SUBTRACT,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .alpha_blend_op        = SDL_GPU_BLENDOP_SUBTRACT,
+            .enable_blend          = true
+        }
+    };
+
     const std::vector<PipelineConfig> PIPELINE_CONFIGS =
     {
+        // 2D primitive.
         PipelineConfig
         {
             .Type                     = PipelineType::Primitive2d,
@@ -53,6 +124,7 @@ namespace Silent::Renderer
                 }
             }
         },
+        // 2D textured primitive.
         PipelineConfig
         {
             .Type                   = PipelineType::Primitive2dTextured,

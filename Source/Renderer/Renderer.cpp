@@ -335,9 +335,9 @@ namespace Silent::Renderer
     {
         auto sortTasks = ParallelTasks
         {
-            // Sort 2D primitives by depth.
             [&]()
             {
+                // Sort 2D primitives by depth.
                 Sort(_primitives2d, [](const Primitive2d& prim0, const Primitive2d& prim1)
                 {
                     return prim0.Depth > prim1.Depth; // @todo Weird reverse order necessary here.

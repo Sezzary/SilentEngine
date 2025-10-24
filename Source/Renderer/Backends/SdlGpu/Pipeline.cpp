@@ -10,76 +10,6 @@ using namespace Silent::Services;
 
 namespace Silent::Renderer
 {
-    static const auto PIPELINE_BLEND_MODE_COLOR_TARGETS = std::vector<SDL_GPUColorTargetBlendState>
-    {
-        // Opaque.
-        SDL_GPUColorTargetBlendState
-        {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
-            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
-            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .enable_blend          = true
-        },
-        // Alpha.
-        SDL_GPUColorTargetBlendState
-        {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .enable_blend          = true
-        },
-        // Fast alpha. Requires `IsFastAlpha` shader uniform set to `true`.
-        SDL_GPUColorTargetBlendState
-        {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
-            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
-            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .enable_blend          = true
-        },
-        // Multiply.
-        SDL_GPUColorTargetBlendState
-        {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_COLOR,
-            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .enable_blend          = true
-        },
-        // Add.
-        SDL_GPUColorTargetBlendState
-        {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .enable_blend          = true
-        },
-        // Subtract.
-        SDL_GPUColorTargetBlendState
-        {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .color_blend_op        = SDL_GPU_BLENDOP_SUBTRACT,
-            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .alpha_blend_op        = SDL_GPU_BLENDOP_SUBTRACT,
-            .enable_blend          = true
-        }
-    };
-
     PipelineManager::~PipelineManager()
     {
         for (auto* pipeline : _pipelines)
@@ -124,7 +54,8 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to create fragment shader `" + config.FragmentShaderName + "`.");
         }
 
-        // Create pipeline variants for type, blend mode, and fill mode.
+        // @todo Some pipelines don't need every variant. Use `std::unordedred_map` instead of flat array to accommodate this?
+        // Create pipeline variants for type, blend mode, and fill/wireframe mode.
         for (int i = 0; i < 2; i++)
         {
             for (int j = 0; j < (int)BlendMode::Count; j++)

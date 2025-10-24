@@ -12,6 +12,7 @@ namespace Silent::Renderer
     static const auto PIPELINE_BLEND_MODE_COLOR_TARGETS = std::vector<SDL_GPUColorTargetBlendState>
     {
         // Opaque.
+        SDL_GPUColorTargetBlendState
         {
             .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
             .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
@@ -22,6 +23,7 @@ namespace Silent::Renderer
             .enable_blend          = true
         },
         // Alpha.
+        SDL_GPUColorTargetBlendState
         {
             .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
             .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
@@ -31,7 +33,8 @@ namespace Silent::Renderer
             .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
             .enable_blend          = true
         },
-        // Fast alpha.
+        // Fast alpha. Requires `IsFastAlpha` shader uniform set to `true`.
+        SDL_GPUColorTargetBlendState
         {
             .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
             .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
@@ -42,6 +45,7 @@ namespace Silent::Renderer
             .enable_blend          = true
         },
         // Multiply.
+        SDL_GPUColorTargetBlendState
         {
             .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_COLOR,
             .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
@@ -52,6 +56,7 @@ namespace Silent::Renderer
             .enable_blend          = true
         },
         // Add.
+        SDL_GPUColorTargetBlendState
         {
             .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
             .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
@@ -62,6 +67,7 @@ namespace Silent::Renderer
             .enable_blend          = true
         },
         // Subtract.
+        SDL_GPUColorTargetBlendState
         {
             .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
             .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
@@ -97,39 +103,38 @@ namespace Silent::Renderer
     {
         _device = &device;
 
-        // @todo Vectors won't compile as part of initialiser list.
         auto prim2dPipelineConfig = PipelineConfig
         {
             .Type                     = PipelineType::Primitive2d,
             .VertexShaderName         = "2dPrimitive.vert",
             .FragmentShaderName       = "2dPrimitive.frag",
-            .FragShaderUniBufferCount = 1
-        };
-        prim2dPipelineConfig.VertBufferDescs =
-        {
-            SDL_GPUVertexBufferDescription
+            .FragShaderUniBufferCount = 1,
+            .VertBufferDescs          =
             {
-                .slot               = 0,
-                .pitch              = sizeof(BufferVertex),
-                .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
-                .instance_step_rate = 0
-            }
-        };
-        prim2dPipelineConfig.VertBufferAttribs =
-        {
-            SDL_GPUVertexAttribute
-            {
-                .location    = 0,
-                .buffer_slot = 0,
-                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-                .offset      = 0
+                SDL_GPUVertexBufferDescription
+                {
+                    .slot               = 0,
+                    .pitch              = sizeof(BufferVertex),
+                    .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+                    .instance_step_rate = 0
+                }
             },
-            SDL_GPUVertexAttribute
+            .VertBufferAttribs =
             {
-                .location    = 1,
-                .buffer_slot = 0,
-                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
-                .offset      = sizeof(float) * 3
+                SDL_GPUVertexAttribute
+                {
+                    .location    = 0,
+                    .buffer_slot = 0,
+                    .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+                    .offset      = 0
+                },
+                SDL_GPUVertexAttribute
+                {
+                    .location    = 1,
+                    .buffer_slot = 0,
+                    .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
+                    .offset      = sizeof(float) * 3
+                }
             }
         };
         InitializeGraphicsPipeline(window, prim2dPipelineConfig);
@@ -139,33 +144,33 @@ namespace Silent::Renderer
             .Type                   = PipelineType::Primitive2dTextured,
             .VertexShaderName       = "TexturedQuad.vert",
             .FragmentShaderName     = "TexturedQuad.frag",
-            .FragShaderSamplerCount = 1
-        };
-        texPipelineConfig.VertBufferDescs =
-        {
-            SDL_GPUVertexBufferDescription
+            .FragShaderSamplerCount = 1,
+            .VertBufferDescs        =
             {
-                .slot               = 0,
-                .pitch              = sizeof(BufferPositionTextureVertex),
-                .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
-                .instance_step_rate = 0
-            }
-        };
-        texPipelineConfig.VertBufferAttribs =
-        {
-            SDL_GPUVertexAttribute
-            {
-                .location    = 0,
-                .buffer_slot = 0,
-                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-                .offset      = 0
+                SDL_GPUVertexBufferDescription
+                {
+                    .slot               = 0,
+                    .pitch              = sizeof(BufferPositionTextureVertex),
+                    .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+                    .instance_step_rate = 0
+                }
             },
-            SDL_GPUVertexAttribute
+            .VertBufferAttribs =
             {
-                .location    = 1,
-                .buffer_slot = 0,
-                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2,
-                .offset      = sizeof(float) * 3
+                SDL_GPUVertexAttribute
+                {
+                    .location    = 0,
+                    .buffer_slot = 0,
+                    .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+                    .offset      = 0
+                },
+                SDL_GPUVertexAttribute
+                {
+                    .location    = 1,
+                    .buffer_slot = 0,
+                    .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2,
+                    .offset      = sizeof(float) * 3
+                }
             }
         };
         InitializeGraphicsPipeline(window, texPipelineConfig);

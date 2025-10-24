@@ -17,12 +17,12 @@ using namespace Silent::Utils;
 
 namespace Silent::Renderer
 {
-    struct TimeUniform
+    struct TestUniform
     {
-        float Time = 0;
+        bool IsFastAlpha = false;
     };
 
-    static auto UniformBuffer = TimeUniform{};
+    static auto UniformBuffer = TestUniform{};
 
     struct PositionTextureVertex
     {
@@ -335,7 +335,7 @@ namespace Silent::Renderer
         _buffers.Primitives2d.Bind(renderPass, 0);
 
         // Upload uniform data.
-        UniformBuffer.Time = 1.0f;//SDL_GetTicksNS() / 1e9f;
+        UniformBuffer.IsFastAlpha = true;
         SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
 
         // Process render pass.

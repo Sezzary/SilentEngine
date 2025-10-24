@@ -46,9 +46,8 @@ namespace Silent::Game
             g_MainOptions_SelectionHighlightTo.y   = (g_MainOptionsMenu_SelectedEntry * LINE_OFFSET_Y)               - HIGHLIGHT_OFFSET_Y;
         }
 
-        // @todo
         // Compute sine-based interpolation alpha.
-        short interpAlpha = 0;//Math_Sin(g_Options_SelectionHighlightTimer << 7);
+        q3_12 interpAlpha = Math_Sin(g_Options_SelectionHighlightTimer << 7);
 
         // Draw active selection highlight.
         auto highlightLine      = s_Line2d{};

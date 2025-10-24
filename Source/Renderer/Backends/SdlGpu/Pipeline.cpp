@@ -272,26 +272,26 @@ namespace Silent::Renderer
 
         // Define shader properties.
         char        fullPath[256];
-        auto        formatFlags = SDL_GetGPUShaderFormats(_device);
-        auto        formatFlag  = (SDL_GPUShaderFormat)SDL_GPU_SHADERFORMAT_INVALID;
-        const char* entryPoint  = nullptr;
+        auto        formatFlags      = SDL_GetGPUShaderFormats(_device);
+        auto        activeFormatFlag = (SDL_GPUShaderFormat)SDL_GPU_SHADERFORMAT_INVALID;
+        const char* entryPoint       = nullptr;
 
         if (formatFlags & SDL_GPU_SHADERFORMAT_SPIRV)
         {
             snprintf(fullPath, sizeof(fullPath), "%s.spv", (fs.GetShadersDirectory() / filename).string().c_str());
-            formatFlag = SDL_GPU_SHADERFORMAT_SPIRV;
+            activeFormatFlag = SDL_GPU_SHADERFORMAT_SPIRV;
             entryPoint = "main";
         }
         else if (formatFlags & SDL_GPU_SHADERFORMAT_MSL)
         {
             snprintf(fullPath, sizeof(fullPath), "%s.msl", (fs.GetShadersDirectory() / filename).string().c_str());
-            formatFlag = SDL_GPU_SHADERFORMAT_MSL;
+            activeFormatFlag = SDL_GPU_SHADERFORMAT_MSL;
             entryPoint = "main0";
         }
         else if (formatFlags & SDL_GPU_SHADERFORMAT_DXIL)
         {
             snprintf(fullPath, sizeof(fullPath), "%s.dxil", (fs.GetShadersDirectory() / filename).string().c_str());
-            formatFlag = SDL_GPU_SHADERFORMAT_DXIL;
+            activeFormatFlag = SDL_GPU_SHADERFORMAT_DXIL;
             entryPoint = "main";
         }
         else
@@ -314,7 +314,7 @@ namespace Silent::Renderer
             .code_size            = codeSize,
             .code                 = (const uint8*)code,
             .entrypoint           = entryPoint,
-            .format               = formatFlag,
+            .format               = activeFormatFlag,
             .stage                = stage,
             .num_samplers         = samplerCount,
             .num_storage_textures = storageTexCount,

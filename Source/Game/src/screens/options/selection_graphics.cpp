@@ -112,7 +112,7 @@ namespace Silent::Game
         // Submit triangle primitive for arrow.
         auto arrowPrim = Primitive2d::CreateTriangle(tri.vertex0, tri.vertex1, tri.vertex2,
                                                      color0, color1, color2,
-                                                     DEPTH_40);
+                                                     DEPTH_40, ScaleMode::Fit, BlendMode::Opaque);
         renderer.Submit2dPrimitive(arrowPrim);
     }
 
@@ -156,7 +156,7 @@ namespace Silent::Game
         // Submit quad primitive for bullet point element.
         auto elementPrim = Primitive2d::CreateQuad(quad.vertex0, quad.vertex1, quad.vertex2, quad.vertex3,
                                                    color0, color1, color2, color3,
-                                                   DEPTH_24);
+                                                   DEPTH_24, ScaleMode::Fit, BlendMode::Opaque);
         renderer.Submit2dPrimitive(elementPrim);
     }
 }

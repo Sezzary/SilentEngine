@@ -515,14 +515,14 @@ namespace Silent::Debug
                             isOptChanged      = true;
                         }
 
-                        // `Enable dithering` checkbox.
-                        if (ImGui::Checkbox("Enable dithering", &options->EnableDithering))
+                        // `Enable vertex jitter` checkbox.
+                        if (ImGui::Checkbox("Enable vertex jitter", &options->EnableVertexJitter))
                         {
                             isOptChanged = true;
                         }
 
-                        // `Enable CRT filter` checkbox.
-                        if (ImGui::Checkbox("Enable CRT filter", &options->EnableCrtFilter))
+                        // `Enable dithering` checkbox.
+                        if (ImGui::Checkbox("Enable dithering", &options->EnableDithering))
                         {
                             isOptChanged = true;
                         }
@@ -533,8 +533,8 @@ namespace Silent::Debug
                             isOptChanged = true;
                         }
 
-                        // `Enable vertex jitter` checkbox.
-                        if (ImGui::Checkbox("Enable vertex jitter", &options->EnableVertexJitter))
+                        // `Enable CRT filter` checkbox.
+                        if (ImGui::Checkbox("Enable CRT filter", &options->EnableCrtFilter))
                         {
                             isOptChanged = true;
                         }

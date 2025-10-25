@@ -30,10 +30,10 @@ namespace Silent::Services
     constexpr char KEY_ASPECT_RATIO[]                             = "AspectRatio";
     constexpr char KEY_TEXTURE_FILTER[]                           = "TextureFilter";
     constexpr char KEY_LIGHTING[]                                 = "Lighting";
-    constexpr char KEY_ENABLE_DITHERING[]                         = "EnableDithering";
-    constexpr char KEY_ENABLE_CRT_FILTER[]                        = "EnableCrtFilter";
-    constexpr char KEY_ENABLE_VIGNETTE[]                          = "EnableVignette";
     constexpr char KEY_ENABLE_VERTEX_JITTER[]                     = "EnableVertexJitter";
+    constexpr char KEY_ENABLE_DITHERING[]                         = "EnableDithering";
+    constexpr char KEY_ENABLE_VIGNETTE[]                          = "EnableVignette";
+    constexpr char KEY_ENABLE_CRT_FILTER[]                        = "EnableCrtFilter";
     constexpr char KEY_ENABLE_AUTO_LOAD[]                         = "EnableAutoLoad";
     constexpr char KEY_ENABLE_SUBTITLES[]                         = "EnableSubtitles";
     constexpr char KEY_LANGUAGE[]                                 = "Language";
@@ -103,10 +103,10 @@ namespace Silent::Services
         _options.AspectRatio        = DEFAULT_ASPECT_RATIO;
         _options.TextureFilter      = DEFAULT_TEXTURE_FILTER;
         _options.Lighting           = DEFAULT_LIGHTING;
-        _options.EnableDithering    = DEFAULT_ENABLE_DITHERING;
-        _options.EnableCrtFilter    = DEFAULT_ENABLE_CRT_FILTER;
-        _options.EnableVignette     = DEFAULT_ENABLE_VIGNETTE;
         _options.EnableVertexJitter = DEFAULT_ENABLE_VERTEX_JITTER;
+        _options.EnableDithering    = DEFAULT_ENABLE_DITHERING;
+        _options.EnableVignette     = DEFAULT_ENABLE_VIGNETTE;
+        _options.EnableCrtFilter    = DEFAULT_ENABLE_CRT_FILTER;
     }
 
     void OptionsManager::SetDefaultGameplayOptions()
@@ -228,10 +228,10 @@ namespace Silent::Services
         options.AspectRatio        = graphicsJson.value(KEY_ASPECT_RATIO,         DEFAULT_ASPECT_RATIO);
         options.TextureFilter      = graphicsJson.value(KEY_TEXTURE_FILTER,       DEFAULT_TEXTURE_FILTER);
         options.Lighting           = graphicsJson.value(KEY_LIGHTING,             DEFAULT_LIGHTING);
-        options.EnableDithering    = graphicsJson.value(KEY_ENABLE_DITHERING,     DEFAULT_ENABLE_DITHERING);
-        options.EnableCrtFilter    = graphicsJson.value(KEY_ENABLE_CRT_FILTER,    DEFAULT_ENABLE_CRT_FILTER);
-        options.EnableVignette     = graphicsJson.value(KEY_ENABLE_VIGNETTE,      DEFAULT_ENABLE_VIGNETTE);
         options.EnableVertexJitter = graphicsJson.value(KEY_ENABLE_VERTEX_JITTER, DEFAULT_ENABLE_VERTEX_JITTER);
+        options.EnableDithering    = graphicsJson.value(KEY_ENABLE_DITHERING,     DEFAULT_ENABLE_DITHERING);
+        options.EnableVignette     = graphicsJson.value(KEY_ENABLE_VIGNETTE,      DEFAULT_ENABLE_VIGNETTE);
+        options.EnableCrtFilter    = graphicsJson.value(KEY_ENABLE_CRT_FILTER,    DEFAULT_ENABLE_CRT_FILTER);
 
         // Load gameplay options.
         const auto& gameplayJson = optionsJson[KEY_GAMEPLAY];
@@ -373,10 +373,10 @@ namespace Silent::Services
                     { KEY_ASPECT_RATIO,         options.AspectRatio        },
                     { KEY_TEXTURE_FILTER,       options.TextureFilter      },
                     { KEY_LIGHTING,             options.Lighting           },
+                    { KEY_ENABLE_VERTEX_JITTER, options.EnableVertexJitter },
                     { KEY_ENABLE_DITHERING,     options.EnableDithering    },
-                    { KEY_ENABLE_CRT_FILTER,    options.EnableCrtFilter    },
                     { KEY_ENABLE_VIGNETTE,      options.EnableVignette     },
-                    { KEY_ENABLE_VERTEX_JITTER, options.EnableVertexJitter }
+                    { KEY_ENABLE_CRT_FILTER,    options.EnableCrtFilter    }
                 }
             },
             {

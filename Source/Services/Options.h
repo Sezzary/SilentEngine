@@ -107,10 +107,10 @@ namespace Silent::Services
         AspectRatioType   AspectRatio        = AspectRatioType::Native;
         TextureFilterType TextureFilter      = TextureFilterType::Nearest;
         LightingType      Lighting           = LightingType::PerVertex;
-        bool              EnableDithering    = false;
-        bool              EnableCrtFilter    = false;
-        bool              EnableVignette     = false;
         bool              EnableVertexJitter = false;
+        bool              EnableDithering    = false;
+        bool              EnableVignette     = false;
+        bool              EnableCrtFilter    = false;
 
         /** Gameplay */
 

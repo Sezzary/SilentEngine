@@ -348,6 +348,8 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::DrawPostProcess()
     {
+        const auto& options = g_App.GetOptions();
+
         // Begin render pass.
         auto colorTargetInfo = SDL_GPUColorTargetInfo
         {
@@ -357,9 +359,26 @@ namespace Silent::Renderer
         };
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
-        // @todo
-
         // Process render pass.
+
+        // Dithering.
+        if (options->EnableDithering)
+        {
+            // @todo
+        }
+
+        // Vignette.
+        if (options->EnableVignette)
+        {
+            // @todo
+        }
+
+        // CRT filter.
+        if (options->EnableCrtFilter)
+        {
+            // @todo
+        }
+
         SDL_EndGPURenderPass(&renderPass);
     }
 
@@ -399,6 +418,7 @@ namespace Silent::Renderer
 
         // Process render pass.
         ImGui_ImplSDLGPU3_RenderDrawData(drawData, _commandBuffer, renderPass);
+
         SDL_EndGPURenderPass(renderPass);
     }
 

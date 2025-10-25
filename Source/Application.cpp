@@ -111,7 +111,7 @@ namespace Silent
         }
 
         // Assets.
-        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory());
+        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / "Psx");
 
         // Renderer.
         _work.Renderer = CreateRenderer(RendererType::SdlGpu);

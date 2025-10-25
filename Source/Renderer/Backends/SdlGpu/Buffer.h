@@ -56,7 +56,6 @@ namespace Silent::Renderer
     Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size, const std::string& name)
     {
         _usageFlags = usageFlags;
-
         if (!(_usageFlags & (SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_INDEX | SDL_GPU_BUFFERUSAGE_INDIRECT)))
         {
             throw std::runtime_error("Attempted to create GPU buffer with invalid usage flags.");

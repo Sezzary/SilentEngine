@@ -44,11 +44,11 @@ namespace Silent::Renderer
         // Fast alpha. Requires `IsFastAlpha` shader uniform set to `true`.
         SDL_GPUColorTargetBlendState
         {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+            .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
             .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ZERO,
+            .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+            .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
             .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
             .enable_blend          = true
         },

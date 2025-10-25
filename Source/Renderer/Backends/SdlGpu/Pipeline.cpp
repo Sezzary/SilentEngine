@@ -28,9 +28,9 @@ namespace Silent::Renderer
         }
     }
 
-    void PipelineManager::Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType, BlendMode blendMode)
+    void PipelineManager::Bind(SDL_GPURenderPass& renderPass, RenderStage renderStage, BlendMode blendMode)
     {
-        int pipelineHash = GetPipelineHash(pipelineType, Debug::g_Work.EnableWireframeMode ? BlendMode::Wireframe : blendMode);
+        int pipelineHash = GetPipelineHash(renderStage, Debug::g_Work.EnableWireframeMode ? BlendMode::Wireframe : blendMode);
         SDL_BindGPUGraphicsPipeline(&renderPass, _pipelines[pipelineHash]);
     }
 
@@ -54,7 +54,7 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to create fragment shader `" + config.FragmentShaderName + "`.");
         }
 
-        // @todo Some pipelines don't need every variant. Use `std::unordedred_map` instead of flat array to accommodate this?
+        // @todo Post-process pipelines don't need every variant.
         // Create pipelines with blend mode variants.
         for (int i = 0; i < (int)BlendMode::Count; i++)
         {
@@ -89,11 +89,11 @@ namespace Silent::Renderer
             };
 
             // Create pipeline variant.
-            int piplineHash         = GetPipelineHash(config.Type, (BlendMode)i);
+            int piplineHash         = GetPipelineHash(config.Stage, (BlendMode)i);
             _pipelines[piplineHash] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
             if (_pipelines[piplineHash] == nullptr) 
             {
-                throw std::runtime_error("Failed to create graphics pipeline type " + std::to_string((int)config.Type) +
+                throw std::runtime_error("Failed to create graphics pipeline for render stage " + std::to_string((int)config.Stage) +
                                          ", blend mode " + std::to_string(i) + ": " + std::string(SDL_GetError()));
             }
         }
@@ -186,8 +186,8 @@ namespace Silent::Renderer
         return shader;
     }
 
-    int PipelineManager::GetPipelineHash(PipelineType pipelineType, BlendMode blendMode)
+    int PipelineManager::GetPipelineHash(RenderStage renderStage, BlendMode blendMode)
     {
-        return ((int)pipelineType * (int)BlendMode::Count) + (int)blendMode;
+        return ((int)renderStage * (int)BlendMode::Count) + (int)blendMode;
     }
 }

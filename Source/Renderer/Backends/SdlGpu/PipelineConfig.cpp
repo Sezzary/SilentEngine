@@ -103,7 +103,7 @@ namespace Silent::Renderer
         // 2D primitive.
         PipelineConfig
         {
-            .Type                     = PipelineType::Primitive2d,
+            .Stage                    = RenderStage::Primitive2d,
             .VertexShaderName         = "2dPrimitive.vert",
             .FragmentShaderName       = "2dPrimitive.frag",
             .FragShaderUniBufferCount = 1,
@@ -138,7 +138,7 @@ namespace Silent::Renderer
         // 2D textured primitive.
         PipelineConfig
         {
-            .Type                   = PipelineType::Primitive2dTextured,
+            .Stage                  = RenderStage::Primitive2dTextured,
             .VertexShaderName       = "TexturedQuad.vert",
             .FragmentShaderName     = "TexturedQuad.frag",
             .FragShaderSamplerCount = 1,

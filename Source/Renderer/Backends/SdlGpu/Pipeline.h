@@ -7,19 +7,6 @@ namespace Silent::Renderer
     enum class BlendMode;
     struct     PipelineConfig;
 
-    /** @brief Pipeline types. */
-    enum class PipelineType
-    {
-        Primitive2d,
-        Primitive2dTextured,
-
-        /** Post-process */
-
-        Vignette,
-
-        Count
-    };
-
     /** @brief Central pipeline manager. */
     class PipelineManager
     {
@@ -53,12 +40,12 @@ namespace Silent::Renderer
          */
         void Initialize(SDL_Window& window, SDL_GPUDevice& device);
 
-        /** @brief Binds the graphics pipeline for use in rendering.
+        /** @brief Binds the graphics pipeline render stage for use in rendering.
          *
-         * @param renderPass Render pass used in rendering to bind the pipeline to.
-         * @param pipelineType Pipeline to bind.
+         * @param renderPass Render pass to bind the pipeline to.
+         * @param renderStage Pipeline render stage to bind.
          */
-        void Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType, BlendMode blendMode);
+        void Bind(SDL_GPURenderPass& renderPass, RenderStage renderStage, BlendMode blendMode);
 
     private:
         // ========
@@ -83,12 +70,12 @@ namespace Silent::Renderer
          */
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint storageTexCount, uint storageBufferCount, uint uniBufferCount);
 
-        /** @brief Computes a pipeline hash from a pipeline type and blend mode.
+        /** @brief Computes a pipeline hash from a pipeline render stage and blend mode.
          *
-         * @param pipelineType Pipeline type.
+         * @param renderStage Pipeline render stage.
          * @param blendMode Blend mode.
          * @return Pipeline hash.
          */
-        int GetPipelineHash(PipelineType pipelineType, BlendMode blendMode);
+        int GetPipelineHash(RenderStage renderStage, BlendMode blendMode);
     };
 }

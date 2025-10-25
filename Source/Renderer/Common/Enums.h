@@ -2,7 +2,22 @@
 
 namespace Silent::Renderer
 {
-    /** @brief Blending modes. */
+    /** @brief Render stages representing pipelines or shader programs depending on the renderer backend. */
+    enum class RenderStage
+    {
+        /** Material */
+
+        Primitive2d,
+        Primitive2dTextured,
+
+        /** Post-process */
+
+        Vignette,
+
+        Count
+    };
+
+    /** @brief Render stage blending modes. */
     enum class BlendMode
     {
         Opaque,

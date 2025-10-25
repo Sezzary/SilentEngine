@@ -237,6 +237,12 @@ namespace Silent::Renderer
         /** @brief Clears renderer data used for the previous frame. Called at the end of `Update`. */
         void ClearFrameData();
 
+        /** @brief Checks if a debug page is open in the debug menu.
+         *
+         * @return `true` if the debug page is open, `false` otherwise.
+         */
+        bool CheckDebugPage(Debug::Page page) const;
+
         /** @brief Draws a 3D scene. Called before `Draw2dScene`. */
         virtual void Draw3dScene() = 0;
 

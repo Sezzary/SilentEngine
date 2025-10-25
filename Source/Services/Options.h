@@ -60,10 +60,10 @@ namespace Silent::Services
 
     enum class BloodColorType
     {
-        Normal = 0,
-        Green  = 2,
-        Violet = 5,
-        Black  = 11
+        Normal,
+        Green,
+        Violet,
+        Black
     };
 
     enum class ControlInversionType

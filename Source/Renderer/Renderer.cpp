@@ -117,8 +117,7 @@ namespace Silent::Renderer
 
     void RendererBase::SubmitDebugLine(const Vector3& from, const Vector3& to, const Color& color, Debug::Page page)
     {
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
+        if (!CheckDebugPage(page))
         {
             return;
         }
@@ -129,8 +128,7 @@ namespace Silent::Renderer
 
     void RendererBase::SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, Debug::Page page)
     {
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
+        if (!CheckDebugPage(page))
         {
             return;
         }
@@ -141,8 +139,7 @@ namespace Silent::Renderer
 
     void RendererBase::SubmitDebugTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, Debug::Page page)
     {
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
+        if (!CheckDebugPage(page))
         {
             return;
         }
@@ -164,8 +161,7 @@ namespace Silent::Renderer
 
     void RendererBase::SubmitDebugBox(const OrientedBoundingBox& box, const Color& color, bool isWireframe, Debug::Page page)
     {
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
+        if (!CheckDebugPage(page))
         {
             return;
         }
@@ -217,8 +213,7 @@ namespace Silent::Renderer
     {
         constexpr uint WIREFRAME_SEGMENT_COUNT = 24;
 
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
+        if (!CheckDebugPage(page))
         {
             return;
         }
@@ -231,7 +226,7 @@ namespace Silent::Renderer
             {
                 for (int i = 0; i < WIREFRAME_SEGMENT_COUNT; i++)
                 {
-                    float theta0 = (((float)i / WIREFRAME_SEGMENT_COUNT) * 2.0f) * PI;
+                    float theta0 = (((float)i       / WIREFRAME_SEGMENT_COUNT) * 2.0f) * PI;
                     float theta1 = (((float)(i + 1) / WIREFRAME_SEGMENT_COUNT) * 2.0f) * PI;
 
                     auto point0 = Vector3::Zero;
@@ -273,8 +268,7 @@ namespace Silent::Renderer
 
     void RendererBase::SubmitDebugCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page)
     {
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
+        if (!CheckDebugPage(page))
         {
             return;
         }
@@ -293,8 +287,7 @@ namespace Silent::Renderer
 
     void RendererBase::SubmitDebugCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page)
     {
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
+        if (!CheckDebugPage(page))
         {
             return;
         }
@@ -313,8 +306,7 @@ namespace Silent::Renderer
 
     void RendererBase::SubmitDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page)
     {
-        const auto& options = g_App.GetOptions();
-        if (!options->EnableDebugMode || (page != Debug::g_Work.Page && page != Debug::Page::None))
+        if (!CheckDebugPage(page))
         {
             return;
         }
@@ -335,14 +327,14 @@ namespace Silent::Renderer
     {
         auto sortTasks = ParallelTasks
         {
-            [&]()
-            {
-                // Sort 2D primitives by depth.
-                Sort(_primitives2d, [](const Primitive2d& prim0, const Primitive2d& prim1)
-                {
-                    return prim0.Depth > prim1.Depth; // @todo Weird reverse order necessary here.
-                });
-            }
+            //[&]()
+            //{
+            //    // Sort 2D primitives by depth.
+            //    Sort(_primitives2d, [](const Primitive2d& prim0, const Primitive2d& prim1)
+            //    {
+            //        return prim0.Depth > prim1.Depth; // @todo Weird reverse order necessary here.
+            //    });
+            //}
         };
         g_Executor.AddTasks(sortTasks).wait();
 
@@ -357,6 +349,12 @@ namespace Silent::Renderer
         _sprites2d.clear();
         _debugPrimitives3d.clear();
         _debugGuiDrawCalls.clear();
+    }
+
+    bool RendererBase::CheckDebugPage(Debug::Page page) const
+    {
+        const auto& options = g_App.GetOptions();
+        return options->EnableDebugMode && (page == Debug::g_Work.Page || page == Debug::Page::None);
     }
 
     std::unique_ptr<RendererBase> CreateRenderer(RendererType type)

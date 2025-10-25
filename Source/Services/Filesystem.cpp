@@ -1,6 +1,8 @@
 #include "Framework.h"
 #include "Services/Filesystem.h"
 
+#include "Application.h"
+
 namespace Silent::Services
 {
     const std::filesystem::path& FilesystemManager::GetAppDirectory() const

@@ -19,6 +19,9 @@ namespace Silent
     using namespace Savegame;
     using namespace Services;
 
+    constexpr char APP_NAME[]    = "Silent Engine";
+    constexpr char APP_VERSION[] = "0.1.0";
+
     /** @brief Application workspace. Keeps all subsystems. */
     struct ApplicationWork
     {

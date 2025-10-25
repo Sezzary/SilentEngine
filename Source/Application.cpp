@@ -175,7 +175,7 @@ namespace Silent
     {
         if (SDL_SetWindowFullscreen(_window, !_work.Options->EnableFullscreen))
         {
-            Debug::Log("Toggled fullscreen mode.", Debug::LogLevel::Info, Debug::LogMode::DebugRelease, true);
+            Debug::Log("Toggled fullscreen mode.", Debug::LogLevel::Info, Debug::LogMode::All, true);
             return;
         }
 
@@ -217,7 +217,7 @@ namespace Silent
         Debug::g_Work.Page            = _work.Options->EnableDebugGui ? Debug::Page::Renderer : Debug::Page::None;
         ToggleCursor();
 
-        Debug::Log("Toggled debug mode.", Debug::LogLevel::Info, Debug::LogMode::DebugRelease, true);
+        Debug::Log("Toggled debug mode.", Debug::LogLevel::Info, Debug::LogMode::All, true);
     }
 
     void ApplicationManager::Update()

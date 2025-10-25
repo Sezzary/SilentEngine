@@ -254,25 +254,25 @@ namespace Silent::Renderer
         auto* surface = SDL_GetWindowSurface(_window);
         if (surface == nullptr)
         {
-            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::All, true);
             return;
         }
 
         // Lock surface to access pixels.
         if (!SDL_LockSurface(surface))
         {
-            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::All, true);
             return;
         }
 
         // Write screenshot file.
         if (stbi_write_png(path.string().c_str(), res.x, res.y, COLOR_CHANNEL_COUNT, surface->pixels, res.x * COLOR_CHANNEL_COUNT))
         {
-            Debug::Log("Saved screenshot.", Debug::LogLevel::Info, Debug::LogMode::DebugRelease, true);
+            Debug::Log("Saved screenshot.", Debug::LogLevel::Info, Debug::LogMode::All, true);
         }
         else
         {
-            Debug::Log("Failed to save screenshot.", Debug::LogLevel::Warning, Debug::LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot.", Debug::LogLevel::Warning, Debug::LogMode::All, true);
         }
 
         SDL_UnlockSurface(surface);

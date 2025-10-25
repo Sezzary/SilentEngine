@@ -23,9 +23,6 @@ namespace Silent::Debug
     constexpr char LOGGER_NAME[]     = "Logger";
     constexpr uint MESSAGE_COUNT_MAX = 128;
 
-    static auto Messages  = std::vector<std::string>{};
-    static auto StartTime = std::chrono::high_resolution_clock::time_point{};
-
     DebugWork g_Work = {};
 
     void Scratchpad()
@@ -146,8 +143,9 @@ namespace Silent::Debug
 
     void Initialize()
     {
-        constexpr char LOG_FILENAME[]   = "Log.txt";
-        constexpr char IMGUI_FILENAME[] = "imgui.ini";
+        constexpr char LOG_FILENAME[]       = "Log.txt";
+        constexpr char LOG_FORMAT_PATTERN[] = "[%Y-%b-%d %T] [%^%l%$] %v";
+        constexpr char IMGUI_FILENAME[]     = "imgui.ini";
 
         const auto& fs = g_App.GetFilesystem();
 
@@ -161,7 +159,7 @@ namespace Silent::Debug
         spdlog::initialize_logger(logger);
         logger->set_level(spdlog::level::info);
         logger->flush_on(spdlog::level::info);
-        logger->set_pattern("[%Y-%b-%d %T] [%^%l%$] %v");
+        logger->set_pattern(LOG_FORMAT_PATTERN);
 
         // Initialize `ImGui`.
         ImGui::CreateContext();
@@ -169,7 +167,7 @@ namespace Silent::Debug
         ImGui::GetIO().IniFilename = CopyString(imguiPath.c_str(), imguiPath.size());
 
         // Reserve `Messages` size.
-        Messages.reserve(MESSAGE_COUNT_MAX);
+        g_Work.Messages.reserve(MESSAGE_COUNT_MAX);
     }
 
     void Deinitialize()
@@ -185,8 +183,20 @@ namespace Silent::Debug
         const auto& options = g_App.GetOptions();
         if (!options->EnableDebugGui)
         {
-            //Messages.clear();
+            //g_Work.Messages.clear();
             return;
+        }
+
+        // Update render stats. @todo Move this elsewhere. Maybe time class could handle it?
+        g_Work.FrameCount++;
+        auto now      = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(now - g_Work.PrevTime);
+        if (duration.count() >= (1000000 / 60))
+        {
+            g_Work.Fps        = (float)g_Work.FrameCount / (float)(duration.count() / 1000000.0f);
+            g_Work.FrameTime  = duration.count();
+            g_Work.FrameCount = 0;
+            g_Work.PrevTime   = now;
         }
 
         // Create debug GUI.
@@ -254,12 +264,35 @@ namespace Silent::Debug
                 {
                     g_Work.Page = Page::Renderer;
 
-                    // `Draw calls` info.
-                    /*ImGui::TableNextRow();
-                    ImGui::TableSetColumnIndex(0);
-                    ImGui::Text("Draw calls:", 1, 0);
-                    ImGui::TableSetColumnIndex(1);
-                    ImGui::Text("%d", renderer.GetDrawCallCount(), 1, 1);*/
+                    // `Status` section.
+                    ImGui::SeparatorText("Status");
+                    {
+                        if (ImGui::BeginTable("Status", 2))
+                        {
+                            // `FPS` info.
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0);
+                            ImGui::Text("FPS:", 0, 0);
+                            ImGui::TableSetColumnIndex(1);
+                            ImGui::Text("%.2f", g_Work.Fps, 0, 1);
+
+                            // `Frame time` info.
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0);
+                            ImGui::Text("Frame time (microsec):", 1, 0);
+                            ImGui::TableSetColumnIndex(1);
+                            ImGui::Text("%d", g_Work.FrameTime, 1, 1);
+
+                            // `Draw calls` info.
+                            /*ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0);
+                            ImGui::Text("Draw calls:", 2, 0);
+                            ImGui::TableSetColumnIndex(1);
+                            ImGui::Text("%d", renderer.GetDrawCallCount(), 2, 1);*/
+
+                            ImGui::EndTable();
+                        }
+                    }
 
                     // `Wireframe mode` checkbox.
                     ImGui::Checkbox("Wireframe mode", &g_Work.EnableWireframeMode);
@@ -702,7 +735,7 @@ namespace Silent::Debug
                                       ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 8),
                                       ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
                 {
-                    for (const auto& msg : Messages)
+                    for (const auto& msg : g_Work.Messages)
                     {
                         ImGui::Bullet();
                         ImGui::TextWrapped(msg.c_str());
@@ -725,7 +758,7 @@ namespace Silent::Debug
             ImGui::ShowDemoWindow();
         });*/
 
-        Messages.clear();
+        g_Work.Messages.clear();
     }
 
     // @todo Not working.
@@ -741,7 +774,7 @@ namespace Silent::Debug
         }
 
         // Check if `Messages` is full.
-        if (Messages.size() >= MESSAGE_COUNT_MAX)
+        if (g_Work.Messages.size() >= MESSAGE_COUNT_MAX)
         {
             Log("Attempted to create too many debug messages.", LogLevel::Warning, LogMode::Debug);
             return;
@@ -763,7 +796,7 @@ namespace Silent::Debug
             auto lock = std::lock_guard(mutex);
 
             // Add message.
-            Messages.push_back(buffer);
+            g_Work.Messages.push_back(buffer);
         }
     }
 
@@ -841,7 +874,7 @@ namespace Silent::Debug
     {
         if constexpr (IS_DEBUG_BUILD)
         {
-            StartTime = std::chrono::high_resolution_clock::now();
+            g_Work.StartTime = std::chrono::high_resolution_clock::now();
         }
     }
 
@@ -850,7 +883,7 @@ namespace Silent::Debug
         if constexpr (IS_DEBUG_BUILD)
         {
             auto endTime  = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - StartTime);
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - g_Work.StartTime);
             Message("Execution (μs): %d", duration.count());
         }
     }

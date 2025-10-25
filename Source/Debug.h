@@ -20,9 +20,9 @@ namespace Silent::Debug
     /** @brief Log build modes. */
     enum class LogMode
     {
-        Debug,       /** Log in debug build only. */
-        Release,     /** Log in release build only. */
-        DebugRelease /** Log in debug and release builds. */
+        Debug,   /** Log in debug build only. */
+        Release, /** Log in release build only. */
+        All      /** Log in debug and release builds. */
     };
 
     /** @brief Debug GUI pages. */
@@ -38,17 +38,31 @@ namespace Silent::Debug
     /** @brief Debug workspace. */
     struct DebugWork
     {
-        Page Page = Page::Renderer;
-
-        // Temp
+        /** Temp */
 
         float BlendAlpha = 0.0f;
 
-        // Renderer
+        /** System (internal) */
+
+        std::vector<std::string>                       Messages  = {};
+        std::chrono::high_resolution_clock::time_point StartTime = {};
+
+        /** System (user) */
+
+        Page Page = Page::Renderer;
+
+        /** Renderer (internal) */
+
+        float                                 Fps        = 0.0f;
+        uint                                  FrameTime  = 0;
+        uint                                  FrameCount = 0;
+        std::chrono::steady_clock::time_point PrevTime   = {};
+
+        /** Renderer (user) */
 
         bool EnableWireframeMode = false;
 
-        // Cheats
+        /** Cheats */
 
         bool EnableFreezeMode = false;
     };
@@ -81,7 +95,7 @@ namespace Silent::Debug
      * @param logMode Which build modes to log the message.
      * @param repeat Whether to repeat identical messages.
      */
-    void Log(const std::string& msg, LogLevel level = LogLevel::Info, LogMode mode = LogMode::DebugRelease, bool repeat = false);
+    void Log(const std::string& msg, LogLevel level = LogLevel::Info, LogMode mode = LogMode::All, bool repeat = false);
 
     /** @brief Asserts a condition with a failure message. Functional only in the debug build.
      *

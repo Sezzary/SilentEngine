@@ -172,11 +172,11 @@ namespace Silent::Renderer
         // Write screenshot file.
         if (stbi_write_png(path.string().c_str(), res.x, res.y, COLOR_CHANNEL_COUNT, pixels.data(), res.x * COLOR_CHANNEL_COUNT))
         {
-            Debug::Log("Saved screenshot.", Debug::LogLevel::Info, Debug::LogMode::DebugRelease, true);
+            Debug::Log("Saved screenshot.", Debug::LogLevel::Info, Debug::LogMode::All, true);
             return;
         }
 
-        Debug::Log("Failed to save screenshot.", Debug::LogLevel::Warning, Debug::LogMode::DebugRelease, true);
+        Debug::Log("Failed to save screenshot.", Debug::LogLevel::Warning, Debug::LogMode::All, true);
     }
 
     void OpenGlRenderer::RefreshTextureFilter()

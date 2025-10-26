@@ -12,6 +12,7 @@
 #include "Services/Time.h"
 #include "Services/Toasts.h"
 #include "Utils/Parallel.h"
+#include "Utils/Translator.h"
 
 using namespace Silent::Assets;
 using namespace Silent::Audio;
@@ -70,6 +71,11 @@ namespace Silent
         return _work.Toasts;
     }
 
+    TranslationManager& ApplicationManager::GetTranslator()
+    {
+        return _work.Translator;
+    }
+
     Vector2i ApplicationManager::GetWindowResolution() const
     {
         auto res = Vector2i::Zero;
@@ -112,6 +118,13 @@ namespace Silent
 
         // Assets.
         _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / "Psx");
+
+        // Translator.
+        auto localeNames = std::vector<std::string>
+        {
+            "English"
+        };
+        _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / "Locales", localeNames);
 
         // Renderer.
         _work.Renderer = CreateRenderer(RendererType::SdlGpu);

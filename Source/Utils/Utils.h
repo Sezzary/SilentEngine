@@ -67,11 +67,11 @@ namespace Silent::Utils
 
     /** @brief Sorts elements in a container.
      *
-     * @tparam TContainer Container type.
+     * @tparam T Container type.
      * @param cont Container to sort.
      */
-    template <typename TContainer>
-    void Sort(TContainer& cont)
+    template <typename T>
+    void Sort(T& cont)
     {
         std::sort(cont.begin(), cont.end());
     }
@@ -87,6 +87,17 @@ namespace Silent::Utils
     void Sort(TContainer& cont, const TPredicate& pred)
     {
         std::sort(cont.begin(), cont.end(), pred);
+    }
+
+    /** @brief Reverses elements in a container.
+     *
+     * @tparam T Container type.
+     * @param cont Container to reverse.
+     */
+    template <typename T>
+    void Reverse(T& cont)
+    {
+        std::reverse(cont.begin(), cont.end());
     }
 
     /** @brief Converts a raw array to a read-only span.

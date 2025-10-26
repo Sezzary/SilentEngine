@@ -9,12 +9,13 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        // @todo Load one at a time to prevent memory overallocation.
+        json                       _activeLocale     = {};
+        std::string                _activeLocaleName = {};
+        std::vector<std::string>   _localeNames      = {};
+        std::optional<std::string> _queuedLocaleName = std::nullopt;
 
-        std::unordered_map<std::string, json> _locales      = {}; /** Key = locale name, value = locale translations. */
-        std::string                           _activeLocale = {};
-        std::optional<std::string>            _queuedLocale = std::nullopt;
-        bool                                  _isLocked     = false;
+        std::filesystem::path _localesPath = {};
+        bool                  _isLocked    = false;
 
     public:
         // =============
@@ -41,12 +42,6 @@ namespace Silent::Utils
          */
         std::string GetTranslation(const std::string& translationKey) const;
 
-        /** @brief Gets the currently used locale.
-         *
-         * @return Active locale.
-         */
-        const std::string& GetActiveLocale() const;
-
         // ========
         // Setters
         // ========
@@ -54,10 +49,9 @@ namespace Silent::Utils
         /** @brief Sets the active locale if the translator is unlocked.
          * If locked, the new locale will be queued and set when `Unlock` is called.
          *
-         * @param locale New active locale to set.
-         * @return `true` if the new locale is valid, `false` otherwise.
+         * @param localeName Name of the new locale to set.
          */
-        bool SetLocale(const std::string& locale);
+        void SetLocale(const std::string& localeName);
 
         // ==========
         // Utilities
@@ -74,5 +68,16 @@ namespace Silent::Utils
         // ==========
 
         std::string operator()(const std::string& translationKey) const;
+
+    private:
+        // ========
+        // Helpers
+        // ========
+
+        /** @brief Loads and sets a new active locale.
+         *
+         * @param localeName Name of the new locale.
+         */
+        void LoadActiveLocale(const std::string& localeName);
     };
 }

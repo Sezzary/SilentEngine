@@ -13,86 +13,71 @@ namespace Silent::Utils
     {
         constexpr char LOCALE_FILENAME[] = "Locale";
 
-        // Collect locale names sorted alphabetically.
-        auto localeNames = std::vector<std::string>{};
-        for (const auto& entry : std::filesystem::directory_iterator(localesPath))
+        // Set path.
+        _localesPath = localesPath;
+
+        // Register locale names sorted alphabetically.
+        for (const auto& entry : std::filesystem::directory_iterator(_localesPath))
         {
             if (entry.is_directory())
             {
-                localeNames.push_back(entry.path().filename().string());
+                _localeNames.push_back(entry.path().filename().string());
             }
         }
-        Sort(localeNames);
+        Sort(_localeNames);
 
-        if (localeNames.empty())
+        if (_localeNames.empty())
         {
-            Debug::Log("Failed to initialize translator locales.", Debug::LogLevel::Warning);
+            Debug::Log("No translator locales found.", Debug::LogLevel::Warning);
             return;
         }
 
-        // Collect locales.
-        for (const auto& localeName : localeNames)
-        {
-            auto localePath = localesPath / localeName / (std::string(LOCALE_FILENAME) + JSON_FILE_EXT);
-            auto stream     = Stream(localePath, true, false);
-            if (!stream.IsOpen())
-            {
-                Debug::Log("Failed to initialize `" + localeName + "` translator locale.", Debug::LogLevel::Warning);
-                continue;
-            }
-
-            _locales[localeName] = stream.ReadJson();
-            stream.Close();
-        }
-
         // Set first locale as default.
-        if (!localeNames.empty())
+        if (!_localeNames.empty())
         {
-            _activeLocale = localeNames.front();
+            LoadActiveLocale(_localeNames.front());
         }
     }
 
     std::string TranslationManager::GetTranslation(const std::string& translationKey) const
     {
-        if (_locales.empty())
+        // Check if active locale is loaded.
+        if (_activeLocale.empty())
         {
             return translationKey;
         }
 
         // Get translated text or use translation key as fallback if it doesn't exist.
-        const auto& locale = _locales.at(_activeLocale);
-        return locale.value(translationKey, translationKey);
+        return _activeLocale.value(translationKey, translationKey);
     }
 
-    const std::string& TranslationManager::GetActiveLocale() const
+    void TranslationManager::SetLocale(const std::string& localeName)
     {
-        return _activeLocale;
-    }
-
-    bool TranslationManager::SetLocale(const std::string& locale)
-    {
-        if (locale == _activeLocale)
+        // Check if new locale is already active or queued.
+        if (localeName == _activeLocaleName ||
+            (_queuedLocaleName.has_value() && localeName == *_queuedLocaleName))
         {
-            return true;
+            return;
         }
 
-        auto it = _locales.find(locale);
-        if (it == _locales.end())
+        // Check if new locale is registered.
+        if (!Contains(_localeNames, localeName))
         {
-            Debug::Log("Attempted to set uninitialized translator locale `" + locale + "`.", Debug::LogLevel::Warning);
-            return false;
+            Debug::Log("Attempted to set unregistered translator locale `" + localeName + "`.", Debug::LogLevel::Warning);
+            return;
         }
 
+        // Load new locale or queue to load when translator becomes unlocked.
         if (_isLocked)
         {
-            _queuedLocale = locale;
+            _queuedLocaleName = localeName;
         }
         else
         {
-            _activeLocale = locale;
+            LoadActiveLocale(localeName);
         }
 
-        return true;
+        return;
     }
 
     void TranslationManager::Lock()
@@ -105,15 +90,34 @@ namespace Silent::Utils
         _isLocked = false;
 
         // Set new locale if queued.
-        if (_queuedLocale.has_value())
+        if (_queuedLocaleName.has_value())
         {
-            _activeLocale = *_queuedLocale;
-            _queuedLocale = std::nullopt;
+            LoadActiveLocale(*_queuedLocaleName);
+            _queuedLocaleName = std::nullopt;
         }
     }
 
     std::string TranslationManager::operator()(const std::string& translationKey) const
     {
         return GetTranslation(translationKey);
+    }
+
+    void TranslationManager::LoadActiveLocale(const std::string& localeName)
+    {
+        constexpr char LOCALE_FILENAME[] = "Locale";
+
+        // Open locale file stream.
+        auto localePath = _localesPath / localeName / (std::string(LOCALE_FILENAME) + JSON_FILE_EXT);
+        auto stream     = Stream(localePath, true, false);
+        if (!stream.IsOpen())
+        {
+            Debug::Log("Failed to load `" + localeName + "` translator locale.", Debug::LogLevel::Warning);
+            return;
+        }
+
+        // Set new locale.
+        _activeLocale     = stream.ReadJson();
+        _activeLocaleName = localeName;
+        stream.Close();
     }
 }

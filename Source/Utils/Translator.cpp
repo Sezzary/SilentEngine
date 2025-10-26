@@ -14,11 +14,12 @@ namespace Silent::Utils
             auto stream     = Stream(localePath, true, false);
             if (!stream.IsOpen())
             {
-                Debug::Log("Failed to load locale file `" + localePath.string() + "` for translator.", Debug::LogLevel::Warning);
+                Debug::Log("Failed to load locale `" + localeName + "` for translator.", Debug::LogLevel::Warning);
                 continue;
             }
 
             _locales[localeName] = stream.ReadJson();
+            stream.Close();
         }
 
         // Set first locale as default.

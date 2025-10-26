@@ -24,6 +24,7 @@ namespace Silent::Utils
 
     Stream::~Stream()
     {
+        _stream.flush();
         _stream.close();
     }
 

@@ -4,6 +4,9 @@
 #include "Application.h"
 #include "Savegame/Generated/savegame_generated.h"
 #include "Services/Filesystem.h"
+#include "Utils/Utils.h"
+
+using namespace Silent::Utils;
 
 namespace Silent::Savegame
 {
@@ -194,7 +197,7 @@ namespace Silent::Savegame
             }
 
             // Sort file folders.
-            std::sort(fileDirs.begin(), fileDirs.end(), [](const std::filesystem::path& file0, const std::filesystem::path& file1)
+            Sort(fileDirs, [](const std::filesystem::path& file0, const std::filesystem::path& file1)
             {
                 auto extractNumber = [](const std::filesystem::path& file)
                 {
@@ -228,7 +231,7 @@ namespace Silent::Savegame
             }
 
             // Sort savegame files.
-            std::sort(saveFiles.begin(), saveFiles.end(), [](const std::filesystem::path& file0, const std::filesystem::path& file1)
+            Sort(saveFiles, [](const std::filesystem::path& file0, const std::filesystem::path& file1)
             {
                 auto extractNumber = [](const std::filesystem::path& file)
                 {

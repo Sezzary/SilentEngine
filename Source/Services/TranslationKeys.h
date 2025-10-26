@@ -2,11 +2,6 @@
 
 namespace Silent::Services
 {
-    enum class LanguageType;
-
-    extern const std::vector<std::string>                      LOCALE_NAMES;
-    extern const std::unordered_map<LanguageType, std::string> LANGUAGE_LOCALES;
-
     // ===============
     // Save Locations
     // ===============

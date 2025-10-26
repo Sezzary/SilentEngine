@@ -2,19 +2,39 @@
 #include "Utils/Translator.h"
 
 #include "Utils/Stream.h"
+#include "Utils/Utils.h"
 
 namespace Silent::Utils
 {
-    void TranslationManager::Initialize(const std::filesystem::path localesPath, const std::vector<std::string>& localeNames)
+    void TranslationManager::Initialize(const std::filesystem::path localesPath)
     {
+        constexpr char LOCALE_FILENAME[] = "Locale.json";
+
+        // Collect locale names sorted alphabetically.
+        auto localeNames = std::vector<std::string>{};
+        for (const auto& entry : std::filesystem::directory_iterator(localesPath))
+        {
+            if (entry.is_directory())
+            {
+                localeNames.push_back(entry.path().filename().string());
+            }
+        }
+        Sort(localeNames);
+
+        if (localeNames.empty())
+        {
+            Debug::Log("Failed to initialize translator locales.", Debug::LogLevel::Warning);
+            return;
+        }
+
         // Collect locales.
         for (const auto& localeName : localeNames)
         {
-            auto localePath = localesPath / localeName;
+            auto localePath = localesPath / localeName / LOCALE_FILENAME;
             auto stream     = Stream(localePath, true, false);
             if (!stream.IsOpen())
             {
-                Debug::Log("Failed to load `" + localeName + "` locale for translator.", Debug::LogLevel::Warning);
+                Debug::Log("Failed to initialize `" + localeName + "` translator locale.", Debug::LogLevel::Warning);
                 continue;
             }
 
@@ -46,13 +66,13 @@ namespace Silent::Utils
         return _activeLocale;
     }
 
-    void TranslationManager::SetLocale(const std::string& locale)
+    bool TranslationManager::SetLocale(const std::string& locale)
     {
         auto it = _locales.find(locale);
         if (it == _locales.end())
         {
-            Debug::Log("Attempted to set invalid locale `" + locale + "` for translator.", Debug::LogLevel::Warning);
-            return;
+            Debug::Log("Attempted to set uninitialized translator locale `" + locale + "`.", Debug::LogLevel::Warning);
+            return false;
         }
 
         if (_isLocked)
@@ -63,6 +83,8 @@ namespace Silent::Utils
         {
             _activeLocale = locale;
         }
+
+        return true;
     }
 
     void TranslationManager::Lock()

@@ -92,6 +92,11 @@ namespace Silent::Services
     constexpr auto DEFAULT_VIEW_MODE                                = ViewMode::Normal;
     constexpr bool DEFAULT_ENABLE_TOASTS                            = true;
 
+    const std::vector<std::string> LOCALE_NAMES
+    {
+        "English"
+    };
+
     void OptionsManager::SetDefaultGraphicsOptions()
     {
         _options.WindowedSize       = DEFAULT_WINDOWED_SIZE;

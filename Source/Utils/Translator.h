@@ -23,12 +23,11 @@ namespace Silent::Utils
         /** @brief Constructs an uninitialized default `Translator`. */
         TranslationManager() = default;
 
-        /** @brief Initializes the `Translator` with the provided locales.
+        /** @brief Initializes the `Translator` with locales from a path.
          *
-         * @param localesPath Path containing all locale assets.
-         * @param localeNames Locale names.
+         * @param localesPath Path containing locale folders.
          */
-        void Initialize(const std::filesystem::path localesPath, const std::vector<std::string>& localeNames);
+        void Initialize(const std::filesystem::path localesPath);
 
         // ========
         // Getters
@@ -55,8 +54,9 @@ namespace Silent::Utils
          * If locked, the new locale will be queued and set when `Unlock` is called.
          *
          * @param locale New active locale to set.
+         * @return `true` if the new locale is valid, `false` otherwise.
          */
-        void SetLocale(const std::string& locale);
+        bool SetLocale(const std::string& locale);
 
         // ==========
         // Utilities

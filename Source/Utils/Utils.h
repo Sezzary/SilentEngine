@@ -65,6 +65,17 @@ namespace Silent::Utils
         cont.erase(std::remove_if(cont.begin(), cont.end(), pred), cont.end());
     }
 
+    /** @brief Sorts elements in a container.
+     *
+     * @tparam TContainer Container type.
+     * @param cont Container to sort.
+     */
+    template <typename TContainer>
+    void Sort(TContainer& cont)
+    {
+        std::sort(cont.begin(), cont.end());
+    }
+
     /** @brief Sorts elements in a container based on a predicate.
      *
      * @tparam TContainer Container type.

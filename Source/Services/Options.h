@@ -90,6 +90,8 @@ namespace Silent::Services
         Short    /** Shorter pause length between dialog lines. */
     };
 
+    extern const std::vector<std::string> LOCALE_NAMES; /** Index = `LanguageType`. */
+
     /** @brief User options configuration data. */
     struct Options
     {

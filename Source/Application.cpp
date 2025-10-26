@@ -10,7 +10,6 @@
 #include "Services/Filesystem.h"
 #include "Services/Options.h"
 #include "Services/Time.h"
-#include "Services/TranslationKeys.h"
 #include "Services/Toasts.h"
 #include "Utils/Parallel.h"
 #include "Utils/Translator.h"
@@ -121,7 +120,7 @@ namespace Silent
         _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / "Psx");
 
         // Translator.
-        _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / "Locales", LOCALE_NAMES);
+        _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / "Locales");
 
         // Renderer.
         _work.Renderer = CreateRenderer(RendererType::SdlGpu);

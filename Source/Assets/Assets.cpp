@@ -109,7 +109,7 @@ namespace Silent::Assets
 
     void AssetManager::Initialize(const std::filesystem::path& assetsPath)
     {
-        // Collect files.
+        // Collect files sorted alphabetically.
         auto files = std::vector<std::filesystem::path>{};
         for (auto& entry : std::filesystem::recursive_directory_iterator(assetsPath))
         {
@@ -118,9 +118,7 @@ namespace Silent::Assets
                 files.push_back(entry.path());
             }
         }
-
-        // Sort files alphabetically.
-        std::sort(files.begin(), files.end());
+        Sort(files);
 
         // Register assets.
         _assets.reserve(files.size());

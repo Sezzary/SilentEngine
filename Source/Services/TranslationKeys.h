@@ -2,33 +2,37 @@
 
 namespace Silent::Services
 {
+    // ===========
+    // Menu Items
+    // ===========
+
     // ===============
     // Save Locations
     // ===============
 
-    constexpr char KEY_ANYWHERE[]     = "anywhere";
-    constexpr char KEY_CAFE[]         = "cafe";
-    constexpr char KEY_BUS[]          = "bus";
-    constexpr char KEY_STORE[]        = "store";
-    constexpr char KEY_INFIRMARY[]    = "infirmary";
-    constexpr char KEY_DOGHOUSE[]     = "doghouse";
-    constexpr char KEY_GORDON[]       = "gordon";
-    constexpr char KEY_CHURCH[]       = "church";
-    constexpr char KEY_GARAGE[]       = "garage";
-    constexpr char KEY_POLICE[]       = "police";
-    constexpr char KEY_RECEPTION[]    = "reception";
-    constexpr char KEY_ROOM_302[]     = "room_302";
-    constexpr char KEY_DIRECTORS[]    = "directors";
-    constexpr char KEY_JEWELRY_SHOP[] = "jewelry_shop";
-    constexpr char KEY_POOL_HALL[]    = "pool_hall";
-    constexpr char KEY_ANTIQUE_SHOP[] = "antique_shop";
-    constexpr char KEY_THEME_PARK[]   = "theme_park";
-    constexpr char KEY_BOAT[]         = "boat";
-    constexpr char KEY_BRIDGE[]       = "bridge";
-    constexpr char KEY_MOTEL[]        = "motel";
-    constexpr char KEY_LIGHTHOUSE[]   = "lighthouse";
-    constexpr char KEY_SEWER[]        = "sewer";
-    constexpr char KEY_NOWHERE[]      = "nowhere";
-    constexpr char KEY_CHILDS_ROOM[]  = "childs_room";
-    constexpr char KEY_NEXT_FEAR[]    = "next_fear";
+    constexpr char KEY_SAVE_LOC_ANTIQUE_SHOP[]   = "saveLocAntiqueShop";
+    constexpr char KEY_SAVE_LOC_ANYWHERE[]       = "saveLocAnywhere";
+    constexpr char KEY_SAVE_LOC_BOAT[]           = "saveLocBoat";
+    constexpr char KEY_SAVE_LOC_BRIDGE[]         = "saveLocBridge";
+    constexpr char KEY_SAVE_LOC_BUS[]            = "saveLocBus";
+    constexpr char KEY_SAVE_LOC_CAFE[]           = "saveLocCafe";
+    constexpr char KEY_SAVE_LOC_CHILDS_ROOM[]    = "saveLocChildsRoom";
+    constexpr char KEY_SAVE_LOC_CHURCH[]         = "saveLocChurch";
+    constexpr char KEY_SAVE_LOC_DIRECTORS[]      = "saveLocDirectors";
+    constexpr char KEY_SAVE_LOC_DOGHOUSE[]       = "saveLocDoghouse";
+    constexpr char KEY_SAVE_LOC_GARAGE[]         = "saveLocGarage";
+    constexpr char KEY_SAVE_LOC_GORDON[]         = "saveLocGordon";
+    constexpr char KEY_SAVE_LOC_INFIRMARY[]      = "saveLocInfirmary";
+    constexpr char KEY_SAVE_LOC_JEWELLERY_SHOP[] = "saveLocJewelleryShop";
+    constexpr char KEY_SAVE_LOC_LIGHTHOUSE[]     = "saveLocLighthouse";
+    constexpr char KEY_SAVE_LOC_MOTEL[]          = "saveLocMotel";
+    constexpr char KEY_SAVE_LOC_NEXT_FEAR[]      = "saveLocNextFear";
+    constexpr char KEY_SAVE_LOC_NOWHERE[]        = "saveLocNowhere";
+    constexpr char KEY_SAVE_LOC_POLICE[]         = "saveLocPolice";
+    constexpr char KEY_SAVE_LOC_POOL_HALL[]      = "saveLocPoolHall";
+    constexpr char KEY_SAVE_LOC_RECEPTION[]      = "saveLocReception";
+    constexpr char KEY_SAVE_LOC_ROOM_302[]       = "saveLocRoom302";
+    constexpr char KEY_SAVE_LOC_SEWER[]          = "saveLocSewer";
+    constexpr char KEY_SAVE_LOC_STORE[]          = "saveLocStore";
+    constexpr char KEY_SAVE_LOC_THEME_PARK[]     = "saveLocThemePark";
 }

@@ -9,11 +9,12 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::unordered_map<std::string, json> _locales = {}; /** Key = locale name, value = locale translations. */
+        // @todo Load one at a time to prevent memory overallocation.
 
-        std::string                _activeLocale = {};
-        std::optional<std::string> _queuedLocale = std::nullopt;
-        bool                       _isLocked     = false;
+        std::unordered_map<std::string, json> _locales      = {}; /** Key = locale name, value = locale translations. */
+        std::string                           _activeLocale = {};
+        std::optional<std::string>            _queuedLocale = std::nullopt;
+        bool                                  _isLocked     = false;
 
     public:
         // =============

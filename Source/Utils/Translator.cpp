@@ -1,14 +1,17 @@
 #include "Framework.h"
 #include "Utils/Translator.h"
 
+#include "Services/Filesystem.h"
 #include "Utils/Stream.h"
 #include "Utils/Utils.h"
+
+using namespace Silent::Services;
 
 namespace Silent::Utils
 {
     void TranslationManager::Initialize(const std::filesystem::path localesPath)
     {
-        constexpr char LOCALE_FILENAME[] = "Locale.json";
+        constexpr char LOCALE_FILENAME[] = "Locale";
 
         // Collect locale names sorted alphabetically.
         auto localeNames = std::vector<std::string>{};
@@ -30,7 +33,7 @@ namespace Silent::Utils
         // Collect locales.
         for (const auto& localeName : localeNames)
         {
-            auto localePath = localesPath / localeName / LOCALE_FILENAME;
+            auto localePath = localesPath / localeName / (std::string(LOCALE_FILENAME) + JSON_FILE_EXT);
             auto stream     = Stream(localePath, true, false);
             if (!stream.IsOpen())
             {

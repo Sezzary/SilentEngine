@@ -28,11 +28,14 @@ namespace Silent::Utils
         bool                      _deinitialize = false; /** Flag to notify worker threads of a shutdown. */
 
     public:
-        // ==========================
-        // Constructors, Destructors
-        // ==========================
+        // =============
+        // Constructors
+        // =============
 
+        /** @brief Constructs a default `ParallelExecutor`. */
         ParallelExecutor();
+
+        /** @brief Gracefully destroys the `ParallelExecutor`, notifying threads to shut down. */
         ~ParallelExecutor();
 
         // ========

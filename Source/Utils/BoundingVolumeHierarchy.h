@@ -24,7 +24,7 @@ namespace Silent::Utils
         struct Node
         {
             int                    ObjectId = NO_VALUE;                 /** Only stored by a leaf node. */
-            AxisAlignedBoundingBox Aabb     = AxisAlignedBoundingBox(); /** AABB encompassing the object. */
+            AxisAlignedBoundingBox Aabb     = AxisAlignedBoundingBox(); /** Encompassing AABB. */
 
             int Height       = 0;        /** Height of the node in the tree. */
             int ParentId     = NO_VALUE; /** Parent node ID. */
@@ -142,7 +142,7 @@ namespace Silent::Utils
 
     private:
         // ==================
-        // Collision helpers
+        // Collision Helpers
         // ==================
 
         /** @brief Gets all object IDs of nodes which pass an input collision test routine.
@@ -152,9 +152,9 @@ namespace Silent::Utils
          */
         std::vector<int> GetBoundedObjectIds(const std::function<bool(const Node& node)>& testCollRoutine) const;
 
-        // ================
-        // Dynamic helpers
-        // ================
+        // =====================
+        // Dynamic Tree Helpers
+        // =====================
 
         /** @brief Allocates memory for a new node and gets its ID.
          *
@@ -200,9 +200,9 @@ namespace Silent::Utils
          */
         int BalanceNode(int nodeId);
 
-        // ===============
-        // Static helpers
-        // ===============
+        // ====================
+        // Static Tree Helpers
+        // ====================
 
         /** @brief Builds an optimally balanced tree.
          *
@@ -224,7 +224,7 @@ namespace Silent::Utils
         int Build(const std::vector<int>& objectIds, const std::vector<AxisAlignedBoundingBox>& aabbs, int start, int end, BvhBuildStrategy strategy);
 
         // ==============
-        // Debug helpers
+        // Debug Helpers
         // ==============
 
         /** @brief Validates the correctness of the tree.

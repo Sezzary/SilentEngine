@@ -25,8 +25,8 @@ namespace Silent::Utils
 
         /** @brief Initializes the `Translator` with the provided locales.
          *
-         * @param localesPath Path containing all locale folders.
-         * @param localeNames JSON locale filenames.
+         * @param localesPath Path containing all locale assets.
+         * @param localeNames Locale names.
          */
         void Initialize(const std::filesystem::path localesPath, const std::vector<std::string>& localeNames);
 

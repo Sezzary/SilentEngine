@@ -68,6 +68,11 @@ namespace Silent::Utils
 
     bool TranslationManager::SetLocale(const std::string& locale)
     {
+        if (locale == _activeLocale)
+        {
+            return true;
+        }
+
         auto it = _locales.find(locale);
         if (it == _locales.end())
         {

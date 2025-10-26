@@ -73,7 +73,7 @@ namespace Silent::Services
     constexpr bool DEFAULT_ENABLE_VERTEX_JITTER                     = false;
     constexpr bool DEFAULT_ENABLE_AUTO_LOAD                         = false;
     constexpr bool DEFAULT_ENABLE_SUBTITLES                         = true;
-    constexpr auto DEFAULT_LANGUAGE                                 = LanguageType::English;
+    constexpr auto DEFAULT_LANGUAGE                                 = LanguageType::EnglishOriginal;
     constexpr auto DEFAULT_SOUND                                    = SoundType::Stereo;
     constexpr int  DEFAULT_BGM_VOLUME                               = 16;
     constexpr int  DEFAULT_SE_VOLUME                                = 16;
@@ -94,7 +94,8 @@ namespace Silent::Services
 
     const std::vector<std::string> LOCALE_NAMES
     {
-        "English"
+        "EnglishOriginal",
+        "EnglishRevised"
     };
 
     void OptionsManager::SetDefaultGraphicsOptions()

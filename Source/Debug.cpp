@@ -4,9 +4,11 @@
 #include "Application.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "Services/Options.h"
 #include "Services/Time.h"
 #include "Utils/Bitfield.h"
 #include "Utils/Parallel.h"
+#include "Utils/Translator.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Renderer;
@@ -207,7 +209,7 @@ namespace Silent::Debug
             constexpr const char* ASPECT_RATIO_ITEMS[]      = { "Native", "Widescreen", "Retro" };
             constexpr const char* TEX_FILTER_ITEMS[]        = { "Nearest", "Linear" };
             constexpr const char* LIGHTING_ITEMS[]          = { "Per vertex", "Per pixel" };
-            constexpr const char* LANG_ITEMS[]              = { "English" };
+            constexpr const char* LANG_ITEMS[]              = { "English (Original)", "English (Revised)" };
             constexpr const char* SOUND_ITEMS[]             = { "Stereo", "Monaural" };
             constexpr const char* BLOOD_COLOR_ITEMS[]       = { "Normal", "Green", "Violet", "Black" };
             constexpr const char* CONTROL_INVERSION_ITEMS[] = { "Normal", "Reverse" };
@@ -215,9 +217,11 @@ namespace Silent::Debug
             constexpr const char* VIEW_MODE_ITEMS[]         = { "Normal", "Self view" };
             constexpr const char* DIALOG_PAUSE_ITEMS[]      = { "Classic", "Short" };
 
-            const auto& assets   = g_App.GetAssets();
-            auto&       options  = g_App.GetOptions();
-            auto&       renderer = g_App.GetRenderer();
+            const auto& assets     = g_App.GetAssets();
+            auto&       options    = g_App.GetOptions();
+            auto&       renderer   = g_App.GetRenderer();
+            auto&       translator = g_App.GetTranslator();
+
 
             // Main tabs.
             if (ImGui::BeginTabBar("MainTabs", ImGuiTabBarFlags_FittingPolicyScroll))
@@ -567,7 +571,9 @@ namespace Silent::Debug
                         if (ImGui::Combo("Language", &lang, LANG_ITEMS, IM_ARRAYSIZE(LANG_ITEMS)))
                         {
                             options->Language = (LanguageType)lang;
-                            isOptChanged      = true;
+                            translator.SetLocale(LOCALE_NAMES[(int)options->Language]);
+
+                            isOptChanged = true;
                         }
 
                         // `Sound type` combo.

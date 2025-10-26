@@ -49,7 +49,8 @@ namespace Silent::Services
 
     enum class LanguageType
     {
-        English
+        EnglishOriginal,
+        EnglishRevised
     };
 
     enum class SoundType
@@ -118,7 +119,7 @@ namespace Silent::Services
 
         bool           EnableAutoLoad  = false;
         bool           EnableSubtitles = false;
-        LanguageType   Language        = LanguageType::English;
+        LanguageType   Language        = LanguageType::EnglishOriginal;
         SoundType      Sound           = SoundType::Stereo;
         int            BgmVolume       = 0;
         int            SeVolume        = 0;

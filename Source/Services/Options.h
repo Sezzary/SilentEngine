@@ -90,8 +90,6 @@ namespace Silent::Services
         Short    /** Shorter pause length between dialog lines. */
     };
 
-    extern const std::unordered_map<LanguageType, std::string> LOCALE_NAMES;
-
     /** @brief User options configuration data. */
     struct Options
     {

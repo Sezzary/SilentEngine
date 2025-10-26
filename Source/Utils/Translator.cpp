@@ -14,7 +14,7 @@ namespace Silent::Utils
             auto stream     = Stream(localePath, true, false);
             if (!stream.IsOpen())
             {
-                Debug::Log("Failed to load locale `" + localeName + "` for translator.", Debug::LogLevel::Warning);
+                Debug::Log("Failed to load `" + localeName + "` locale for translator.", Debug::LogLevel::Warning);
                 continue;
             }
 

@@ -1,9 +1,9 @@
 #include "Framework.h"
-#include "Game/include/screens/options/brightness.h"
+#include "Game/screens/options/brightness.h"
 
 #include "Game/dummy.h"
-#include "Game/include/screens/options/selection_graphics.h"
-#include "Game/include/screens/options/options.h"
+#include "Game/screens/options/selection_graphics.h"
+#include "Game/screens/options/options.h"
 
 namespace Silent::Game
 {

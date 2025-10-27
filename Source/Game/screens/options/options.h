@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Game/include/common.h"
-#include "Game/include/screens/options/brightness.h"
-#include "Game/include/screens/options/controller.h"
-#include "Game/include/screens/options/menu_graphics.h"
-#include "Game/include/screens/options/screen_position.h"
-#include "Game/include/screens/options/selection_graphics.h"
+#include "Game/common.h"
+#include "Game/screens/options/brightness.h"
+#include "Game/screens/options/controller.h"
+#include "Game/screens/options/menu_graphics.h"
+#include "Game/screens/options/screen_position.h"
+#include "Game/screens/options/selection_graphics.h"
 
 namespace Silent::Game
 {

@@ -2,6 +2,11 @@
     "menuHeadingExtraOptions": "EXTRA OPTIONS",
     "menuHeadingOptions": "OPTIONS",
 
+    "mainMenuLoad": "LOAD",
+    "mainMenuContinue": "CONTINUE",
+    "mainMenuStart": "START",
+    "mainMenuOption": "OPTION",
+
     "option_weapon_control": "Weapon Control",
     "option_blood_color": "Blood Color",
     "option_view_control": "View Control",
@@ -23,10 +28,6 @@
     "configSoundOff": "Off",
     "configSoundStereo": "Stereo",
     "configSoundMonaural": "Monaural",
-    "main_menu_load": "LOAD",
-    "main_menu_continue": "CONTINUE",
-    "main_menu_start": "START",
-    "main_menu_option": "OPTION",
     "config_auto_aiming_press": "Press",
     "config_auto_aiming_switch": "Switch",
     "config_blood_color_normal": "Normal",

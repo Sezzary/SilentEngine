@@ -9,7 +9,7 @@ using namespace Silent::Services;
 
 namespace Silent::Utils
 {
-    void TranslationManager::Initialize(const std::filesystem::path localesPath)
+    void TranslationManager::Initialize(const std::filesystem::path& localesPath)
     {
         constexpr char LOCALE_FILENAME[] = "Locale";
 
@@ -41,12 +41,6 @@ namespace Silent::Utils
 
     std::string TranslationManager::GetTranslation(const std::string& translationKey) const
     {
-        // Check if active locale is loaded.
-        if (_activeLocale.empty())
-        {
-            return translationKey;
-        }
-
         // Get translated text or use translation key as fallback if it doesn't exist.
         return _activeLocale.value(translationKey, translationKey);
     }
@@ -89,7 +83,7 @@ namespace Silent::Utils
     {
         _isLocked = false;
 
-        // Set new locale if queued.
+        // Load new queued locale.
         if (_queuedLocaleName.has_value())
         {
             LoadActiveLocale(*_queuedLocaleName);

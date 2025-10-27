@@ -11,8 +11,8 @@ namespace Silent::Utils
 
         json                       _activeLocale     = {};
         std::string                _activeLocaleName = {};
-        std::vector<std::string>   _localeNames      = {};
         std::optional<std::string> _queuedLocaleName = std::nullopt;
+        std::vector<std::string>   _localeNames      = {};
 
         std::filesystem::path _localesPath = {};
         bool                  _isLocked    = false;
@@ -29,7 +29,7 @@ namespace Silent::Utils
          *
          * @param localesPath Path containing locale folders.
          */
-        void Initialize(const std::filesystem::path localesPath);
+        void Initialize(const std::filesystem::path& localesPath);
 
         // ========
         // Getters

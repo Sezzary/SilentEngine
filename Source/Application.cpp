@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Assets/Assets.h"
+#include "Assets/Locales.h"
 #include "Audio/Audio.h"
 #include "Input/Input.h"
 #include "Game/main.h"
@@ -117,10 +118,10 @@ namespace Silent
         }
 
         // Assets.
-        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / "Psx");
+        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_PSX_DIR_NAME);
 
         // Translator.
-        _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / "Locales");
+        _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_LOCALES_DIR_NAME, LOCALE_NAMES);
 
         // Renderer.
         _work.Renderer = CreateRenderer(RendererType::SdlGpu);

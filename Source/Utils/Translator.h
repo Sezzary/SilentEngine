@@ -12,10 +12,10 @@ namespace Silent::Utils
         json                       _activeLocale     = {};
         std::string                _activeLocaleName = {};
         std::optional<std::string> _queuedLocaleName = std::nullopt;
-        std::vector<std::string>   _localeNames      = {};
+        bool                       _isLocked         = false;
 
-        std::filesystem::path _localesPath = {};
-        bool                  _isLocked    = false;
+        std::vector<std::string> _localeNames = {};
+        std::filesystem::path    _localesPath = {};
 
     public:
         // =============
@@ -28,8 +28,9 @@ namespace Silent::Utils
         /** @brief Initializes the `Translator` with locales from a path.
          *
          * @param localesPath Path containing locale folders.
+         * @param localeNames Locale names to register.
          */
-        void Initialize(const std::filesystem::path& localesPath);
+        void Initialize(const std::filesystem::path& localesPath, const std::vector<std::string>& localeNames);
 
         // ========
         // Getters

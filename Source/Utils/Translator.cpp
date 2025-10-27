@@ -9,34 +9,23 @@ using namespace Silent::Services;
 
 namespace Silent::Utils
 {
-    void TranslationManager::Initialize(const std::filesystem::path& localesPath)
+    void TranslationManager::Initialize(const std::filesystem::path& localesPath, const std::vector<std::string>& localeNames)
     {
         constexpr char LOCALE_FILENAME[] = "Locale";
 
         // Set path.
         _localesPath = localesPath;
 
-        // Register locale names sorted alphabetically.
-        for (const auto& entry : std::filesystem::directory_iterator(_localesPath))
-        {
-            if (entry.is_directory())
-            {
-                _localeNames.push_back(entry.path().filename().string());
-            }
-        }
-        Sort(_localeNames);
-
+        // Register locale names.
+        _localeNames = localeNames;
         if (_localeNames.empty())
         {
-            Debug::Log("No translator locales found.", Debug::LogLevel::Warning);
+            Debug::Log("No translator locales registered.", Debug::LogLevel::Warning);
             return;
         }
 
         // Set first locale as default.
-        if (!_localeNames.empty())
-        {
-            LoadActiveLocale(_localeNames.front());
-        }
+        LoadActiveLocale(_localeNames.front());
     }
 
     std::string TranslationManager::GetTranslation(const std::string& translationKey) const
@@ -100,17 +89,19 @@ namespace Silent::Utils
     {
         constexpr char LOCALE_FILENAME[] = "Locale";
 
-        // Open locale file stream.
+        // Open locale file stream and set new locale.
         auto localePath = _localesPath / localeName / (std::string(LOCALE_FILENAME) + JSON_FILE_EXT);
         auto stream     = Stream(localePath, true, false);
         if (!stream.IsOpen())
         {
             Debug::Log("Failed to load `" + localeName + "` translator locale.", Debug::LogLevel::Warning);
-            return;
+            _activeLocale = json();
         }
-
-        // Set new locale.
-        _activeLocale     = stream.ReadJson();
+        else
+        {
+            _activeLocale = stream.ReadJson();
+        }
+    
         _activeLocaleName = localeName;
         stream.Close();
     }

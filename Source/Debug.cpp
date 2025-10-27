@@ -2,6 +2,7 @@
 #include "Debug.h"
 
 #include "Application.h"
+#include "Assets/Locales.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Services/Options.h"
@@ -11,6 +12,7 @@
 #include "Utils/Translator.h"
 #include "Utils/Utils.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Renderer;
 using namespace Silent::Services;
 using namespace Silent::Utils;
@@ -221,7 +223,6 @@ namespace Silent::Debug
             auto&       options    = g_App.GetOptions();
             auto&       renderer   = g_App.GetRenderer();
             auto&       translator = g_App.GetTranslator();
-
 
             // Main tabs.
             if (ImGui::BeginTabBar("MainTabs", ImGuiTabBarFlags_FittingPolicyScroll))

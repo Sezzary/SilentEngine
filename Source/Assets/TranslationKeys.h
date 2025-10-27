@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Silent::Services
+namespace Silent::Assets
 {
     // ===========
     // Menu Items

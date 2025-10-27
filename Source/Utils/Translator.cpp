@@ -38,7 +38,7 @@ namespace Silent::Utils
     {
         // Check if new locale is already active or queued.
         if (localeName == _activeLocaleName ||
-            (_queuedLocaleName.has_value() && localeName == *_queuedLocaleName))
+            localeName == _queuedLocaleName)
         {
             return;
         }
@@ -73,10 +73,10 @@ namespace Silent::Utils
         _isLocked = false;
 
         // Load new queued locale.
-        if (_queuedLocaleName.has_value())
+        if (!_queuedLocaleName.empty())
         {
-            LoadActiveLocale(*_queuedLocaleName);
-            _queuedLocaleName = std::nullopt;
+            LoadActiveLocale(_queuedLocaleName);
+            _queuedLocaleName = {};
         }
     }
 

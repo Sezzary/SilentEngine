@@ -9,10 +9,10 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        json                       _activeLocale     = {};
-        std::string                _activeLocaleName = {};
-        std::optional<std::string> _queuedLocaleName = std::nullopt;
-        bool                       _isLocked         = false;
+        json        _activeLocale     = {};
+        std::string _activeLocaleName = {};
+        std::string _queuedLocaleName = {};
+        bool        _isLocked         = false;
 
         std::vector<std::string> _localeNames = {};
         std::filesystem::path    _localesPath = {};

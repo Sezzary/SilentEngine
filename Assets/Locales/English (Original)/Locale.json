@@ -1,6 +1,7 @@
 {
-    "menu_heading_extra_options": "EXTRA OPTIONS",
-    "menu_heading_options": "OPTIONS",
+    "menuHeadingExtraOptions": "EXTRA OPTIONS",
+    "menuHeadingOptions": "OPTIONS",
+
     "option_weapon_control": "Weapon Control",
     "option_blood_color": "Blood Color",
     "option_view_control": "View Control",
@@ -40,9 +41,9 @@
     "selfView": "SelfView",
 
     "contMenuOptionExit": "EXIT",
-    "contMenuOptionType1": "TYPE_1",
-    "contMenuOptionType2": "TYPE_2",
-    "contMenuOptionType3": "TYPE_3",
+    "contMenuOptionType1": "TYPE 1",
+    "contMenuOptionType2": "TYPE 2",
+    "contMenuOptionType3": "TYPE 3",
 
     "contMenuOptionEnter": "ENTER",
     "contMenuOptionCancel": "CANCEL",

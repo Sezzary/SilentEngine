@@ -2,7 +2,7 @@
 
 namespace Silent::Utils
 {
-    class BitField
+    class Bitfield
     {
     public:
         // ========
@@ -29,16 +29,16 @@ namespace Silent::Utils
     public:
         // Presets
 
-        static const BitField Empty;
-        static const BitField Default;
+        static const Bitfield Empty;
+        static const Bitfield Default;
 
         // Constructors
 
-        BitField();
-        BitField(uint size);
-        BitField(const std::initializer_list<bool>& bits);
-        BitField(const std::vector<ChunkType>& bitChunks, uint size);
-        BitField(const std::string& bitString);
+        Bitfield();
+        Bitfield(uint size);
+        Bitfield(const std::initializer_list<bool>& bits);
+        Bitfield(const std::vector<ChunkType>& bitChunks, uint size);
+        Bitfield(const std::string& bitString);
         
         // ========
         // Getters
@@ -172,16 +172,16 @@ namespace Silent::Utils
         // Operators
         // ==========
 
-        bool      operator==(const BitField& bitField) const;
-        bool      operator!=(const BitField& bitField) const;
-        BitField& operator=(const BitField& bitField) = default;
-        BitField& operator&=(const BitField& bitField);
-        BitField& operator|=(const BitField& bitField);
-        BitField& operator^=(const BitField& bitField);
-        BitField  operator&(const BitField& bitField) const;
-        BitField  operator|(const BitField& bitField) const;
-        BitField  operator^(const BitField& bitField) const;
-        BitField  operator~() const;
+        bool      operator==(const Bitfield& bitField) const;
+        bool      operator!=(const Bitfield& bitField) const;
+        Bitfield& operator=(const Bitfield& bitField) = default;
+        Bitfield& operator&=(const Bitfield& bitField);
+        Bitfield& operator|=(const Bitfield& bitField);
+        Bitfield& operator^=(const Bitfield& bitField);
+        Bitfield  operator&(const Bitfield& bitField) const;
+        Bitfield  operator|(const Bitfield& bitField) const;
+        Bitfield  operator^(const Bitfield& bitField) const;
+        Bitfield  operator~() const;
 
     private:
         // ========
@@ -206,14 +206,14 @@ namespace Silent::Utils
 namespace std
 {
     template<>
-    struct hash<Silent::Utils::BitField>
+    struct hash<Silent::Utils::Bitfield>
     {
-        size_t operator()(const Silent::Utils::BitField& bitField) const
+        size_t operator()(const Silent::Utils::Bitfield& bitField) const
         {
             size_t hashVal = 0;
             for (auto chunk : bitField.GetChunks())
             {
-                hashVal ^= hash<Silent::Utils::BitField::ChunkType>{}(chunk) +
+                hashVal ^= hash<Silent::Utils::Bitfield::ChunkType>{}(chunk) +
                            0x9E3779B9 +
                            (hashVal << 6) + (hashVal >> 2);
             }

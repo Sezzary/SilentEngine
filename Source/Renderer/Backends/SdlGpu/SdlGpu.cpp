@@ -17,12 +17,12 @@ using namespace Silent::Utils;
 
 namespace Silent::Renderer
 {
-    struct TimeUniform
+    struct TestUniform
     {
-        float Time = 0;
+        bool IsFastAlpha = false;
     };
 
-    static auto UniformBuffer = TimeUniform{};
+    static auto UniformBuffer = TestUniform{};
 
     struct PositionTextureVertex
     {
@@ -37,14 +37,14 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Initialize(SDL_Window& window)
     {
-        Log("Using SDL_gpu renderer.");
+        Debug::Log("Using SDL_gpu renderer.");
 
         _type   = RendererType::SdlGpu;
         _window = &window;
 
         // Create GPU device.
         int formatFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
-        _device         = SDL_CreateGPUDevice(formatFlags, IS_DEBUG_BUILD, nullptr);
+        _device         = SDL_CreateGPUDevice(formatFlags, Debug::IS_DEBUG_BUILD, nullptr);
         if (_device == nullptr)
         {
             throw std::runtime_error("Failed to create GPU device: " + std::string(SDL_GetError()));
@@ -205,7 +205,7 @@ namespace Silent::Renderer
         _commandBuffer = SDL_AcquireGPUCommandBuffer(_device);
         if (_commandBuffer == nullptr)
         {
-            Log("Failed to acquire command buffer: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to acquire command buffer: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
             ClearFrameData();
             return;
         }
@@ -214,7 +214,7 @@ namespace Silent::Renderer
         _swapchainTexture = nullptr;
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(_commandBuffer, _window, &_swapchainTexture, nullptr, nullptr))
         {
-            Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), LogLevel::Warning, LogMode::Debug);
+            Debug::Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             ClearFrameData();
             return;
         }
@@ -254,25 +254,25 @@ namespace Silent::Renderer
         auto* surface = SDL_GetWindowSurface(_window);
         if (surface == nullptr)
         {
-            Log("Failed to save screenshot: " + std::string(SDL_GetError()), LogLevel::Warning, LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::All, true);
             return;
         }
 
         // Lock surface to access pixels.
         if (!SDL_LockSurface(surface))
         {
-            Log("Failed to save screenshot: " + std::string(SDL_GetError()), LogLevel::Warning, LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::All, true);
             return;
         }
 
         // Write screenshot file.
         if (stbi_write_png(path.string().c_str(), res.x, res.y, COLOR_CHANNEL_COUNT, surface->pixels, res.x * COLOR_CHANNEL_COUNT))
         {
-            Log("Saved screenshot.", LogLevel::Info, LogMode::DebugRelease, true);
+            Debug::Log("Saved screenshot.", Debug::LogLevel::Info, Debug::LogMode::All, true);
         }
         else
         {
-            Log("Failed to save screenshot.", LogLevel::Warning, LogMode::DebugRelease, true);
+            Debug::Log("Failed to save screenshot.", Debug::LogLevel::Warning, Debug::LogMode::All, true);
         }
 
         SDL_UnlockSurface(surface);
@@ -296,6 +296,8 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::Draw2dScene()
     {
+        const auto& options = g_App.GetOptions();
+
         // Process copy pass.
         auto* copyPass = SDL_BeginGPUCopyPass(_commandBuffer);
 
@@ -316,7 +318,7 @@ namespace Silent::Renderer
         // Texture test.
         // ===========================
 
-        _pipelines.Bind(renderPass, PipelineType::Primitive2dTextured);
+        _pipelines.Bind(renderPass, RenderStage::Primitive2dTextured, BlendMode::Opaque);
 
         auto bufferBinding = SDL_GPUBufferBinding{ .buffer = VertexBuffer, .offset = 0 };
         SDL_BindGPUVertexBuffers(&renderPass, 0, &bufferBinding, 1);
@@ -324,18 +326,18 @@ namespace Silent::Renderer
         bufferBinding = SDL_GPUBufferBinding{ .buffer = IndexBuffer, .offset = 0 };
         SDL_BindGPUIndexBuffer(&renderPass, &bufferBinding, SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
-        TestTexture.Bind(renderPass, *_samplers[0]);
+        TestTexture.Bind(renderPass, *_samplers[(int)options->TextureFilter]);
 
         SDL_DrawGPUIndexedPrimitives(&renderPass, 6, 1, 0, 0, 0);
 
         //===============================
 
         // Bind.
-        _pipelines.Bind(renderPass, PipelineType::Primitive2d);
+        _pipelines.Bind(renderPass, RenderStage::Primitive2d, BlendMode::FastAlpha);
         _buffers.Primitives2d.Bind(renderPass, 0);
 
         // Upload uniform data.
-        UniformBuffer.Time = SDL_GetTicksNS() / 1e9f;
+        UniformBuffer.IsFastAlpha = false;
         SDL_PushGPUFragmentUniformData(_commandBuffer, 0, &UniformBuffer, sizeof(UniformBuffer));
 
         // Process render pass.
@@ -346,6 +348,8 @@ namespace Silent::Renderer
 
     void SdlGpuRenderer::DrawPostProcess()
     {
+        const auto& options = g_App.GetOptions();
+
         // Begin render pass.
         auto colorTargetInfo = SDL_GPUColorTargetInfo
         {
@@ -355,9 +359,26 @@ namespace Silent::Renderer
         };
         auto& renderPass = *SDL_BeginGPURenderPass(_commandBuffer, &colorTargetInfo, 1, nullptr);
 
-        // @todo
-
         // Process render pass.
+
+        // Dithering.
+        if (options->EnableDithering)
+        {
+            // @todo
+        }
+
+        // Vignette.
+        if (options->EnableVignette)
+        {
+            // @todo
+        }
+
+        // CRT filter.
+        if (options->EnableCrtFilter)
+        {
+            // @todo
+        }
+
         SDL_EndGPURenderPass(&renderPass);
     }
 
@@ -397,6 +418,7 @@ namespace Silent::Renderer
 
         // Process render pass.
         ImGui_ImplSDLGPU3_RenderDrawData(drawData, _commandBuffer, renderPass);
+
         SDL_EndGPURenderPass(renderPass);
     }
 
@@ -411,8 +433,8 @@ namespace Silent::Renderer
             {
                 for (const auto& vert : prim.Vertices)
                 {
-                    auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
-                    auto ndc = ConvertScreenPositionToNdc(pos);
+                    //auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
+                    auto ndc = ConvertScreenPositionToNdc(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
                         .Position = Vector3(ndc.x, ndc.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),
@@ -427,8 +449,8 @@ namespace Silent::Renderer
                 {
                     const auto& vert = prim.Vertices[i];
 
-                    auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
-                    auto ndc = ConvertScreenPositionToNdc(pos);
+                    //auto pos = GetAspectCorrectScreenPosition(Vector2(vert.Position.x, vert.Position.y), prim.ScaleM);
+                    auto ndc = ConvertScreenPositionToNdc(Vector2(vert.Position.x, vert.Position.y));
                     bufferVerts.push_back(BufferVertex
                     {
                         .Position = Vector3(ndc.x, ndc.y, std::clamp((float)prim.Depth / (float)DEPTH_MAX, 0.0f, 1.0f)),

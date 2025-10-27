@@ -60,9 +60,44 @@ namespace Silent::Utils
      * @param pred Predicate defining the basis for element erasure.
      */
     template <typename TContainer, typename TPredicate>
-    void EraseIf(TContainer& cont, TPredicate pred)
+    void Erase(TContainer& cont, TPredicate pred)
     {
         cont.erase(std::remove_if(cont.begin(), cont.end(), pred), cont.end());
+    }
+
+    /** @brief Sorts elements in a container.
+     *
+     * @tparam T Container type.
+     * @param cont Container to sort.
+     */
+    template <typename T>
+    void Sort(T& cont)
+    {
+        std::sort(cont.begin(), cont.end());
+    }
+
+    /** @brief Sorts elements in a container based on a predicate.
+     *
+     * @tparam TContainer Container type.
+     * @tparam TPreciate Predicate type.
+     * @param cont Container to sort.
+     * @param pred Predicate defining the basis for sorting.
+     */
+    template <typename TContainer, typename TPredicate>
+    void Sort(TContainer& cont, const TPredicate& pred)
+    {
+        std::sort(cont.begin(), cont.end(), pred);
+    }
+
+    /** @brief Reverses elements in a container.
+     *
+     * @tparam T Container type.
+     * @param cont Container to reverse.
+     */
+    template <typename T>
+    void Reverse(T& cont)
+    {
+        std::reverse(cont.begin(), cont.end());
     }
 
     /** @brief Converts a raw array to a read-only span.

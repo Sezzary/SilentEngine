@@ -49,7 +49,8 @@ namespace Silent::Services
 
     enum class LanguageType
     {
-        English
+        EnglishOriginal,
+        EnglishRevised
     };
 
     enum class SoundType
@@ -60,10 +61,10 @@ namespace Silent::Services
 
     enum class BloodColorType
     {
-        Normal = 0,
-        Green  = 2,
-        Violet = 5,
-        Black  = 11
+        Normal,
+        Green,
+        Violet,
+        Black
     };
 
     enum class ControlInversionType
@@ -107,16 +108,16 @@ namespace Silent::Services
         AspectRatioType   AspectRatio        = AspectRatioType::Native;
         TextureFilterType TextureFilter      = TextureFilterType::Nearest;
         LightingType      Lighting           = LightingType::PerVertex;
-        bool              EnableDithering    = false;
-        bool              EnableCrtFilter    = false;
-        bool              EnableVignette     = false;
         bool              EnableVertexJitter = false;
+        bool              EnableDithering    = false;
+        bool              EnableVignette     = false;
+        bool              EnableCrtFilter    = false;
 
         /** Gameplay */
 
         bool           EnableAutoLoad  = false;
         bool           EnableSubtitles = false;
-        LanguageType   Language        = LanguageType::English;
+        LanguageType   Language        = LanguageType::EnglishOriginal;
         SoundType      Sound           = SoundType::Stereo;
         int            BgmVolume       = 0;
         int            SeVolume        = 0;
@@ -152,9 +153,9 @@ namespace Silent::Services
 
         bool EnableDebugMode = true;
         bool EnableDebugGui  = false;
-
+        
         /** System (user) */
-
+        
         bool EnableToasts      = false;
         bool EnableParallelism = false;
     };

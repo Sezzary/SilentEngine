@@ -1,41 +1,11 @@
 #pragma once
 
+#include "Renderer/Common/Enums.h"
+
 namespace Silent::Renderer
 {
-    /** @brief Pipeline types. */
-    enum class PipelineType
-    {
-        Primitive2d,
-        Primitive2dTextured,
-
-        /** Post-process */
-
-        Vignette,
-
-        Count
-    };
-
-    /** @brief Pipeline configuration data. */
-    struct PipelineConfig
-    {
-        PipelineType Type = PipelineType::Primitive2d;
-
-        std::string VertexShaderName             = {};
-        uint        VertShaderSamplerCount       = 0;
-        uint        VertShaderUniBufferCount     = 0;
-        uint        VertShaderStorageBufferCount = 0;
-        uint        VertShaderStorageTexCount    = 0;
-
-        std::string FragmentShaderName           = {};
-        uint        FragShaderSamplerCount       = 0;
-        uint        FragShaderUniBufferCount     = 0;
-        uint        FragShaderStorageBufferCount = 0;
-        uint        FragShaderStorageTexCount    = 0;
-
-        std::vector<SDL_GPUVertexBufferDescription> VertBufferDescs   = {};
-        std::vector<SDL_GPUVertexAttribute>         VertBufferAttribs = {};
-        std::vector<SDL_GPUColorTargetDescription>  ColorTargetDescs  = {};
-    };
+    enum class BlendMode;
+    struct     PipelineConfig;
 
     /** @brief Central pipeline manager. */
     class PipelineManager
@@ -45,8 +15,8 @@ namespace Silent::Renderer
         // Fields
         // =======
 
-        SDL_GPUDevice*                                                 _device    = nullptr; /** GPU device. */
-        std::array<SDL_GPUGraphicsPipeline*, (int)PipelineType::Count> _pipelines = {};      /** Available pipelines. */
+        SDL_GPUDevice*                                    _device    = nullptr;
+        std::unordered_map<int, SDL_GPUGraphicsPipeline*> _pipelines = {}; /** Key = pipeline hash, value = pipeline. */
 
     public:
         // =============
@@ -70,12 +40,12 @@ namespace Silent::Renderer
          */
         void Initialize(SDL_Window& window, SDL_GPUDevice& device);
 
-        /** @brief Binds the graphics pipeline for use in rendering.
+        /** @brief Binds the graphics pipeline render stage for use in rendering.
          *
-         * @param renderPass Render pass used in rendering to bind the pipeline to.
-         * @param pipelineType Pipeline to bind.
+         * @param renderPass Render pass to bind the pipeline to.
+         * @param renderStage Pipeline render stage to bind.
          */
-        void Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType);
+        void Bind(SDL_GPURenderPass& renderPass, RenderStage renderStage, BlendMode blendMode);
 
     private:
         // ========
@@ -99,5 +69,13 @@ namespace Silent::Renderer
          * @return Compiled vertex or fragment shader.
          */
         SDL_GPUShader* LoadShader(const std::string& filename, uint samplerCount, uint storageTexCount, uint storageBufferCount, uint uniBufferCount);
+
+        /** @brief Computes a pipeline hash from a pipeline render stage and blend mode.
+         *
+         * @param renderStage Pipeline render stage.
+         * @param blendMode Blend mode.
+         * @return Pipeline hash.
+         */
+        int GetPipelineHash(RenderStage renderStage, BlendMode blendMode);
     };
 }

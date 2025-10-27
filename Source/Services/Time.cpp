@@ -24,7 +24,7 @@ namespace Silent::Services
         if (offsetTicks >= intervalTicks)
         {
             offsetTicks = 0;
-            Log("Attempted to test time interval with offset greater than or equal to interval.", LogLevel::Warning, LogMode::Debug);
+            Debug::Log("Attempted to test time interval with offset greater than or equal to interval.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
         }
         
         uint64 ticks = GetUptimeMicrosec() / TICK_INTERVAL_MICROSEC;

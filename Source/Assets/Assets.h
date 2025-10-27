@@ -5,6 +5,8 @@
 
 namespace Silent::Assets
 {
+    constexpr char ASSETS_PSX_DIR_NAME[] = "Psx";
+
     /** @brief Loaded asset types. Used in `Asset`. */
     enum class AssetType
     {

@@ -3,6 +3,7 @@
 
 #include "Math/Constants.h"
 #include "Math/Objects/Vector3.h"
+#include "Math/Objects/Vector4.h"
 
 namespace Silent::Math
 {

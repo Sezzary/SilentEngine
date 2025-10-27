@@ -196,7 +196,7 @@ namespace Silent
             auto& renderer = g_App.GetRenderer();
 
             // Set clear color.
-            renderer.SetClearColor(Color::Black);
+            renderer.SetClearColor(Color::Clear);
 
             // Load `1ST/2ZANKO_E.TIM` ("There are violent and disturbing images...").
             assets.LoadAsset(e_FsFile::FILE_1ST_2ZANKO_E_TIM).wait();

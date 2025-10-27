@@ -27,7 +27,7 @@ namespace Silent::Renderer
         RendererType _type          = RendererType::SdlGpu;
         SDL_Window*  _window        = nullptr;
         View         _view          = View();
-        Color        _clearColor    = Color::Black;
+        Color        _clearColor    = Color::Clear;
         uint         _drawCallCount = 0;
         bool         _isResized     = false;
         
@@ -149,7 +149,7 @@ namespace Silent::Renderer
          * @param color Line color.
          * @param page Debug page in which the line will be visible.
          */
-        void SubmitDebugLine(const Vector3& from, const Vector3& to, const Color& color, DebugPage page);
+        void SubmitDebugLine(const Vector3& from, const Vector3& to, const Color& color, Debug::Page page);
 
         /** @brief Submits a 3D triangle polygon with additive blending for drawing.
          * Used to construct more complex geometry.
@@ -160,7 +160,7 @@ namespace Silent::Renderer
          * @param color Triangle color.
          * @param page Debug page in which the triangle will be visible.
          */
-        void SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page);
+        void SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, Debug::Page page);
 
         /** @brief Submits a 3D reticle-shaped target with additive blending for drawing.
          *
@@ -170,7 +170,7 @@ namespace Silent::Renderer
          * @param color Target color.
          * @param page Debug page in which the target will be visible.
          */
-        void SubmitDebugTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, DebugPage page);
+        void SubmitDebugTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, Debug::Page page);
 
         /** @brief Submits a 3D box with additive blending for drawing.
          *
@@ -179,7 +179,7 @@ namespace Silent::Renderer
          * @param isWireframe If the box should be wireframe or solid.
          * @param page Debug page in which the box will be visible.
          */
-        void SubmitDebugBox(const OrientedBoundingBox& obb, const Color& color, bool isWireframe, DebugPage page);
+        void SubmitDebugBox(const OrientedBoundingBox& obb, const Color& color, bool isWireframe, Debug::Page page);
 
         /** @brief Submits a 3D sphere with additive blending for drawing.
          *
@@ -188,7 +188,7 @@ namespace Silent::Renderer
          * @param isWireframe If the sphere should be wireframe or solid.
          * @param page Debug page in which the sphere will be visible.
          */
-        void SubmitDebugSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe, DebugPage page);
+        void SubmitDebugSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe, Debug::Page page);
 
         /** @brief Submits a 3D cylinder with additive blending for drawing.
          *
@@ -200,7 +200,7 @@ namespace Silent::Renderer
          * @param isWireframe If the cylinder should be wireframe or solid.
          * @param page Debug page in which the cylinder will be visible.
          */
-        void SubmitDebugCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page);
+        void SubmitDebugCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page);
 
         /** @brief Submits a 3D cone with additive blending for drawing.
          *
@@ -212,7 +212,7 @@ namespace Silent::Renderer
          * @param isWireframe If the cone should be wireframe or solid.
          * @param page Debug page in which the cone will be visible.
          */
-        void SubmitDebugCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page);
+        void SubmitDebugCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page);
 
         /** @brief Submits a 3D diamond with additive blending for drawing.
          *
@@ -224,7 +224,7 @@ namespace Silent::Renderer
          * @param isWireframe If the diamond should be wireframe or solid.
          * @param page Debug page in which the diamond will be visible.
          */
-        void SubmitDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page);
+        void SubmitDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Debug::Page page);
 
     protected:
         // ========
@@ -236,6 +236,12 @@ namespace Silent::Renderer
 
         /** @brief Clears renderer data used for the previous frame. Called at the end of `Update`. */
         void ClearFrameData();
+
+        /** @brief Checks if a debug page is open in the debug menu.
+         *
+         * @return `true` if the debug page is open, `false` otherwise.
+         */
+        bool CheckDebugPage(Debug::Page page) const;
 
         /** @brief Draws a 3D scene. Called before `Draw2dScene`. */
         virtual void Draw3dScene() = 0;

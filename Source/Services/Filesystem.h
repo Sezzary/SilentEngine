@@ -2,25 +2,6 @@
 
 namespace Silent::Services
 {
-    constexpr char APP_NAME[]    = "Silent Engine";
-    constexpr char APP_VERSION[] = "0.1.0";
-
-    /** @brief Supported operating system types. */
-    enum class OsType
-    {
-        Windows,
-        MacOs,
-        Linux
-    };
-
-#if defined(_WIN32) || defined(_WIN64)
-    constexpr auto OS_TYPE = OsType::Windows;
-#elif defined(__APPLE__)
-    constexpr auto OS_TYPE = OsType::MacOs;
-#elif defined(__linux__)
-    constexpr auto OS_TYPE = OsType::Linux;
-#endif
-
     constexpr char JSON_FILE_EXT[]     = ".json";
     constexpr char PNG_FILE_EXT[]      = ".png";
     constexpr char SAVEGAME_FILE_EXT[] = ".savegame";

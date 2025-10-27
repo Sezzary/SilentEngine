@@ -94,6 +94,7 @@ using json = nlohmann::json;
 // Resources
 // ==========
 
+#include "Config.h"
 #include "Types.h"
 #include "Math/Math.h"
 
@@ -101,5 +102,3 @@ using namespace Silent;
 using namespace Silent::Math;
 
 #include "Debug.h"
-
-using namespace Silent::Debug;

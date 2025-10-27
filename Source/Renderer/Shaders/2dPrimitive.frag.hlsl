@@ -10,14 +10,14 @@ struct Output
 
 cbuffer UniformBlock : register(b0, space3)
 {
-    float Time;
+    bool IsFastAlpha;
 };
 
 Output main(Input input)
 {
     Output output;
 
-    float pulse      = (sin(Time * 2.0f) * 0.5f) + 0.5f;
-    output.FragColor = float4(input.Color.rgb * ((0.8f + pulse) * 0.5f), input.Color.a);
+    float alpha      = (IsFastAlpha * step(0.5f, input.Color.a)) + ((1.0f - IsFastAlpha) * input.Color.a);
+    output.FragColor = float4(input.Color.rgb, alpha);
     return output;
 }

@@ -12,11 +12,11 @@ int main()
     }
     catch (const std::exception& ex)
     {
-        Log(ex.what(), LogLevel::Critical);
+        Debug::Log(ex.what(), Debug::LogLevel::Critical);
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Critical Error", ex.what(), nullptr);
         return EXIT_FAILURE;
     }
 
-    DeinitializeDebug();
+    Debug::Deinitialize();
     return EXIT_SUCCESS;
 }

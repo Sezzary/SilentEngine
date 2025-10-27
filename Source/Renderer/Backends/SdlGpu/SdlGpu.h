@@ -11,7 +11,7 @@ namespace Silent::Renderer
     struct BufferVertex
     {
         Vector3 Position = Vector3::Zero;
-        Color   Col      = Color::Black;
+        Color   Col      = Color::Clear;
     };
     struct BufferTexVertex
     {

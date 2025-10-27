@@ -1,9 +1,12 @@
 #include "Framework.h"
 #include "Math/Objects/Color.h"
 
+#include "Math/Objects/Vector4.h"
+
 namespace Silent::Math
 {
-    const Color Color::Black = Color(0.0f, 0.0f, 0.0f, 0.0f);
+    const Color Color::Clear = Color(0.0f, 0.0f, 0.0f, 0.0f);
+    const Color Color::Black = Color(0.0f, 0.0f, 0.0f, 1.0f);
     const Color Color::White = Color(1.0f, 1.0f, 1.0f, 1.0f);
     const Color Color::Red   = Color(1.0f, 0.0f, 0.0f, 1.0f);
     const Color Color::Green = Color(0.0f, 1.0f, 0.0f, 1.0f);
@@ -67,24 +70,6 @@ namespace Silent::Math
     uchar Color::A8() const
     {
         return FP_COLOR(A());
-    }
-
-    Color From8Bit(uchar r, uchar g, uchar b, uchar a)
-    {
-        return Color(r / (float)FP_COLOR(1.0f),
-                     g / (float)FP_COLOR(1.0f),
-                     b / (float)FP_COLOR(1.0f),
-                     a / (float)FP_COLOR(1.0f));
-    }
-
-    Color Color::FromPackedRgba(uint packedRgba)
-    {
-        constexpr uchar BIT_MASK = FP_COLOR(1.0f);
-
-        return Color((float)((packedRgba >> 24) & BIT_MASK) / (float)BIT_MASK,
-                     (float)((packedRgba >> 16) & BIT_MASK) / (float)BIT_MASK,
-                     (float)((packedRgba >> 8) & BIT_MASK) / (float)BIT_MASK,
-                     (float)(packedRgba & BIT_MASK) / (float)BIT_MASK);
     }
 
     Color Color::Lerp(const Color& color0, const Color& color1, float alpha)
@@ -151,7 +136,7 @@ namespace Silent::Math
         *this = Color::Darken(*this, alpha);
     }
 
-    uint Color::ToPackedRgba() const
+    uint Color::ToPacked8Bit() const
     {
         return (FP_COLOR(R()) << 24) | (FP_COLOR(G()) << 16) | (FP_COLOR(B()) << 8) | FP_COLOR(A());
     }

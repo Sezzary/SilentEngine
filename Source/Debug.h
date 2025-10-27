@@ -20,13 +20,13 @@ namespace Silent::Debug
     /** @brief Log build modes. */
     enum class LogMode
     {
-        Debug,       /** Log in debug build only. */
-        Release,     /** Log in release build only. */
-        DebugRelease /** Log in debug and release builds. */
+        Debug,   /** Log in debug build only. */
+        Release, /** Log in release build only. */
+        All      /** Log in debug and release builds. */
     };
 
     /** @brief Debug GUI pages. */
-    enum class DebugPage
+    enum class Page
     {
         None,
         Renderer,
@@ -35,38 +35,52 @@ namespace Silent::Debug
         Options
     };
 
-    /** @brief Debug data used by the debugging system. */
-    struct DebugData
+    /** @brief Debug workspace. */
+    struct DebugWork
     {
-        DebugPage Page = DebugPage::Renderer;
-
-        // Temp
+        /** Temp */
 
         float BlendAlpha = 0.0f;
 
-        // Renderer
+        /** System (internal) */
+
+        std::vector<std::string>                       Messages  = {};
+        std::chrono::high_resolution_clock::time_point StartTime = {};
+
+        /** System (user) */
+
+        Page Page = Page::Renderer;
+
+        /** Renderer (internal) */
+
+        float                                 Fps        = 0.0f;
+        uint                                  FrameTime  = 0;
+        uint                                  FrameCount = 0;
+        std::chrono::steady_clock::time_point PrevTime   = {};
+
+        /** Renderer (user) */
 
         bool EnableWireframeMode = false;
 
-        // Cheats
+        /** Cheats */
 
         bool EnableFreezeMode = false;
     };
 
-    /** @brief Global debug data. */
-    extern DebugData g_DebugData;
+    /** @brief Global debug workspace data. */
+    extern DebugWork g_Work;
 
     /** @brief Executes scratch code. This is a dedicated space which can be used to test anything. */
     void Scratchpad();
 
     /** @brief Initializes the debug logger, log file for flushing, and GUI. */
-    void InitializeDebug();
+    void Initialize();
 
     /** @brief Gracefully shuts down the logger. */
-    void DeinitializeDebug();
+    void Deinitialize();
 
     /** @brief Updates the debug GUI. */
-    void UpdateDebug();
+    void Update();
 
     /** @brief Displays a message in the debug GUI.
      *
@@ -81,7 +95,7 @@ namespace Silent::Debug
      * @param logMode Which build modes to log the message.
      * @param repeat Whether to repeat identical messages.
      */
-    void Log(const std::string& msg, LogLevel level = LogLevel::Info, LogMode mode = LogMode::DebugRelease, bool repeat = false);
+    void Log(const std::string& msg, LogLevel level = LogLevel::Info, LogMode mode = LogMode::All, bool repeat = false);
 
     /** @brief Asserts a condition with a failure message. Functional only in the debug build.
      *
@@ -111,7 +125,7 @@ namespace Silent::Debug
      * @param color Line color.
      * @param page Debug page in which the line will be visible.
      */
-    void CreateLine(const Vector3& from, const Vector3& to, const Color& color, DebugPage page = DebugPage::None);
+    void CreateLine(const Vector3& from, const Vector3& to, const Color& color, Page page = Page::None);
 
     /** @brief Creates a 3D triangle polygon with additive blending and submits it to the renderer for drawing.
      * Used to construct more complex geometry.
@@ -122,7 +136,7 @@ namespace Silent::Debug
      * @param color Triangle color.
      * @param page Debug page in which the triangle will be visible.
      */
-    void CreateTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page = DebugPage::None);
+    void CreateTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, Page page = Page::None);
 
     /** @brief Creates a 3D reticle-shaped target with additive blending and submits it to the renderer for drawing.
      *
@@ -132,7 +146,7 @@ namespace Silent::Debug
      * @param color Target color.
      * @param page Debug page in which the target will be visible.
      */
-    void CreateTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, DebugPage page = DebugPage::None);
+    void CreateTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, Page page = Page::None);
 
     /** @brief Creates a 3D box with additive blending and submits it to the renderer for drawing.
      *
@@ -141,7 +155,7 @@ namespace Silent::Debug
      * @param isWireframe If the box should be wireframe or solid.
      * @param page Debug page in which the box will be visible.
      */
-    void CreateBox(const OrientedBoundingBox& obb, const Color& color, bool isWireframe = true, DebugPage page = DebugPage::None);
+    void CreateBox(const OrientedBoundingBox& obb, const Color& color, bool isWireframe = true, Page page = Page::None);
 
     /** @brief Creates a 3D sphere with additive blending and submits it to the renderer for drawing.
      *
@@ -150,7 +164,7 @@ namespace Silent::Debug
      * @param isWireframe If the sphere should be wireframe or solid.
      * @param page Debug page in which the sphere will be visible.
      */
-    void CreateSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe = true, DebugPage page = DebugPage::None);
+    void CreateSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe = true, Page page = Page::None);
 
     /** @brief Creates a 3D cylinder with additive blending and submits it to the renderer for drawing.
      *
@@ -162,7 +176,7 @@ namespace Silent::Debug
      * @param isWireframe If the cylinder should be wireframe or solid.
      * @param page Debug page in which the cylinder will be visible.
      */
-    void CreateCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe = true, DebugPage page = DebugPage::None);
+    void CreateCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe = true, Page page = Page::None);
     
     /** @brief Creates a 3D cone with additive blending and submits it to the renderer for drawing.
      *
@@ -174,7 +188,7 @@ namespace Silent::Debug
      * @param isWireframe If the cone should be wireframe or solid.
      * @param page Debug page in which the cone will be visible.
      */
-    void CreateCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe = true, DebugPage page = DebugPage::None);
+    void CreateCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe = true, Page page = Page::None);
 
     /** @brief Creates a 3D diamond with additive blending and submits it to the renderer for drawing.
      *
@@ -186,5 +200,5 @@ namespace Silent::Debug
      * @param isWireframe If the diamond should be wireframe or solid.
      * @param page Debug page in which the diamond will be visible.
      */
-    void CreateDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe = true, DebugPage page = DebugPage::None);
+    void CreateDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe = true, Page page = Page::None);
 }

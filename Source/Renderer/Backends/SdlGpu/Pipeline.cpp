@@ -2,29 +2,19 @@
 #include "Renderer/Backends/SdlGpu/Pipeline.h"
 
 #include "Application.h"
+#include "Renderer/Backends/SdlGpu/PipelineConfig.h"
+#include "Renderer/Common/Enums.h"
 #include "Services/Filesystem.h"
 
 using namespace Silent::Services;
 
 namespace Silent::Renderer
 {
-    // @todo Temp.
-    struct BufferVertex
-    {
-        Vector3 Position = Vector3::Zero;
-        Color   Col      = Color::Black;
-    };
-    struct BufferPositionTextureVertex
-    {
-        float x, y, z;
-        float u, v;
-    };
-
     PipelineManager::~PipelineManager()
     {
-        for (auto* pipeline : _pipelines)
+        for (auto [keyHash, pipeline] : _pipelines)
         {
-	        SDL_ReleaseGPUGraphicsPipeline(_device, pipeline);
+            SDL_ReleaseGPUGraphicsPipeline(_device, pipeline);
         }
     }
 
@@ -32,117 +22,16 @@ namespace Silent::Renderer
     {
         _device = &device;
 
-        // @todo Vectors won't compile as part of initialiser list.
-        auto prim2dPipelineConfig = PipelineConfig
+        for (const auto& pipelineConfig : PIPELINE_CONFIGS)
         {
-            .Type                     = PipelineType::Primitive2d,
-            .VertexShaderName         = "2dPrimitive.vert",
-            .FragmentShaderName       = "2dPrimitive.frag",
-            .FragShaderUniBufferCount = 1
-        };
-        prim2dPipelineConfig.VertBufferDescs =
-        {
-            SDL_GPUVertexBufferDescription
-            {
-                .slot               = 0,
-                .pitch              = sizeof(BufferVertex),
-                .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
-                .instance_step_rate = 0
-            }
-        };
-        prim2dPipelineConfig.VertBufferAttribs =
-        {
-            SDL_GPUVertexAttribute
-            {
-                .location    = 0,
-                .buffer_slot = 0,
-                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-                .offset      = 0
-            },
-            SDL_GPUVertexAttribute
-            {
-                .location    = 1,
-                .buffer_slot = 0,
-                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
-                .offset      = sizeof(float) * 3
-            }
-        };
-        prim2dPipelineConfig.ColorTargetDescs =
-        {
-            SDL_GPUColorTargetDescription
-            {
-                .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
-                .blend_state = SDL_GPUColorTargetBlendState
-                {
-                    .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-                    .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-                    .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-                    .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-                    .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-                    .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
-                    .enable_blend          = true
-                }
-            }
-        };
-        InitializeGraphicsPipeline(window, prim2dPipelineConfig);
-
-        auto texPipelineConfig = PipelineConfig
-        {
-            .Type                   = PipelineType::Primitive2dTextured,
-            .VertexShaderName       = "TexturedQuad.vert",
-            .FragmentShaderName     = "TexturedQuad.frag",
-            .FragShaderSamplerCount = 1
-        };
-        texPipelineConfig.VertBufferDescs =
-        {
-            SDL_GPUVertexBufferDescription
-            {
-                .slot               = 0,
-                .pitch              = sizeof(BufferPositionTextureVertex),
-                .input_rate         = SDL_GPU_VERTEXINPUTRATE_VERTEX,
-                .instance_step_rate = 0
-            }
-        };
-        texPipelineConfig.VertBufferAttribs =
-        {
-            SDL_GPUVertexAttribute
-            {
-                .location    = 0,
-                .buffer_slot = 0,
-                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-                .offset      = 0
-            },
-            SDL_GPUVertexAttribute
-            {
-                .location    = 1,
-                .buffer_slot = 0,
-                .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2,
-                .offset      = sizeof(float) * 3
-            }
-        };
-        texPipelineConfig.ColorTargetDescs =
-        {
-            SDL_GPUColorTargetDescription
-            {
-                .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
-                .blend_state = SDL_GPUColorTargetBlendState
-                {
-                    .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-                    .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-                    .color_blend_op        = SDL_GPU_BLENDOP_ADD,
-                    .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
-                    .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
-                    .alpha_blend_op        = SDL_GPU_BLENDOP_ADD,
-                    .enable_blend          = true
-                }
-            }
-        };
-        InitializeGraphicsPipeline(window, texPipelineConfig);
+            InitializeGraphicsPipeline(window, pipelineConfig);
+        }
     }
 
-    void PipelineManager::Bind(SDL_GPURenderPass& renderPass, PipelineType pipelineType)
+    void PipelineManager::Bind(SDL_GPURenderPass& renderPass, RenderStage renderStage, BlendMode blendMode)
     {
-        SDL_BindGPUGraphicsPipeline(&renderPass, _pipelines[(int)pipelineType]);
+        int pipelineHash = GetPipelineHash(renderStage, Debug::g_Work.EnableWireframeMode ? BlendMode::Wireframe : blendMode);
+        SDL_BindGPUGraphicsPipeline(&renderPass, _pipelines[pipelineHash]);
     }
 
     void PipelineManager::InitializeGraphicsPipeline(SDL_Window& window, const PipelineConfig& config)
@@ -165,34 +54,48 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to create fragment shader `" + config.FragmentShaderName + "`.");
         }
 
-        auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
+        // @todo Post-process pipelines don't need every variant.
+        // Create pipelines with blend mode variants.
+        for (int i = 0; i < (int)BlendMode::Count; i++)
         {
-            .vertex_shader      = vertShader,
-            .fragment_shader    = fragShader,
-            .vertex_input_state =
+            auto colorTargetDescs = config.ColorTargetDescs;
+            colorTargetDescs.push_back(SDL_GPUColorTargetDescription
             {
-                .vertex_buffer_descriptions = config.VertBufferDescs.data(),
-                .num_vertex_buffers         = (uint)config.VertBufferDescs.size(),
-                .vertex_attributes          = config.VertBufferAttribs.data(),
-                .num_vertex_attributes      = (uint)config.VertBufferAttribs.size()
-            },
-            .primitive_type   = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
-            .rasterizer_state = SDL_GPURasterizerState
-            {
-                .fill_mode = SDL_GPU_FILLMODE_FILL
-            },
-            .target_info = SDL_GPUGraphicsPipelineTargetInfo
-            {
-                .color_target_descriptions = config.ColorTargetDescs.data(),
-                .num_color_targets         = (uint)config.ColorTargetDescs.size()
-            }
-        };
+                .format      = SDL_GetGPUSwapchainTextureFormat(_device, &window),
+                .blend_state = PIPELINE_BLEND_MODE_COLOR_TARGETS[i]
+            });
 
-        // Create pipeline.
-        _pipelines[(int)config.Type] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
-        if (_pipelines[(int)config.Type] == nullptr) 
-        {
-            throw std::runtime_error("Failed to create graphics pipeline type " + std::to_string((int)config.Type) + ": " + std::string(SDL_GetError()));
+            auto pipelineInfo = SDL_GPUGraphicsPipelineCreateInfo
+            {
+                .vertex_shader      = vertShader,
+                .fragment_shader    = fragShader,
+                .vertex_input_state =
+                {
+                    .vertex_buffer_descriptions = config.VertBufferDescs.data(),
+                    .num_vertex_buffers         = (uint)config.VertBufferDescs.size(),
+                    .vertex_attributes          = config.VertBufferAttribs.data(),
+                    .num_vertex_attributes      = (uint)config.VertBufferAttribs.size()
+                },
+                .primitive_type   = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
+                .rasterizer_state = SDL_GPURasterizerState
+                {
+                    .fill_mode = ((BlendMode)i == BlendMode::Wireframe) ? SDL_GPU_FILLMODE_LINE : SDL_GPU_FILLMODE_FILL
+                },
+                .target_info = SDL_GPUGraphicsPipelineTargetInfo
+                {
+                    .color_target_descriptions = colorTargetDescs.data(),
+                    .num_color_targets         = (uint)colorTargetDescs.size()
+                }
+            };
+
+            // Create pipeline variant.
+            int piplineHash         = GetPipelineHash(config.Stage, (BlendMode)i);
+            _pipelines[piplineHash] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
+            if (_pipelines[piplineHash] == nullptr) 
+            {
+                throw std::runtime_error("Failed to create graphics pipeline for render stage " + std::to_string((int)config.Stage) +
+                                         ", blend mode " + std::to_string(i) + ": " + std::string(SDL_GetError()));
+            }
         }
 
         // Free shaders.
@@ -214,38 +117,39 @@ namespace Silent::Renderer
         }
         else
         {
-            Log("Invalid shader stage.", LogLevel::Error);
+            Debug::Log("Invalid shader stage.", Debug::LogLevel::Error);
             return nullptr;
         }
 
+        const auto& fs = g_App.GetFilesystem();
+
         // Define shader properties.
         char        fullPath[256];
-        auto        formatFlags = SDL_GetGPUShaderFormats(_device);
-        auto        formatFlag  = (SDL_GPUShaderFormat)SDL_GPU_SHADERFORMAT_INVALID;
-        const char* entryPoint  = nullptr;
+        auto        formatFlags      = SDL_GetGPUShaderFormats(_device);
+        auto        activeFormatFlag = (SDL_GPUShaderFormat)SDL_GPU_SHADERFORMAT_INVALID;
+        const char* entryPoint       = nullptr;
 
-        const auto& fs = g_App.GetFilesystem();
         if (formatFlags & SDL_GPU_SHADERFORMAT_SPIRV)
         {
             snprintf(fullPath, sizeof(fullPath), "%s.spv", (fs.GetShadersDirectory() / filename).string().c_str());
-            formatFlag = SDL_GPU_SHADERFORMAT_SPIRV;
+            activeFormatFlag = SDL_GPU_SHADERFORMAT_SPIRV;
             entryPoint = "main";
         }
         else if (formatFlags & SDL_GPU_SHADERFORMAT_MSL)
         {
             snprintf(fullPath, sizeof(fullPath), "%s.msl", (fs.GetShadersDirectory() / filename).string().c_str());
-            formatFlag = SDL_GPU_SHADERFORMAT_MSL;
+            activeFormatFlag = SDL_GPU_SHADERFORMAT_MSL;
             entryPoint = "main0";
         }
         else if (formatFlags & SDL_GPU_SHADERFORMAT_DXIL)
         {
             snprintf(fullPath, sizeof(fullPath), "%s.dxil", (fs.GetShadersDirectory() / filename).string().c_str());
-            formatFlag = SDL_GPU_SHADERFORMAT_DXIL;
+            activeFormatFlag = SDL_GPU_SHADERFORMAT_DXIL;
             entryPoint = "main";
         }
         else
         {
-            Log("Unrecognized backend shader format.", LogLevel::Error);
+            Debug::Log("Unrecognized backend shader format.", Debug::LogLevel::Error);
             return nullptr;
         }
 
@@ -254,7 +158,7 @@ namespace Silent::Renderer
         void*  code     = SDL_LoadFile(fullPath, &codeSize);
         if (code == nullptr)
         {
-            Log("Failed to load shader `" + std::string(fullPath) + "`: " + SDL_GetError(), LogLevel::Error);
+            Debug::Log("Failed to load shader `" + std::string(fullPath) + "`: " + SDL_GetError(), Debug::LogLevel::Error);
             return nullptr;
         }
 
@@ -263,7 +167,7 @@ namespace Silent::Renderer
             .code_size            = codeSize,
             .code                 = (const uint8*)code,
             .entrypoint           = entryPoint,
-            .format               = formatFlag,
+            .format               = activeFormatFlag,
             .stage                = stage,
             .num_samplers         = samplerCount,
             .num_storage_textures = storageTexCount,
@@ -275,10 +179,15 @@ namespace Silent::Renderer
         auto* shader = SDL_CreateGPUShader(_device, &shaderInfo);
         if (shader == nullptr)
         {
-            Log("Failed to create shader: " + std::string(SDL_GetError()));
+            Debug::Log("Failed to create shader `" + std::string(fullPath) + "`: " + std::string(SDL_GetError()));
         }
         SDL_free(code);
 
         return shader;
+    }
+
+    int PipelineManager::GetPipelineHash(RenderStage renderStage, BlendMode blendMode)
+    {
+        return ((int)renderStage * (int)BlendMode::Count) + (int)blendMode;
     }
 }

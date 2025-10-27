@@ -2,6 +2,7 @@
 #include "Math/Legacy.h"
 
 #include "Math/Constants.h"
+#include "Math/FixedPoint.h"
 #include "Math/Objects/EulerAngles.h"
 #include "Math/Objects/Matrix.h"
 #include "Math/Objects/Vector3i.h"
@@ -83,5 +84,15 @@ namespace Silent::Math
         }
 
         return Vector3((float)x, (float)y, (float)z) * scale;
+    }
+
+    q19_12 Math_Sin(q19_12 angle)
+    {
+        return Q12(glm::sin(FP_ANGLE_TO_RAD(angle)));
+    }
+
+    q19_12 Math_Cos(q19_12 angle)
+    {
+        return Q12(glm::cos(FP_ANGLE_TO_RAD(angle)));
     }
 }

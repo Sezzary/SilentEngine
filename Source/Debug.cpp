@@ -2,18 +2,22 @@
 #include "Debug.h"
 
 #include "Application.h"
+#include "Assets/Locales.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "Services/Options.h"
 #include "Services/Time.h"
-#include "Utils/BitField.h"
+#include "Utils/Bitfield.h"
 #include "Utils/Parallel.h"
+#include "Utils/Translator.h"
 #include "Utils/Utils.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Renderer;
 using namespace Silent::Services;
 using namespace Silent::Utils;
 
-// Includes for `Scratchpad` function go here.
+// Includes and namespace usings required for `Scratchpad` function go here.
 #ifdef _DEBUG
 
 #endif
@@ -23,10 +27,7 @@ namespace Silent::Debug
     constexpr char LOGGER_NAME[]     = "Logger";
     constexpr uint MESSAGE_COUNT_MAX = 128;
 
-    DebugData g_DebugData = {};
-
-    static auto Messages  = std::vector<std::string>{};
-    static auto StartTime = std::chrono::high_resolution_clock::time_point{};
+    DebugWork g_Work = {};
 
     void Scratchpad()
     {
@@ -71,7 +72,7 @@ namespace Silent::Debug
                                                 Color(0.0f, 1.0f, 0.0f, 1.0f),
                                                 Color(0.0f, 1.0f, 0.0f, 1.0f),
                                                 Color(0.0f, 0.0f, 0.0f, 0.0f),
-                                                0);
+                                                0, ScaleMode::Fit, BlendMode::Alpha);
             auto line0 = Primitive2d::CreateLine(Vector2i(10, 10),
                                                 Vector2i(50, 10),
                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
@@ -82,24 +83,73 @@ namespace Silent::Debug
                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
                                                 0);
-            auto line2 = Primitive2d::CreateLine(Vector2i(10, 220),
-                                                Vector2i(50, 220),
-                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                                Color(1.0f, 1.0f, 0.0f, 1.0f),
-                                                0);
+            auto line2 = Primitive2d::CreateLine(Vector2i(0, 1),
+                                                 Vector2i(0, 239),
+                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                 0);
+            auto line3 = Primitive2d::CreateLine(Vector2i(319, 0),
+                                                 Vector2i(1, 0),
+                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                 Color(1.0f, 1.0f, 0.0f, 1.0f),
+                                                 0);
             //renderer.Submit2dPrimitive(tri0);
             //renderer.Submit2dPrimitive(tri1);
             renderer.Submit2dPrimitive(quad);
             renderer.Submit2dPrimitive(line0);
             renderer.Submit2dPrimitive(line1);
-            renderer.Submit2dPrimitive(line2);
+            //renderer.Submit2dPrimitive(line2);
+            renderer.Submit2dPrimitive(line3);
+
+            for (int i = 0; i < 11; i++)
+            {
+                auto line3 = Primitive2d::CreateLine(Vector2i(39,  82 + (i * 16)),
+                                                     Vector2i(200, 82 + (i * 16)),
+                                                     Color::From8Bit(176, 176, 176),
+                                                     Color::From8Bit(160, 128, 64),
+                                                     0);
+                auto quadB0 = Primitive2d::CreateQuad(
+                                                    Vector2i(52, 69 + (i * 16)),
+                                                    Vector2i(52, 81 + (i * 16)),
+                                                    Vector2i(40, 69 + (i * 16)),
+                                                    Vector2i(40, 81 + (i * 16)),
+                                                    Color::From8Bit(255, 255, 255),
+                                                    Color::From8Bit(160, 128, 64),
+                                                    Color::From8Bit(160, 128, 64),
+                                                    Color::From8Bit(255, 255, 255),
+                                                    0);
+                auto quadB1 = Primitive2d::CreateQuad(
+                                                    Vector2i(39, 68 + (i * 16)),
+                                                    Vector2i(39, 82 + (i * 16)),
+                                                    Vector2i(53, 68 + (i * 16)),
+                                                    Vector2i(53, 82 + (i * 16)),
+                                                    Color::From8Bit(255, 255, 255),
+                                                    Color::From8Bit(160, 128, 64),
+                                                    Color::From8Bit(160, 128, 64),
+                                                    Color::From8Bit(64,  64,  64),
+                                                    1);
+                renderer.Submit2dPrimitive(line3);
+                renderer.Submit2dPrimitive(quadB1);
+                renderer.Submit2dPrimitive(quadB0);
+            }
+
+            auto tri = Primitive2d::CreateTriangle(
+                                                   Vector2i(8, 84),
+                                                   Vector2i(16, 76),
+                                                   Vector2i(16, 92),
+                                                   Color::From8Bit(48, 255, 255),
+                                                   Color::From8Bit(48, 255, 128),
+                                                   Color::From8Bit(48, 255, 128),
+                                                   0);
+            renderer.Submit2dPrimitive(tri);
         }
     }
 
-    void InitializeDebug()
+    void Initialize()
     {
-        constexpr char LOG_FILENAME[]   = "Log.txt";
-        constexpr char IMGUI_FILENAME[] = "imgui.ini";
+        constexpr char LOG_FILENAME[]       = "Log.txt";
+        constexpr char LOG_FORMAT_PATTERN[] = "[%Y-%b-%d %T] [%^%l%$] %v";
+        constexpr char IMGUI_FILENAME[]     = "imgui.ini";
 
         const auto& fs = g_App.GetFilesystem();
 
@@ -113,7 +163,7 @@ namespace Silent::Debug
         spdlog::initialize_logger(logger);
         logger->set_level(spdlog::level::info);
         logger->flush_on(spdlog::level::info);
-        logger->set_pattern("[%Y-%b-%d %T] [%^%l%$] %v");
+        logger->set_pattern(LOG_FORMAT_PATTERN);
 
         // Initialize `ImGui`.
         ImGui::CreateContext();
@@ -121,15 +171,15 @@ namespace Silent::Debug
         ImGui::GetIO().IniFilename = CopyString(imguiPath.c_str(), imguiPath.size());
 
         // Reserve `Messages` size.
-        Messages.reserve(MESSAGE_COUNT_MAX);
+        g_Work.Messages.reserve(MESSAGE_COUNT_MAX);
     }
 
-    void DeinitializeDebug()
+    void Deinitialize()
     {
         spdlog::shutdown();
     }
 
-    void UpdateDebug()
+    void Update()
     {
         Scratchpad();
 
@@ -137,8 +187,20 @@ namespace Silent::Debug
         const auto& options = g_App.GetOptions();
         if (!options->EnableDebugGui)
         {
-            //Messages.clear();
+            //g_Work.Messages.clear();
             return;
+        }
+
+        // Update render stats. @todo Move this elsewhere. Maybe time class could handle it?
+        g_Work.FrameCount++;
+        auto now      = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(now - g_Work.PrevTime);
+        if (duration.count() >= (1000000 / 60))
+        {
+            g_Work.Fps        = (float)g_Work.FrameCount / (float)(duration.count() / 1000000.0f);
+            g_Work.FrameTime  = duration.count();
+            g_Work.FrameCount = 0;
+            g_Work.PrevTime   = now;
         }
 
         // Create debug GUI.
@@ -149,7 +211,7 @@ namespace Silent::Debug
             constexpr const char* ASPECT_RATIO_ITEMS[]      = { "Native", "Widescreen", "Retro" };
             constexpr const char* TEX_FILTER_ITEMS[]        = { "Nearest", "Linear" };
             constexpr const char* LIGHTING_ITEMS[]          = { "Per vertex", "Per pixel" };
-            constexpr const char* LANG_ITEMS[]              = { "English" };
+            constexpr const char* LANG_ITEMS[]              = { "English (Original)", "English (Revised)" };
             constexpr const char* SOUND_ITEMS[]             = { "Stereo", "Monaural" };
             constexpr const char* BLOOD_COLOR_ITEMS[]       = { "Normal", "Green", "Violet", "Black" };
             constexpr const char* CONTROL_INVERSION_ITEMS[] = { "Normal", "Reverse" };
@@ -157,9 +219,10 @@ namespace Silent::Debug
             constexpr const char* VIEW_MODE_ITEMS[]         = { "Normal", "Self view" };
             constexpr const char* DIALOG_PAUSE_ITEMS[]      = { "Classic", "Short" };
 
-            const auto& assets   = g_App.GetAssets();
-            auto&       options  = g_App.GetOptions();
-            auto&       renderer = g_App.GetRenderer();
+            const auto& assets     = g_App.GetAssets();
+            auto&       options    = g_App.GetOptions();
+            auto&       renderer   = g_App.GetRenderer();
+            auto&       translator = g_App.GetTranslator();
 
             // Main tabs.
             if (ImGui::BeginTabBar("MainTabs", ImGuiTabBarFlags_FittingPolicyScroll))
@@ -170,7 +233,7 @@ namespace Silent::Debug
                     if (ImGui::BeginTabItem("Scratchpad"))
                     {
                         // 'Alpha blend' slider.
-                        ImGui::SliderFloat("Alpha Blend", &g_DebugData.BlendAlpha, 0.0f, 1.0f);
+                        ImGui::SliderFloat("Alpha Blend", &g_Work.BlendAlpha, 0.0f, 1.0f);
     
                         ImGui::EndTabItem();
                     }
@@ -204,17 +267,40 @@ namespace Silent::Debug
                 // `Renderer` tab.
                 if (ImGui::BeginTabItem("Renderer"))
                 {
-                    g_DebugData.Page = DebugPage::Renderer;
+                    g_Work.Page = Page::Renderer;
 
-                    // `Draw calls` info.
-                    /*ImGui::TableNextRow();
-                    ImGui::TableSetColumnIndex(0);
-                    ImGui::Text("Draw calls:", 1, 0);
-                    ImGui::TableSetColumnIndex(1);
-                    ImGui::Text("%d", renderer.GetDrawCallCount(), 1, 1);*/
+                    // `Status` section.
+                    ImGui::SeparatorText("Status");
+                    {
+                        if (ImGui::BeginTable("Status", 2))
+                        {
+                            // `FPS` info.
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0);
+                            ImGui::Text("FPS:", 0, 0);
+                            ImGui::TableSetColumnIndex(1);
+                            ImGui::Text("%.2f", g_Work.Fps, 0, 1);
+
+                            // `Frame time` info.
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0);
+                            ImGui::Text("Frame time (microsec):", 1, 0);
+                            ImGui::TableSetColumnIndex(1);
+                            ImGui::Text("%d", g_Work.FrameTime, 1, 1);
+
+                            // `Draw calls` info.
+                            /*ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0);
+                            ImGui::Text("Draw calls:", 2, 0);
+                            ImGui::TableSetColumnIndex(1);
+                            ImGui::Text("%d", renderer.GetDrawCallCount(), 2, 1);*/
+
+                            ImGui::EndTable();
+                        }
+                    }
 
                     // `Wireframe mode` checkbox.
-                    ImGui::Checkbox("Wireframe mode", &g_DebugData.EnableWireframeMode);
+                    ImGui::Checkbox("Wireframe mode", &g_Work.EnableWireframeMode);
 
                     ImGui::EndTabItem();
                 }
@@ -222,7 +308,7 @@ namespace Silent::Debug
                 // `Input` tab.
                 if (ImGui::BeginTabItem("Input"))
                 {
-                    g_DebugData.Page = DebugPage::Input;
+                    g_Work.Page = Page::Input;
 
                     const auto& input = g_App.GetInput();
 
@@ -257,9 +343,9 @@ namespace Silent::Debug
 
                         // Collect action statuses.
                         int  flagCount           = (int)ACTION_ID_GROUPS.at(USER_ACTION_GROUP_IDS.back()).back();
-                        auto clickedActionFlags  = BitField(flagCount);
-                        auto heldActionFlags     = BitField(flagCount);
-                        auto releasedActionFlags = BitField(flagCount);
+                        auto clickedActionFlags  = Bitfield(flagCount);
+                        auto heldActionFlags     = Bitfield(flagCount);
+                        auto releasedActionFlags = Bitfield(flagCount);
                         for (int i = 0; i < flagCount; i++)
                         {
                             auto actionId = (ActionId)i;
@@ -358,10 +444,10 @@ namespace Silent::Debug
                 // `Cheats` tab.
                 if (ImGui::BeginTabItem("Cheats"))
                 {
-                    g_DebugData.Page = DebugPage::Cheats;
+                    g_Work.Page = Page::Cheats;
 
                     // `Freeze mode` checkbox.
-                    ImGui::Checkbox("Freeze mode", &g_DebugData.EnableFreezeMode);
+                    ImGui::Checkbox("Freeze mode", &g_Work.EnableFreezeMode);
 
                     ImGui::EndTabItem();
                 }
@@ -369,7 +455,7 @@ namespace Silent::Debug
                 // `Options` tab.
                 if (ImGui::BeginTabItem("Options"))
                 {
-                    g_DebugData.Page  = DebugPage::Options;
+                    g_Work.Page  = Page::Options;
                     bool isOptChanged = false;
 
                     // `Graphics` section.
@@ -434,14 +520,14 @@ namespace Silent::Debug
                             isOptChanged      = true;
                         }
 
-                        // `Enable dithering` checkbox.
-                        if (ImGui::Checkbox("Enable dithering", &options->EnableDithering))
+                        // `Enable vertex jitter` checkbox.
+                        if (ImGui::Checkbox("Enable vertex jitter", &options->EnableVertexJitter))
                         {
                             isOptChanged = true;
                         }
 
-                        // `Enable CRT filter` checkbox.
-                        if (ImGui::Checkbox("Enable CRT filter", &options->EnableCrtFilter))
+                        // `Enable dithering` checkbox.
+                        if (ImGui::Checkbox("Enable dithering", &options->EnableDithering))
                         {
                             isOptChanged = true;
                         }
@@ -452,8 +538,8 @@ namespace Silent::Debug
                             isOptChanged = true;
                         }
 
-                        // `Enable vertex jitter` checkbox.
-                        if (ImGui::Checkbox("Enable vertex jitter", &options->EnableVertexJitter))
+                        // `Enable CRT filter` checkbox.
+                        if (ImGui::Checkbox("Enable CRT filter", &options->EnableCrtFilter))
                         {
                             isOptChanged = true;
                         }
@@ -486,7 +572,9 @@ namespace Silent::Debug
                         if (ImGui::Combo("Language", &lang, LANG_ITEMS, IM_ARRAYSIZE(LANG_ITEMS)))
                         {
                             options->Language = (LanguageType)lang;
-                            isOptChanged      = true;
+                            translator.SetLocale(LOCALE_NAMES[(int)options->Language]);
+
+                            isOptChanged = true;
                         }
 
                         // `Sound type` combo.
@@ -654,7 +742,7 @@ namespace Silent::Debug
                                       ImVec2(-FLT_MIN, ImGui::GetTextLineHeightWithSpacing() * 8),
                                       ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY))
                 {
-                    for (const auto& msg : Messages)
+                    for (const auto& msg : g_Work.Messages)
                     {
                         ImGui::Bullet();
                         ImGui::TextWrapped(msg.c_str());
@@ -677,7 +765,7 @@ namespace Silent::Debug
             ImGui::ShowDemoWindow();
         });*/
 
-        Messages.clear();
+        g_Work.Messages.clear();
     }
 
     // @todo Not working.
@@ -693,7 +781,7 @@ namespace Silent::Debug
         }
 
         // Check if `Messages` is full.
-        if (Messages.size() >= MESSAGE_COUNT_MAX)
+        if (g_Work.Messages.size() >= MESSAGE_COUNT_MAX)
         {
             Log("Attempted to create too many debug messages.", LogLevel::Warning, LogMode::Debug);
             return;
@@ -715,7 +803,7 @@ namespace Silent::Debug
             auto lock = std::lock_guard(mutex);
 
             // Add message.
-            Messages.push_back(buffer);
+            g_Work.Messages.push_back(buffer);
         }
     }
 
@@ -793,7 +881,7 @@ namespace Silent::Debug
     {
         if constexpr (IS_DEBUG_BUILD)
         {
-            StartTime = std::chrono::high_resolution_clock::now();
+            g_Work.StartTime = std::chrono::high_resolution_clock::now();
         }
     }
 
@@ -802,7 +890,7 @@ namespace Silent::Debug
         if constexpr (IS_DEBUG_BUILD)
         {
             auto endTime  = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - StartTime);
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - g_Work.StartTime);
             Message("Execution (μs): %d", duration.count());
         }
     }
@@ -813,49 +901,49 @@ namespace Silent::Debug
         renderer.SubmitDebugGui(drawFunc);
     }
 
-    void CreateLine(const Vector3& from, const Vector3& to, const Color& color, DebugPage page)
+    void CreateLine(const Vector3& from, const Vector3& to, const Color& color, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugLine(from, to, color, page);
     }
 
-    void CreateTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, DebugPage page)
+    void CreateTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2, const Color& color, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugTriangle(vert0, vert1, vert2, color, page);
     }
 
-    void CreateTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, DebugPage page)
+    void CreateTarget(const Vector3& center, const Quaternion& rot, float radius, const Color& color, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugTarget(center, rot, radius, color, page);
     }
 
-    void CreateBox(const OrientedBoundingBox& obb, const Color& color, bool isWireframe, DebugPage page)
+    void CreateBox(const OrientedBoundingBox& obb, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugBox(obb, color, isWireframe, page);
     }
 
-    void CreateSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe, DebugPage page)
+    void CreateSphere(const BoundingSphere& sphere, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugSphere(sphere, color, isWireframe, page);
     }
 
-    void CreateCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void CreateCylinder(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugCylinder(center, rot, radius, length, color, isWireframe, page);
     }
 
-    void CreateCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void CreateCone(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugCone(center, rot, radius, length, color, isWireframe, page);
     }
 
-    void CreateDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, DebugPage page)
+    void CreateDebugDiamond(const Vector3& center, const Quaternion& rot, float radius, float length, const Color& color, bool isWireframe, Page page)
     {
         auto& renderer = g_App.GetRenderer();
         renderer.SubmitDebugDiamond(center, rot, radius, length, color, isWireframe, page);

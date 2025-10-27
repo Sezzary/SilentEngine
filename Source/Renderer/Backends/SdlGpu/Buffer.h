@@ -11,9 +11,10 @@ namespace Silent::Renderer
         // Fields
         // =======
 
-        SDL_GPUDevice*         _device   = nullptr;
-        SDL_GPUBuffer*         _buffer   = nullptr;
-        SDL_GPUTransferBuffer* _transfer = nullptr;
+        SDL_GPUDevice*          _device     = nullptr;
+        SDL_GPUBuffer*          _buffer     = nullptr;
+        SDL_GPUTransferBuffer*  _transfer   = nullptr;
+        SDL_GPUBufferUsageFlags _usageFlags = 0;
 
     public:
         // =============
@@ -45,21 +46,17 @@ namespace Silent::Renderer
 
         /** @brief Binds the GPU buffer for drawing.
          *
-         * @todo How would you bind multiple?
-         *
-         * @param renderPass 
-         * @param startIdx 
+         * @param renderPass Render pass.
+         * @param startIdx Data start index.
          */
         void Bind(SDL_GPURenderPass& renderPass, uint startIdx);
-
-        // temp
-        void BindIndex(SDL_GPURenderPass& renderPass, uint startIdx);
     };
 
     template <typename T>
     Buffer<T>::Buffer(SDL_GPUDevice& device, SDL_GPUBufferUsageFlags usageFlags, uint size, const std::string& name)
     {
-        if (!(usageFlags & (SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_INDEX | SDL_GPU_BUFFERUSAGE_INDIRECT)))
+        _usageFlags = usageFlags;
+        if (!(_usageFlags & (SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_INDEX | SDL_GPU_BUFFERUSAGE_INDIRECT)))
         {
             throw std::runtime_error("Attempted to create GPU buffer with invalid usage flags.");
         }
@@ -68,7 +65,7 @@ namespace Silent::Renderer
 
         auto bufferInfo = SDL_GPUBufferCreateInfo
         {
-            .usage = usageFlags,
+            .usage = _usageFlags,
             .size  = size * sizeof(T)
         };
 
@@ -76,7 +73,7 @@ namespace Silent::Renderer
         _buffer = SDL_CreateGPUBuffer(&device, &bufferInfo);
         if (_buffer == nullptr)
         {
-            Log("Failed to create buffer: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to create buffer: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
         }
 
         // Set buffer name.
@@ -85,14 +82,14 @@ namespace Silent::Renderer
         auto transferBufferInfo = SDL_GPUTransferBufferCreateInfo
         {
             .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-            .size  = size * sizeof(T)/* + (sizeof(uint16) * 6)*/ // @todo Texture test. Remove later.
+            .size  = size * sizeof(T)
         };
 
         // Create transfer buffer.
         _transfer = SDL_CreateGPUTransferBuffer(_device, &transferBufferInfo);
         if (_transfer == nullptr)
         {
-            Log("Failed to create transfer buffer: " + std::string(SDL_GetError()), LogLevel::Error);
+            Debug::Log("Failed to create transfer buffer: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
         }
     }
 
@@ -121,21 +118,21 @@ namespace Silent::Renderer
     template <typename T>
     void Buffer<T>::Bind(SDL_GPURenderPass& renderPass, uint startIdx)
     {
-        auto bufferBindings      = std::array<SDL_GPUBufferBinding, 1>{};
-        bufferBindings[0].buffer = _buffer;
-        bufferBindings[0].offset = startIdx * sizeof(T);
-
-        SDL_BindGPUVertexBuffers(&renderPass, 0, bufferBindings.data(), bufferBindings.size());
-    }
-
-    template <typename T>
-    void Buffer<T>::BindIndex(SDL_GPURenderPass& renderPass, uint startIdx)
-    {
         auto bufferBindings = SDL_GPUBufferBinding
         {
             .buffer = _buffer,
             .offset = startIdx * sizeof(T)
         };
-        SDL_BindGPUIndexBuffer(&renderPass, &bufferBindings, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+
+        if (_usageFlags & SDL_GPU_BUFFERUSAGE_VERTEX)
+        {
+            SDL_BindGPUVertexBuffers(&renderPass, 0, &bufferBindings, 1);
+        }
+        else if (_usageFlags & SDL_GPU_BUFFERUSAGE_INDEX)
+        {
+            SDL_BindGPUIndexBuffer(&renderPass, &bufferBindings, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+        }
+
+        // @todo Can indirect buffer be bound?
     }
 };

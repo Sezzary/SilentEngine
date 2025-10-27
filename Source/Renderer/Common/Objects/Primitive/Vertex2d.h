@@ -6,7 +6,7 @@ namespace Silent::Renderer
     struct Vertex2d
     {
         Vector2 Position = Vector2::Zero;
-        Color   Col      = Color::Black;
+        Color   Col      = Color::Clear;
         Vector2 Uv       = Vector2::Zero;
     };
 }

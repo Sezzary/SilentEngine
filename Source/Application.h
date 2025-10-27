@@ -9,6 +9,7 @@
 #include "Services/Options.h"
 #include "Services/Time.h"
 #include "Services/Toasts.h"
+#include "Utils/Translator.h"
 
 namespace Silent
 {
@@ -18,6 +19,10 @@ namespace Silent
     using namespace Renderer;
     using namespace Savegame;
     using namespace Services;
+    using namespace Utils;
+
+    constexpr char APP_NAME[]    = "Silent Engine";
+    constexpr char APP_VERSION[] = "0.1.0";
 
     /** @brief Application workspace. Keeps all subsystems. */
     struct ApplicationWork
@@ -30,6 +35,7 @@ namespace Silent
         std::unique_ptr<RendererBase> Renderer   = nullptr;
         SavegameManager               Savegame   = SavegameManager();
         TimeManager                   Time       = TimeManager();
+        TranslationManager            Translator = TranslationManager();
         ToastManager                  Toasts     = ToastManager();
     };
 
@@ -57,15 +63,16 @@ namespace Silent
         // Getters
         // ========
 
-        AssetManager&      GetAssets();
-        AudioManager&      GetAudio();
-        FilesystemManager& GetFilesystem();
-        InputManager&      GetInput();
-        OptionsManager&    GetOptions();
-        RendererBase&      GetRenderer();
-        SavegameManager&   GetSavegame();
-        TimeManager&       GetTime();
-        ToastManager&      GetToasts();
+        AssetManager&       GetAssets();
+        AudioManager&       GetAudio();
+        FilesystemManager&  GetFilesystem();
+        InputManager&       GetInput();
+        OptionsManager&     GetOptions();
+        RendererBase&       GetRenderer();
+        SavegameManager&    GetSavegame();
+        TimeManager&        GetTime();
+        TranslationManager& GetTranslator();
+        ToastManager&       GetToasts();
 
         /** @brief Gets the window resolution.
          *

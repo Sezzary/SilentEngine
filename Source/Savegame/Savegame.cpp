@@ -4,6 +4,9 @@
 #include "Application.h"
 #include "Savegame/Generated/savegame_generated.h"
 #include "Services/Filesystem.h"
+#include "Utils/Utils.h"
+
+using namespace Silent::Utils;
 
 namespace Silent::Savegame
 {
@@ -41,7 +44,7 @@ namespace Silent::Savegame
 
     const std::vector<SavegameMetadata>& SavegameManager::GetSlotMetadata(int slotIdx)
     {
-        Assert(slotIdx < _slotMetadata.size(), "Attempted to get metadata for invalid save slot.");
+        Debug::Assert(slotIdx < _slotMetadata.size(), "Attempted to get metadata for invalid save slot.");
 
         return _slotMetadata[slotIdx];
     }
@@ -70,10 +73,10 @@ namespace Silent::Savegame
             outputFile.close();
         }
 
-        Log("Saved game to slot " + std::to_string(slotIdx + 1) +
+        Debug::Log("Saved game to slot " + std::to_string(slotIdx + 1) +
             ", file " + std::to_string(fileIdx + 1) +
             ", savegame " + std::to_string(saveIdx + 1) + ".",
-            LogLevel::Info);
+            Debug::LogLevel::Info);
     }
 
     void SavegameManager::Load(int slotIdx, int fileIdx, int saveIdx)
@@ -84,10 +87,10 @@ namespace Silent::Savegame
         auto inputFile = std::ifstream(saveFile, std::ios::binary);
         if (!inputFile.is_open())
         {
-            Log("Attempted to load missing savegame for slot " + std::to_string(slotIdx + 1) +
+            Debug::Log("Attempted to load missing savegame for slot " + std::to_string(slotIdx + 1) +
                 ", file " + std::to_string(fileIdx + 1) +
                 ", savegame " + std::to_string(saveIdx + 1) + ".",
-                LogLevel::Warning, LogMode::Debug);
+                Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
 
@@ -104,10 +107,10 @@ namespace Silent::Savegame
         // Read savegame buffer.
         _savegame = std::move(*FromSavegameBuffer(*saveBuffer));
 
-        Log("Loaded game from slot " + std::to_string(slotIdx + 1) +
+        Debug::Log("Loaded game from slot " + std::to_string(slotIdx + 1) +
             ", file " + std::to_string(fileIdx + 1) +
             ", savegame " + std::to_string(saveIdx + 1) + ".",
-            LogLevel::Info);
+            Debug::LogLevel::Info);
     }
 
     const Savegame* SavegameManager::operator->() const
@@ -122,7 +125,7 @@ namespace Silent::Savegame
 
     std::filesystem::path SavegameManager::GetSavegamePath(int slotIdx, int fileIdx, int saveIdx) const
     {
-        Assert(slotIdx < _slotMetadata.size(), "Attempted to get savegame path for invalid slot.");
+        Debug::Assert(slotIdx < _slotMetadata.size(), "Attempted to get savegame path for invalid slot.");
 
         const auto& fs = g_App.GetFilesystem();
 
@@ -138,7 +141,7 @@ namespace Silent::Savegame
         auto inputFile = std::ifstream(saveFile, std::ios::binary);
         if (!inputFile.is_open())
         {
-            Log("Attempted to get metadata for missing savegame file `" + saveFile.string() + "'.", LogLevel::Warning, LogMode::Debug);
+            Debug::Log("Attempted to get metadata for missing savegame file `" + saveFile.string() + "'.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return SavegameMetadata
             {
                 .SlotIdx        = NO_VALUE,
@@ -194,7 +197,7 @@ namespace Silent::Savegame
             }
 
             // Sort file folders.
-            std::sort(fileDirs.begin(), fileDirs.end(), [](const std::filesystem::path& file0, const std::filesystem::path& file1)
+            Sort(fileDirs, [](const std::filesystem::path& file0, const std::filesystem::path& file1)
             {
                 auto extractNumber = [](const std::filesystem::path& file)
                 {
@@ -228,7 +231,7 @@ namespace Silent::Savegame
             }
 
             // Sort savegame files.
-            std::sort(saveFiles.begin(), saveFiles.end(), [](const std::filesystem::path& file0, const std::filesystem::path& file1)
+            Sort(saveFiles, [](const std::filesystem::path& file0, const std::filesystem::path& file1)
             {
                 auto extractNumber = [](const std::filesystem::path& file)
                 {

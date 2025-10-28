@@ -23,8 +23,8 @@ def generate_savegame_headers():
 
         # Collect all schema files at `SCHEMAS_PATH`.
         schema_files = [
-            os.path.join(SCHEMAS_PATH, file) 
-            for file in os.listdir(SCHEMAS_PATH) 
+            os.path.join(SCHEMAS_PATH, file)
+            for file in os.listdir(SCHEMAS_PATH)
             if file.endswith(".fbs")
         ]
         schema_files = sorted(schema_files)
@@ -39,18 +39,20 @@ def generate_savegame_headers():
             print(f"Error running `flatc`: {result.stderr.decode()}")
             sys.exit(result.returncode)
 
-        # Enforce LF line endings.
+        # Enforce LF end of line sequence.
         for root, _, files in os.walk(OUTPUT_PATH):
             for file in files:
                 if file.endswith(".h"):
                     filePath = os.path.join(root, file)
+
                     with open(filePath, "rb") as f:
                         content = f.read()
+
                     content = content.replace(b"\r\n", b"\n")
                     with open(filePath, "wb") as f:
                         f.write(content)
 
-        print("Savegame FlatBuffers header generation complete.")
+        print("Finished.")
     except Exception as ex:
         print(f"Error: {ex}")
         sys.exit(1)

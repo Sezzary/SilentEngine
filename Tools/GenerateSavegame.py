@@ -62,6 +62,7 @@ def generate_savegame_headers():
         # Report status.
         print("Finished.")
     except Exception as ex:
+        # Report exception.
         print(f"Error: {ex}")
         sys.exit(1)
 

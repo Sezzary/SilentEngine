@@ -99,6 +99,11 @@ def generate_shaders():
                 for fail_name in fail_names:
                     print(fail_name)
     except Exception as ex:
+        # Ensure temporary output folder is deleted.
+        if os.path.isfile(temp_shader_output):
+            shutil.rmtree(TEMP_OUTPUT_PATH)
+
+        # Report exception error.
         print(f"Error: {ex}")
         sys.exit(1)
 

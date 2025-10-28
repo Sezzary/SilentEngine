@@ -37,9 +37,9 @@ def generate_shaders():
 
         # Setup.
         shadercross_exe = get_shadercross_executable()
-        os.makedirs(OUTPUT_PATH, exist_ok=True)
+        formats         = get_output_formats()
+        os.makedirs(OUTPUT_PATH,      exist_ok=True)
         os.makedirs(TEMP_OUTPUT_PATH, exist_ok=True)
-        formats = get_output_formats()
 
         # Collect all shader sources at `SOURCES_PATH`.
         shader_sources = [

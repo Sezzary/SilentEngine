@@ -15,7 +15,7 @@ float4 main(float2 FragCoord : SV_Position) : SV_Target
     
     // Add color variation.
     float3 color;
-    color.r = Texture.Sample(Sampler, float2(uv.x + 0.001f, uv.y + 0.001f)).x + 0.05f;
+    color.r = Texture.Sample(Samper, float2(uv.x + 0.001f, uv.y + 0.001f)).x + 0.05f;
     color.g = Texture.Sample(Sampler, float2(uv.x,          uv.y - 0.002f)).y + 0.05f;
     color.b = Texture.Sample(Sampler, float2(uv.x - 0.002f, uv.y)).z          + 0.05f;
 

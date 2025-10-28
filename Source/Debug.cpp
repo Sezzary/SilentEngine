@@ -572,7 +572,7 @@ namespace Silent::Debug
                         if (ImGui::Combo("Language", &lang, LANG_ITEMS, IM_ARRAYSIZE(LANG_ITEMS)))
                         {
                             options->Language = (LanguageType)lang;
-                            translator.SetLocale(LOCALE_NAMES[(int)options->Language]);
+                            translator.SetActiveLocale(LOCALE_NAMES[(int)options->Language]);
 
                             isOptChanged = true;
                         }

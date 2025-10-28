@@ -39,6 +39,17 @@ def generate_savegame_headers():
             print(f"Error running `flatc`: {result.stderr.decode()}")
             sys.exit(result.returncode)
 
+        # Enforce LF line endings.
+        for root, _, files in os.walk(OUTPUT_PATH):
+            for file in files:
+                if file.endswith(".h"):
+                    filePath = os.path.join(root, file)
+                    with open(filePath, "rb") as f:
+                        content = f.read()
+                    content = content.replace(b"\r\n", b"\n")
+                    with open(filePath, "wb") as f:
+                        f.write(content)
+
         print("Savegame FlatBuffers header generation complete.")
     except Exception as ex:
         print(f"Error: {ex}")
@@ -65,5 +76,4 @@ def get_flatc_executable():
 
     return flatc_exe
 
-if __name__ == "__main__":
-    generate_savegame_headers()
+generate_savegame_headers()

@@ -34,7 +34,17 @@ namespace Silent::Utils
         return _activeLocale.value(translationKey, translationKey);
     }
 
-    void TranslationManager::SetLocale(const std::string& localeName)
+    const std::string& TranslationManager::GetActiveLocaleName() const
+    {
+        return _activeLocaleName;
+    }
+
+    const std::vector<std::string>& TranslationManager::GetLocaleNames() const
+    {
+        return _localeNames;
+    }
+
+    void TranslationManager::SetActiveLocale(const std::string& localeName)
     {
         // Check if new locale is already active or queued.
         if (localeName == _activeLocaleName ||
@@ -59,8 +69,6 @@ namespace Silent::Utils
         {
             LoadActiveLocale(localeName);
         }
-
-        return;
     }
 
     void TranslationManager::Lock()
@@ -101,7 +109,7 @@ namespace Silent::Utils
         {
             _activeLocale = stream.ReadJson();
         }
-    
+
         _activeLocaleName = localeName;
         stream.Close();
     }

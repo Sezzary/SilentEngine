@@ -43,16 +43,28 @@ namespace Silent::Utils
          */
         std::string GetTranslation(const std::string& translationKey) const;
 
+        /** @brief Gets the name of the active locale.
+         *
+         * @return Active locale name.
+         */
+        const std::string& GetActiveLocaleName() const;
+
+        /** @brief Gets the registered locale names.
+         *
+         * @return Registered locale names.
+         */
+        const std::vector<std::string>& GetLocaleNames() const;
+
         // ========
         // Setters
         // ========
 
-        /** @brief Sets the active locale if the translator is unlocked.
-         * If locked, the new locale will be queued and set when `Unlock` is called.
+        /** @brief Sets the active locale. If the translator is unlocked, it's set immediately.
+         * If locked, it queues the new locale to be set on the next `Unlock` call.
          *
          * @param localeName Name of the new locale to set.
          */
-        void SetLocale(const std::string& localeName);
+        void SetActiveLocale(const std::string& localeName);
 
         // ==========
         // Utilities

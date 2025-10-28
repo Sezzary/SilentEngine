@@ -15,7 +15,7 @@ float4 main(float2 FragCoord : SV_Position) : SV_Target
     
     // Add color variation.
     float3 color;
-    color.r = Texture.Sample(Samper, float2(uv.x + 0.001f, uv.y + 0.001f)).x + 0.05f;
+    color.r = Texture.Sample(Sampler, float2(uv.x + 0.001f, uv.y + 0.001f)).x + 0.05f;
     color.g = Texture.Sample(Sampler, float2(uv.x,          uv.y - 0.002f)).y + 0.05f;
     color.b = Texture.Sample(Sampler, float2(uv.x - 0.002f, uv.y)).z          + 0.05f;
 
@@ -28,9 +28,9 @@ float4 main(float2 FragCoord : SV_Position) : SV_Target
     color = clamp((color * 0.6f) + (((0.4f * color) * color) * 1.0f), 0.0f, 1.0f);
 
     // Add horizontal scan line effect.
-    float scanLine = clamp(0.35f + (0.35f * sin(3.5f + ((uv.y * Resolution.y) * 1.5f))), 0.0f, 1.0f);
-    scanLine       = pow(scanLineIntensity, 1.7f);
-    color         *= (0.4f + (0.7f * scanLineEffect)) * 2.8f;
+    float scanLineIntensity = clamp(0.35f + (0.35f * sin(3.5f + ((uv.y * Resolution.y) * 1.5f))), 0.0f, 1.0f);
+    float scanLineEffect    = pow(scanLineIntensity, 1.7f);
+    color                  *= (0.4f + (0.7f * scanLineEffect)) * 2.8f;
 
     // Add flicker effect.
     color *= 1.0f + (0.01f * sin(110.0f * Time));

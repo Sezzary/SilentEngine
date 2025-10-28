@@ -43,7 +43,7 @@ def generate_savegame_headers():
         command = [flatc_exe, "--cpp", "-o", OUTPUT_PATH, "-I", SCHEMAS_PATH] + schema_files
         result  = subprocess.run(command, capture_output=True)
         if result.returncode != 0:
-            print(f"Error running `{FLATC_NAME}`: {result.stderr.decode()}")
+            print(f"Command error: {result.stderr.decode()}")
             sys.exit(result.returncode)
 
         # Enforce LF end of line sequence.

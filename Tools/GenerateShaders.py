@@ -103,7 +103,7 @@ def generate_shaders():
         if os.path.isfile(temp_shader_output):
             shutil.rmtree(TEMP_OUTPUT_PATH)
 
-        # Report exception error.
+        # Report exception.
         print(f"Error: {ex}")
         sys.exit(1)
 

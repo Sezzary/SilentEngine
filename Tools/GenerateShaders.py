@@ -81,7 +81,7 @@ def generate_shaders():
                     if result.returncode == 0:
                         build_count += 1
                     else:
-                        print(f"Command error for `{name}`: {result.stderr.decode()}")
+                        print(f"Command error for `{output_name}`: {result.stderr.decode()}")
                         fail_names.append(output_name)
 
         # Delete failed shaders from temporary output folder.

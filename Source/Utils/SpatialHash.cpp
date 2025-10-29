@@ -247,9 +247,9 @@ namespace Silent::Utils
     Vector3i SpatialHash::GetCellKey(const Vector3& pos) const
     {
         // Compute and return key.
-        return Vector3i(RoundToStep(pos.x, _cellSize) + (_cellSize / 2),
-                        RoundToStep(pos.y, _cellSize) + (_cellSize / 2),
-                        RoundToStep(pos.z, _cellSize) + (_cellSize / 2));
+        return Vector3i(RoundToStep(pos.x, _cellSize) + (_cellSize * 0.5f),
+                        RoundToStep(pos.y, _cellSize) + (_cellSize * 0.5f),
+                        RoundToStep(pos.z, _cellSize) + (_cellSize * 0.5f));
     }
 
     std::vector<Vector3i> SpatialHash::GetCellKeys(const Ray& ray, float dist) const
@@ -269,9 +269,9 @@ namespace Silent::Utils
                                (ray.Direction.z > 0.0f) ? _cellSize : -_cellSize);
 
         // Compute next intersection.
-        auto nextIntersect = Vector3(((pos.x + ((posStep.x > 0.0f) ? _cellSize : 0)) - ray.Origin.x) / ray.Direction.x,
-                                     ((pos.y + ((posStep.y > 0.0f) ? _cellSize : 0)) - ray.Origin.y) / ray.Direction.y,
-                                     ((pos.z + ((posStep.z > 0.0f) ? _cellSize : 0)) - ray.Origin.z) / ray.Direction.z);
+        auto nextIntersect = Vector3(((pos.x + ((posStep.x > 0.0f) ? _cellSize : 0.0f)) - ray.Origin.x) / ray.Direction.x,
+                                     ((pos.y + ((posStep.y > 0.0f) ? _cellSize : 0.0f)) - ray.Origin.y) / ray.Direction.y,
+                                     ((pos.z + ((posStep.z > 0.0f) ? _cellSize : 0.0f)) - ray.Origin.z) / ray.Direction.z);
 
         // Compute ray step.
         auto rayStep = Vector3(_cellSize / abs(ray.Direction.x),
@@ -333,9 +333,9 @@ namespace Silent::Utils
 
         // Reserve key vector.
         auto keys = std::vector<Vector3i>{};
-        keys.reserve((((maxCell.x - minCell.x) / _cellSize) + 1) *
-                     (((maxCell.y - minCell.y) / _cellSize) + 1) *
-                     (((maxCell.z - minCell.z) / _cellSize) + 1));
+        keys.reserve(((int)((maxCell.x - minCell.x) / _cellSize) + 1) *
+                     ((int)((maxCell.y - minCell.y) / _cellSize) + 1) *
+                     ((int)((maxCell.z - minCell.z) / _cellSize) + 1));
 
         // Collect keys of cells intersecting AABB.
         for (float x = minCell.x; x <= maxCell.x; x += _cellSize)

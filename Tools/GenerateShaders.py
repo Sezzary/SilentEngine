@@ -97,7 +97,7 @@ def generate_shaders():
 
         # Report status.
         if build_count == 0 and len(fail_names) == 0:
-            print("Shaders are already up-to-date.")
+            print("Shaders are up-to-date.")
         else:
             print(f"{build_count} shader{'' if build_count == 1 else 's'} built successfully.")
 

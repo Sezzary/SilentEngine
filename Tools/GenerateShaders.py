@@ -55,9 +55,11 @@ def generate_shaders():
         build_count = 0
         fail_names  = []
         for shader_source in shader_sources:
+            # Define base name.
+            name = Path(os.path.splitext(shader_source)[0]).name
+
             for format in formats:
                 # Define output name.
-                name        = Path(os.path.splitext(shader_source)[0]).name
                 output_name = name + format
 
                 # Define output file.
@@ -74,7 +76,8 @@ def generate_shaders():
                 # Run generation command.
                 if run_new_build:
                     command = [shadercross_exe, shader_source, "-o", temp_shader_output]
-                    result  = subprocess.run(command, capture_output=True)
+
+                    result = subprocess.run(command, capture_output=True)
                     if result.returncode == 0:
                         build_count += 1
                     else:
@@ -87,7 +90,7 @@ def generate_shaders():
             if os.path.isfile(temp_shader_output):
                 os.remove(temp_shader_output)
 
-        # Copy contents of temporary output folder folder to real output folder.
+        # Copy contents of temporary output folder to real output folder.
         for shader_output in os.listdir(TEMP_OUTPUT_PATH):
             shutil.copy(TEMP_OUTPUT_PATH / shader_output, OUTPUT_PATH / shader_output)
         shutil.rmtree(TEMP_OUTPUT_PATH)

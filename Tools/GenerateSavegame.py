@@ -41,7 +41,8 @@ def generate_savegame_headers():
 
         # Run generation command.
         command = [flatc_exe, "--cpp", "-o", OUTPUT_PATH, "-I", SCHEMAS_PATH] + schema_files
-        result  = subprocess.run(command, capture_output=True)
+
+        result = subprocess.run(command, capture_output=True)
         if result.returncode != 0:
             print(f"Command error: {result.stderr.decode()}")
             sys.exit(result.returncode)

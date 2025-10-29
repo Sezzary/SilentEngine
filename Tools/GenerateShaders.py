@@ -1,16 +1,16 @@
 """
 Platform-Specific Shader Generator
 
-Generates shaders from .HLSL sources to be used by the platform-specific engine executable at runtime.
+Generates shaders from .HLSL sources to be used by a platform-specific engine executable at runtime.
 
 Usage:
     `python Tools/GenerateShaders.py <build_os>`
 
 Arguments:
     `<build_os>` : The platform to generate shaders for. Must be one of the following (case-insensitive):
-                   `"Windows"` : Generate .SPV and .DXIL shaders for Windows.
-                   `"macOS"`   : Generate .MSL shaders for macOS.
-                   `"Linux"`   : Generate .SPV shaders for Linux.
+                   `"Windows"` : Generate .SPV and .DXIL shaders.
+                   `"macOS"`   : Generate .MSL shaders.
+                   `"Linux"`   : Generate .SPV shaders.
 """
 
 import os
@@ -26,7 +26,7 @@ BASE_PATH        = Path(__file__).parent
 SHADERCROSS_PATH = BASE_PATH / SHADERCROSS_NAME
 SOURCES_PATH     = BASE_PATH / "../Source/Renderer/Shaders"
 OUTPUT_PATH      = BASE_PATH / "../Build/Debug/Debug/Shaders" # @todo Make common output path for Debug and Release. .EXEs can be in Bin/Debug and Bin/Release.
-TEMP_OUTPUT_PATH = BASE_PATH / "../Build/Debug/Debug/TempShaders"
+TEMP_OUTPUT_PATH = BASE_PATH / "../Build/Debug/Debug/.Temp"
 
 def generate_shaders():
     """
@@ -34,6 +34,10 @@ def generate_shaders():
     """
     try:
         print("Generating shaders...")
+
+        # Ensure temporary output folder is deleted.
+        if os.path.isfile(TEMP_OUTPUT_PATH):
+            shutil.rmtree(TEMP_OUTPUT_PATH)
 
         # Setup.
         shadercross_exe = get_shadercross_executable()
@@ -94,13 +98,13 @@ def generate_shaders():
         else:
             print(f"{build_count} shader{'' if build_count == 1 else 's'} built successfully.")
 
-            if (len(fail_names) > 0):
-                print(f"{len(fail_names)} failed (see details above):")
+            if len(fail_names) > 0:
+                print(f"{len(fail_names)} failed:")
                 for fail_name in fail_names:
                     print(fail_name)
     except Exception as ex:
         # Ensure temporary output folder is deleted.
-        if os.path.isfile(temp_shader_output):
+        if os.path.isfile(TEMP_OUTPUT_PATH):
             shutil.rmtree(TEMP_OUTPUT_PATH)
 
         # Report exception.

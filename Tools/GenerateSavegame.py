@@ -32,7 +32,7 @@ def generate_savegame_headers():
         flatc_exe = get_flatc_executable()
         os.makedirs(OUTPUT_PATH, exist_ok=True)
 
-        # Collect all schema files at `SCHEMAS_PATH`.
+        # Collect all schema files.
         schema_files = [
             os.path.join(SCHEMAS_PATH, file)
             for file in os.listdir(SCHEMAS_PATH) if file.endswith(".fbs")

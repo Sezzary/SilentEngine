@@ -45,7 +45,7 @@ def generate_shaders():
         os.makedirs(OUTPUT_PATH,      exist_ok=True)
         os.makedirs(TEMP_OUTPUT_PATH, exist_ok=True)
 
-        # Collect all shader sources at `SOURCES_PATH`.
+        # Collect all shader sources.
         shader_sources = [
             os.path.join(SOURCES_PATH, file)
             for file in os.listdir(SOURCES_PATH) if file.endswith(".hlsl")
@@ -99,12 +99,9 @@ def generate_shaders():
         if build_count == 0 and len(fail_names) == 0:
             print("Shaders are up-to-date.")
         else:
-            print(f"{build_count} shader{'' if build_count == 1 else 's'} built successfully.")
-
-            if len(fail_names) > 0:
-                print(f"{len(fail_names)} failed:")
-                for fail_name in fail_names:
-                    print(fail_name)
+            print(f"{build_count} shader{"" if build_count == 1 else "s"} built successfully." + f" {len(fail_names)} failed:" if len(fail_names) > 0 else "")
+            for fail_name in fail_names:
+                print(fail_name)
     except Exception as ex:
         # Ensure temporary output folder is deleted.
         if os.path.isfile(TEMP_OUTPUT_PATH):

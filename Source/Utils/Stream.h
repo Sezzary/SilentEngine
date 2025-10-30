@@ -2,8 +2,6 @@
 
 namespace Silent::Utils
 {
-    // @todo Writer methods.
-
     /** @brief Binary file data stream. */
     class Stream
     {

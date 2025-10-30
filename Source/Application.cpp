@@ -67,9 +67,9 @@ namespace Silent
         return _work.Time;
     }
 
-    ToastManager& ApplicationManager::GetToasts()
+    ToastManager& ApplicationManager::GetToaster()
     {
-        return _work.Toasts;
+        return _work.Toaster;
     }
 
     TranslationManager& ApplicationManager::GetTranslator()
@@ -119,8 +119,6 @@ namespace Silent
 
         // Assets.
         _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_PSX_DIR_NAME);
-
-        // Translator.
         _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_LOCALES_DIR_NAME, LOCALE_NAMES);
 
         // Renderer.
@@ -244,7 +242,7 @@ namespace Silent
 
         // Update debug and toasts.
         Debug::Update();
-        _work.Toasts.Update();
+        _work.Toaster.Update();
     }
 
     void ApplicationManager::Render()

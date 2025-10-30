@@ -2,7 +2,7 @@
 
 namespace Silent::Renderer
 {
-    /** @brief GPU buffer with data of type `T`. */
+    /** @brief GPU vertex, index, or indirect buffer with data of type `T`. */
     template <typename T>
     class Buffer
     {

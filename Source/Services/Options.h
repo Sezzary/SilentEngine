@@ -160,7 +160,7 @@ namespace Silent::Services
         bool EnableParallelism = false;
     };
 
-    /** @brief Central manager for the user options configuration. */
+    /** @brief User options configuration manager. */
     class OptionsManager
     {
     private:

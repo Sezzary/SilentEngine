@@ -50,6 +50,12 @@ namespace Silent::Renderer
             throw std::runtime_error("Failed to create GPU device: " + std::string(SDL_GetError()));
         }
 
+        const char* deviceDriverName = SDL_GetGPUDeviceDriver(_device);
+        if (deviceDriverName != nullptr)
+        {
+            Debug::Log("Using " + std::string(deviceDriverName) + " backend.");
+        }
+
         // Claim window.
         if (!SDL_ClaimWindowForGPUDevice(_device, _window))
         {
@@ -214,7 +220,6 @@ namespace Silent::Renderer
         _swapchainTexture = nullptr;
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(_commandBuffer, _window, &_swapchainTexture, nullptr, nullptr))
         {
-            Debug::Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             ClearFrameData();
             return;
         }

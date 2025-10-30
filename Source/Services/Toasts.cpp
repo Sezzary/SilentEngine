@@ -70,13 +70,14 @@ namespace Silent::Services
     {
         constexpr float ROW_OFFSET = 2.0f;
 
+        // Check if toasts are enabled.
         const auto& options = g_App.GetOptions();
         if (!options->EnableToasts)
         {
             return;
         }
 
-        // Submit toasts to renderer.
+        // Submit text to renderer.
         auto pos = Vector2(0.0f, ROW_OFFSET * _toasts.size());
         for (const auto& toast : _toasts)
         {

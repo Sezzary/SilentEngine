@@ -7,7 +7,7 @@ namespace Silent::Renderer
     enum class BlendMode;
     struct     PipelineConfig;
 
-    /** @brief Central pipeline manager. */
+    /** @brief Pipeline manager. */
     class PipelineManager
     {
     private:

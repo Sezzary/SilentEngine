@@ -4,7 +4,7 @@ namespace Silent::Services
 {
     constexpr uint TICKS_PER_SECOND = 60;
 
-    /** @brief Central game time manager. */
+    /** @brief Game time manager. */
     class TimeManager
     {
     private:

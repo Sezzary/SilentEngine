@@ -3,6 +3,7 @@
 
 #include "Math/Constants.h"
 #include "Math/Objects/Matrix.h"
+#include "Math/Objects/Vector3.h"
 
 namespace Silent::Math
 {
@@ -135,6 +136,26 @@ namespace Silent::Math
     bool Vector3::Compare(const Vector3& vec0, const Vector3& vec1, float epsilon)
     {
         return Vector3::DistanceSquared(vec0, vec1) <= SQUARE(epsilon);
+    }
+
+    Matrix Vector3::ToTranslationMatrix() const
+    {
+        return Matrix::CreateTranslation(*this);
+    }
+
+    Matrix Vector3::ToScaleMatrix() const
+    {
+        return Matrix::CreateScale(*this);
+    }
+
+    Vector3i Vector3::ToVector3i(int shift) const
+    {
+        if (shift != NO_VALUE)
+        {
+            return Vector3i(FP_TO(x, shift), FP_TO(y, shift), FP_TO(z, shift));
+        }
+
+        return Vector3i((int)round(x), (int)round(y), (int)round(z));
     }
 
     const glm::vec3& Vector3::ToGlmVec3() const

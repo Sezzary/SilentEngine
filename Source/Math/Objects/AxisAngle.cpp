@@ -17,6 +17,7 @@ namespace Silent::Math
         auto axis = Vector3::Normalize(Vector3::Cross(Vector3::UnitZ, dir));
         if (axis.LengthSquared() < EPSILON)
         {
+            Debug::Log("Attempted to construct `AxisAngle` from degenerate direction vector.", Debug::LogLevel::Warning);
             axis = Vector3::UnitZ;
         }
 

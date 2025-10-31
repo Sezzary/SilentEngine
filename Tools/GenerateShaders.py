@@ -8,9 +8,9 @@ Usage:
 
 Arguments:
     `<build_os>` : The platform to generate shaders for. Must be one of the following (case-insensitive):
-                   `"Windows"` : Generate .SPV and .DXIL shaders.
-                   `"macOS"`   : Generate .MSL shaders.
-                   `"Linux"`   : Generate .SPV shaders.
+                   `"Windows"` : Generates .SPV and .DXIL shaders.
+                   `"macOS"`   : Generates .MSL shaders.
+                   `"Linux"`   : Generates .SPV shaders.
 """
 
 import os

@@ -49,7 +49,7 @@ namespace Silent::Math
 
         // Converters
 
-        Vector2 ToVector2() const;
+        Vector2 ToVector2(int shift = NO_VALUE) const;
 
         const glm::ivec2& ToGlmVec2i() const;
         glm::ivec2&       ToGlmVec2i();

@@ -3,6 +3,7 @@
 namespace Silent::Math
 {
     class Matrix;
+    class Vector3i;
 
     class Vector3 : public glm::vec3
     {
@@ -22,13 +23,16 @@ namespace Silent::Math
         // Constructors
 
         constexpr Vector3() = default;
-        constexpr Vector3(const glm::vec3& vec)      : glm::vec3(vec) {}
-        constexpr Vector3(float x)                   : glm::vec3(x) {}
+        constexpr Vector3(const glm::vec3& vec) : glm::vec3(vec) {}
+        constexpr Vector3(float x) : glm::vec3(x) {}
         constexpr Vector3(float x, float y, float z) : glm::vec3(x, y, z) {}
 
         // Utilities
 
+        /** @brief Computes the magnitude. */
         float Length() const;
+
+        /** @brief Computes the squared magnitude. */
         float LengthSquared() const;
 
         static float   Distance(const Vector3& from, const Vector3& to);
@@ -58,6 +62,11 @@ namespace Silent::Math
         static bool Compare(const Vector3& vec0, const Vector3& vec1, float epsilon = EPSILON);
 
         // Converters
+
+        Matrix ToTranslationMatrix() const;
+        Matrix ToScaleMatrix() const;
+
+        Vector3i ToVector3i(int shift = NO_VALUE) const;
 
         const glm::vec3& ToGlmVec3() const;
         glm::vec3&       ToGlmVec3();

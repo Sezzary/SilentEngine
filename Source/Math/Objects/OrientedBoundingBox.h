@@ -37,7 +37,7 @@ namespace Silent::Math
        float                GetDepth() const;
        float                GetSurfaceArea() const;
        float                GetVolume() const;
-       std::vector<Vector3> GetCorners() const;
+       std::array<Vector3, CORNER_COUNT> GetCorners() const;
        Matrix               GetTransformMatrix() const;
 
        // Utilities

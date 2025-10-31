@@ -38,17 +38,17 @@ namespace Silent::Math
         static float DistanceSquared(const Vector3i& from, const Vector3i& to);
 
         static Vector3i Min(const Vector3i& vec0, const Vector3i& vec1);
-        void            Min(const Vector3i& vec);
+        void Min(const Vector3i& vec);
         static Vector3i Max(const Vector3i& vec0, const Vector3i& vec1);
-        void            Max(const Vector3i& vec);
+        void Max(const Vector3i& vec);
         static Vector3i Clamp(const Vector3i& vec, const Vector3i& min, const Vector3i& max);
-        void            Clamp(const Vector3i& min, const Vector3i& max);
+        void Clamp(const Vector3i& min, const Vector3i& max);
         static Vector3i Lerp(const Vector3i& from, const Vector3i& to, float alpha);
-        void            Lerp(const Vector3i& to, float alpha);
+        void Lerp(const Vector3i& to, float alpha);
         static Vector3i Transform(const Vector3i& vec, const Matrix& mat);
-        void            Transform(const Matrix& mat);
+        void Transform(const Matrix& mat);
         static Vector3i Translate(const Vector3i& vec, const Vector3& dir, float dist);
-        void            Translate(const Vector3& dir, float dist);
+        void Translate(const Vector3& dir, float dist);
 
         // ===========
         // Converters

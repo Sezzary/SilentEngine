@@ -246,7 +246,7 @@ namespace Silent::Math
 
     BoundingSphere AxisAlignedBoundingBox::ToSphere() const
     {
-        return BoundingSphere(ToSpan(GetCorners()));
+        return BoundingSphere(Center, Extents.Length());
     }
 
     OrientedBoundingBox AxisAlignedBoundingBox::ToObb() const

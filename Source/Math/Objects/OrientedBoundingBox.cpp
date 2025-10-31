@@ -189,6 +189,11 @@ namespace Silent::Math
         return ContainmentType::Contains;
     }
 
+    BoundingSphere OrientedBoundingBox::ToSphere() const
+    {
+        return BoundingSphere(Center, Extents.Length());
+    }
+
     AxisAlignedBoundingBox OrientedBoundingBox::ToAabb() const
     {
         auto corners = GetCorners();

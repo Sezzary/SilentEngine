@@ -180,6 +180,12 @@ namespace Silent::Math
         // Converters
         // ===========
 
+        /** Converts the AABB to a sphere.
+         *
+         * @return Sphere encompassing the AABB.
+         */
+        BoundingSphere ToSphere() const;
+
         /** @brief Converts the AABB to an OBB.
          *
          * @return AABB converted to an OBB.

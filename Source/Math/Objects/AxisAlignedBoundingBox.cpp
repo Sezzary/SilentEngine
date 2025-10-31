@@ -244,6 +244,11 @@ namespace Silent::Math
         *this = AxisAlignedBoundingBox::Merge(*this, aabb);
     }
 
+    BoundingSphere AxisAlignedBoundingBox::ToSphere() const
+    {
+        return BoundingSphere(ToSpan(GetCorners()));
+    }
+
     OrientedBoundingBox AxisAlignedBoundingBox::ToObb() const
     {
         return OrientedBoundingBox(Center, Extents, Quaternion::Identity);

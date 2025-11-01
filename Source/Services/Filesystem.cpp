@@ -109,9 +109,9 @@ namespace Silent::Services
         }
 
         // Set workspace paths.
-        _assetsDir   = _appDir / ASSETS_DIR_NAME;
-        _savegameDir = _appDir / SAVEGAME_DIR_NAME;
-        _shadersDir  = _appDir / SHADERS_DIR_NAME;
+        _assetsDir   = _appDir  / ASSETS_DIR_NAME;
+        _savegameDir = _workDir / SAVEGAME_DIR_NAME;
+        _shadersDir  = _appDir  / SHADERS_DIR_NAME;
 
         // Check for assets directory.
         if (!std::filesystem::exists(_assetsDir))

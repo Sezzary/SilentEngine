@@ -65,8 +65,10 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add library directories.
 #add_subdirectory(Libraries/assimp)
 add_subdirectory(Libraries/flatbuffers)
+add_subdirectory(Libraries/freetype)
 add_subdirectory(Libraries/glad/cmake)
 add_subdirectory(Libraries/glm)
+add_subdirectory(Libraries/harfbuzz)
 add_subdirectory(Libraries/json)
 add_subdirectory(Libraries/SDL)
 add_subdirectory(Libraries/spdlog)
@@ -75,8 +77,10 @@ add_subdirectory(Libraries/spdlog)
 target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
     #${CMAKE_CURRENT_LIST_DIR}/Libraries/assimp/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/flatbuffers/include
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/freetype/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/glad/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/glm
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/harfbuzz
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
@@ -90,41 +94,9 @@ target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     #assimp
     flatbuffers
+    freetype
     glm
+    harfbuzz
     SDL3::SDL3-static
     spdlog
 )
-
-# @todo Make this a Python script. SDL_shadercross can be a pre-compiled tool.
-## Set shader directories.
-#set(SHADER_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Shaders)
-#set(SHADER_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/Shaders)
-#file(MAKE_DIRECTORY ${SHADER_OUTPUT_DIR})
-#
-## Set SDL_shadercross executable.
-#set(SDL_SHADERCROSS_EXECUTABLE shadercross)
-#
-## Collect shader compilation targets.
-#set(COMPILED_SHADERS "")
-#file(GLOB SHADERS "${SHADER_SOURCE_DIR}/*.hlsl")
-#foreach(SHADER ${SHADERS})
-#    get_filename_component(FILENAME ${SHADER} NAME)
-#    string(REPLACE ".hlsl" "" BASE_FILENAME ${FILENAME})
-#
-#    # Compile to SPIR-V.
-#    #if(WIN32)
-#        set(SHADER_OUTPUT ${SHADER_OUTPUT_DIR}/${BASE_FILENAME}.spv)
-#
-#        add_custom_command(
-#            OUTPUT ${SHADER_OUTPUT}
-#            COMMAND ${SDL_SHADERCROSS_EXECUTABLE} ${SHADER} -o ${SHADER_OUTPUT}
-#            DEPENDS ${SHADER}
-#            COMMENT "Compiling shader ${FILENAME} to SPIR-V."
-#        )
-#
-#        list(APPEND COMPILED_SHADERS ${SHADER_OUTPUT})
-#    #endif()
-#endforeach()
-#
-## Create custom target to run shader compilation.
-#add_custom_target(CompileShaders ALL DEPENDS ${COMPILED_SHADERS})

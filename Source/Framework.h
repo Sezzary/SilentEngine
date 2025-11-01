@@ -47,6 +47,9 @@
 // FlatBuffers
 #include <flatbuffers/flatbuffers.h>
 
+// FreeType
+#include <ft2build.h>
+
 // GLAD
 #include <glad/glad.h>
 
@@ -59,6 +62,10 @@
 #include <glm/gtx/matrix_interpolation.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/euler_angles.hpp>
+
+// HarfBuzz
+#include <hb.h>
+#include <hb-ft.h>
 
 // ImGui
 #include <imgui.h>

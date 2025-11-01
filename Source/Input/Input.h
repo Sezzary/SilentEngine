@@ -72,7 +72,7 @@ namespace Silent::Input
         uint       Ticks         = 0;
     };
 
-    /** @brief Central input manager. */
+    /** @brief Input manager. */
     class InputManager
     {
     private:

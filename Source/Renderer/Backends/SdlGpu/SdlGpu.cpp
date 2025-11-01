@@ -42,12 +42,38 @@ namespace Silent::Renderer
         _type   = RendererType::SdlGpu;
         _window = &window;
 
+        // Define format flags.
+        int formatFlags = 0;
+        switch (OS_TYPE)
+        {
+            case OsType::Windows:
+            {
+                formatFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL;
+                break;
+            }
+            case OsType::MacOs:
+            {
+                formatFlags = SDL_GPU_SHADERFORMAT_MSL;
+                break;
+            }
+            case OsType::Linux:
+            {
+                formatFlags = SDL_GPU_SHADERFORMAT_SPIRV;
+                break;
+            }
+        }
+
         // Create GPU device.
-        int formatFlags = SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_MSL;
-        _device         = SDL_CreateGPUDevice(formatFlags, Debug::IS_DEBUG_BUILD, nullptr);
+        _device = SDL_CreateGPUDevice(formatFlags, Debug::IS_DEBUG_BUILD, nullptr);
         if (_device == nullptr)
         {
             throw std::runtime_error("Failed to create GPU device: " + std::string(SDL_GetError()));
+        }
+
+        const char* deviceDriverName = SDL_GetGPUDeviceDriver(_device);
+        if (deviceDriverName != nullptr)
+        {
+            Debug::Log("Using " + std::string(deviceDriverName) + " backend.");
         }
 
         // Claim window.
@@ -214,7 +240,6 @@ namespace Silent::Renderer
         _swapchainTexture = nullptr;
         if (!SDL_WaitAndAcquireGPUSwapchainTexture(_commandBuffer, _window, &_swapchainTexture, nullptr, nullptr))
         {
-            Debug::Log("Failed to acquire swapchain texture: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             ClearFrameData();
             return;
         }

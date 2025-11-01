@@ -36,7 +36,7 @@ namespace Silent
         SavegameManager               Savegame   = SavegameManager();
         TimeManager                   Time       = TimeManager();
         TranslationManager            Translator = TranslationManager();
-        ToastManager                  Toasts     = ToastManager();
+        ToastManager                  Toaster    = ToastManager();
     };
 
     class ApplicationManager
@@ -72,7 +72,7 @@ namespace Silent
         SavegameManager&    GetSavegame();
         TimeManager&        GetTime();
         TranslationManager& GetTranslator();
-        ToastManager&       GetToasts();
+        ToastManager&       GetToaster();
 
         /** @brief Gets the window resolution.
          *

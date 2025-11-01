@@ -2,7 +2,7 @@
 
 namespace Silent::Audio
 {
-    /** @brief Central audio manager. */
+    /** @brief Audio manager. */
     class AudioManager
     {
     private:

@@ -49,7 +49,7 @@ namespace Silent::Input
     extern const std::vector<BindingProfileId> USER_GAMEPAD_BINDING_PROFILE_IDS;
     extern const std::vector<BindingProfileId> RAW_EVENT_BINDING_PROFILE_IDS;
 
-    /** @brief Central manager for input bindings. */
+    /** @brief Input binder. */
     class BindingManager
     {
     private:

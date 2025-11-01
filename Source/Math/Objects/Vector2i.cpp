@@ -96,9 +96,14 @@ namespace Silent::Math
         *this = Vector2i::Translate(*this, Vector2::Normalize(dir), dist);
     }
 
-    Vector2 Vector2i::ToVector2() const
+    Vector2 Vector2i::ToVector2(int shift) const
     {
-        return Vector2((float)x, (float)y);
+        if (shift != NO_VALUE)
+        {
+            return Vector2(FP_FLOAT(x, shift), FP_FLOAT(y, shift));
+        }
+
+        return Vector2(x, y);
     }
 
     const glm::ivec2& Vector2i::ToGlmVec2i() const

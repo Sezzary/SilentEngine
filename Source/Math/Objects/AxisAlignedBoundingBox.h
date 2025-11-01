@@ -96,25 +96,66 @@ namespace Silent::Math
          *
          * @return Corner points.
          */
-        std::vector<Vector3> GetCorners() const;
+        std::array<Vector3, CORNER_COUNT> GetCorners() const;
 
         // ==========
         // Inquirers
         // ==========
 
-        /** @brief Checks if the AABB intersects with a point.
+        /** @brief Checks if a point intersects the AABB.
          *
          * @param point Point to test against.
          * @return `true` if the intersection is valid, `false` otherwise.
          */
         bool Intersects(const Vector3& point) const;
+
+        /** @brief Checks if a sphere intersects the AABB.
+         *
+         * @param sphere Sphere to test against.
+         * @return `true` if the intersection is valid, `false` otherwise.
+         */
         bool Intersects(const BoundingSphere& sphere) const;
+
+        /** @brief Checks if an AABB intersects the AABB.
+         *
+         * @param aabb AABB to test against.
+         * @return `true` if the intersection is valid, `false` otherwise.
+         */
         bool Intersects(const AxisAlignedBoundingBox& aabb) const;
+
+        /** @brief Checks an OBB intersects the AABB.
+         *
+         * @param obb OBB to test against.
+         * @return `true` if the intersection is valid, `false` otherwise.
+         */
         bool Intersects(const OrientedBoundingBox& obb) const;
 
+        /** @brief Checks if a point is contained by the AABB.
+         *
+         * @param point Point to test for containment.
+         * @return Containment type.
+         */
         ContainmentType Contains(const Vector3& point) const;
+
+        /** @brief Checks if a sphere is contained by the AABB.
+         *
+         * @param sphere Sphere to test for containment.
+         * @return Containment type.
+         */
         ContainmentType Contains(const BoundingSphere& sphere) const;
+
+        /** @brief Checks if an AABB is contained by the AABB.
+         *
+         * @param aabb AABB to test for containment.
+         * @return Containment type.
+         */
         ContainmentType Contains(const AxisAlignedBoundingBox& aabb) const;
+
+        /** @brief Checks if an OBB is contained by the AABB.
+         *
+         * @param obb OBB to test for containment.
+         * @return Containment type.
+         */
         ContainmentType Contains(const OrientedBoundingBox& obb) const;
 
         // ==========
@@ -138,6 +179,12 @@ namespace Silent::Math
         // ===========
         // Converters
         // ===========
+
+        /** Converts the AABB to a sphere.
+         *
+         * @return Sphere encompassing the AABB.
+         */
+        BoundingSphere ToSphere() const;
 
         /** @brief Converts the AABB to an OBB.
          *

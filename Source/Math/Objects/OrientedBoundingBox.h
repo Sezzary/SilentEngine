@@ -27,39 +27,49 @@ namespace Silent::Math
 
         // Constructors
 
-       constexpr OrientedBoundingBox() = default;
-       constexpr OrientedBoundingBox(const Vector3& center, const Vector3& extents, const Quaternion rot) : Center(center), Extents(extents), Rotation(rot) {}
+        constexpr OrientedBoundingBox() = default;
+        constexpr OrientedBoundingBox(const Vector3& center, const Vector3& extents, const Quaternion rot) : Center(center), Extents(extents), Rotation(rot) {}
 
-       // Getters
+        // Getters
 
-       float                GetWidth() const;
-       float                GetHeight() const;
-       float                GetDepth() const;
-       float                GetSurfaceArea() const;
-       float                GetVolume() const;
-       std::vector<Vector3> GetCorners() const;
-       Matrix               GetTransformMatrix() const;
+        float                GetWidth() const;
+        float                GetHeight() const;
+        float                GetDepth() const;
+        float                GetSurfaceArea() const;
+        float                GetVolume() const;
+        std::array<Vector3, CORNER_COUNT> GetCorners() const;
+        Matrix               GetTransformMatrix() const;
 
-       // Utilities
+        // Utilities
 
-       bool Intersects(const Vector3& point) const;
-       bool Intersects(const BoundingSphere& sphere) const;
-       bool Intersects(const AxisAlignedBoundingBox& aabb) const;
-       bool Intersects(const OrientedBoundingBox& obb) const;
+        bool Intersects(const Vector3& point) const;
+        bool Intersects(const BoundingSphere& sphere) const;
+        bool Intersects(const AxisAlignedBoundingBox& aabb) const;
+        bool Intersects(const OrientedBoundingBox& obb) const;
 
-       ContainmentType Contains(const Vector3& point) const;
-       ContainmentType Contains(const BoundingSphere& sphere) const;
-       ContainmentType Contains(const AxisAlignedBoundingBox& aabb) const;
-       ContainmentType Contains(const OrientedBoundingBox& obb) const;
+        ContainmentType Contains(const Vector3& point) const;
+        ContainmentType Contains(const BoundingSphere& sphere) const;
+        ContainmentType Contains(const AxisAlignedBoundingBox& aabb) const;
+        ContainmentType Contains(const OrientedBoundingBox& obb) const;
 
-       // Converters
+        // Converters
 
-       AxisAlignedBoundingBox ToAabb() const;
+        /** Converts the OBB to a sphere.
+         *
+         * @return Sphere encompassing the OBB.
+         */
+        BoundingSphere ToSphere() const;
 
-       // Operators
+        /** Converts the OBB to an AABB.
+         *
+         * @return AABB encompassing the OBB.
+         */
+        AxisAlignedBoundingBox ToAabb() const;
 
-       bool                 operator==(const OrientedBoundingBox& obb) const;
-       bool                 operator!=(const OrientedBoundingBox& obb) const;
-       OrientedBoundingBox& operator=(const OrientedBoundingBox& obb) = default;
+        // Operators
+
+        bool                 operator==(const OrientedBoundingBox& obb) const;
+        bool                 operator!=(const OrientedBoundingBox& obb) const;
+        OrientedBoundingBox& operator=(const OrientedBoundingBox& obb) = default;
     };
 }

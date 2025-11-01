@@ -2,9 +2,11 @@
 
 namespace Silent::Assets
 {
-    // ===========
-    // Menu Items
-    // ===========
+    // ======
+    // Menus
+    // ======
+
+    constexpr char KEY_INV_MENU_EXIT[] = "invMenuExit";
 
     // @todo
 
@@ -37,6 +39,14 @@ namespace Silent::Assets
     constexpr char KEY_SAVE_LOC_NOWHERE[]        = "saveLocNowhere";
     constexpr char KEY_SAVE_LOC_CHILDS_ROOM[]    = "saveLocChildsRoom";
     constexpr char KEY_SAVE_LOC_NEXT_FEAR[]      = "saveLocNextFear";
+
+    // ==================
+    // Item Descriptions
+    // ==================
+
+    constexpr char KEY_ITEM_DESC_KITCHEN_KNIFE[] = "itemDescKitchenKnife";
+
+    // @todo
 
     // ====================
     // Common Map Messages

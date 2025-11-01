@@ -105,7 +105,7 @@ namespace Silent::Math
             return Vector3(FP_FLOAT(x, shift), FP_FLOAT(y, shift), FP_FLOAT(z, shift));
         }
 
-        return Vector3((float)x, (float)y, (float)z);
+        return Vector3(x, y, z);
     }
 
     const glm::ivec3& Vector3i::ToGlmVec3i() const

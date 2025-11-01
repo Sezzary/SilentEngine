@@ -4,13 +4,14 @@
 
 namespace Silent::Math
 {
-    constexpr float PI       = glm::pi<float>();
-    constexpr float PI_MUL_2 = PI * 2.0f;
-    constexpr float PI_MUL_4 = PI * 4.0f;
-    constexpr float PI_DIV_2 = PI / 2.0f;
-    constexpr float PI_DIV_4 = PI / 4.0f;
-    constexpr float SQRT_2   = 1.41421356237f;
-    constexpr float EPSILON  = 0.00001f;
+    constexpr float PI           = glm::pi<float>();
+    constexpr float PI_MUL_2     = PI * 2.0f;
+    constexpr float PI_MUL_4     = PI * 4.0f;
+    constexpr float PI_DIV_2     = PI / 2.0f;
+    constexpr float PI_DIV_4     = PI / 4.0f;
+    constexpr float SQRT_2       = 1.41421356237f;
+    constexpr float EPSILON      = 0.00001f;
+    constexpr uint  GOLDEN_RATIO = 0x9E3779B9;
 
     constexpr uint TRIANGLE_VERTEX_COUNT = 3;
     constexpr uint QUAD_VERTEX_COUNT     = 4;

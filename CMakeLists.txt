@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.31.6)
 # @todo
 # - Switch to GCC.
 # - Modules don't work.
+# - Assimp doesn't work.
 
 # Define project.
 project(SilentEngine)
@@ -61,22 +62,18 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/..
 )
 
-# Prevent SDL_shadercross from looking for system packages.
-#set(SDLSHADERCROSS_VENDORED ON)
-
 # Add library directories.
-add_subdirectory(Libraries/assimp)
+#add_subdirectory(Libraries/assimp)
 add_subdirectory(Libraries/flatbuffers)
 add_subdirectory(Libraries/glad/cmake)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/json)
 add_subdirectory(Libraries/SDL)
-#add_subdirectory(Libraries/SDL_shadercross)
 add_subdirectory(Libraries/spdlog)
 
 # Add library header paths.
 target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/Libraries/assimp/include
+    #${CMAKE_CURRENT_LIST_DIR}/Libraries/assimp/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/flatbuffers/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/glad/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/glm
@@ -85,22 +82,20 @@ target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
-    #${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL_shadercross
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb
 )
 
 # Add libraries.
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
-    assimp
+    #assimp
     flatbuffers
     glm
     SDL3::SDL3-static
-    #SDL3_shadercross::SDL3_shadercross-static
     spdlog
 )
 
-# @todo Weird errors with this. Running the commands manually in a terminal works, but not here for some reason.
+# @todo Make this a Python script. SDL_shadercross can be a pre-compiled tool.
 ## Set shader directories.
 #set(SHADER_SOURCE_DIR ${CMAKE_SOURCE_DIR}/Shaders)
 #set(SHADER_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/Shaders)

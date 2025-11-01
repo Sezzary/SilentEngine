@@ -64,9 +64,9 @@ namespace Silent::Math
         return Center + Extents;
     }
 
-    std::vector<Vector3> AxisAlignedBoundingBox::GetCorners() const
+    std::array<Vector3, AxisAlignedBoundingBox::CORNER_COUNT> AxisAlignedBoundingBox::GetCorners() const
     {
-        return std::vector<Vector3>
+        return std::array<Vector3, CORNER_COUNT>
         {
             Center + Vector3(-Extents.x, -Extents.y, -Extents.z),
             Center + Vector3( Extents.x, -Extents.y, -Extents.z),
@@ -235,12 +235,18 @@ namespace Silent::Math
     {
         auto min = Vector3::Min(aabb0.GetMin(), aabb1.GetMin());
         auto max = Vector3::Max(aabb0.GetMax(), aabb1.GetMax());
+
         return AxisAlignedBoundingBox((max + min) / 2.0f, (max - min) / 2.0f);
     }
 
     void AxisAlignedBoundingBox::Merge(const AxisAlignedBoundingBox& aabb)
     {
         *this = AxisAlignedBoundingBox::Merge(*this, aabb);
+    }
+
+    BoundingSphere AxisAlignedBoundingBox::ToSphere() const
+    {
+        return BoundingSphere(Center, Extents.Length());
     }
 
     OrientedBoundingBox AxisAlignedBoundingBox::ToObb() const

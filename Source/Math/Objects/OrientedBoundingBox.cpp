@@ -38,20 +38,20 @@ namespace Silent::Math
         return Extents.x * Extents.y * Extents.z;
     }
 
-    std::vector<Vector3> OrientedBoundingBox::GetCorners() const
+    std::array<Vector3, AxisAlignedBoundingBox::CORNER_COUNT> OrientedBoundingBox::GetCorners() const
     {
         auto rotMat = Rotation.ToRotationMatrix();
 
-        return std::vector<Vector3>
+        return std::array<Vector3, CORNER_COUNT>
         {
-            Center + Vector3(glm::vec4(-Extents.x, -Extents.y, -Extents.z, 1.0f) * rotMat),
-            Center + Vector3(glm::vec4( Extents.x, -Extents.y, -Extents.z, 1.0f) * rotMat),
-            Center + Vector3(glm::vec4(-Extents.x,  Extents.y, -Extents.z, 1.0f) * rotMat),
-            Center + Vector3(glm::vec4( Extents.x,  Extents.y, -Extents.z, 1.0f) * rotMat),
-            Center + Vector3(glm::vec4(-Extents.x, -Extents.y,  Extents.z, 1.0f) * rotMat),
-            Center + Vector3(glm::vec4( Extents.x, -Extents.y,  Extents.z, 1.0f) * rotMat),
-            Center + Vector3(glm::vec4(-Extents.x,  Extents.y,  Extents.z, 1.0f) * rotMat),
-            Center + Vector3(glm::vec4( Extents.x,  Extents.y,  Extents.z, 1.0f) * rotMat)
+            Center + Vector3::Transform(Vector3(-Extents.x, -Extents.y, -Extents.z), rotMat),
+            Center + Vector3::Transform(Vector3( Extents.x, -Extents.y, -Extents.z), rotMat),
+            Center + Vector3::Transform(Vector3(-Extents.x,  Extents.y, -Extents.z), rotMat),
+            Center + Vector3::Transform(Vector3( Extents.x,  Extents.y, -Extents.z), rotMat),
+            Center + Vector3::Transform(Vector3(-Extents.x, -Extents.y,  Extents.z), rotMat),
+            Center + Vector3::Transform(Vector3( Extents.x, -Extents.y,  Extents.z), rotMat),
+            Center + Vector3::Transform(Vector3(-Extents.x,  Extents.y,  Extents.z), rotMat),
+            Center + Vector3::Transform(Vector3( Extents.x,  Extents.y,  Extents.z), rotMat)
         };
     }
 
@@ -187,6 +187,11 @@ namespace Silent::Math
         }*/
 
         return ContainmentType::Contains;
+    }
+
+    BoundingSphere OrientedBoundingBox::ToSphere() const
+    {
+        return BoundingSphere(Center, Extents.Length());
     }
 
     AxisAlignedBoundingBox OrientedBoundingBox::ToAabb() const

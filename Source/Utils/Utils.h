@@ -37,7 +37,7 @@ namespace Silent::Utils
         return (val >= 0) ? 1 : -1;
     }
 
-    /** @brief Checks if a container contains a given element
+    /** @brief Checks if a container contains a matching element
      *
      * @tparam TContainer Container type.
      * @tparam TElement Element type.
@@ -102,6 +102,7 @@ namespace Silent::Utils
 
     /** @brief Converts a raw array to a read-only span.
      *
+     * @tparam T Element type.
      * @param rawArray Raw array.
      * @param size Array size.
      * @return Read-only `std::span` representing the raw array.
@@ -114,6 +115,7 @@ namespace Silent::Utils
 
     /** @brief Converts a raw array to a writable span.
      *
+     * @tparam T Element type.
      * @param rawArray Raw array.
      * @param size Array size.
      * @return Writable `std::span` representing the raw array.
@@ -126,6 +128,7 @@ namespace Silent::Utils
 
     /** @brief Converts a C array to a span.
      *
+     * @tparam T Element type.
      * @param cArray C array.
      * @param size Array size.
      * @return `std::span` representing the C array.

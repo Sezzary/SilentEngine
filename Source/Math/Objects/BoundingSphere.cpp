@@ -8,6 +8,37 @@
 
 namespace Silent::Math
 {
+    BoundingSphere::BoundingSphere(const std::span<const Vector3>& points)
+    {
+        // Check if points exist.
+        if (points.empty())
+        {
+            Center = Vector3::Zero;
+            Radius = 0.0f;
+            return;
+        }
+
+        // Compute centroid.
+        auto pointSum = Vector3::Zero;
+        for (const auto& point : points)
+        {
+            pointSum += point;
+        }
+        Center = pointSum / (float)points.size();
+
+        // Compute max distance from centroid.
+        float radiusSqr = 0.0f;
+        for (const auto& point : points)
+        {
+            float distSqr = Vector3::DistanceSquared(Center, point);
+            if (distSqr > radiusSqr)
+            {
+                radiusSqr = distSqr;
+            }
+        }
+        Radius = glm::sqrt(radiusSqr);
+    }
+
     float BoundingSphere::GetSurfaceArea() const
     {
         return SQUARE(Radius) * PI_MUL_4;

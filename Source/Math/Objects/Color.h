@@ -140,15 +140,50 @@ namespace Silent::Math
         // ==========
 
         static Color Lerp(const Color& color0, const Color& color1, float alpha);
-        void         Lerp(const Color& color, float alpha);
+
+        void Lerp(const Color& color, float alpha);
+
+        /** @brief Inverts a color.
+         *
+         * @param color Color to invert.
+         * @return Inverted color.
+         */
         static Color Invert(const Color& color);
-        void         Invert();
+
+        /** @brief Inverts the color. */
+        void Invert();
+
         static Color Blend(const Color& color0, const Color& color1, float alpha);
-        void         Blend(const Color& color, float alpha);
+
+        void Blend(const Color& color, float alpha);
+
+        /** @brief Brightens a color by a given factor.
+         *
+         * @param color Color to brighten.
+         * @param factor Brightening factor.
+         * @return Brightened color.
+         */
         static Color Brighten(const Color& color, float factor);
-        void         Brighten(float alpha);
+
+        /** @brief Brightens the color by a given factor.
+         *
+         * @param factor Brightening factor.
+         */
+        void Brighten(float factor);
+
+        /** @brief Darkens a color by a given factor.
+         *
+         * @param color Color to brighten.
+         * @param factor Darkening factor.
+         * @return Darkened color.
+         */
         static Color Darken(const Color& color, float factor);
-        void         Darken(float alpha);
+
+        /** @brief Darkens the color by a given factor.
+         *
+         * @param factor Darkening factor.
+         */
+        void Darken(float factor);
 
         // ===========
         // Converters
@@ -160,10 +195,10 @@ namespace Silent::Math
          */
         uint ToPacked8Bit() const;
 
-        const Vector4&   ToVector4() const;
-        Vector4&         ToVector4();
+        const Vector4& ToVector4() const;
+        Vector4& ToVector4();
         const glm::vec4& ToGlmVec4() const;
-        glm::vec4&       ToGlmVec4();
+        glm::vec4& ToGlmVec4();
 
         // ==========
         // Operators

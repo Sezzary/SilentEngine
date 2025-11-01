@@ -65,7 +65,7 @@ namespace Silent::Assets
         }
     };
 
-    /** @brief Central manager for asset streaming. */
+    /** @brief Asset streamer. */
     class AssetManager
     {
     private:

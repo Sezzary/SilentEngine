@@ -1,8 +1,8 @@
 #include "Framework.h"
-#include "Game/include/screens/options/selection_graphics.h"
+#include "Game/screens/options/selection_graphics.h"
 
 #include "Application.h"
-#include "Game/include/screens/options/options.h"
+#include "Game/screens/options/options.h"
 #include "Renderer/Renderer.h"
 
 #include "Game/dummy.h"

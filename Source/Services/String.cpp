@@ -9,7 +9,34 @@ namespace Silent::Services
     constexpr char FONT_8_X_8_ASSET_NAME[]   = "1ST/FONT8.TIM";
     constexpr char FONT_12_X_16_ASSET_NAME[] = "1ST/FONT16.TIM";
 
-    static const auto FONT_8_X_8_GLYPH_COORDS = std::unordered_map<char, Vector2i> // Key = character code, value = coordinate in `TIM/FONT8.TIM` 8x8 glyph atlas.
+    /** @brief String color IDs for strings displayed in screen space.
+     * Used as indices into `STRING_COLORS`.
+     */
+    enum class e_StringColorId
+    {
+        Gold,
+        DarkGrey,
+        Green,
+        Nuclear,
+        Red,
+        LightGrey,
+        White,
+
+        Count
+    };
+
+    const std::array<Color, (int)e_StringColorId::Count> STRING_COLORS =
+    {
+        Color::From8Bit(160, 128, 64),
+        Color::From8Bit(32,  32,  32),
+        Color::From8Bit(24,  128, 40),
+        Color::From8Bit(8,   184, 96),
+        Color::From8Bit(128, 0,   0),
+        Color::From8Bit(100, 100, 100),
+        Color::From8Bit(128, 128, 128)
+    };
+
+    static const auto FONT_8_X_8_GLYPH_COORDS = std::unordered_map<char, Vector2i> /** Key = character code, value = coordinate in `TIM/FONT8.TIM` 8x8 glyph atlas. */
     {
         { '*', Vector2i(0,  0) },
         { '+', Vector2i(1,  0) },

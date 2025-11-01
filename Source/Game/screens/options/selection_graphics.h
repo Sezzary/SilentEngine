@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/include/common.h"
+#include "Game/common.h"
 
 namespace Silent::Game
 {
@@ -19,7 +19,7 @@ namespace Silent::Game
      *
      * @param tri 2D triangle of the arrow element.
      * @param isFlashing `true` if drawing the flashing element with a gradient, `false` if drawing the border.
-    */
+     */
     void Options_Selection_ArrowDraw(const s_Triangle2d& tri, bool isFlashing);
 
     /** @brief Draws a gold bullet point element used next to listed entries in the main and extra options menus.

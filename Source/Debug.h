@@ -38,14 +38,16 @@ namespace Silent::Debug
     /** @brief Debug workspace. */
     struct DebugWork
     {
+        using TimeType = std::chrono::steady_clock::time_point;
+
         /** Temp */
 
         float BlendAlpha = 0.0f;
 
         /** System (internal) */
 
-        std::vector<std::string>                       Messages  = {};
-        std::chrono::high_resolution_clock::time_point StartTime = {};
+        std::vector<std::string> Messages  = {};
+        TimeType                 StartTime = {};
 
         /** System (user) */
 
@@ -53,10 +55,10 @@ namespace Silent::Debug
 
         /** Renderer (internal) */
 
-        float                                 Fps        = 0.0f;
-        uint                                  FrameTime  = 0;
-        uint                                  FrameCount = 0;
-        std::chrono::steady_clock::time_point PrevTime   = {};
+        float    Fps        = 0.0f;
+        uint     FrameTime  = 0;
+        uint     FrameCount = 0;
+        TimeType PrevTime   = {};
 
         /** Renderer (user) */
 

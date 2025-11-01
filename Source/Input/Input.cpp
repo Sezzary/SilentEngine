@@ -145,7 +145,7 @@ namespace Silent::Input
             return;
         }
 
-        auto& toasts = g_App.GetToasts();
+        auto& toaster = g_App.GetToaster();
 
         // Set connection.
         _gamepad.Device = SDL_OpenGamepad(deviceId);
@@ -178,7 +178,7 @@ namespace Silent::Input
             }
 
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
-            toasts.Add("Gamepad connected.");
+            toaster.Add("Gamepad connected.");
 
             Debug::Log(GetGamepadVendorName(_gamepad.VendorId) + " gamepad connected.");
         }
@@ -192,12 +192,12 @@ namespace Silent::Input
             return;
         }
 
-        auto& toasts = g_App.GetToasts();
+        auto& toaster = g_App.GetToaster();
 
         // Disconnect with toast.
         _gamepad = {};
         SDL_CloseGamepad(_gamepad.Device);
-        toasts.Add("Gamepad disconnected.");
+        toaster.Add("Gamepad disconnected.");
 
         Debug::Log("Gamepad disconnected.");
     }

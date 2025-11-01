@@ -118,9 +118,9 @@ namespace Silent::Math
                      color.A());
     }
 
-    void Color::Brighten(float alpha)
+    void Color::Brighten(float factor)
     {
-        *this = Color::Brighten(*this, alpha);
+        *this = Color::Brighten(*this, factor);
     }
 
     Color Color::Darken(const Color& color, float factor)
@@ -131,9 +131,9 @@ namespace Silent::Math
                      color.A());
     }
 
-    void Color::Darken(float alpha)
+    void Color::Darken(float factor)
     {
-        *this = Color::Darken(*this, alpha);
+        *this = Color::Darken(*this, factor);
     }
 
     uint Color::ToPacked8Bit() const

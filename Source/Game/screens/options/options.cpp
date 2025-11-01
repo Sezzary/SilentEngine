@@ -1,5 +1,5 @@
 #include "Framework.h"
-#include "Game/include/screens/options/options.h"
+#include "Game/screens/options/options.h"
 
 #include "Game/dummy.h"
 

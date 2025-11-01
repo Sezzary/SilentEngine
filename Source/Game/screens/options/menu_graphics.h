@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/include/common.h"
+#include "Game/common.h"
 
 /** @brief Draws a BGM volume bar in the main options menu. */
 void Options_MainOptionsMenu_BgmVolumeBarDraw();

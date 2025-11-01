@@ -10,6 +10,8 @@ namespace Silent::Services
         Vector2 Uv3 = Vector2::Zero;
     };
 
+    extern const std::array<Color, (int)e_StringColorId::Count> STRING_COLORS;
+
     FontGlyphUvs Get8x8FontGlyphUvs(char charCode);
     FontGlyphUvs Get12x16FontGlyphUvs(char charCode);
 

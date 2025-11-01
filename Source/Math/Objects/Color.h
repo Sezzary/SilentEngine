@@ -195,10 +195,10 @@ namespace Silent::Math
          */
         uint ToPacked8Bit() const;
 
-        const Vector4&   ToVector4() const;
-        Vector4&         ToVector4();
+        const Vector4& ToVector4() const;
+        Vector4& ToVector4();
         const glm::vec4& ToGlmVec4() const;
-        glm::vec4&       ToGlmVec4();
+        glm::vec4& ToGlmVec4();
 
         // ==========
         // Operators

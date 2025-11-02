@@ -34,6 +34,10 @@
     path = Libraries/json
     url = https://github.com/nlohmann/json.git
 
+[submodule "Libraries/rectpack2D"]
+    path = Libraries/rectpack2D
+    url = https://github.com/TeamHypersomnia/rectpack2D.git
+
 [submodule "Libraries/SDL"]
     path = Libraries/SDL
     url = https://github.com/libsdl-org/SDL.git

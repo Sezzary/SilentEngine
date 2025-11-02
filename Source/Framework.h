@@ -81,6 +81,9 @@
 
 using json = nlohmann::json;
 
+// rectpack2D
+#include <rectpack2D/finders_interface.h>
+
 // SDL
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_gpu.h>

@@ -70,6 +70,7 @@ add_subdirectory(Libraries/glad/cmake)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/harfbuzz)
 add_subdirectory(Libraries/json)
+add_subdirectory(Libraries/rectpack2D)
 add_subdirectory(Libraries/SDL)
 add_subdirectory(Libraries/spdlog)
 add_subdirectory(Libraries/utfcpp)
@@ -86,6 +87,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/rectpack2D/src
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb
@@ -100,5 +102,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     glm
     harfbuzz
     SDL3::SDL3-static
+    rectpack2D
     spdlog
 )

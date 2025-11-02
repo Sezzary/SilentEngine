@@ -45,3 +45,7 @@
 [submodule "Libraries/stb"]
     path = Libraries/stb
     url = https://github.com/nothings/stb.git
+
+[submodule "Libraries/utfcpp"]
+    path = Libraries/utfcpp
+    url = https://github.com/nemtrif/utfcpp.git

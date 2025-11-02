@@ -72,6 +72,7 @@ add_subdirectory(Libraries/harfbuzz)
 add_subdirectory(Libraries/json)
 add_subdirectory(Libraries/SDL)
 add_subdirectory(Libraries/spdlog)
+add_subdirectory(Libraries/utfcpp)
 
 # Add library header paths.
 target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
@@ -88,6 +89,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/utfcpp/source
 )
 
 # Add libraries.

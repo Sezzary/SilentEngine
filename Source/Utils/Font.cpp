@@ -6,15 +6,17 @@
 
 namespace Silent::Utils
 {
-    Font::Font(FT_Library& fontLib, const std::filesystem::path& fontPath, int pointSize)
+    Font::Font(const std::string& name, const std::filesystem::path& path, int pointSize, FT_Library& fontLib)
     {
+        _name = name;
+
         if (FT_Init_FreeType(&fontLib))
         {
             Debug::Log("Failed to initialize font library.", Debug::LogLevel::Error);
             return;
         }
 
-        if (FT_New_Face(fontLib, fontPath.string().c_str(), 0, &_fontFace))
+        if (FT_New_Face(fontLib, path.string().c_str(), 0, &_fontFace))
         {
             Debug::Log("Failed to initialize font face.", Debug::LogLevel::Error);
             return;
@@ -36,12 +38,31 @@ namespace Silent::Utils
 
     std::vector<Glyph*> Font::GetGlyphs(const std::string& msg)
     {
+        // Get rune IDs.
+        auto runeIds = std::vector<char32_t>{};
+        utf8::utf8to32(msg.begin(), msg.end(), std::back_inserter(runeIds));
+
+        // Collect glyphs.
         auto glyphs = std::vector<Glyph*>{};
-
-        for (auto thing : msg)
+        glyphs.reserve(runeIds.size());
+        for (char32_t& runeId : runeIds)
         {
+            // @todo If the glyph isn't loaded yet, load it and add to atlas.
 
+            // Check if rune exists.
+            auto it = _glyphs.find(runeId);
+            if (it == _glyphs.end())
+            {
+                Debug::Log("Failed to find glyph rune ID " + std::to_string(runeId) + "` in font `" + _name + "`.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
+                continue;
+            }
+
+            // Add glyph.
+            auto& [keyRuneId, glyph] = *it;
+            glyphs.push_back(&glyph);
         }
+
+        return glyphs;
     }
 
     bool Font::IsLoaded() const
@@ -51,7 +72,6 @@ namespace Silent::Utils
 
     FontManager::FontManager()
     {
-
     }
 
     FontManager::~FontManager()
@@ -86,7 +106,7 @@ namespace Silent::Utils
         }
 
         // Handle load.
-        _fonts[fontName] = Font(_fontLibrary, fontPath, pointSize);
+        _fonts[fontName] = Font(fontName, fontPath, pointSize, _fontLibrary);
         if (!_fonts[fontName].IsLoaded())
         {
             Debug::Log("Failed to load font `" + fontName + "`.", Debug::LogLevel::Error);

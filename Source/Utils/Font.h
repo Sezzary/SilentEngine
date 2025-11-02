@@ -18,8 +18,9 @@ namespace Silent::Utils
         // Fields
         // =======
 
+        std::string                    _name     = {};
         FT_Face                        _fontFace = {};
-        std::unordered_map<int, Glyph> _glyphs   = {}; /** Key = glyph ID, value = glyph info. */
+        std::unordered_map<int, Glyph> _glyphs   = {}; /** Key = rune ID, value = glyph info. */
         bool                           _isLoaded = false;
 
     public:
@@ -27,8 +28,11 @@ namespace Silent::Utils
         // Constructors
         // =============
 
-        Font(FT_Library& fontLib, const std::filesystem::path& fontPath, int pointSize);
+        Font() = default;
 
+        Font(const std::string& name, const std::filesystem::path& path, int pointSize, FT_Library& fontLib);
+
+        /** @brief Gracefully destroys the `Font`, freeing resources. */
         ~Font();
 
         // ========
@@ -56,7 +60,7 @@ namespace Silent::Utils
         // Helpers
         // ========
 
-        void LoadGlyph(int glyphId);
+        void LoadGlyph(int runeId);
 
         void BuildAtlas();
     };
@@ -76,8 +80,10 @@ namespace Silent::Utils
         // Constructors
         // =============
 
+        /** @brief Constructs a default `FontManager`. */
         FontManager();
 
+        /** @brief Gracefully destroys the `FontManager`, freeing resources. */
         ~FontManager();
 
         // ========

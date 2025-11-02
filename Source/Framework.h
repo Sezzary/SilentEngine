@@ -97,6 +97,9 @@ using json = nlohmann::json;
 #include <stb_image.h>
 #include <stb_image_write.h>
 
+// UTF8-CPP
+#include <utf8.h>
+
 // ==========
 // Resources
 // ==========

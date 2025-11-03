@@ -23,8 +23,6 @@ namespace Silent::Services
     enum class RenderScaleType
     {
         Native,
-        Half,
-        Quarter,
         Retro
     };
 

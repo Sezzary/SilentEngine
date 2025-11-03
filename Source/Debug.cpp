@@ -207,7 +207,7 @@ namespace Silent::Debug
         CreateGui([]()
         {
             constexpr const char* FRAME_RATE_ITEMS[]        = { "30", "60", "120", "Unlimited" };
-            constexpr const char* RENDER_SCALE_ITEMS[]      = { "Native", "Half", "Quarter", "Retro" };
+            constexpr const char* RENDER_SCALE_ITEMS[]      = { "Native", "Retro" };
             constexpr const char* ASPECT_RATIO_ITEMS[]      = { "Native", "Widescreen", "Retro" };
             constexpr const char* TEX_FILTER_ITEMS[]        = { "Nearest", "Linear" };
             constexpr const char* LIGHTING_ITEMS[]          = { "Per vertex", "Per pixel" };

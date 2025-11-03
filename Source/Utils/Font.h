@@ -20,20 +20,28 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        bool                                _isLoaded     = false;
-        std::string                         _name         = {};
-        FT_Face                             _face         = {};
-        std::unordered_map<int, Glyph>      _glyphs       = {}; /** Key = rune ID, value = glyph info. */
-        std::vector<rectpack2D::space_rect> _packedGlyphs = {};
-        std::vector<byte>                   _atlasPixels  = {};
+        bool                                _isLoaded   = false; /** Load status. */
+        std::string                         _name       = {};    /** Font name. */
+        FT_Face                             _face       = {};    /** Loaded typeface file. */
+        std::unordered_map<int, Glyph>      _glyphs     = {};    /** Key = rune ID, value = glyph info. */
+        std::vector<rectpack2D::space_rect> _glyphRects = {};    /** Optimally packed glyph rectangles. */
+        std::vector<byte>                   _atlas      = {};    /** Rasterized glyph bitmap texture atlas. */
 
     public:
         // =============
         // Constructors
         // =============
 
+        // @todo Remove.
         Font() = default;
 
+        /** @brief Constructs a `Font` from a font file and adds it to a library.
+         *
+         * @param name Font name.
+         * @param path Font file path.
+         * @param pointSize Point size at which to load the font.
+         * @param fontLib Library to load the font into.
+         */
         Font(const std::string& name, const std::filesystem::path& path, int pointSize, FT_Library& fontLib);
 
         /** @brief Gracefully destroys the `Font`, freeing resources. */
@@ -49,24 +57,45 @@ namespace Silent::Utils
         // Inquirers
         // ==========
 
+        /** @brief Checks if the font is loaded and usable.
+         *
+         * @param `true` if the font is loaded, `false` otherwise.
+         */
         bool IsLoaded() const;
 
         // ==========
         // Utilities
         // ==========
 
-        void CacheGlyph(char32 runeId);
-
-        void RasterizeGlyph(const Glyph& glyph);
+        /** @brief Initializes the font with glyphs precached in the bitmap texture atlas.
+         *
+         * @param precacheGlyphs Glyphs to precache.
+         */
+        void Initialize(const std::string& precacheGlyphs);
 
     private:
         // ========
         // Helpers
         // ========
 
-        void LoadGlyph(int runeId);
+        /** @brief Gets the rune IDs for the glyphs in a string.
+         *
+         * @param str String to parse.
+         * @return Rune IDs for each glyph.
+         */
+        std::vector<char32> GetRuneIds(const std::string& str) const;
 
-        void BuildAtlas();
+        /** @brief Caches a new glyph in the bitmap texture atlas.
+         *
+         * @param runeId Rune ID of the glyph to cache.
+         */
+        void CacheGlyph(char32 runeId);
+
+        /** @brief Rasterizes a glyph and adds it to the bitmap texture atlas.
+         *
+         * @param runeId Rune ID of the glyph to rasterize.
+         */
+        void RasterizeGlyph(char32 runeId);
     };
 
     /** @brief Font manager. */

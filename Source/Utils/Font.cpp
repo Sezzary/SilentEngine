@@ -7,9 +7,10 @@
 
 namespace Silent::Utils
 {
-    Font::Font(const std::string& name, const std::filesystem::path& path, int pointSize, FT_Library& fontLib)
+    Font::Font(FT_Library& fontLib, const std::string& name, const std::filesystem::path& path, int pointSize, const std::string& precacheGlyphs)
     {
-        _name = name;
+        _name                     = name;
+        _glyphRects.flipping_mode = rectpack2D::flipping_option::DISABLED;
 
         if (FT_New_Face(fontLib, path.string().c_str(), 0, &_face))
         {
@@ -21,6 +22,16 @@ namespace Silent::Utils
         {
             Debug::Log("Failed to set font point size.", Debug::LogLevel::Error);
             return;
+        }
+
+        // Set atlas size.
+        _atlas.resize((ATLAS_SIZE * ATLAS_SIZE) * 4);
+
+        // Cache precache glyphs.
+        auto runeIds = GetRuneIds(precacheGlyphs);
+        for (char32 runeId : runeIds)
+        {
+            CacheGlyph(runeId);
         }
 
         _isLoaded = true;
@@ -41,11 +52,14 @@ namespace Silent::Utils
         glyphs.reserve(runeIds.size());
         for (char32 runeId : runeIds)
         {
-            // Check if glyph exists in atlas.
+            // Check if glyph is cached.
             auto it = _glyphs.find(runeId);
             if (it == _glyphs.end())
             {
-                CacheGlyph(runeId);
+                if (!CacheGlyph(runeId))
+                {
+                    continue;
+                }
             }
 
             // Add glyph.
@@ -61,38 +75,6 @@ namespace Silent::Utils
         return _isLoaded;
     }
 
-    void Font::Initialize(const std::string& glyphPrecache)
-    {
-        // Register precache glyphs.
-        auto runeIds = GetRuneIds(glyphPrecache);
-        for (char32 runeId : runeIds)
-        {
-            RegisterGlyph(runeId);
-        }
-
-        // @todo Doesn't work. This library has a horrid API.
-        // Pack glyph rectangles.
-        /*_glyphRects.reserve(_glyphs.size());
-        auto finder    = rectpack2D::make_finder_input(DEFAULT_ATLAS_SIZE, 1, nullptr, nullptr, rectpack2D::flipping_option::DISABLED);
-        auto atlasSize = rectpack2D::find_best_packing_dont_sort<rectpack2D::space_rect>(_glyphRects, finder);
-        if (atlasSize.w > DEFAULT_ATLAS_SIZE || atlasSize.h > DEFAULT_ATLAS_SIZE)
-        {
-            throw std::runtime_error("Attempted to initialize `" + _name + "` font glyph atlas beyond a compatible size.");
-        }*/
-
-        _atlas.resize(DEFAULT_ATLAS_SIZE * DEFAULT_ATLAS_SIZE);
-
-        // Set glyph atlas positions and rasterize.
-        for (int i = 0; i < _glyphs.size(); i++)
-        {
-            auto&       glyph = _glyphs[i];
-            const auto& rect  = _glyphRects[i];
-
-            glyph.Position = Vector2i(rect.x, rect.y) + Vector2i(GLYPH_PADDING);
-            RasterizeGlyph(glyph.RuneId);
-        }
-    }
-
     std::vector<char32> Font::GetRuneIds(const std::string& str) const
     {
         auto runeIds = std::vector<char32>{};
@@ -100,52 +82,37 @@ namespace Silent::Utils
         return runeIds;
     }
 
-    void Font::CacheGlyph(char32 runeId)
+    bool Font::CacheGlyph(char32 runeId)
     {
-        RegisterGlyph(runeId);
-
-        // @todo Doesn't work. This library has a horrid API.
-        // Pack new glyph rectangle. @todo Does this append 1 or rebuild the whole atlas?
-        /*auto finder    = rectpack2D::make_finder_input(DEFAULT_ATLAS_SIZE, 1, nullptr, nullptr, rectpack2D::flipping_option::DISABLED);
-        auto atlasSize = rectpack2D::find_best_packing_dont_sort<rectpack2D::space_rect>(_glyphRects, finder);
-        if (atlasSize.w > DEFAULT_ATLAS_SIZE || atlasSize.h > DEFAULT_ATLAS_SIZE)
-        {
-            _glyphs.erase(runeId);
-            _glyphRects.pop_back();
-            Debug::Log("Attempted to add glyph with rune ID " + std::to_string(runeId) + " to full glyph atlas in `" + _name + "` font.");
-            return;
-        }*/
-
-        // Set position and rasterize.
-        _glyphs[runeId].Position = Vector2i(_glyphRects.back().x, _glyphRects.back().y) + Vector2i(GLYPH_PADDING);
-        RasterizeGlyph(runeId);
-    }
-
-    void Font::RegisterGlyph(char32 runeId)
-    {
-        // Get data from font.
+        // Load glyph.
         FT_Load_Glyph(_face, runeId, FT_LOAD_DEFAULT);
         const auto& metrics = _face->glyph->metrics;
 
-        // Register new unpositioned glyph.
+        // Pack glyph rectangle.
+        auto rect = _glyphRects.insert(rectpack2D::rect_wh(metrics.width  + (GLYPH_PADDING * 2),
+                                                           metrics.height + (GLYPH_PADDING * 2)));
+        if (!rect.has_value())
+        {
+            Debug::Log("Failed to register glyph with rune ID " + std::to_string(runeId) + " for font `" + _name + "`. Atlas too full.", Debug::LogLevel::Warning);
+            return false;
+        }
+
+        // Register new glyph.
         _glyphs[runeId] = Glyph
         {
-            .RuneId  = runeId,
-            .Size    = Vector2i(metrics.width,        metrics.height),
-            .Bearing = Vector2i(metrics.horiBearingX, metrics.horiBearingY),
-            .Advance = (int)metrics.horiAdvance
+            .RuneId   = runeId,
+            .Position = Vector2i(rect->x + GLYPH_PADDING, rect->y + GLYPH_PADDING),
+            .Size     = Vector2i(metrics.width,           metrics.height),
+            .Bearing  = Vector2i(metrics.horiBearingX,    metrics.horiBearingY),
+            .Advance  = (int)metrics.horiAdvance
         };
-        _glyphRects.push_back(rectpack2D::space_rect(0, 0, metrics.width + (GLYPH_PADDING * 2), metrics.height + (GLYPH_PADDING * 2)));
-    }
 
-    void Font::RasterizeGlyph(char32 runeId)
-    {
         const auto& glyph = _glyphs[runeId];
 
         // Rasterize.
         FT_Render_Glyph(_face->glyph, FT_RENDER_MODE_NORMAL);
         const auto& bitmap     = _face->glyph->bitmap;
-        byte*       pixelsTo   = &_atlas[(glyph.Position.y * DEFAULT_ATLAS_SIZE) + glyph.Position.x];
+        byte*       pixelsTo   = &_atlas[(glyph.Position.y * ATLAS_SIZE) + glyph.Position.x];
         byte*       pixelsFrom = (byte*)bitmap.buffer;
 
         // Copy pixels to atlas.
@@ -157,9 +124,11 @@ namespace Silent::Utils
             }
 
             // Advance pointers.
-            pixelsTo   += DEFAULT_ATLAS_SIZE;
+            pixelsTo   += ATLAS_SIZE;
             pixelsFrom += bitmap.width;
         }
+
+        return true;
     }
 
     FontManager::FontManager()
@@ -195,23 +164,20 @@ namespace Silent::Utils
         // Check if font is already loaded.
         auto fontName = fontPath.filename().string();
         auto it       = _fonts.find(fontName);
-        if (it == _fonts.end())
+        if (it != _fonts.end())
         {
             Debug::Log("Attempted to load loaded font `"+ fontName + "`.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
 
         // Handle load.
-        _fonts[fontName] = Font(fontName, fontPath, pointSize, _library);
+        _fonts[fontName] = Font(_library, fontName, fontPath, pointSize, glyphPrecache);
         if (!_fonts[fontName].IsLoaded())
         {
             Debug::Log("Failed to load font `" + fontName + "`.", Debug::LogLevel::Error);
             _fonts.erase(fontName);
             return;
         }
-
-        // Precache glyphs.
-        _fonts[fontName].Initialize(glyphPrecache);
 
         Debug::Log("Loaded font `" + fontName + "` at point size " + std::to_string(pointSize) + ".");
     }

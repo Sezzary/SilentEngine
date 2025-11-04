@@ -16,19 +16,29 @@ namespace Silent::Utils
     class Font
     {
     private:
-        static constexpr uint DEFAULT_ATLAS_SIZE = 2048;
-        static constexpr uint GLYPH_PADDING      = 1;
+        // ========
+        // Aliases
+        // ========
+
+        using PackedRects = rectpack2D::empty_spaces<false, rectpack2D::default_empty_spaces>;
+
+        // ==========
+        // Constants
+        // ==========
+
+        static constexpr uint ATLAS_SIZE    = 2048;
+        static constexpr uint GLYPH_PADDING = 1;
 
         // =======
         // Fields
         // =======
 
-        bool                                _isLoaded   = false; /** Load status. */
-        std::string                         _name       = {};    /** Font name. */
-        FT_Face                             _face       = {};    /** Loaded typeface file. */
-        std::unordered_map<int, Glyph>      _glyphs     = {};    /** Key = rune ID, value = atlased glyph info. */
-        std::vector<rectpack2D::space_rect> _glyphRects = {};    /** Optimally packed glyph rectangles. */
-        std::vector<byte>                   _atlas      = {};    /** Rasterized glyph bitmap texture atlas. */
+        bool                           _isLoaded   = false;                                   /** Load status. */
+        std::string                    _name       = {};                                      /** Font name. */
+        FT_Face                        _face       = {};                                      /** Loaded typeface file. */
+        std::unordered_map<int, Glyph> _glyphs     = {};                                      /** Key = rune ID, value = atlased glyph info. */
+        PackedRects                    _glyphRects = PackedRects({ ATLAS_SIZE, ATLAS_SIZE }); /** Packed glyph rectangles. */
+        std::vector<byte>              _atlas      = {};                                      /** Rasterized glyph bitmap texture atlas. */
 
     public:
         // =============
@@ -38,14 +48,15 @@ namespace Silent::Utils
         // @todo Remove.
         Font() = default;
 
-        /** @brief Constructs a `Font` from a font file and adds it to a library.
+        /** @brief Constructs a `Font` from a font file and adds it to a library, precaching a set of glyphs in the bitmat texture atlas.
          *
+         * @param fontLib Library to load the font into.
          * @param name Font name.
          * @param path Font file path.
          * @param pointSize Point size at which to load the font.
-         * @param fontLib Library to load the font into.
+         * @param precacheGlyphs Glyphs to precache.
          */
-        Font(const std::string& name, const std::filesystem::path& path, int pointSize, FT_Library& fontLib);
+        Font(FT_Library& fontLib, const std::string& name, const std::filesystem::path& path, int pointSize, const std::string& precacheGlyphs);
 
         /** @brief Gracefully destroys the `Font`, freeing resources. */
         ~Font();
@@ -66,16 +77,6 @@ namespace Silent::Utils
          */
         bool IsLoaded() const;
 
-        // ==========
-        // Utilities
-        // ==========
-
-        /** @brief Initializes the font with glyphs precached in the bitmap texture atlas.
-         *
-         * @param precacheGlyphs Glyphs to precache.
-         */
-        void Initialize(const std::string& precacheGlyphs);
-
     private:
         // ========
         // Helpers
@@ -91,20 +92,9 @@ namespace Silent::Utils
         /** @brief Caches a new glyph in the bitmap texture atlas.
          *
          * @param runeId Rune ID of the glyph to cache.
+         * @return `true` if the glyph was cached successfully, `false` otherwise.
          */
-        void CacheGlyph(char32 runeId);
-
-        /** @brief Registers a new glyph for rasterization.
-         *
-         * @param runeId Rune ID of the glyph to register.
-         */
-        void RegisterGlyph(char32 runeId);
-
-        /** @brief Rasterizes a new glyph and adds it to the bitmap texture atlas.
-         *
-         * @param runeId Rune ID of the glyph to rasterize.
-         */
-        void RasterizeGlyph(char32 runeId);
+        bool CacheGlyph(char32 runeId);
     };
 
     /** @brief Atlased font manager. */
@@ -148,8 +138,8 @@ namespace Silent::Utils
          *
          * @param fontPath Font file path.
          * @param pointSize Vertical rasterization point size.
-         * @param glyphPrecache Glyphs to precache in the atlas upon font initialization.
+         * @param precacheGlyphs Glyphs to precache in the atlas upon font initialization.
          */
-        void LoadFont(const std::filesystem::path& fontPath, int pointSize, const std::string& glyphPrecache);
+        void LoadFont(const std::filesystem::path& fontPath, int pointSize, const std::string& precacheGlyphs = {});
     };
 }

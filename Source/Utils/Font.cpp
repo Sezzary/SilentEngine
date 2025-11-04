@@ -63,35 +63,24 @@ namespace Silent::Utils
 
     void Font::Initialize(const std::string& glyphPrecache)
     {
-        // Collect unpositioned glyphs.
+        // Register precache glyphs.
         auto runeIds = GetRuneIds(glyphPrecache);
         for (char32 runeId : runeIds)
         {
-            FT_Load_Glyph(_face, runeId, FT_LOAD_DEFAULT);
-            const auto& metrics = _face->glyph->metrics;
-
-            _glyphs[runeId] = Glyph
-            {
-                .RuneId  = runeId,
-                .Size    = Vector2i(metrics.width,        metrics.height),
-                .Bearing = Vector2i(metrics.horiBearingX, metrics.horiBearingY),
-                .Advance = (int)metrics.horiAdvance
-            };
+            RegisterGlyph(runeId);
         }
 
-        // @todo
+        // @todo Doesn't work. This library has a horrid API.
         // Pack glyph rectangles.
         /*_glyphRects.reserve(_glyphs.size());
-        auto resultSize = rectpack2D::find_best_packing_dont_sort<rectpack2D::space_rect>(
-            _glyphRects,
-            rectpack2D::make_finder_input(
-                0,//max_side,
-                0,//discard_step,
-                report_successful,
-                report_unsuccessful,
-                rectpack2D::flipping_option::DISABLED,//runtime_flipping_mode
-            )
-        );*/
+        auto finder    = rectpack2D::make_finder_input(DEFAULT_ATLAS_SIZE, 1, nullptr, nullptr, rectpack2D::flipping_option::DISABLED);
+        auto atlasSize = rectpack2D::find_best_packing_dont_sort<rectpack2D::space_rect>(_glyphRects, finder);
+        if (atlasSize.w > DEFAULT_ATLAS_SIZE || atlasSize.h > DEFAULT_ATLAS_SIZE)
+        {
+            throw std::runtime_error("Attempted to initialize `" + _name + "` font glyph atlas beyond a compatible size.");
+        }*/
+
+        _atlas.resize(DEFAULT_ATLAS_SIZE * DEFAULT_ATLAS_SIZE);
 
         // Set glyph atlas positions and rasterize.
         for (int i = 0; i < _glyphs.size(); i++)
@@ -99,7 +88,7 @@ namespace Silent::Utils
             auto&       glyph = _glyphs[i];
             const auto& rect  = _glyphRects[i];
 
-            glyph.Position = Vector2i(rect.x, rect.y);
+            glyph.Position = Vector2i(rect.x, rect.y) + Vector2i(GLYPH_PADDING);
             RasterizeGlyph(glyph.RuneId);
         }
     }
@@ -113,11 +102,32 @@ namespace Silent::Utils
 
     void Font::CacheGlyph(char32 runeId)
     {
+        RegisterGlyph(runeId);
+
+        // @todo Doesn't work. This library has a horrid API.
+        // Pack new glyph rectangle. @todo Does this append 1 or rebuild the whole atlas?
+        /*auto finder    = rectpack2D::make_finder_input(DEFAULT_ATLAS_SIZE, 1, nullptr, nullptr, rectpack2D::flipping_option::DISABLED);
+        auto atlasSize = rectpack2D::find_best_packing_dont_sort<rectpack2D::space_rect>(_glyphRects, finder);
+        if (atlasSize.w > DEFAULT_ATLAS_SIZE || atlasSize.h > DEFAULT_ATLAS_SIZE)
+        {
+            _glyphs.erase(runeId);
+            _glyphRects.pop_back();
+            Debug::Log("Attempted to add glyph with rune ID " + std::to_string(runeId) + " to full glyph atlas in `" + _name + "` font.");
+            return;
+        }*/
+
+        // Set position and rasterize.
+        _glyphs[runeId].Position = Vector2i(_glyphRects.back().x, _glyphRects.back().y) + Vector2i(GLYPH_PADDING);
+        RasterizeGlyph(runeId);
+    }
+
+    void Font::RegisterGlyph(char32 runeId)
+    {
         // Get data from font.
         FT_Load_Glyph(_face, runeId, FT_LOAD_DEFAULT);
         const auto& metrics = _face->glyph->metrics;
 
-        // Register new glyph.
+        // Register new unpositioned glyph.
         _glyphs[runeId] = Glyph
         {
             .RuneId  = runeId,
@@ -125,33 +135,7 @@ namespace Silent::Utils
             .Bearing = Vector2i(metrics.horiBearingX, metrics.horiBearingY),
             .Advance = (int)metrics.horiAdvance
         };
-        _glyphRects.push_back(rectpack2D::space_rect(0, 0, metrics.width, metrics.height));
-
-        /*using rect_type = rectpack2D::output_rect_t<rectpack2D::space_rect>;
-
-        auto report_successful = [](rectpack2D::space_rect&) {
-            return rectpack2D::callback_result::CONTINUE_PACKING;
-        };
-
-        auto report_unsuccessful = [](rectpack2D::space_rect&) {
-            return rectpack2D::callback_result::ABORT_PACKING;
-        };*/
-
-        // @todo
-        /*auto result_size = rectpack2D::find_best_packing_dont_sort<rect_type>(
-            _glyphRects,
-            rectpack2D::make_finder_input(
-                0,//max_side,
-                0,//discard_step,
-                report_successful,
-                report_unsuccessful,
-                rectpack2D::flipping_option::DISABLED,//runtime_flipping_mode
-            )
-        );*/
-
-        // Set position and rasterize.
-        _glyphs[runeId].Position = Vector2i(_glyphRects.back().x, _glyphRects.back().y);
-        RasterizeGlyph(runeId);
+        _glyphRects.push_back(rectpack2D::space_rect(0, 0, metrics.width + (GLYPH_PADDING * 2), metrics.height + (GLYPH_PADDING * 2)));
     }
 
     void Font::RasterizeGlyph(char32 runeId)
@@ -164,7 +148,7 @@ namespace Silent::Utils
         byte*       pixelsTo   = &_atlas[(glyph.Position.y * DEFAULT_ATLAS_SIZE) + glyph.Position.x];
         byte*       pixelsFrom = (byte*)bitmap.buffer;
 
-        // Copy pixels to atlas. @todo Needs padding?
+        // Copy pixels to atlas.
         for (int i = 0; i < bitmap.rows; i++)
         {
             for (int x = 0; x < bitmap.width; x++)

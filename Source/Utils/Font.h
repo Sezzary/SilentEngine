@@ -2,6 +2,7 @@
 
 namespace Silent::Utils
 {
+    /** @brief Atlased font glyph. */
     struct Glyph
     {
         char32   RuneId   = 0;
@@ -11,10 +12,12 @@ namespace Silent::Utils
         int      Advance  = 0;
     };
 
+    /** @brief Atlased font. */
     class Font
     {
     private:
-        static constexpr uint DEFAULT_ATLAS_SIZE = 1024;
+        static constexpr uint DEFAULT_ATLAS_SIZE = 2048;
+        static constexpr uint GLYPH_PADDING      = 1;
 
         // =======
         // Fields
@@ -23,7 +26,7 @@ namespace Silent::Utils
         bool                                _isLoaded   = false; /** Load status. */
         std::string                         _name       = {};    /** Font name. */
         FT_Face                             _face       = {};    /** Loaded typeface file. */
-        std::unordered_map<int, Glyph>      _glyphs     = {};    /** Key = rune ID, value = glyph info. */
+        std::unordered_map<int, Glyph>      _glyphs     = {};    /** Key = rune ID, value = atlased glyph info. */
         std::vector<rectpack2D::space_rect> _glyphRects = {};    /** Optimally packed glyph rectangles. */
         std::vector<byte>                   _atlas      = {};    /** Rasterized glyph bitmap texture atlas. */
 
@@ -91,14 +94,20 @@ namespace Silent::Utils
          */
         void CacheGlyph(char32 runeId);
 
-        /** @brief Rasterizes a glyph and adds it to the bitmap texture atlas.
+        /** @brief Registers a new glyph for rasterization.
+         *
+         * @param runeId Rune ID of the glyph to register.
+         */
+        void RegisterGlyph(char32 runeId);
+
+        /** @brief Rasterizes a new glyph and adds it to the bitmap texture atlas.
          *
          * @param runeId Rune ID of the glyph to rasterize.
          */
         void RasterizeGlyph(char32 runeId);
     };
 
-    /** @brief Font manager. */
+    /** @brief Atlased font manager. */
     class FontManager
     {
     private:
@@ -107,7 +116,7 @@ namespace Silent::Utils
         // =======
 
         FT_Library                            _library = {};
-        std::unordered_map<std::string, Font> _fonts   = {}; /** Key = font name, value = font. */
+        std::unordered_map<std::string, Font> _fonts   = {}; /** Key = font name, value = atlased font. */
 
     public:
         // =============

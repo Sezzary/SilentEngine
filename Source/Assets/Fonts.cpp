@@ -5,11 +5,16 @@ namespace Silent::Assets
 {
     const std::vector<std::string> FONT_NAMES
     {
+        "FreeSerif.oft",
         "Unifont.tff"
     };
 
     const std::vector<std::string> FONT_GLYPH_PRECACHES
     {
-        " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+        " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+
+        "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん\
+         アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン\
+         。！？、"
     };
 }

@@ -12,6 +12,7 @@
 #include "Services/Options.h"
 #include "Services/Time.h"
 #include "Services/Toasts.h"
+#include "Utils/Font.h"
 #include "Utils/Parallel.h"
 #include "Utils/Translator.h"
 
@@ -84,6 +85,7 @@ namespace Silent
         return res;
     }
 
+        auto fonts = FontManager();
     void ApplicationManager::Initialize()
     {
         _quit = false;
@@ -134,6 +136,8 @@ namespace Silent
 
         // Input.
         _work.Input.Initialize();
+
+        fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / "Fonts/FreeSerif.otf", 32, "DEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
 
         // Finish.
         Debug::Log("Startup complete.");

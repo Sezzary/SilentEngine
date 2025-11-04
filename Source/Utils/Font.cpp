@@ -25,7 +25,7 @@ namespace Silent::Utils
         }
 
         // Set atlas size.
-        _atlas.resize((ATLAS_SIZE * ATLAS_SIZE) * 4);
+        _atlas.resize((ATLAS_SIZE * ATLAS_SIZE));
 
         // Cache precache glyphs.
         auto runeIds = GetRuneIds(precacheGlyphs);
@@ -34,6 +34,8 @@ namespace Silent::Utils
             CacheGlyph(runeId);
         }
 
+        if (stbi_write_png((std::filesystem::current_path() / "test.png").string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlas.data(), ATLAS_SIZE))
+            Debug::Log("saved image");
         _isLoaded = true;
     }
 
@@ -89,8 +91,8 @@ namespace Silent::Utils
         const auto& metrics = _face->glyph->metrics;
 
         // Pack glyph rectangle.
-        auto rect = _glyphRects.insert(rectpack2D::rect_wh(metrics.width  + (GLYPH_PADDING * 2),
-                                                           metrics.height + (GLYPH_PADDING * 2)));
+        auto rect = _glyphRects.insert(rectpack2D::rect_wh(FP_FROM(metrics.width,  Q6_SHIFT) + (GLYPH_PADDING * 2),
+                                                           FP_FROM(metrics.height, Q6_SHIFT) + (GLYPH_PADDING * 2)));
         if (!rect.has_value())
         {
             Debug::Log("Failed to register glyph with rune ID " + std::to_string(runeId) + " for font `" + _name + "`. Atlas too full.", Debug::LogLevel::Warning);
@@ -120,7 +122,7 @@ namespace Silent::Utils
         {
             for (int x = 0; x < bitmap.width; x++)
             {
-                pixelsTo[x] = (pixelsFrom[x] << 24) | 0xFFFFFF;
+                pixelsTo[x] = pixelsFrom[x];
             }
 
             // Advance pointers.

@@ -9,8 +9,7 @@ namespace Silent::Utils
 {
     Font::Font(FT_Library& fontLib, const std::string& name, const std::filesystem::path& path, int pointSize, const std::string& precacheGlyphs)
     {
-        _name                     = name;
-        _glyphRects.flipping_mode = rectpack2D::flipping_option::DISABLED;
+        _name = name;
 
         if (FT_New_Face(fontLib, path.string().c_str(), 0, &_face))
         {
@@ -25,7 +24,7 @@ namespace Silent::Utils
         }
 
         // Set atlas size.
-        _atlas.resize((ATLAS_SIZE * ATLAS_SIZE));
+        _atlas.resize(ATLAS_SIZE * ATLAS_SIZE);
 
         // Cache precache glyphs.
         auto runeIds = GetRuneIds(precacheGlyphs);
@@ -34,8 +33,7 @@ namespace Silent::Utils
             CacheGlyph(runeId);
         }
 
-        if (stbi_write_png((std::filesystem::current_path() / "test.png").string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlas.data(), ATLAS_SIZE))
-            Debug::Log("saved image");
+        stbi_write_png((std::filesystem::current_path() / "test.png").string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlas.data(), ATLAS_SIZE);
         _isLoaded = true;
     }
 
@@ -91,8 +89,8 @@ namespace Silent::Utils
         const auto& metrics = _face->glyph->metrics;
 
         // Pack glyph rectangle.
-        auto rect = _glyphRects.insert(rectpack2D::rect_wh(FP_FROM(metrics.width,  Q6_SHIFT) + (GLYPH_PADDING * 2),
-                                                           FP_FROM(metrics.height, Q6_SHIFT) + (GLYPH_PADDING * 2)));
+        auto size = Vector2i(FP_FROM(metrics.width,  Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
+        auto rect = _glyphRects.insert(rectpack2D::rect_wh(size.x, size.y));
         if (!rect.has_value())
         {
             Debug::Log("Failed to register glyph with rune ID " + std::to_string(runeId) + " for font `" + _name + "`. Atlas too full.", Debug::LogLevel::Warning);
@@ -104,7 +102,7 @@ namespace Silent::Utils
         {
             .RuneId   = runeId,
             .Position = Vector2i(rect->x, rect->y) + Vector2i(GLYPH_PADDING),
-            .Size     = Vector2i(metrics.width, metrics.height),
+            .Size     = size,
             .Bearing  = Vector2i(metrics.horiBearingX, metrics.horiBearingY),
             .Advance  = (int)metrics.horiAdvance
         };
@@ -118,16 +116,12 @@ namespace Silent::Utils
         byte*       pixelsFrom = (byte*)bitmap.buffer;
 
         // Copy pixels to atlas.
-        for (int i = 0; i < bitmap.rows; i++)
+        for (int y = 0; y < bitmap.rows; y++)
         {
             for (int x = 0; x < bitmap.width; x++)
             {
-                pixelsTo[x] = pixelsFrom[x];
+                pixelsTo[(ATLAS_SIZE * y) + x] = pixelsFrom[(bitmap.width * y) + x];
             }
-
-            // Advance pointers.
-            pixelsTo   += ATLAS_SIZE;
-            pixelsFrom += bitmap.width;
         }
 
         return true;

@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Assets/Assets.h"
+#include "Assets/Fonts.h"
 #include "Assets/Locales.h"
 #include "Audio/Audio.h"
 #include "Input/Input.h"
@@ -123,6 +124,9 @@ namespace Silent
         _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_PSX_DIR_NAME);
         _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_LOCALES_DIR_NAME, LOCALE_NAMES);
 
+        // Fonts.
+        fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / "FreeSerif.otf", 32, " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
+
         // Renderer.
         _work.Renderer = CreateRenderer(RendererType::SdlGpu);
         if (_work.Renderer == nullptr)
@@ -136,8 +140,6 @@ namespace Silent
 
         // Input.
         _work.Input.Initialize();
-
-        fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / "Fonts/FreeSerif.otf", 32, "DEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
 
         // Finish.
         Debug::Log("Startup complete.");

@@ -45,7 +45,7 @@ namespace Silent::Utils
         // Constructors
         // =============
 
-        // @todo Remove.
+        /** @brief Constructs an uninitialized default `Font`. */
         Font() = default;
 
         /** @brief Constructs a `Font` from a font file and adds it to a library, precaching a set of glyphs in the bitmat texture atlas.

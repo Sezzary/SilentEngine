@@ -22,7 +22,10 @@ endif()
 # Add executable.
 file(GLOB_RECURSE SOURCES "Source/*.cpp")
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME "${CMAKE_PROJECT_NAME}" DEBUG_POSTFIX "_d")
+set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+    OUTPUT_NAME "${CMAKE_PROJECT_NAME}"
+    DEBUG_POSTFIX "_d"
+)
 
 # Add library sources.
 file(GLOB LIB_SOURCES

@@ -43,13 +43,13 @@ namespace Silent::Utils
         _size   = std::min(size, (uint)bitChunks.size() * CHUNK_SIZE);
     }
 
-    Bitfield::Bitfield(const std::string& bitString)
+    Bitfield::Bitfield(const std::string& bitStr)
     {
-        _chunks.resize((bitString.size() + (CHUNK_SIZE - 1)) / CHUNK_SIZE);
-        _size = (uint)bitString.size();
+        _chunks.resize((bitStr.size() + (CHUNK_SIZE - 1)) / CHUNK_SIZE);
+        _size = (uint)bitStr.size();
 
         uint bitIdx = 0;
-        for (char bit : bitString)
+        for (char bit : bitStr)
         {
             uint i        = bitIdx % CHUNK_SIZE;
             uint chunkIdx = bitIdx / CHUNK_SIZE;

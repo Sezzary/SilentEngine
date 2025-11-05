@@ -103,9 +103,9 @@ namespace Silent::Utils
         _glyphs[runeId] = Glyph
         {
             .RuneId   = runeId,
-            .Position = Vector2i(rect->x + GLYPH_PADDING, rect->y + GLYPH_PADDING),
-            .Size     = Vector2i(metrics.width,           metrics.height),
-            .Bearing  = Vector2i(metrics.horiBearingX,    metrics.horiBearingY),
+            .Position = Vector2i(rect->x, rect->y) + Vector2i(GLYPH_PADDING),
+            .Size     = Vector2i(metrics.width, metrics.height),
+            .Bearing  = Vector2i(metrics.horiBearingX, metrics.horiBearingY),
             .Advance  = (int)metrics.horiAdvance
         };
 

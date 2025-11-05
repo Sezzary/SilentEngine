@@ -27,14 +27,16 @@ namespace Silent::Utils
         _atlas.resize(ATLAS_SIZE * ATLAS_SIZE);
 
         // Cache precache glyphs.
-        auto runeIds = GetRuneIds(precacheGlyphs);
-        for (char32 runeId : runeIds)
+        auto codePoints = GetCodePoints(precacheGlyphs);
+        for (char32 codePoint : codePoints)
         {
-            CacheGlyph(runeId);
+            CacheGlyph(codePoint);
         }
 
-        stbi_write_png((std::filesystem::current_path() / "test.png").string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlas.data(), ATLAS_SIZE);
         _isLoaded = true;
+
+        // Debug.
+        //stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + "_Atlas.png")).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlas.data(), ATLAS_SIZE);
     }
 
     Font::~Font()
@@ -44,26 +46,26 @@ namespace Silent::Utils
 
     std::vector<Glyph*> Font::GetGlyphs(const std::string& msg)
     {
-        // Get rune IDs.
-        auto runeIds = GetRuneIds(msg);
+        // Get code points.
+        auto codePoints = GetCodePoints(msg);
 
         // Collect glyphs.
         auto glyphs = std::vector<Glyph*>{};
-        glyphs.reserve(runeIds.size());
-        for (char32 runeId : runeIds)
+        glyphs.reserve(codePoints.size());
+        for (char32 codePoint : codePoints)
         {
             // Check if glyph is cached.
-            auto it = _glyphs.find(runeId);
+            auto it = _glyphs.find(codePoint);
             if (it == _glyphs.end())
             {
-                if (!CacheGlyph(runeId))
+                if (!CacheGlyph(codePoint))
                 {
                     continue;
                 }
             }
 
             // Add glyph.
-            auto& [keyRuneId, glyph] = *it;
+            auto& [keyCodePoint, glyph] = *it;
             glyphs.push_back(&glyph);
         }
 
@@ -75,17 +77,18 @@ namespace Silent::Utils
         return _isLoaded;
     }
 
-    std::vector<char32> Font::GetRuneIds(const std::string& str) const
+    // @todo Not decoded properly.
+    std::vector<char32> Font::GetCodePoints(const std::string& str) const
     {
-        auto runeIds = std::vector<char32>{};
-        utf8::utf8to32(str.begin(), str.end(), std::back_inserter(runeIds));
-        return runeIds;
+        auto codePoints = std::vector<char32>{};
+        utf8::utf8to32(str.begin(), str.end(), std::back_inserter(codePoints));
+        return codePoints;
     }
 
-    bool Font::CacheGlyph(char32 runeId)
+    bool Font::CacheGlyph(char32 codePoint)
     {
         // Load glyph.
-        FT_Load_Glyph(_face, runeId, FT_LOAD_DEFAULT);
+        FT_Load_Glyph(_face, codePoint, FT_LOAD_DEFAULT);
         const auto& metrics = _face->glyph->metrics;
 
         // Pack glyph rectangle.
@@ -93,21 +96,21 @@ namespace Silent::Utils
         auto rect = _glyphRects.insert(rectpack2D::rect_wh(size.x, size.y));
         if (!rect.has_value())
         {
-            Debug::Log("Failed to register glyph with rune ID " + std::to_string(runeId) + " for font `" + _name + "`. Atlas too full.", Debug::LogLevel::Warning);
+            Debug::Log("Failed to register glyph with code point " + std::to_string(codePoint) + " for font `" + _name + "`. Atlas too full.", Debug::LogLevel::Warning);
             return false;
         }
 
         // Register new glyph.
-        _glyphs[runeId] = Glyph
+        _glyphs[codePoint] = Glyph
         {
-            .RuneId   = runeId,
-            .Position = Vector2i(rect->x, rect->y) + Vector2i(GLYPH_PADDING),
-            .Size     = size,
-            .Bearing  = Vector2i(metrics.horiBearingX, metrics.horiBearingY),
-            .Advance  = (int)metrics.horiAdvance
+            .CodePoint = codePoint,
+            .Position  = Vector2i(rect->x, rect->y) + Vector2i(GLYPH_PADDING),
+            .Size      = size,
+            .Bearing   = Vector2i(metrics.horiBearingX, metrics.horiBearingY),
+            .Advance   = (int)metrics.horiAdvance
         };
 
-        const auto& glyph = _glyphs[runeId];
+        const auto& glyph = _glyphs[codePoint];
 
         // Rasterize.
         FT_Render_Glyph(_face->glyph, FT_RENDER_MODE_NORMAL);

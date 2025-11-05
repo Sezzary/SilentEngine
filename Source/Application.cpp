@@ -14,7 +14,6 @@
 #include "Services/Time.h"
 #include "Services/Toasts.h"
 #include "Utils/Font.h"
-#include "Utils/Parallel.h"
 #include "Utils/Translator.h"
 
 using namespace Silent::Assets;
@@ -42,6 +41,11 @@ namespace Silent
     FilesystemManager& ApplicationManager::GetFilesystem()
     {
         return _work.Filesystem;
+    }
+
+    FontManager& ApplicationManager::GetFonts()
+    {
+        return _work.Fonts;
     }
 
     InputManager& ApplicationManager::GetInput()
@@ -86,7 +90,6 @@ namespace Silent
         return res;
     }
 
-        auto fonts = FontManager();
     void ApplicationManager::Initialize()
     {
         _quit = false;
@@ -124,8 +127,10 @@ namespace Silent
         _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_PSX_DIR_NAME);
         _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_LOCALES_DIR_NAME, LOCALE_NAMES);
 
-        // Fonts.
-        fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / "FreeSerif.otf", 32, " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
+        for (const auto& fontMetadata : FONTS_METADATA)
+        {
+            _work.Fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / fontMetadata.Name, fontMetadata.PointSize, fontMetadata.Precache);
+        }
 
         // Renderer.
         _work.Renderer = CreateRenderer(RendererType::SdlGpu);

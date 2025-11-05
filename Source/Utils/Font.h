@@ -2,14 +2,14 @@
 
 namespace Silent::Utils
 {
-    /** @brief Atlased font glyph. */
+    /** @brief Atlased glyph metadata. */
     struct Glyph
     {
-        char32   RuneId   = 0;
-        Vector2i Position = Vector2i::Zero;
-        Vector2i Size     = Vector2i::Zero;
-        Vector2i Bearing  = Vector2i::Zero;
-        int      Advance  = 0;
+        char32   CodePoint = 0;
+        Vector2i Position  = Vector2i::Zero;
+        Vector2i Size      = Vector2i::Zero;
+        Vector2i Bearing   = Vector2i::Zero;
+        int      Advance   = 0;
     };
 
     /** @brief Atlased font. */
@@ -36,7 +36,7 @@ namespace Silent::Utils
         bool                           _isLoaded   = false;                                   /** Load status. */
         std::string                    _name       = {};                                      /** Font name. */
         FT_Face                        _face       = {};                                      /** Loaded typeface file. */
-        std::unordered_map<int, Glyph> _glyphs     = {};                                      /** Key = rune ID, value = atlased glyph info. */
+        std::unordered_map<int, Glyph> _glyphs     = {};                                      /** Key = code point, value = atlased glyph metadata. */
         PackedRects                    _glyphRects = PackedRects({ ATLAS_SIZE, ATLAS_SIZE }); /** Packed glyph rectangles. */
         std::vector<byte>              _atlas      = {};                                      /** Rasterized glyph bitmap texture atlas. */
 
@@ -82,19 +82,19 @@ namespace Silent::Utils
         // Helpers
         // ========
 
-        /** @brief Gets the rune IDs for the glyphs in a string.
+        /** @brief Gets the code points for the glyphs in a string.
          *
          * @param str String to parse.
-         * @return Rune IDs for each glyph.
+         * @return Code points for each glyph.
          */
-        std::vector<char32> GetRuneIds(const std::string& str) const;
+        std::vector<char32> GetCodePoints(const std::string& str) const;
 
         /** @brief Caches a new glyph in the bitmap texture atlas.
          *
-         * @param runeId Rune ID of the glyph to cache.
+         * @param codePoint Code point of the glyph to cache.
          * @return `true` if the glyph was cached successfully, `false` otherwise.
          */
-        bool CacheGlyph(char32 runeId);
+        bool CacheGlyph(char32 codePoint);
     };
 
     /** @brief Atlased font manager. */

@@ -3,18 +3,32 @@
 
 namespace Silent::Assets
 {
-    const std::vector<std::string> FONT_NAMES
-    {
-        "FreeSerif.oft",
-        "Unifont.tff"
-    };
+    constexpr auto POINT_SIZE_HIGH_RES = 48;
+    constexpr auto POINT_SIZE_LOW_RES  = 16;
+    constexpr char ASCII_PRECACHE[]    = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    constexpr char JAPANESE_PRECACHE[] = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん\
+                                          アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン\
+                                          。！？、";
 
-    const std::vector<std::string> FONT_GLYPH_PRECACHES
+    const std::vector<FontMetadata> FONTS_METADATA
     {
-        " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
-
-        "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん\
-         アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン\
-         。！？、"
+        FontMetadata
+        {
+            .Name      = "FreeSerif.otf",
+            .PointSize = POINT_SIZE_HIGH_RES,
+            .Precache  = ASCII_PRECACHE
+        },
+        FontMetadata
+        {
+            .Name      = "ShipporiMincho.ttf",
+            .PointSize = POINT_SIZE_HIGH_RES,
+            .Precache  = JAPANESE_PRECACHE
+        },
+        FontMetadata
+        {
+            .Name      = "UnifontExMono.ttf",
+            .PointSize = POINT_SIZE_LOW_RES,
+            .Precache  = ASCII_PRECACHE
+        }
     };
 }

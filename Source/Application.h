@@ -9,6 +9,7 @@
 #include "Services/Options.h"
 #include "Services/Time.h"
 #include "Services/Toasts.h"
+#include "Utils/Font.h"
 #include "Utils/Translator.h"
 
 namespace Silent
@@ -30,6 +31,7 @@ namespace Silent
         AssetManager                  Assets     = AssetManager();
         AudioManager                  Audio      = AudioManager();
         FilesystemManager             Filesystem = FilesystemManager();
+        FontManager                   Fonts      = FontManager();
         InputManager                  Input      = InputManager();
         OptionsManager                Options    = OptionsManager();
         std::unique_ptr<RendererBase> Renderer   = nullptr;
@@ -66,6 +68,7 @@ namespace Silent
         AssetManager&       GetAssets();
         AudioManager&       GetAudio();
         FilesystemManager&  GetFilesystem();
+        FontManager&        GetFonts();
         InputManager&       GetInput();
         OptionsManager&     GetOptions();
         RendererBase&       GetRenderer();

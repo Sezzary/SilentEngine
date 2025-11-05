@@ -2,6 +2,7 @@
 #include "Savegame/Savegame.h"
 
 #include "Application.h"
+#include "Assets/TranslationKeys.h"
 #include "Savegame/Generated/savegame_generated.h"
 #include "Services/Filesystem.h"
 #include "Utils/Utils.h"
@@ -13,33 +14,33 @@ namespace Silent::Savegame
     constexpr char SAVEGAME_SLOT_FILE_DIR_NAME_BASE[] = "File ";
     constexpr char SAVEGAME_SLOT_DIR_NAME_BASE[]      = "Slot ";
 
-    static const char* SAVE_LOCATION_NAMES[] =
+    static const std::vector<std::string> SAVE_LOCATION_NAME_KEYS =
     {
-        "Anywhere",
-        "Cafe",
-        "Bus",
-        "Store",
-        "Infirmary",
-        "Doghouse",
-        "Gordon",
-        "Church",
-        "Garage",
-        "Police",
-        "Reception",
-        "Room_302",
-        "Director's",
-        "Jewelry_shop",
-        "Pool_hall",
-        "Antique_shop",
-        "Theme_park",
-        "Boat",
-        "Bridge",
-        "Motel",
-        "Lighthouse",
-        "Sewer",
-        "Nowhere",
-        "Child's_room",
-        "Next_fear"
+        KEY_SAVE_LOC_ANYWHERE,
+        KEY_SAVE_LOC_CAFE,
+        KEY_SAVE_LOC_BUS,
+        KEY_SAVE_LOC_STORE,
+        KEY_SAVE_LOC_INFIRMARY,
+        KEY_SAVE_LOC_DOGHOUSE,
+        KEY_SAVE_LOC_GORDON,
+        KEY_SAVE_LOC_CHURCH,
+        KEY_SAVE_LOC_GARAGE,
+        KEY_SAVE_LOC_POLICE,
+        KEY_SAVE_LOC_RECEPTION,
+        KEY_SAVE_LOC_ROOM_302,
+        KEY_SAVE_LOC_DIRECTORS,
+        KEY_SAVE_LOC_JEWELLERY_SHOP,
+        KEY_SAVE_LOC_POOL_HALL,
+        KEY_SAVE_LOC_ANTIQUE_SHOP,
+        KEY_SAVE_LOC_THEME_PARK,
+        KEY_SAVE_LOC_BOAT,
+        KEY_SAVE_LOC_BRIDGE,
+        KEY_SAVE_LOC_MOTEL,
+        KEY_SAVE_LOC_LIGHTHOUSE,
+        KEY_SAVE_LOC_SEWER,
+        KEY_SAVE_LOC_NOWHERE,
+        KEY_SAVE_LOC_CHILDS_ROOM,
+        KEY_SAVE_LOC_NEXT_FEAR
     };
 
     const std::vector<SavegameMetadata>& SavegameManager::GetSlotMetadata(int slotIdx)

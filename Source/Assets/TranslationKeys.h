@@ -2,6 +2,12 @@
 
 namespace Silent::Assets
 {
+    // ==============
+    // Splash Screen
+    // ==============
+
+    constexpr char KEY_SPLASH_SCREEN_WARNING[] = "splashScreenWarning";
+
     // ======
     // Menus
     // ======

@@ -9,6 +9,9 @@ namespace Silent
     using ushort = unsigned short;
     using uint   = unsigned int;
     using ulong  = unsigned long;
+    using char8  = char8_t;
+    using char16 = char16_t;
+    using char32 = char32_t;
     using int8   = int8_t;
     using int16  = int16_t;
     using int32  = int32_t;

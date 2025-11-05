@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Assets/Assets.h"
+#include "Assets/Fonts.h"
 #include "Assets/Locales.h"
 #include "Audio/Audio.h"
 #include "Input/Input.h"
@@ -12,7 +13,7 @@
 #include "Services/Options.h"
 #include "Services/Time.h"
 #include "Services/Toasts.h"
-#include "Utils/Parallel.h"
+#include "Utils/Font.h"
 #include "Utils/Translator.h"
 
 using namespace Silent::Assets;
@@ -40,6 +41,11 @@ namespace Silent
     FilesystemManager& ApplicationManager::GetFilesystem()
     {
         return _work.Filesystem;
+    }
+
+    FontManager& ApplicationManager::GetFonts()
+    {
+        return _work.Fonts;
     }
 
     InputManager& ApplicationManager::GetInput()
@@ -120,6 +126,11 @@ namespace Silent
         // Assets.
         _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_PSX_DIR_NAME);
         _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_LOCALES_DIR_NAME, LOCALE_NAMES);
+
+        for (const auto& fontMetadata : FONTS_METADATA)
+        {
+            _work.Fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / fontMetadata.Name, fontMetadata.PointSize, fontMetadata.Precache);
+        }
 
         // Renderer.
         _work.Renderer = CreateRenderer(RendererType::SdlGpu);

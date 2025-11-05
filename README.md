@@ -43,16 +43,20 @@ The project has the following requirements:
 
 ### Clone the repository
 
-Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning recursively will ensure all the following submodules are included in the process:
+Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning recursively will ensure the following submodules are included in the process:
 - assimp
 - FlatBuffers
+- FreeType
 - GLM
+- HarfBuzz
 - ImGui
 - ImGuizmo
 - json
+- rectpack2D
 - SDL3
 - spdlog
 - stb
+- UTF8-CPP
 
 ```
 git clone --recursive https://github.com/Sezzary/SilentMath

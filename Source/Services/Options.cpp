@@ -29,6 +29,7 @@ namespace Silent::Services
     constexpr char KEY_RENDER_SCALE[]                             = "renderScale";
     constexpr char KEY_ASPECT_RATIO[]                             = "aspectRatio";
     constexpr char KEY_TEXTURE_FILTER[]                           = "textureFilter";
+    constexpr char KEY_TEXT_QUALITY[]                             = "textQuality";
     constexpr char KEY_LIGHTING[]                                 = "lighting";
     constexpr char KEY_ENABLE_VERTEX_JITTER[]                     = "enableVertexJitter";
     constexpr char KEY_ENABLE_DITHERING[]                         = "enableDithering";
@@ -66,6 +67,7 @@ namespace Silent::Services
     constexpr auto DEFAULT_RENDER_SCALE                             = RenderScaleType::Native;
     constexpr auto DEFAULT_ASPECT_RATIO                             = AspectRatioType::Native;
     constexpr auto DEFAULT_TEXTURE_FILTER                           = TextureFilterType::Nearest;
+    constexpr auto DEFAULT_TEXT_QUALITY                             = TextQualityType::Smooth;
     constexpr auto DEFAULT_LIGHTING                                 = LightingType::PerVertex;
     constexpr bool DEFAULT_ENABLE_DITHERING                         = true;
     constexpr bool DEFAULT_ENABLE_CRT_FILTER                        = false;
@@ -88,7 +90,7 @@ namespace Silent::Services
     constexpr auto DEFAULT_RETREAT_TURN_CONTROL                     = ControlInversionType::Normal;
     constexpr auto DEFAULT_WALK_RUN_CONTROL                         = ControlInversionType::Normal;
     constexpr bool DEFAULT_DISABLE_AUTO_AIMING                      = false;
-    constexpr auto DEFAULT_DIALOG_PAUSE                             = DialogPauseType::Classic;
+    constexpr auto DEFAULT_DIALOG_PAUSE                             = DialogPauseType::Retro;
     constexpr auto DEFAULT_VIEW_MODE                                = ViewMode::Normal;
     constexpr bool DEFAULT_ENABLE_TOASTS                            = true;
 
@@ -102,6 +104,7 @@ namespace Silent::Services
         _options.RenderScale        = DEFAULT_RENDER_SCALE;
         _options.AspectRatio        = DEFAULT_ASPECT_RATIO;
         _options.TextureFilter      = DEFAULT_TEXTURE_FILTER;
+        _options.TextQuality        = DEFAULT_TEXT_QUALITY;
         _options.Lighting           = DEFAULT_LIGHTING;
         _options.EnableVertexJitter = DEFAULT_ENABLE_VERTEX_JITTER;
         _options.EnableDithering    = DEFAULT_ENABLE_DITHERING;
@@ -182,7 +185,7 @@ namespace Silent::Services
         auto stream = Stream(fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT), true, false);
         if (!stream.IsOpen())
         {
-            Debug::Log("No options file found. Creating file.", Debug::LogLevel::Info);
+            Debug::Log("Creating new `" + (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT) + "` file.", Debug::LogLevel::Info);
 
             SetDefaultOptions();
             Save();
@@ -227,6 +230,7 @@ namespace Silent::Services
         options.RenderScale        = graphicsJson.value(KEY_RENDER_SCALE,         DEFAULT_RENDER_SCALE);
         options.AspectRatio        = graphicsJson.value(KEY_ASPECT_RATIO,         DEFAULT_ASPECT_RATIO);
         options.TextureFilter      = graphicsJson.value(KEY_TEXTURE_FILTER,       DEFAULT_TEXTURE_FILTER);
+        options.TextQuality        = graphicsJson.value(KEY_TEXT_QUALITY,         DEFAULT_TEXT_QUALITY);
         options.Lighting           = graphicsJson.value(KEY_LIGHTING,             DEFAULT_LIGHTING);
         options.EnableVertexJitter = graphicsJson.value(KEY_ENABLE_VERTEX_JITTER, DEFAULT_ENABLE_VERTEX_JITTER);
         options.EnableDithering    = graphicsJson.value(KEY_ENABLE_DITHERING,     DEFAULT_ENABLE_DITHERING);
@@ -372,7 +376,8 @@ namespace Silent::Services
                     { KEY_RENDER_SCALE,         options.RenderScale        },
                     { KEY_ASPECT_RATIO,         options.AspectRatio        },
                     { KEY_TEXTURE_FILTER,       options.TextureFilter      },
-                    { KEY_LIGHTING,             options.Lighting           },
+                    { KEY_TEXT_QUALITY,         options.Lighting           },
+                    { KEY_LIGHTING,             options.TextQuality        },
                     { KEY_ENABLE_VERTEX_JITTER, options.EnableVertexJitter },
                     { KEY_ENABLE_DITHERING,     options.EnableDithering    },
                     { KEY_ENABLE_VIGNETTE,      options.EnableVignette     },

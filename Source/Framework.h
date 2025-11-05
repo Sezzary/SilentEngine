@@ -47,6 +47,9 @@
 // FlatBuffers
 #include <flatbuffers/flatbuffers.h>
 
+// FreeType
+#include <ft2build.h>
+
 // GLAD
 #include <glad/glad.h>
 
@@ -59,6 +62,10 @@
 #include <glm/gtx/matrix_interpolation.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/euler_angles.hpp>
+
+// HarfBuzz
+#include <hb.h>
+#include <hb-ft.h>
 
 // ImGui
 #include <imgui.h>
@@ -73,6 +80,9 @@
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
+
+// rectpack2D
+#include <rectpack2D/finders_interface.h>
 
 // SDL
 #include <SDL3/SDL.h>
@@ -89,6 +99,9 @@ using json = nlohmann::json;
 // stb
 #include <stb_image.h>
 #include <stb_image_write.h>
+
+// UTF8-CPP
+#include <utf8.h>
 
 // ==========
 // Resources

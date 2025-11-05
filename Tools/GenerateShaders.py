@@ -26,7 +26,7 @@ BASE_PATH        = Path(__file__).parent
 SHADERCROSS_PATH = BASE_PATH / SHADERCROSS_NAME
 SOURCES_PATH     = BASE_PATH / "../Source/Renderer/Shaders"
 OUTPUT_PATH      = BASE_PATH / "../Build/Debug/Debug/Shaders" # @todo Make common output path for Debug and Release. .EXEs can be in Bin/Debug and Bin/Release.
-TEMP_OUTPUT_PATH = BASE_PATH / "../Build/Debug/Debug/.Temp"
+TEMP_OUTPUT_PATH = OUTPUT_PATH / ".Temp"
 
 def generate_shaders():
     """

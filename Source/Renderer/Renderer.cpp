@@ -48,16 +48,6 @@ namespace Silent::Renderer
             {
                 break;
             }
-            case RenderScaleType::Half:
-            {
-                res /= 2;
-                break;
-            }
-            case RenderScaleType::Quarter:
-            {
-                res /= 4;
-                break;
-            }
             case RenderScaleType::Retro:
             {
                 res = RETRO_RES;

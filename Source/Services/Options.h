@@ -23,22 +23,26 @@ namespace Silent::Services
     enum class RenderScaleType
     {
         Native,
-        Half,
-        Quarter,
         Retro
     };
 
     enum class AspectRatioType
     {
-        Native,
-        Widescreen,
-        Retro
+        Native,     /** Fits the screen. */
+        Widescreen, /** Forced 16:9. */
+        Retro       /** Forced 4:3. */
     };
 
     enum class TextureFilterType
     {
         Nearest,
         Linear
+    };
+
+    enum class TextQualityType
+    {
+        Smooth, /** High-resolution glyphs. */
+        Retro   /** Pixelated glyphs. */
     };
 
     enum class LightingType
@@ -87,8 +91,8 @@ namespace Silent::Services
 
     enum class DialogPauseType
     {
-        Classic, /** Original pause length between dialog lines. */
-        Short    /** Shorter pause length between dialog lines. */
+        Retro,    /** Original pause length between dialog lines. */
+        Condensed /** Shorter pause length between dialog lines. */
     };
 
     /** @brief User options configuration data. */
@@ -107,6 +111,7 @@ namespace Silent::Services
         RenderScaleType   RenderScale        = RenderScaleType::Native;
         AspectRatioType   AspectRatio        = AspectRatioType::Native;
         TextureFilterType TextureFilter      = TextureFilterType::Nearest;
+        TextQualityType   TextQuality        = TextQualityType::Smooth;
         LightingType      Lighting           = LightingType::PerVertex;
         bool              EnableVertexJitter = false;
         bool              EnableDithering    = false;
@@ -147,7 +152,7 @@ namespace Silent::Services
 
         /** Enhancements */
 
-        DialogPauseType DialogPause = DialogPauseType::Classic;
+        DialogPauseType DialogPause = DialogPauseType::Retro;
 
         /** System (internal) */
 

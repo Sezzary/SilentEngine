@@ -27,18 +27,44 @@ namespace Silent::Utils
         std::vector<ChunkType> _chunks = {}; /** Integers containing the bits. */
 
     public:
+        // ========
         // Presets
+        // ========
 
         static const Bitfield Empty;
         static const Bitfield Default;
 
+        // =============
         // Constructors
+        // =============
 
+        /** @brief Constructs a default `Bitfield` with a size of 32. */
         Bitfield();
+
+        /** @brief Constructs a `Bitfield` of the specified size.
+         *
+         * @param size Number of bits.
+         */
         Bitfield(uint size);
+
+        /** @brief Constructs a `Bitfield` with the specified bit indices set to 1.
+         *
+         * @param bits Bits to set.
+         */
         Bitfield(const std::initializer_list<bool>& bits);
+
+        /** @brief Constructs a `Bitfield` from specified chunks with a size.
+         *
+         * @param bitChunks Chunks containing bits.
+         * @param size Number of bits.
+         */
         Bitfield(const std::vector<ChunkType>& bitChunks, uint size);
-        Bitfield(const std::string& bitString);
+
+        /** @brief Constructs a `Bitfield` from a string of `1`s and `0`s.
+         *
+         * @param bitStr Bits encoded in a string.
+         */
+        Bitfield(const std::string& bitStr);
         
         // ========
         // Getters
@@ -214,7 +240,7 @@ namespace std
             for (auto chunk : bitField.GetChunks())
             {
                 hashVal ^= hash<Silent::Utils::Bitfield::ChunkType>{}(chunk) +
-                           0x9E3779B9 +
+                           Silent::Math::GOLDEN_RATIO +
                            (hashVal << 6) + (hashVal >> 2);
             }
 

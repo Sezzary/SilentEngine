@@ -6,6 +6,10 @@
     path = Libraries/flatbuffers
     url = https://github.com/google/flatbuffers.git
 
+[submodule "Libraries/freetype"]
+    path = Libraries/freetype
+    url = https://github.com/freetype/freetype.git
+
 [submodule "Libraries/glad"]
     path = Libraries/glad
     url = https://github.com/Dav1dde/glad.git
@@ -13,6 +17,10 @@
 [submodule "Libraries/glm"]
     path = Libraries/glm
     url = https://github.com/g-truc/glm.git
+
+[submodule "Libraries/harfbuzz"]
+    path = Libraries/harfbuzz
+    url = https://github.com/harfbuzz/harfbuzz.git
 
 [submodule "Libraries/imgui"]
     path = Libraries/imgui
@@ -26,6 +34,10 @@
     path = Libraries/json
     url = https://github.com/nlohmann/json.git
 
+[submodule "Libraries/rectpack2D"]
+    path = Libraries/rectpack2D
+    url = https://github.com/TeamHypersomnia/rectpack2D.git
+
 [submodule "Libraries/SDL"]
     path = Libraries/SDL
     url = https://github.com/libsdl-org/SDL.git
@@ -37,3 +49,7 @@
 [submodule "Libraries/stb"]
     path = Libraries/stb
     url = https://github.com/nothings/stb.git
+
+[submodule "Libraries/utfcpp"]
+    path = Libraries/utfcpp
+    url = https://github.com/nemtrif/utfcpp.git

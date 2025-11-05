@@ -44,6 +44,11 @@ namespace Silent::Utils
         FT_Done_Face(_face);
     }
 
+    const std::vector<byte>& Font::GetAtlas()
+    {
+        return _atlas;
+    }
+
     std::vector<Glyph*> Font::GetGlyphs(const std::string& msg)
     {
         // Get code points.

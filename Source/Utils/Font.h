@@ -38,7 +38,7 @@ namespace Silent::Utils
         FT_Face                        _face       = {};                                      /** Loaded typeface file. */
         std::unordered_map<int, Glyph> _glyphs     = {};                                      /** Key = code point, value = atlased glyph metadata. */
         PackedRects                    _glyphRects = PackedRects({ ATLAS_SIZE, ATLAS_SIZE }); /** Packed glyph rectangles. */
-        std::vector<byte>              _atlas      = {};                                      /** Rasterized glyph bitmap texture atlas. */
+        std::vector<byte>              _atlas      = {};                                      /** Monochrome glyph texture atlas. */
 
     public:
         // =============
@@ -65,6 +65,17 @@ namespace Silent::Utils
         // Getters
         // ========
 
+        /** @brief Gets the monochrome texture atlas containing cached glyphs.
+         *
+         * @return Glyph texture atlas.
+         */
+        const std::vector<byte>& GetAtlas();
+
+        /** @brief Gets metadata for glyphs in a message.
+         *
+         * @param msg Message to parse.
+         * @return Message glyph metadata.
+         */
         std::vector<Glyph*> GetGlyphs(const std::string& msg);
 
         // ==========

@@ -210,6 +210,7 @@ namespace Silent::Debug
             constexpr const char* RENDER_SCALE_ITEMS[]      = { "Native", "Retro" };
             constexpr const char* ASPECT_RATIO_ITEMS[]      = { "Native", "Widescreen", "Retro" };
             constexpr const char* TEX_FILTER_ITEMS[]        = { "Nearest", "Linear" };
+            constexpr const char* TEXT_QUALITY_ITEMS[]      = { "Smooth", "Retro" };
             constexpr const char* LIGHTING_ITEMS[]          = { "Per vertex", "Per pixel" };
             constexpr const char* LANG_ITEMS[]              = { "English (Original)", "English (Revised)" };
             constexpr const char* SOUND_ITEMS[]             = { "Stereo", "Monaural" };
@@ -217,7 +218,7 @@ namespace Silent::Debug
             constexpr const char* CONTROL_INVERSION_ITEMS[] = { "Normal", "Reverse" };
             constexpr const char* WEAPON_CONTROL_ITEMS[]    = { "Switch", "Press" };
             constexpr const char* VIEW_MODE_ITEMS[]         = { "Normal", "Self view" };
-            constexpr const char* DIALOG_PAUSE_ITEMS[]      = { "Classic", "Short" };
+            constexpr const char* DIALOG_PAUSE_ITEMS[]      = { "Retro", "Condensed" };
 
             const auto& assets     = g_App.GetAssets();
             auto&       options    = g_App.GetOptions();
@@ -509,7 +510,15 @@ namespace Silent::Debug
                         if (ImGui::Combo("Texture filter", &texFilter, TEX_FILTER_ITEMS, IM_ARRAYSIZE(TEX_FILTER_ITEMS)))
                         {
                             options->TextureFilter = (TextureFilterType)texFilter;
-                            isOptChanged = true;
+                            isOptChanged           = true;
+                        }
+
+                        // `Text quality` combo.
+                        int textQuality = (int)options->TextQuality;
+                        if (ImGui::Combo("Text quality", &textQuality, TEXT_QUALITY_ITEMS, IM_ARRAYSIZE(TEXT_QUALITY_ITEMS)))
+                        {
+                            options->TextQuality = (TextQualityType)textQuality;
+                            isOptChanged         = true;
                         }
 
                         // `Lighting type` combo.

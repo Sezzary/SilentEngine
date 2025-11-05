@@ -5,7 +5,7 @@ namespace Silent::Assets
 {
     const std::vector<std::string> LOCALE_NAMES
     {
-        "en (Original)",
-        "en (Revised)"
+        "English (Original)",
+        "English (Revised)"
     };
 }

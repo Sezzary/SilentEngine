@@ -39,6 +39,12 @@ namespace Silent::Services
         Linear
     };
 
+    enum class TextQualityType
+    {
+        Smooth,
+        Retro
+    };
+
     enum class LightingType
     {
         PerVertex,
@@ -85,8 +91,8 @@ namespace Silent::Services
 
     enum class DialogPauseType
     {
-        Classic, /** Original pause length between dialog lines. */
-        Short    /** Shorter pause length between dialog lines. */
+        Retro,    /** Original pause length between dialog lines. */
+        Condensed /** Shorter pause length between dialog lines. */
     };
 
     /** @brief User options configuration data. */
@@ -105,6 +111,7 @@ namespace Silent::Services
         RenderScaleType   RenderScale        = RenderScaleType::Native;
         AspectRatioType   AspectRatio        = AspectRatioType::Native;
         TextureFilterType TextureFilter      = TextureFilterType::Nearest;
+        TextQualityType   TextQuality        = TextQualityType::Smooth;
         LightingType      Lighting           = LightingType::PerVertex;
         bool              EnableVertexJitter = false;
         bool              EnableDithering    = false;
@@ -145,7 +152,7 @@ namespace Silent::Services
 
         /** Enhancements */
 
-        DialogPauseType DialogPause = DialogPauseType::Classic;
+        DialogPauseType DialogPause = DialogPauseType::Retro;
 
         /** System (internal) */
 

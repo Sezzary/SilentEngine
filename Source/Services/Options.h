@@ -28,9 +28,9 @@ namespace Silent::Services
 
     enum class AspectRatioType
     {
-        Native,
-        Widescreen,
-        Retro
+        Native,     /** Fits the screen. */
+        Widescreen, /** Forced 16:9. */
+        Retro       /** Forced 4:3. */
     };
 
     enum class TextureFilterType
@@ -41,8 +41,8 @@ namespace Silent::Services
 
     enum class TextQualityType
     {
-        Smooth,
-        Retro
+        Smooth, /** High-resolution glyphs. */
+        Retro   /** Pixelated glyphs. */
     };
 
     enum class LightingType

@@ -33,12 +33,12 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        bool                           _isLoaded   = false;                                   /** Load status. */
-        std::string                    _name       = {};                                      /** Font name. */
-        FT_Face                        _face       = {};                                      /** Loaded typeface file. */
-        std::unordered_map<int, Glyph> _glyphs     = {};                                      /** Key = code point, value = atlased glyph metadata. */
-        PackedRects                    _glyphRects = PackedRects({ ATLAS_SIZE, ATLAS_SIZE }); /** Packed glyph rectangles. */
-        std::vector<byte>              _atlas      = {};                                      /** Monochrome glyph texture atlas. */
+        bool                              _isLoaded   = false;                                   /** Load status. */
+        std::string                       _name       = {};                                      /** Font name. */
+        FT_Face                           _face       = {};                                      /** Loaded typeface file. */
+        std::unordered_map<char32, Glyph> _glyphs     = {};                                      /** Key = code point, value = atlased glyph metadata. */
+        PackedRects                       _glyphRects = PackedRects({ ATLAS_SIZE, ATLAS_SIZE }); /** Packed glyph rectangles. */
+        std::vector<byte>                 _atlas      = {};                                      /** Monochrome glyph texture atlas. */
 
     public:
         // =============

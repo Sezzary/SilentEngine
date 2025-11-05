@@ -36,7 +36,7 @@ namespace Silent::Utils
         _isLoaded = true;
 
         // Debug.
-        //stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + "_Atlas.png")).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlas.data(), ATLAS_SIZE);
+        stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + "_Atlas.png")).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlas.data(), ATLAS_SIZE);
     }
 
     Font::~Font()
@@ -82,7 +82,6 @@ namespace Silent::Utils
         return _isLoaded;
     }
 
-    // @todo Not decoded properly.
     std::vector<char32> Font::GetCodePoints(const std::string& str) const
     {
         auto codePoints = std::vector<char32>{};
@@ -93,11 +92,11 @@ namespace Silent::Utils
     bool Font::CacheGlyph(char32 codePoint)
     {
         // Load glyph.
-        FT_Load_Glyph(_face, codePoint, FT_LOAD_DEFAULT);
+        FT_Load_Glyph(_face, FT_Get_Char_Index(_face, codePoint), FT_LOAD_DEFAULT);
         const auto& metrics = _face->glyph->metrics;
 
         // Pack glyph rectangle.
-        auto size = Vector2i(FP_FROM(metrics.width,  Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
+        auto size = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
         auto rect = _glyphRects.insert(rectpack2D::rect_wh(size.x, size.y));
         if (!rect.has_value())
         {

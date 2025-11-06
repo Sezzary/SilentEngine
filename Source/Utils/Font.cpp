@@ -7,22 +7,20 @@
 
 namespace Silent::Utils
 {
-    Font::Font(FT_Library& fontLib, const std::string& name, const std::filesystem::path& path, int pointSize, const std::string& precacheGlyphs)
+    Font::Font(FT_Library& fontLib, const std::filesystem::path& path, int pointSize, const std::string& precacheGlyphs)
     {
-        _name = name;
+        _name = path.filename().string();
 
         // Load FreeType and HarfBuzz data.
         if (FT_New_Face(fontLib, path.string().c_str(), 0, &_ftFace))
         {
-            Debug::Log("Failed to initialize font face.", Debug::LogLevel::Error);
-            return;
+            throw std::runtime_error("Failed to initialize FreeFont font face.");
         }
         _hbFont = hb_ft_font_create(_ftFace, nullptr);
 
         if (FT_Set_Pixel_Sizes(_ftFace, 0, std::min<int>(pointSize, ATLAS_SIZE / 4)))
         {
-            Debug::Log("Failed to set font point size.", Debug::LogLevel::Error);
-            return;
+            throw std::runtime_error("Failed to set font point size.");
         }
 
         // Add first atlas.
@@ -34,8 +32,6 @@ namespace Silent::Utils
         {
             CacheGlyph(codePoint);
         }
-
-        _isLoaded = true;
 
         // Debug.
         //stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + "_Atlas.png")).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlases.front().data(), ATLAS_SIZE);
@@ -88,7 +84,7 @@ namespace Silent::Utils
 
         // Collect shaped glyphs.
         auto shapedGlyphs = std::vector<ShapedGlyph>{};
-        shapedGlyphs.reserve(codePoints.size());
+        shapedGlyphs.reserve(glyphCount);
         for (int i = 0; i < glyphCount; i++)
         {
             const auto& glyphInfo = glyphInfos[i];
@@ -105,11 +101,6 @@ namespace Silent::Utils
         // Free resources and return shaped glyphs.
         hb_buffer_destroy(buffer);
         return shapedGlyphs;
-    }
-
-    bool Font::IsLoaded() const
-    {
-        return _isLoaded;
     }
 
     std::vector<char32> Font::GetCodePoints(const std::string& str) const
@@ -212,19 +203,19 @@ namespace Silent::Utils
         auto it       = _fonts.find(fontName);
         if (it != _fonts.end())
         {
-            Debug::Log("Attempted to load loaded font `"+ fontName + "`.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
 
         // Handle load.
-        _fonts[fontName] = Font(_library, fontName, fontPath, pointSize, glyphPrecache);
-        if (!_fonts[fontName].IsLoaded())
+        try
+        {
+            _fonts[fontName] = Font(_library, fontPath, pointSize, glyphPrecache);
+
+            Debug::Log("Loaded font `" + fontName + "` at point size " + std::to_string(pointSize) + ".");
+        }
+        catch(const std::runtime_error& ex)
         {
             Debug::Log("Failed to load font `" + fontName + "`.", Debug::LogLevel::Error);
-            _fonts.erase(fontName);
-            return;
         }
-
-        Debug::Log("Loaded font `" + fontName + "` at point size " + std::to_string(pointSize) + ".");
     }
 }

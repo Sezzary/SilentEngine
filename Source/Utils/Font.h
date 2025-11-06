@@ -6,6 +6,7 @@ namespace Silent::Utils
     struct GlyphMetadata
     {
         char32   CodePoint = 0;
+        int      AtlasIdx  = 0;
         Vector2i Position  = Vector2i::Zero;
         Vector2i Size      = Vector2i::Zero;
         Vector2i Bearing   = Vector2i::Zero;
@@ -40,15 +41,15 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string                               _name       = {};                                      /** Font name. */
-        FT_Face                                   _ftFace     = {};                                      /** FreeType typeface handle. */
-        hb_font_t*                                _hbFont     = nullptr;                                 /** HarfBuzz font handle. */
-        std::unordered_map<char32, GlyphMetadata> _glyphs     = {};                                      /** Key = code point, value = atlased glyph metadata. */
-        PackedRects                               _glyphRects = PackedRects({ ATLAS_SIZE, ATLAS_SIZE }); /** Packed glyph rectangles. */
-        std::vector<byte>                         _atlas      = {};                                      /** Monochrome glyph texture atlas. */
+        std::string                               _name      = {};      /** Font name. */
+        std::unordered_map<char32, GlyphMetadata> _glyphs    = {};      /** Key = code point, value = atlased glyph metadata. */
+        std::vector<PackedRects>                  _rectPacks = {};      /** Glyph rectangle packs. */
+        std::vector<std::vector<byte>>            _atlases   = {};      /** Monochrome glyph texture atlases. */
 
-        bool _isLoaded   = false; /** Load status. */
-        bool _queueReset = false; /** Queued atlas reset status. */
+        bool       _isLoaded       = false;   /** Load status. */
+        int        _activeAtlasIdx = 0;       /** Index of the atlas currently used for caching. */
+        FT_Face    _ftFace         = {};      /** FreeType typeface handle. */
+        hb_font_t* _hbFont         = nullptr; /** HarfBuzz font handle. */
 
     public:
         // =============
@@ -75,18 +76,18 @@ namespace Silent::Utils
         // Getters
         // ========
 
-        /** @brief Gets the monochrome texture atlas containing cached glyphs.
+        /** @brief Gets the monochrome texture atlases containing cached glyphs.
          *
-         * @return Glyph texture atlas.
+         * @return Glyph texture atlases.
          */
-        const std::vector<byte>& GetAtlas();
+        const std::vector<std::vector<byte>>& GetAtlases();
 
         /** @brief Gets the shaped glyphs for a message.
          *
          * @param msg Message to parse.
          * @return Shaped glyphs.
          */
-        std::vector<ShapedGlyph> GetShapedText(const std::string& msg);
+        std::vector<ShapedGlyph> GetShapedGlyphs(const std::string& msg);
 
         // ==========
         // Inquirers
@@ -110,11 +111,14 @@ namespace Silent::Utils
          */
         std::vector<char32> GetCodePoints(const std::string& str) const;
 
-        /** @brief Caches a new glyph in the bitmap texture atlas.
+        /** @brief Caches a new glyph in the texture atlas.
          *
          * @param codePoint Code point of the glyph to cache.
          */
         void CacheGlyph(char32 codePoint);
+
+        /** @brief Adds a new glyph texture atlas to use for caching. */
+        void AddAtlas();
     };
 
     /** @brief Atlased font manager. */

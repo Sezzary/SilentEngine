@@ -102,9 +102,12 @@ namespace Silent::Utils
         {
             Debug::Log("Resetting `" + _name + "` font glyph atlas.");
 
-            // Reset atlas if new glyph doesn't fit.
-            _atlas.resize(ATLAS_SIZE * ATLAS_SIZE, 0);
+            // Clear atlas.
+            _glyphs.clear();
             _glyphRects = PackedRects({ ATLAS_SIZE, ATLAS_SIZE });
+            _atlas.resize(ATLAS_SIZE * ATLAS_SIZE, 0);
+
+            // Retry packing glyph rectangle.
             auto rect   = _glyphRects.insert(rectpack2D::rect_wh(size.x, size.y));
             if (!rect.has_value())
             {
@@ -119,7 +122,7 @@ namespace Silent::Utils
             .CodePoint = codePoint,
             .Position  = Vector2i(rect->x, rect->y) + Vector2i(GLYPH_PADDING),
             .Size      = size,
-            .Bearing   = Vector2i(metrics.horiBearingX, metrics.horiBearingY),
+            .Bearing   = Vector2i(FP_FROM(metrics.horiBearingX, Q6_SHIFT), FP_FROM(metrics.horiBearingY, Q6_SHIFT)),
             .Advance   = (int)metrics.horiAdvance
         };
 

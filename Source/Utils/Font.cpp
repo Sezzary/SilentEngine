@@ -84,7 +84,11 @@ namespace Silent::Utils
 
     std::vector<char32> Font::GetCodePoints(const std::string& str) const
     {
+        // Reserve minimum size.
         auto codePoints = std::vector<char32>{};
+        codePoints.reserve((str.size() / 4) + 1);
+
+        // Collect code points.
         utf8::utf8to32(str.begin(), str.end(), std::back_inserter(codePoints));
         return codePoints;
     }

@@ -46,7 +46,12 @@ namespace Silent::Utils
         FT_Done_Face(_ftFace);
     }
 
-    const std::vector<std::vector<byte>>& Font::GetAtlases()
+    int Font::GetPointSize() const
+    {
+        return _pointSize;
+    }
+
+    const std::vector<std::vector<byte>>& Font::GetAtlases() const
     {
         return _atlases;
     }

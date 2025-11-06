@@ -41,6 +41,7 @@ namespace Silent::Utils
         // =======
 
         std::string                               _name      = {};      /** Font name. */
+        int                                       _pointSize = 0;       /** Point size. */
         std::unordered_map<char32, GlyphMetadata> _glyphs    = {};      /** Key = code point, value = rasterized glyph metadata. */
         std::vector<PackedRects>                  _rectPacks = {};      /** Glyph rectangle packs. */
         std::vector<std::vector<byte>>            _atlases   = {};      /** Monochrome glyph texture atlases. */
@@ -74,11 +75,17 @@ namespace Silent::Utils
         // Getters
         // ========
 
+        /** @brief Gets the point size.
+         *
+         * @return point size.
+         */
+        int GetPointSize() const;
+
         /** @brief Gets the monochrome texture atlases containing cached glyphs.
          *
          * @return Glyph texture atlases.
          */
-        const std::vector<std::vector<byte>>& GetAtlases();
+        const std::vector<std::vector<byte>>& GetAtlases() const;
 
         /** @brief Gets the shaped glyphs for a message.
          *

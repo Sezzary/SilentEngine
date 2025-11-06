@@ -23,6 +23,9 @@ namespace Silent::Utils
             throw std::runtime_error("Failed to set font point size.");
         }
 
+        // Set scale factor.
+        _scaleFactor = (float)pointSize / (float)_ftFace->size->metrics.x_ppem;
+
         // Add first atlas.
         AddAtlas();
 
@@ -94,7 +97,8 @@ namespace Silent::Utils
             shapedGlyphs.push_back(ShapedGlyph
             {
                 .Metadata = glyph,
-                .Offset   = Vector2i(glyphPos.x_offset, glyphPos.y_offset)
+                .Advance  = Vector2i(glyphPos.x_advance, glyphPos.y_advance) * _scaleFactor,
+                .Offset   = Vector2i(glyphPos.x_offset,  glyphPos.y_offset)  * _scaleFactor
             });
         }
 
@@ -125,8 +129,7 @@ namespace Silent::Utils
         auto rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
         if (!rect.has_value())
         {
-            Debug::Log("Active atlas " + std::to_string(_activeAtlasIdx) + " for font `" + _name + "` is full. Creating new atlas.",
-                       Debug::LogLevel::Info, Debug::LogMode::Debug);
+            Debug::Log("Active atlas " + std::to_string(_activeAtlasIdx) + " for font `" + _name + "` is full. Creating new atlas.", Debug::LogLevel::Info);
 
             // Start new atlas.
             AddAtlas();
@@ -139,9 +142,7 @@ namespace Silent::Utils
             .CodePoint = codePoint,
             .AtlasIdx  = _activeAtlasIdx,
             .Position  = Vector2i(rect->x, rect->y) + Vector2i(GLYPH_PADDING),
-            .Size      = size,
-            .Bearing   = Vector2i(FP_FROM(metrics.horiBearingX, Q6_SHIFT), FP_FROM(metrics.horiBearingY, Q6_SHIFT)),
-            .Advance   = (int)metrics.horiAdvance
+            .Size      = size
         };
         const auto& glyph = _glyphs[codePoint];
 

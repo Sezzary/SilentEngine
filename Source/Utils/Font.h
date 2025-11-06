@@ -2,22 +2,21 @@
 
 namespace Silent::Utils
 {
-    /** @brief Atlased glyph metadata. */
+    /** @brief Rasterized glyph metadata. */
     struct GlyphMetadata
     {
-        char32   CodePoint = 0;              /** Unicode code point. */
+        char32   CodePoint = 0;              /** Unicode character ID. */
         int      AtlasIdx  = 0;              /** Index of the atlas in which the glyph is cached. */
         Vector2i Position  = Vector2i::Zero; /** Pixel position in atlas. */
         Vector2i Size      = Vector2i::Zero; /** Pixel size in atlas. */
-        Vector2i Bearing   = Vector2i::Zero;
-        int      Advance   = 0;
     };
 
     /** @brief Shaped glyph data. */
     struct ShapedGlyph
     {
-        const GlyphMetadata& Metadata;
-        Vector2i             Offset = Vector2i::Zero;
+        const GlyphMetadata& Metadata;                 /** Rasterized glyph metadata. */
+        Vector2i             Advance = Vector2i::Zero; /** Pixel line advance. */
+        Vector2i             Offset  = Vector2i::Zero; /** Pixel offset. */
     };
 
     /** @brief Atlased font. */
@@ -42,11 +41,12 @@ namespace Silent::Utils
         // =======
 
         std::string                               _name      = {};      /** Font name. */
-        std::unordered_map<char32, GlyphMetadata> _glyphs    = {};      /** Key = code point, value = atlased glyph metadata. */
+        std::unordered_map<char32, GlyphMetadata> _glyphs    = {};      /** Key = code point, value = rasterized glyph metadata. */
         std::vector<PackedRects>                  _rectPacks = {};      /** Glyph rectangle packs. */
         std::vector<std::vector<byte>>            _atlases   = {};      /** Monochrome glyph texture atlases. */
 
         int        _activeAtlasIdx = 0;       /** Index of the atlas currently used for caching. */
+        float      _scaleFactor    = 0.0f;
         FT_Face    _ftFace         = {};      /** FreeType typeface handle. */
         hb_font_t* _hbFont         = nullptr; /** HarfBuzz font handle. */
 

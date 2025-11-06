@@ -169,7 +169,7 @@ namespace Silent::Utils
 
     void Font::AddAtlas()
     {
-        _rectPacks.push_back(PackedRects({ ATLAS_SIZE, ATLAS_SIZE }));
+        _rectPacks.push_back(PackedRects(rectpack2D::rect_wh(ATLAS_SIZE, ATLAS_SIZE)));
         _atlases.push_back(std::vector<byte>(ATLAS_SIZE * ATLAS_SIZE));
         _activeAtlasIdx++;
     }

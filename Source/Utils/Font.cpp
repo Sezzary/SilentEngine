@@ -100,8 +100,17 @@ namespace Silent::Utils
         auto rect = _glyphRects.insert(rectpack2D::rect_wh(size.x, size.y));
         if (!rect.has_value())
         {
-            Debug::Log("Failed to register glyph with code point " + std::to_string(codePoint) + " for font `" + _name + "`. Atlas too full.", Debug::LogLevel::Warning);
-            return false;
+            Debug::Log("Resetting `" + _name + "` font glyph atlas.");
+
+            // Reset atlas if new glyph doesn't fit.
+            _atlas.resize(ATLAS_SIZE * ATLAS_SIZE, 0);
+            _glyphRects = PackedRects({ ATLAS_SIZE, ATLAS_SIZE });
+            auto rect   = _glyphRects.insert(rectpack2D::rect_wh(size.x, size.y));
+            if (!rect.has_value())
+            {
+                Debug::Log("Failed to register glyph with code point " + std::to_string(codePoint) + ".", Debug::LogLevel::Error);
+                return false;
+            }
         }
 
         // Register new glyph.

@@ -71,6 +71,9 @@ namespace Silent::Utils
          */
         const std::vector<byte>& GetAtlas();
 
+        // @todo Use HarzBuff for shaping.
+        //??? GetShapedText(const std::string& msg);
+
         /** @brief Gets metadata for glyphs in a message.
          *
          * @param msg Message to parse.

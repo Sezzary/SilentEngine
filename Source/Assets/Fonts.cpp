@@ -11,7 +11,7 @@ namespace Silent::Assets
                                           ";
     constexpr char JAPANESE_PRECACHE[] = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん\
                                           アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン\
-                                          。！？、";
+                                          。！？、 ";
 
     const std::vector<FontMetadata> FONTS_METADATA
     {

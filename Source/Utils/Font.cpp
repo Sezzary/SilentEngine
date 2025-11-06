@@ -17,7 +17,7 @@ namespace Silent::Utils
             Debug::Log("Failed to initialize font face.", Debug::LogLevel::Error);
             return;
         }
-        _hbFont = hb_ft_font_create_referenced(_ftFace);
+        _hbFont = hb_ft_font_create(_ftFace, nullptr);
 
         if (FT_Set_Pixel_Sizes(_ftFace, 0, std::min<int>(pointSize, ATLAS_SIZE / 4)))
         {
@@ -65,11 +65,16 @@ namespace Silent::Utils
             }
         }
 
-        // Add string to buffer.
+        // Add text to buffer.
         auto* buffer = hb_buffer_create();
+        if (!hb_buffer_allocation_successful(buffer))
+        {
+            Debug::Log("Failed to get shaped glyphs for message `" + msg + "`.", Debug::LogLevel::Error);
+            return {};
+        }
         hb_buffer_add_utf8(buffer, msg.c_str(), msg.size(), 0, msg.size());
 
-        // @todo Extend this later.
+        // @todo Extend this later to support right-to-left scripts.
         // Set text direction and script.
         hb_buffer_set_direction(buffer, HB_DIRECTION_LTR);                       // Left-to-right text.
         hb_buffer_set_script(buffer, HB_SCRIPT_LATIN);                           // Latin script.

@@ -81,6 +81,9 @@
 
 using json = nlohmann::json;
 
+// LuaJIT
+#include <lua.hpp>
+
 // rectpack2D
 #include <rectpack2D/finders_interface.h>
 
@@ -90,6 +93,9 @@ using json = nlohmann::json;
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_opengl_glext.h>
 #include <SDL3/SDL_vulkan.h>
+
+// sol
+#include <sol/sol.hpp>
 
 // spdlog
 #include <spdlog/sinks/basic_file_sink.h>

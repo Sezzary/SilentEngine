@@ -34,6 +34,10 @@
     path = Libraries/json
     url = https://github.com/nlohmann/json.git
 
+[submodule "Libraries/LuaJIT"]
+    path = Libraries/LuaJIT
+    url = https://github.com/LuaJIT/LuaJIT.git
+
 [submodule "Libraries/rectpack2D"]
     path = Libraries/rectpack2D
     url = https://github.com/TeamHypersomnia/rectpack2D.git
@@ -41,6 +45,10 @@
 [submodule "Libraries/SDL"]
     path = Libraries/SDL
     url = https://github.com/libsdl-org/SDL.git
+
+[submodule "Libraries/sol2"]
+    path = Libraries/sol2
+    url = https://github.com/ThePhD/sol2.git
 
 [submodule "Libraries/spdlog"]
     path = Libraries/spdlog

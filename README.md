@@ -52,15 +52,23 @@ Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning r
 - ImGui
 - ImGuizmo
 - json
+- LuaJIT
 - rectpack2D
 - SDL3
+- sol2
 - spdlog
 - stb
 - UTF8-CPP
-
 ```
 git clone --recursive https://github.com/Sezzary/SilentMath
 git submodule update --init --recursive
+```
+
+Build LuaJIT locally:
+```
+cd Libraries/LuaJIT
+make
+cd ../..
 ```
 
 ### Build the code (Debug/Release)

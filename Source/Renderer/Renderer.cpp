@@ -315,6 +315,8 @@ namespace Silent::Renderer
 
     void RendererBase::PrepareFrameData()
     {
+        auto& executor = g_App.GetExecutor();
+
         auto sortTasks = ParallelTasks
         {
             //[&]()
@@ -326,7 +328,7 @@ namespace Silent::Renderer
             //    });
             //}
         };
-        g_Executor.AddTasks(sortTasks).wait();
+        executor.AddTasks(sortTasks).wait();
 
         // @todo Intermediate data -> renderer-ready data. At later stages, outside this method, renderer-ready data -> GPU copy-ready data.
     }

@@ -5,8 +5,6 @@
 
 namespace Silent::Utils
 {
-    ParallelExecutor g_Executor = ParallelExecutor();
-
     ParallelExecutor::ParallelExecutor()
     {
         constexpr uint THREAD_COUNT_MIN = 2;

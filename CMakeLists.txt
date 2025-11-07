@@ -75,6 +75,7 @@ add_subdirectory(Libraries/harfbuzz)
 add_subdirectory(Libraries/json)
 add_subdirectory(Libraries/rectpack2D)
 add_subdirectory(Libraries/SDL)
+add_subdirectory(Libraries/sol2)
 add_subdirectory(Libraries/spdlog)
 add_subdirectory(Libraries/utfcpp)
 
@@ -90,12 +91,18 @@ target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/LuaJIT/src
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/rectpack2D/src
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/sol2/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/utfcpp/source
 )
+
+# Create target for LuaJIT library.
+add_library(luajit STATIC IMPORTED)
+set_target_properties(luajit PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_LIST_DIR}/Libraries/LuaJIT/src/libluajit.a")
 
 # Add libraries.
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
@@ -104,7 +111,9 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     freetype
     glm
     harfbuzz
-    SDL3::SDL3-static
+    luajit
     rectpack2D
+    sol2
+    SDL3::SDL3-static
     spdlog
 )

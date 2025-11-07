@@ -2,6 +2,7 @@
 #include "Input/Input.h"
 
 #include "Application.h"
+#include "Assets/TranslationKeys.h"
 #include "Input/Action.h"
 #include "Input/Binding.h"
 #include "Input/Event.h"
@@ -12,6 +13,7 @@
 #include "Utils/Parallel.h"
 #include "Utils/Utils.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Services;
 using namespace Silent::Utils;
 
@@ -103,6 +105,8 @@ namespace Silent::Input
 
     void InputManager::Update(SDL_Window& window, const Vector2& mouseWheelAxis)
     {
+        auto& executor = g_App.GetExecutor();
+
         // Capture event states asynchronously.
         auto tasks = ParallelTasks
         {
@@ -110,7 +114,7 @@ namespace Silent::Input
             TASK(ReadMouse(window, mouseWheelAxis)),
             TASK(ReadGamepad())
         };
-        g_Executor.AddTasks(tasks).wait();
+        executor.AddTasks(tasks).wait();
 
         // Update "using gamepad" state.
         if (_states.HasKeyboardInput || _states.HasMouseInput)
@@ -139,13 +143,14 @@ namespace Silent::Input
         constexpr int NINTENDO_VENDOR_CODE = 0x057E;
         constexpr int SONY_VENDOR_CODE     = 0x054C;
 
+        const auto& translator = g_App.GetTranslator();
+        auto&       toaster    = g_App.GetToaster();
+
         // Check if a gamepad is already connected.
         if (IsGamepadConnected())
         {
             return;
         }
-
-        auto& toaster = g_App.GetToaster();
 
         // Set connection.
         _gamepad.Device = SDL_OpenGamepad(deviceId);
@@ -178,7 +183,7 @@ namespace Silent::Input
             }
 
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
-            toaster.Add("Gamepad connected.");
+            toaster.Add(translator(KEY_SYS_GAMEPAD_CONNECTED));
 
             Debug::Log(GetGamepadVendorName(_gamepad.VendorId) + " gamepad connected.");
         }
@@ -186,18 +191,19 @@ namespace Silent::Input
 
     void InputManager::DisconnectGamepad(int deviceId)
     {
+        const auto& translator = g_App.GetTranslator();
+        auto&       toaster    = g_App.GetToaster();
+
         // Check if a gamepad is connected and device IDs match.
         if (!IsGamepadConnected() || _gamepad.Id != deviceId)
         {
             return;
         }
 
-        auto& toaster = g_App.GetToaster();
-
         // Disconnect with toast.
         _gamepad = {};
         SDL_CloseGamepad(_gamepad.Device);
-        toaster.Add("Gamepad disconnected.");
+        toaster.Add(translator(KEY_SYS_GAMEPAD_DISCONNECTED));
 
         Debug::Log("Gamepad disconnected.");
     }
@@ -493,7 +499,8 @@ namespace Silent::Input
 
     void InputManager::UpdateActions()
     {
-        const auto& options = g_App.GetOptions();
+        const auto& options  = g_App.GetOptions();
+        auto&       executor = g_App.GetExecutor();
 
         // 1) Update user action states.
         auto updateUserActions = [&]()
@@ -564,7 +571,7 @@ namespace Silent::Input
             TASK(updateUserActions()),
             TASK(updateRawActions())
         };
-        g_Executor.AddTasks(tasks).wait();
+        executor.AddTasks(tasks).wait();
     }
 
     void InputManager::HandleHotkeyActions()

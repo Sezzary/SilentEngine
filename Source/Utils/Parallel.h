@@ -98,9 +98,6 @@ namespace Silent::Utils
         void HandleTask(const ParallelTask& task, std::atomic<int>& counter, std::promise<void>& promise);
     };
 
-    /** @brief Global parallel task executor. */
-    extern ParallelExecutor g_Executor;
-
     /** @brief Gets the number of CPU cores on the system.
      *
      * @return CPU core count.

@@ -97,9 +97,9 @@ namespace Silent::Game
         // Set flashing blue-cyan color.
         if (isFlashing)
         {
-            color0 = Color::From8Bit(COLOR_FLASH_BASE.R8(), COLOR_FLASH_BASE.R8() + colorEnd, colorEnd, COLOR_FLASH_BASE.B8());
+            color0 = Color::From8Bit(COLOR_FLASH_BASE.R8(), COLOR_FLASH_BASE.G8() + colorEnd, colorEnd, COLOR_FLASH_BASE.B8());
             color1 =
-            color2 = Color::From8Bit(COLOR_FLASH_BASE.R8(), COLOR_FLASH_BASE.R8() + colorStart, COLOR_FLASH_BASE.B8());
+            color2 = Color::From8Bit(COLOR_FLASH_BASE.R8(), COLOR_FLASH_BASE.G8() + colorStart, COLOR_FLASH_BASE.B8());
         }
         // Set solid cyan color.
         else

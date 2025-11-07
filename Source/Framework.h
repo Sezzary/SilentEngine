@@ -94,7 +94,7 @@ using json = nlohmann::json;
 #include <SDL3/SDL_opengl_glext.h>
 #include <SDL3/SDL_vulkan.h>
 
-// sol
+// sol2
 #include <sol/sol.hpp>
 
 // spdlog

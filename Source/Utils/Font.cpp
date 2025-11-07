@@ -221,7 +221,7 @@ namespace Silent::Utils
         }
         catch(const std::runtime_error& ex)
         {
-            Debug::Log("Failed to load font `" + fontName + "`.", Debug::LogLevel::Error);
+            Debug::Log("Failed to load font `" + fontName + "`: " + ex.what(), Debug::LogLevel::Error);
         }
     }
 }

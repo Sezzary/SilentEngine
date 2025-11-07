@@ -14,6 +14,7 @@
 #include "Services/Time.h"
 #include "Services/Toasts.h"
 #include "Utils/Font.h"
+#include "Utils/Parallel.h"
 #include "Utils/Translator.h"
 
 using namespace Silent::Assets;
@@ -36,6 +37,11 @@ namespace Silent
     AudioManager& ApplicationManager::GetAudio()
     {
         return _work.Audio;
+    }
+
+    ParallelExecutor& ApplicationManager::GetExecutor()
+    {
+        return _work.Executor;
     }
 
     FilesystemManager& ApplicationManager::GetFilesystem()

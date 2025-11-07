@@ -1,6 +1,7 @@
 #include "Framework.h"
 #include "Assets/Assets.h"
 
+#include "Application.h"
 #include "Assets/Parsers/Tim.h"
 #include "Assets/Parsers/Tmd.h"
 #include "Utils/Parallel.h"
@@ -159,6 +160,8 @@ namespace Silent::Assets
 
     const std::future<void>& AssetManager::LoadAsset(int assetIdx)
     {
+        auto& executor = g_App.GetExecutor();
+
         // Get asset.
         if (assetIdx < 0 || assetIdx >= _assets.size())
         {
@@ -187,7 +190,7 @@ namespace Silent::Assets
         _loadingCount++;
 
         // Load asynchronously.
-        _loadFutures[assetIdx] = g_Executor.AddTask([&]()
+        _loadFutures[assetIdx] = executor.AddTask([&]()
         {
             // Get parser function.
             auto parserFuncIt = PARSER_FUNCS.find(asset->Type);

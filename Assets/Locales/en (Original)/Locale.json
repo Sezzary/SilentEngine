@@ -1,9 +1,12 @@
 {
+    "sysGamepadConnected": "Gamepad connected.",
+    "sysGamepadDisonnected": "Gamepad disconnected.",
+    
     "splashScreenWarning": "There are violent and disturbing{N}images in this game.",
+    "introFearOfBlood": "The fear of blood tends to create fear for the flesh.",
 
     "menuHeadingExtraOptions": "EXTRA OPTIONS",
     "menuHeadingOptions": "OPTIONS",
-
     "mainMenuLoad": "LOAD",
     "mainMenuContinue": "CONTINUE",
     "mainMenuStart": "START",

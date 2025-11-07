@@ -10,6 +10,7 @@
 #include "Services/Time.h"
 #include "Services/Toasts.h"
 #include "Utils/Font.h"
+#include "Utils/Parallel.h"
 #include "Utils/Translator.h"
 
 namespace Silent
@@ -34,6 +35,7 @@ namespace Silent
         FontManager                   Fonts      = FontManager();
         InputManager                  Input      = InputManager();
         OptionsManager                Options    = OptionsManager();
+        ParallelExecutor              Executor   = ParallelExecutor();
         std::unique_ptr<RendererBase> Renderer   = nullptr;
         SavegameManager               Savegame   = SavegameManager();
         TimeManager                   Time       = TimeManager();
@@ -67,6 +69,7 @@ namespace Silent
 
         AssetManager&       GetAssets();
         AudioManager&       GetAudio();
+        ParallelExecutor&   GetExecutor();
         FilesystemManager&  GetFilesystem();
         FontManager&        GetFonts();
         InputManager&       GetInput();

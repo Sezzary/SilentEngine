@@ -14,7 +14,7 @@ namespace Silent::Assets
     // ========================
 
     constexpr char KEY_SPLASH_SCREEN_WARNING[] = "splashScreenWarning";
-    constexpr char KEY_INTRO_FEAR_OR_BLOOD[]   = "introFearOfBlood";
+    constexpr char KEY_INTRO_FEAR_OF_BLOOD[]   = "introFearOfBlood";
 
     // ======
     // Menus

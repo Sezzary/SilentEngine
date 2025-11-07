@@ -212,7 +212,7 @@ namespace Silent::Debug
             constexpr const char* TEX_FILTER_ITEMS[]        = { "Nearest", "Linear" };
             constexpr const char* TEXT_QUALITY_ITEMS[]      = { "Smooth", "Retro" };
             constexpr const char* LIGHTING_ITEMS[]          = { "Per vertex", "Per pixel" };
-            constexpr const char* LANG_ITEMS[]              = { "English (Original)", "English (Revised)" };
+            constexpr const char* LANG_ITEMS[]              = { "English" };
             constexpr const char* SOUND_ITEMS[]             = { "Stereo", "Monaural" };
             constexpr const char* BLOOD_COLOR_ITEMS[]       = { "Normal", "Green", "Violet", "Black" };
             constexpr const char* CONTROL_INVERSION_ITEMS[] = { "Normal", "Reverse" };

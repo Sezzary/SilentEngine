@@ -40,7 +40,7 @@ namespace Silent::Assets
         if (assetIdx < 0 || assetIdx >= _assets.size())
         {
             Debug::Log(fmt::format("Attempted to get name of invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
-            return {};
+            return EMPTY_STRING;
         }
         const auto asset = _assets[assetIdx];
 

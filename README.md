@@ -56,7 +56,7 @@ Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning r
 - rectpack2D
 - SDL3
 - sol2
-- spdlog
+- spdlog (bundled with {fmt})
 - stb
 - UTF8-CPP
 ```

@@ -16,7 +16,7 @@ namespace Silent::Audio
         _stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, nullptr, nullptr);
         if (_stream == nullptr)
         {
-            throw std::runtime_error("Failed to open audio stream: " + std::string(SDL_GetError()));
+            throw std::runtime_error(fmt::format("Failed to open audio stream: {}", std::string(SDL_GetError())));
         }
 
         SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(_stream));

@@ -40,7 +40,7 @@ namespace Silent::Renderer
         const auto asset = assets.GetAsset(assetIdx);
         if (asset->Type != AssetType::Tim)
         {
-            throw std::runtime_error("Attempted to use non-image asset " + std::to_string(assetIdx) + "as 2D sprite texture.");
+            throw std::runtime_error(fmt::format("Attempted to use non-image asset {} as 2D sprite texture.", assetIdx));
         }
 
         return {}; // @todo

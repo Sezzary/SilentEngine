@@ -42,7 +42,7 @@ namespace Silent::Renderer
                                       config.VertShaderStorageBufferCount, config.VertShaderUniBufferCount);
         if (vertShader == nullptr)
         {
-            throw std::runtime_error("Failed to create vertex shader `" + config.VertexShaderName + "`.");
+            throw std::runtime_error(fmt::format("Failed to create vertex shader `{}`.", config.VertexShaderName));
         }
 
         // Load fragment shader.
@@ -51,7 +51,7 @@ namespace Silent::Renderer
                                       config.FragShaderStorageBufferCount, config.FragShaderUniBufferCount);
         if (fragShader == nullptr)
         {
-            throw std::runtime_error("Failed to create fragment shader `" + config.FragmentShaderName + "`.");
+            throw std::runtime_error(fmt::format("Failed to create fragment shader `{}`.",  config.FragmentShaderName));
         }
 
         // @todo Post-process pipelines don't need every variant.
@@ -93,8 +93,8 @@ namespace Silent::Renderer
             _pipelines[piplineHash] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
             if (_pipelines[piplineHash] == nullptr) 
             {
-                throw std::runtime_error("Failed to create graphics pipeline for render stage " + std::to_string((int)config.Stage) +
-                                         ", blend mode " + std::to_string(i) + ": " + std::string(SDL_GetError()));
+                throw std::runtime_error(fmt::format("Failed to create graphics pipeline for render stage {}, blend mode {}: {}",
+                                                     (int)config.Stage, i, SDL_GetError()));
             }
         }
 
@@ -158,7 +158,7 @@ namespace Silent::Renderer
         void*  code     = SDL_LoadFile(fullPath, &codeSize);
         if (code == nullptr)
         {
-            Debug::Log("Failed to load shader `" + std::string(fullPath) + "`: " + SDL_GetError(), Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to load shader `{}`: {}", fullPath, SDL_GetError()), Debug::LogLevel::Error);
             return nullptr;
         }
 
@@ -179,7 +179,7 @@ namespace Silent::Renderer
         auto* shader = SDL_CreateGPUShader(_device, &shaderInfo);
         if (shader == nullptr)
         {
-            Debug::Log("Failed to create shader `" + std::string(fullPath) + "`: " + std::string(SDL_GetError()));
+            Debug::Log(fmt::format("Failed to create shader `{}`: {}", fullPath, SDL_GetError()));
         }
         SDL_free(code);
 

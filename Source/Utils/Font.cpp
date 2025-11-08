@@ -73,7 +73,7 @@ namespace Silent::Utils
         auto* buffer = hb_buffer_create();
         if (!hb_buffer_allocation_successful(buffer))
         {
-            Debug::Log("Failed to get shaped glyphs for message `" + msg + "`.", Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to get shaped glyphs for message `{}", msg), Debug::LogLevel::Error);
             return {};
         }
         hb_buffer_add_utf8(buffer, msg.c_str(), msg.size(), 0, msg.size());
@@ -134,7 +134,7 @@ namespace Silent::Utils
         auto rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
         if (!rect.has_value())
         {
-            Debug::Log("Active atlas " + std::to_string(_activeAtlasIdx) + " for font `" + _name + "` is full. Creating new atlas.", Debug::LogLevel::Info);
+            Debug::Log(fmt::format("Active atlas {} for font `{}` is full. Creating new atlas.", _activeAtlasIdx, _name), Debug::LogLevel::Info);
 
             // Start new atlas.
             AddAtlas();
@@ -194,7 +194,7 @@ namespace Silent::Utils
         auto it = _fonts.find(fontName);
         if (it == _fonts.end())
         {
-            Debug::Log("Attempted to get missing font `"+ fontName + "`.", Debug::LogLevel::Warning);
+            Debug::Log(fmt::format("Attempted to get missing font `{}`.", fontName), Debug::LogLevel::Warning);
             return nullptr;
         }
 
@@ -217,11 +217,11 @@ namespace Silent::Utils
         {
             _fonts[fontName] = Font(_library, fontPath, pointSize, glyphPrecache);
 
-            Debug::Log("Loaded font `" + fontName + "` at point size " + std::to_string(pointSize) + ".");
+            Debug::Log(fmt::format("Loaded font `{}` at point size {}.", fontName, pointSize));
         }
         catch (const std::runtime_error& ex)
         {
-            Debug::Log("Failed to load font `" + fontName + "`: " + ex.what(), Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to load font `{}`: {}", fontName, ex.what()), Debug::LogLevel::Error);
         }
     }
 }

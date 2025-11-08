@@ -373,7 +373,8 @@ namespace Silent::Services
             auto widthIt = FONT_12_X_16_GLYPH_PIXEL_WIDTHS.find(charCode);
             if (widthIt == FONT_12_X_16_GLYPH_PIXEL_WIDTHS.end())
             {
-                Debug::Log("Failed to get glyph pixel width for char `" + std::string(1, charCode) + "` from asset + `" + FONT_12_X_16_ASSET_NAME + "`.", Debug::LogLevel::Warning);
+                Debug::Log(fmt::format("Failed to get glyph pixel width for char `{}` from asset + `{}`.", std::string(1, charCode), FONT_12_X_16_ASSET_NAME),
+                           Debug::LogLevel::Warning);
                 continue;
             }
             int glyphWidth = widthIt->second;

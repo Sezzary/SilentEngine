@@ -68,7 +68,7 @@ namespace Silent::Utils
         return _atlases;
     }
 
-    std::vector<ShapedGlyph> Font::GetShapedGlyphs(const std::string& msg)
+    ShapedText Font::GetShapedText(const std::string& msg)
     {
         // Cache new glyphs.
         auto codePoints = GetCodePoints(msg);
@@ -102,26 +102,27 @@ namespace Silent::Utils
         auto* glyphInfos     = hb_buffer_get_glyph_infos(buffer, &glyphCount);
         auto* glyphPositions = hb_buffer_get_glyph_positions(buffer, &glyphCount);
 
-        // Collect shaped glyphs.
-        auto shapedGlyphs = std::vector<ShapedGlyph>{};
-        shapedGlyphs.reserve(glyphCount);
+        // Build shaped text.
+        auto shapedText = ShapedText{};
+        shapedText.Glyphs.reserve(glyphCount);
         for (int i = 0; i < glyphCount; i++)
         {
             const auto& glyphInfo = glyphInfos[i];
             const auto& glyphPos  = glyphPositions[i];
             const auto& glyph     = _glyphs[glyphInfo.codepoint];
 
-            shapedGlyphs.push_back(ShapedGlyph
+            shapedText.Glyphs.push_back(ShapedGlyph
             {
                 .Metadata = glyph,
                 .Advance  = Vector2i(glyphPos.x_advance, glyphPos.y_advance) * _scaleFactor,
                 .Offset   = Vector2i(glyphPos.x_offset,  glyphPos.y_offset)  * _scaleFactor
             });
+            shapedText.Width += shapedText.Glyphs.back().Advance.x;
         }
 
-        // Free resources and return shaped glyphs.
+        // Free resources and return shaped text.
         hb_buffer_destroy(buffer);
-        return shapedGlyphs;
+        return shapedText;
     }
 
     std::vector<char32> Font::GetCodePoints(const std::string& str) const

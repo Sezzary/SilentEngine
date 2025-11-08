@@ -19,6 +19,13 @@ namespace Silent::Utils
         Vector2i             Offset  = Vector2i::Zero; /** Pixel offset. */
     };
 
+    /** @brief Shaped text line data. */
+    struct ShapedText
+    {
+        std::vector<ShapedGlyph> Glyphs = {}; /** Shaped glyphs. */
+        int                      Width  = 0;  /** Line width in pixels. */
+    };
+
     /** @brief Atlased font. */
     class Font
     {
@@ -87,12 +94,12 @@ namespace Silent::Utils
          */
         const std::vector<std::vector<byte>>& GetAtlases() const;
 
-        /** @brief Gets the shaped glyphs for a message.
+        /** @brief Gets the shaped text for a message.
          *
          * @param msg Message to parse.
-         * @return Shaped glyphs.
+         * @return Shaped text.
          */
-        std::vector<ShapedGlyph> GetShapedGlyphs(const std::string& msg);
+        ShapedText GetShapedText(const std::string& msg);
 
     private:
         // ========

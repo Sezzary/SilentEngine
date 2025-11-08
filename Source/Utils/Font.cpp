@@ -9,6 +9,8 @@ namespace Silent::Utils
 {
     Font::Font(FT_Library& fontLib, const std::filesystem::path& path, int pointSize, const std::string& precacheGlyphs)
     {
+        constexpr int POINT_SIZE_MAX = ATLAS_SIZE / 8;
+
         _name = path.filename().string();
 
         // Load FreeType and HarfBuzz data.
@@ -18,7 +20,17 @@ namespace Silent::Utils
         }
         _hbFont = hb_ft_font_create(_ftFace, nullptr);
 
-        if (FT_Set_Pixel_Sizes(_ftFace, 0, std::min<int>(pointSize, ATLAS_SIZE / 4)))
+        // Clamp point size.
+        if (pointSize > POINT_SIZE_MAX)
+        {
+            Debug::Log(fmt::format("Attempted to initialize font `{}` with invalid point size {}. Max is {}.", _name, pointSize, POINT_SIZE_MAX),
+                       Debug::LogLevel::Warning);
+
+            pointSize = std::min<int>(pointSize, POINT_SIZE_MAX);
+        }
+
+        // Set point size.
+        if (FT_Set_Pixel_Sizes(_ftFace, 0, pointSize))
         {
             throw std::runtime_error("Failed to set font point size.");
         }

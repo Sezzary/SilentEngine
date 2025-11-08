@@ -1,5 +1,5 @@
 #include "Framework.h"
-#include "Game/main.h"
+#include "Game/Game.h"
 
 #include "Application.h"
 #include "Assets/Assets.h"

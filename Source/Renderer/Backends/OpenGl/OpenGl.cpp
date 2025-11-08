@@ -3,7 +3,7 @@
 
 #include "Application.h"
 #include "Assets/Assets.h"
-#include "Game/main.h"
+#include "Game/Game.h"
 #include "Renderer/Backends/OpenGl/ElementBuffer.h"
 #include "Renderer/Backends/OpenGl/ShaderProgram.h"
 #include "Renderer/Backends/OpenGl/Texture.h"

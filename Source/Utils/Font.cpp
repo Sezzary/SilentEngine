@@ -219,7 +219,7 @@ namespace Silent::Utils
 
             Debug::Log("Loaded font `" + fontName + "` at point size " + std::to_string(pointSize) + ".");
         }
-        catch(const std::runtime_error& ex)
+        catch (const std::runtime_error& ex)
         {
             Debug::Log("Failed to load font `" + fontName + "`: " + ex.what(), Debug::LogLevel::Error);
         }

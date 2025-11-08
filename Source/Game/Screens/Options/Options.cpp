@@ -1,7 +1,7 @@
 #include "Framework.h"
-#include "Game/screens/options/options.h"
+#include "Game/Screens/Options/Options.h"
 
-#include "Game/dummy.h"
+#include "Game/Dummy.h"
 
 namespace Silent::Game
 {

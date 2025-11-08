@@ -1,5 +1,5 @@
 #include "Framework.h"
-#include "Game/dummy.h"
+#include "Game/Dummy.h"
 
 namespace Silent::Game
 {

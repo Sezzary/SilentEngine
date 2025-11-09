@@ -62,6 +62,28 @@ namespace Silent::Assets
 
     // @todo
 
+    // ==========
+    // Game Over
+    // ==========
+
+    constexpr char KEY_GAME_OVER_HEADING[]      = "gameOverHeading";
+    constexpr char KEY_GAME_OVER_TIPS_HEADING[] = "gameOverTipsHeading";
+    constexpr char KEY_GAME_OVER_TIP_1[]        = "gameOverTip1";
+    constexpr char KEY_GAME_OVER_TIP_2[]        = "gameOverTip2";
+    constexpr char KEY_GAME_OVER_TIP_3[]        = "gameOverTip3";
+    constexpr char KEY_GAME_OVER_TIP_4[]        = "gameOverTip4";
+    constexpr char KEY_GAME_OVER_TIP_5[]        = "gameOverTip5";
+    constexpr char KEY_GAME_OVER_TIP_6[]        = "gameOverTip6";
+    constexpr char KEY_GAME_OVER_TIP_7[]        = "gameOverTip7";
+    constexpr char KEY_GAME_OVER_TIP_8[]        = "gameOverTip8";
+    constexpr char KEY_GAME_OVER_TIP_9[]        = "gameOverTip9";
+    constexpr char KEY_GAME_OVER_TIP_10[]       = "gameOverTip10";
+    constexpr char KEY_GAME_OVER_TIP_11[]       = "gameOverTip11";
+    constexpr char KEY_GAME_OVER_TIP_12[]       = "gameOverTip12";
+    constexpr char KEY_GAME_OVER_TIP_13[]       = "gameOverTip13";
+    constexpr char KEY_GAME_OVER_TIP_14[]       = "gameOverTip14";
+    constexpr char KEY_GAME_OVER_TIP_15[]       = "gameOverTip15";
+
     // ====================
     // Common Map Messages
     // ====================

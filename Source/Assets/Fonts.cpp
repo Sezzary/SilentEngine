@@ -11,12 +11,7 @@ namespace Silent::Assets
     {
         FontMetadata
         {
-            .Name      = "FreeSerif.otf",
-            .PointSize = POINT_SIZE_HIGH_RES
-        },
-        FontMetadata
-        {
-            .Name      = "NotoSerifCJK.otf",
+            .Name      = "SilentSerif.ttf",
             .PointSize = POINT_SIZE_HIGH_RES
         },
         FontMetadata

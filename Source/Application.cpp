@@ -135,7 +135,7 @@ namespace Silent
 
         for (const auto& fontMetadata : FONTS_METADATA)
         {
-            _work.Fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / fontMetadata.Name, fontMetadata.PointSize, fontMetadata.Precache);
+            _work.Fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / fontMetadata.Name, fontMetadata.PointSize, GLYPH_PRECACHE);
         }
 
         // Renderer.

@@ -47,14 +47,14 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string                               _name      = {};      /** Font name. */
-        int                                       _pointSize = 0;       /** Point size. */
-        std::unordered_map<char32, GlyphMetadata> _glyphs    = {};      /** Key = code point, value = rasterized glyph metadata. */
-        std::vector<PackedRects>                  _rectPacks = {};      /** Glyph rectangle packs. */
-        std::vector<std::vector<byte>>            _atlases   = {};      /** Monochrome glyph texture atlases. */
+        std::string                               _name      = {}; /** Font name. */
+        int                                       _pointSize = 0;  /** Point size. */
+        std::unordered_map<char32, GlyphMetadata> _glyphs    = {}; /** Key = code point, value = rasterized glyph metadata. */
+        std::vector<PackedRects>                  _rectPacks = {}; /** Glyph rectangle packs. */
+        std::vector<std::vector<byte>>            _atlases   = {}; /** Monochrome glyph texture atlases. */
 
         int        _activeAtlasIdx = 0;       /** Index of the atlas currently used for caching. */
-        float      _scaleFactor    = 0.0f;
+        float      _scaleFactor    = 0.0f;    /** Relative pixel space scale factor. */
         FT_Face    _ftFace         = {};      /** FreeType typeface handle. */
         hb_font_t* _hbFont         = nullptr; /** HarfBuzz font handle. */
 
@@ -149,7 +149,7 @@ namespace Silent::Utils
         // Getters
         // ========
 
-        /** @brief Gets a loaded font. If the font is missing, it regurns `nullptr`.
+        /** @brief Gets a loaded font. If the font is missing, it returns `nullptr`.
          *
          * @param fontName Name of the font to retrieve.
          * @return Loaded font.

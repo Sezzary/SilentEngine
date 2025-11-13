@@ -47,9 +47,9 @@ namespace Silent::Utils
          */
         Bitfield(uint size);
 
-        /** @brief Constructs a `Bitfield` with the specified bit indices set to 1.
+        /** @brief Constructs a `Bitfield` with the specified bits.
          *
-         * @param bits Bits to set.
+         * @param bits Consecutive bit states.
          */
         Bitfield(const std::initializer_list<bool>& bits);
 
@@ -60,12 +60,12 @@ namespace Silent::Utils
          */
         Bitfield(const std::vector<ChunkType>& bitChunks, uint size);
 
-        /** @brief Constructs a `Bitfield` from a string of `1`s and `0`s.
+        /** @brief Constructs a `Bitfield` from a string of `1`s (`true`) and `0`s (`false`).
          *
          * @param bitStr Bits encoded in a string.
          */
         Bitfield(const std::string& bitStr);
-        
+
         // ========
         // Getters
         // ========
@@ -76,7 +76,7 @@ namespace Silent::Utils
          */
         uint GetSize() const;
 
-        /** @brief Gets the number of set bits.
+        /** @brief Gets the number of bits set to `true`.
          *
          * @return Number of set bits.
          */
@@ -84,7 +84,7 @@ namespace Silent::Utils
 
         /** @brief Gets the chunks of the bitfield.
          *
-         * @return `std::vector` of chunks.
+         * @return Bit chunks.
          */
         const std::vector<ChunkType>& GetChunks() const;
 
@@ -92,83 +92,107 @@ namespace Silent::Utils
         // Setters
         // ========
 
-        /** @brief Sets the state of a specified bit.
+        /** @brief Sets the state of a specified bit to `true`.
          *
-         * @param bitIdx Bit index to sset.
+         * @param bitIdx Index of the bit to set.
          */
         void Set(uint bitIdx);
 
-        /** @brief Sets the states of specified bits.
+        /** @brief Sets the states of specified bits to `true`.
          *
-         * @param bitIdxs Bit indices to set.
+         * @param bitIdxs Indices of the bits to set.
          */
         void Set(const std::vector<uint>& bitIdxs);
 
-        /** @brief Sets the state of all bits. */
+        /** @brief Sets the states of specified bits to `true`.
+         *
+         * @param bitIdxs Indices of the bits to set.
+         */
+        template <typename... Args>
+        requires (std::is_integral_v<Args> && ...)
+        void Set(Args... bitIdxs);
+
+        /** @brief Sets the states of all bits to `true`. */
         void SetAll();
 
-        /** @brief Unsets the state of a specified bit.
+        /** @brief Sets the state of a specified bit to `false`.
          *
-         * @param bitIdx Bit index to unset.
+         * @param bitIdx Index of the bit to clear.
          */
         void Clear(uint bitIdx);
 
-        /** @brief Unsets the states of specified bits.
+        /** @brief Sets the states of specified bits to `false`.
          *
-         * @param bitIdxs Bit indices to unset.
+         * @param bitIdxs Indices of the bits to clear.
          */
         void Clear(const std::vector<uint>& bitIdxs);
 
-        /** @brief Unsets the state of all bits. */
+        /** @brief Sets the states of specified bits to `false`.
+         *
+         * @param bitIdxs Indices of the bits to clear.
+         */
+        template <typename... Args>
+        requires (std::is_integral_v<Args> && ...)
+        void Clear(Args... bitIdxs);
+
+        /** @brief Sets the states of all bits to `false`. */
         void ClearAll();
 
         /** @brief Flips the state of a specified bit.
          *
-         * @param bitIdx Bit index to flip.
+         * @param bitIdx Index of the bit to flip.
          */
         void Flip(uint bitIdx);
 
         /** @brief Flips the states of specified bits.
          *
-         * @param bitIdxs Bit indices to flip.
+         * @param bitIdxs Indices of the bits to flip.
          */
         void Flip(const std::vector<uint>& bitIdxs);
 
-        /** @brief Flips the state of all bits. */
+        /** @brief Flips the states of specified bits.
+         *
+         * @param bitIdxs Indices of the bits to flip.
+         */
+        template <typename... Args>
+        requires (std::is_integral_v<Args> && ...)
+        void Flip(Args... bitIdxs);
+
+        /** @brief Flips the states of all bits. */
         void FlipAll();
 
         // ==========
         // Inquirers
         // ==========
 
-        /** @brief Checks if all bits are unset.
+        /** @brief Checks if all bits are set to `false`.
          *
-         * @return `true` if all bits are unset, `false` otherwise.
+         * @return `true` if all bits are `false`, `false` otherwise.
          */
         bool IsEmpty() const;
 
-        /** @brief Checks if specified bits are set. If `testAny` is passed as `true`, any set bit will satisfy the condition.
+        /** @brief Checks if specified bits are set to `true`. If `testAny` is passed as `true`, any set bit will satisfy the condition.
          *
-         * @param bitIdxs Bit indices to check.
+         * @param bitIdxs Indices of the bits to check.
          * @param testAny If any set bit will satisfy the condition.
          * @return `true` if the bits are set, `false` otherwise.
          */
         bool Test(const std::vector<uint>& bitIdxs, bool testAny = true) const;
 
-        /** @brief Checks if a specified bit is set.
+        /** @brief Checks if a specified bit is set to `true`.
          *
-         * @param bitIdx Bit index to check.
+         * @param bitIdxs Index of the bit to check.
          * @param `true` if the bit is set, `false` otherwise.
          */
         bool Test(uint bitIdx) const;
 
-        /** @brief Checks if any bits are set.
+        /** @brief Checks if any bits are set to `true`.
          *
          * @return `true` if any bits are set, `false` otherwise.
          */
         bool TestAny() const;
 
-        /** @brief Checks if all bits are set.
+        /** @brief Checks if all bits are set to `true`.
          *
          * @return `true` if all bits are set, `false` otherwise.
          */
@@ -188,9 +212,9 @@ namespace Silent::Utils
         // Converters
         // ===========
 
-        /** @brief Converts the bitfield to a string of 1s and 0s.
+        /** @brief Converts the bitfield to a string of `1`s (`true`) and `0`s (`false`).
          *
-         * @return Bitfield as a string.
+         * @return String representing the bits.
          */
         std::string ToString() const;
 
@@ -214,19 +238,40 @@ namespace Silent::Utils
         // Helpers
         // ========
 
-        /** @brief Sets or unsets all bits to a specified state.
+        /** @brief Fills all bits with a specified state.
          *
-         * @param state Bit state to set.
+         * @param state Bit state to fill.
          */
         void Fill(bool state);
 
-        /** @brief Checks if a specified bit exists. Only used in the @debug build.
+        /** @brief Checks if a specified bit exists.
          *
-         * @param bitIdx Bit index to check.
+         * @param bitIdx Index of the bit to check.
          * @return `true` if the bit exists, `false` otherwise.
          */
         bool IsBitIdxValid(uint bitIdx) const;
     };
+
+    template <typename... Args>
+    requires (std::is_integral_v<Args> && ...)
+    void Bitfield::Set(Args... bitIdxs)
+    {
+        (Set(bitIdxs), ...);
+    }
+
+    template <typename... Args>
+    requires (std::is_integral_v<Args> && ...)
+    void Bitfield::Clear(Args... bitIdxs)
+    {
+        (Clear(bitIdxs), ...);
+    }
+
+    template <typename... Args>
+    requires (std::is_integral_v<Args> && ...)
+    void Bitfield::Flip(Args... bitIdxs)
+    {
+        (Flip(bitIdxs), ...);
+    }
 }
 
 namespace std
@@ -236,15 +281,15 @@ namespace std
     {
         size_t operator()(const Silent::Utils::Bitfield& bitField) const
         {
-            size_t hashVal = 0;
+            size_t seed = 0;
             for (auto chunk : bitField.GetChunks())
             {
-                hashVal ^= hash<Silent::Utils::Bitfield::ChunkType>{}(chunk) +
-                           Silent::Math::GOLDEN_RATIO +
-                           (hashVal << 6) + (hashVal >> 2);
+                seed ^= hash<Silent::Utils::Bitfield::ChunkType>{}(chunk) +
+                        Silent::Math::GOLDEN_RATIO +
+                        (seed << 6) + (seed >> 2);
             }
 
-            return hashVal;
+            return seed;
         }
     };
 }

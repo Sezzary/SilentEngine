@@ -19,6 +19,13 @@ namespace Silent::Utils
         Vector2i             Offset  = Vector2i::Zero; /** Pixel offset. */
     };
 
+    /** @brief Shaped text line data. */
+    struct ShapedText
+    {
+        std::vector<ShapedGlyph> Glyphs = {}; /** Shaped glyphs. */
+        int                      Width  = 0;  /** Line width in pixels. */
+    };
+
     /** @brief Atlased font. */
     class Font
     {
@@ -40,14 +47,14 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string                               _name      = {};      /** Font name. */
-        int                                       _pointSize = 0;       /** Point size. */
-        std::unordered_map<char32, GlyphMetadata> _glyphs    = {};      /** Key = code point, value = rasterized glyph metadata. */
-        std::vector<PackedRects>                  _rectPacks = {};      /** Glyph rectangle packs. */
-        std::vector<std::vector<byte>>            _atlases   = {};      /** Monochrome glyph texture atlases. */
+        std::string                               _name      = {}; /** Font name. */
+        int                                       _pointSize = 0;  /** Point size. */
+        std::unordered_map<char32, GlyphMetadata> _glyphs    = {}; /** Key = code point, value = rasterized glyph metadata. */
+        std::vector<PackedRects>                  _rectPacks = {}; /** Glyph rectangle packs. */
+        std::vector<std::vector<byte>>            _atlases   = {}; /** Monochrome glyph texture atlases. */
 
         int        _activeAtlasIdx = 0;       /** Index of the atlas currently used for caching. */
-        float      _scaleFactor    = 0.0f;
+        float      _scaleFactor    = 0.0f;    /** Relative pixel space scale factor. */
         FT_Face    _ftFace         = {};      /** FreeType typeface handle. */
         hb_font_t* _hbFont         = nullptr; /** HarfBuzz font handle. */
 
@@ -87,12 +94,12 @@ namespace Silent::Utils
          */
         const std::vector<std::vector<byte>>& GetAtlases() const;
 
-        /** @brief Gets the shaped glyphs for a message.
+        /** @brief Gets the shaped text for a message.
          *
          * @param msg Message to parse.
-         * @return Shaped glyphs.
+         * @return Shaped text.
          */
-        std::vector<ShapedGlyph> GetShapedGlyphs(const std::string& msg);
+        ShapedText GetShapedText(const std::string& msg);
 
     private:
         // ========
@@ -142,7 +149,7 @@ namespace Silent::Utils
         // Getters
         // ========
 
-        /** @brief Gets a loaded font. If the font is missing, it regurns `nullptr`.
+        /** @brief Gets a loaded font. If the font is missing, it returns `nullptr`.
          *
          * @param fontName Name of the font to retrieve.
          * @return Loaded font.

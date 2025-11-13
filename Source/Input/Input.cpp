@@ -79,7 +79,7 @@ namespace Silent::Input
 
         if (!SDL_Init(SDL_INIT_GAMEPAD))
         {
-            Debug::Log("Failed to initialize gamepad subsystem: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to initialize gamepad subsystem: {}", SDL_GetError()), Debug::LogLevel::Error);
         }
 
         // Initialize event states and control axes.
@@ -185,7 +185,7 @@ namespace Silent::Input
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
             toaster.Add(translator(KEY_SYS_GAMEPAD_CONNECTED));
 
-            Debug::Log(GetGamepadVendorName(_gamepad.VendorId) + " gamepad connected.");
+            Debug::Log(fmt::format("{} gamepad connected.", GetGamepadVendorName(_gamepad.VendorId)));
         }
     }
 
@@ -336,7 +336,7 @@ namespace Silent::Input
         auto res = Vector2i::Zero;
         if (!SDL_GetWindowSize(&window, &res.x, &res.y))
         {
-            Debug::Log("Failed to get window size: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to get window size: {}", SDL_GetError()), Debug::LogLevel::Error);
         }
 
         float sensitivity = (options->MouseSensitivity * 0.1f) + 0.4f;
@@ -491,7 +491,7 @@ namespace Silent::Input
         // Rumble gamepad.
         if (!SDL_RumbleGamepad(_gamepad.Device, freqLow, freqHigh, durationMs))
         {
-            Debug::Log("Failed to rumble gamepad: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to rumble gamepad: {}", SDL_GetError()), Debug::LogLevel::Error);
         }
 
         _rumble.Ticks--;

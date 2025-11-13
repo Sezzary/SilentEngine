@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/common.h"
+#include "Game/Common.h"
 
 /** @brief Screen position menu states. Facilitates menu switching via `s_GameWork::gameStateStep[1]`. */
 enum e_ScreenPosMenuState

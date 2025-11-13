@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/common.h"
+#include "Game/Common.h"
 
 namespace Silent::Game
 {

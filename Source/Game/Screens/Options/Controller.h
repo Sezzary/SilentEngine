@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/common.h"
+#include "Game/Common.h"
 
 /** @brief Controller config menu states. Also used as entries for the left presets pane.
  *

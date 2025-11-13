@@ -1,8 +1,8 @@
 #include "Framework.h"
-#include "Game/screens/options/menu_graphics.h"
+#include "Game/Screens/Options/MenuGraphics.h"
 
-#include "Game/screens/options/options.h"
-#include "Game/screens/options/selection_graphics.h"
+#include "Game/Screens/Options/Options.h"
+#include "Game/Screens/Options/SelectionGraphics.h"
 
 namespace Silent::Game
 {

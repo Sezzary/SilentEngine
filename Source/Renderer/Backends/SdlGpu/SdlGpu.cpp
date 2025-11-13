@@ -67,13 +67,13 @@ namespace Silent::Renderer
         _device = SDL_CreateGPUDevice(formatFlags, Debug::IS_DEBUG_BUILD, nullptr);
         if (_device == nullptr)
         {
-            throw std::runtime_error("Failed to create GPU device: " + std::string(SDL_GetError()));
+            throw std::runtime_error(fmt::format("Failed to create GPU device: {}", SDL_GetError()));
         }
 
         const char* deviceDriverName = SDL_GetGPUDeviceDriver(_device);
         if (deviceDriverName != nullptr)
         {
-            Debug::Log("Using " + std::string(deviceDriverName) + " backend.");
+            Debug::Log(fmt::format("Using {} backend.", deviceDriverName));
         }
 
         // Claim window.
@@ -231,7 +231,7 @@ namespace Silent::Renderer
         _commandBuffer = SDL_AcquireGPUCommandBuffer(_device);
         if (_commandBuffer == nullptr)
         {
-            Debug::Log("Failed to acquire command buffer: " + std::string(SDL_GetError()), Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to acquire command buffer: {}", SDL_GetError()), Debug::LogLevel::Error);
             ClearFrameData();
             return;
         }
@@ -279,14 +279,14 @@ namespace Silent::Renderer
         auto* surface = SDL_GetWindowSurface(_window);
         if (surface == nullptr)
         {
-            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::All, true);
+            Debug::Log(fmt::format("Failed to save screenshot: {}", std::string(SDL_GetError())), Debug::LogLevel::Warning, Debug::LogMode::All, true);
             return;
         }
 
         // Lock surface to access pixels.
         if (!SDL_LockSurface(surface))
         {
-            Debug::Log("Failed to save screenshot: " + std::string(SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::All, true);
+            Debug::Log(fmt::format("Failed to save screenshot: {}", SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::All, true);
             return;
         }
 

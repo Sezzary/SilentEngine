@@ -74,10 +74,7 @@ namespace Silent::Savegame
             outputFile.close();
         }
 
-        Debug::Log("Saved game to slot " + std::to_string(slotIdx + 1) +
-            ", file " + std::to_string(fileIdx + 1) +
-            ", savegame " + std::to_string(saveIdx + 1) + ".",
-            Debug::LogLevel::Info);
+        Debug::Log(fmt::format("Saved game to slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1), Debug::LogLevel::Info);
     }
 
     void SavegameManager::Load(int slotIdx, int fileIdx, int saveIdx)
@@ -88,10 +85,8 @@ namespace Silent::Savegame
         auto inputFile = std::ifstream(saveFile, std::ios::binary);
         if (!inputFile.is_open())
         {
-            Debug::Log("Attempted to load missing savegame for slot " + std::to_string(slotIdx + 1) +
-                ", file " + std::to_string(fileIdx + 1) +
-                ", savegame " + std::to_string(saveIdx + 1) + ".",
-                Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(fmt::format("Attempted to load missing savegame for slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1),
+                       Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
 
@@ -108,10 +103,7 @@ namespace Silent::Savegame
         // Read savegame buffer.
         _savegame = std::move(*FromSavegameBuffer(*saveBuffer));
 
-        Debug::Log("Loaded game from slot " + std::to_string(slotIdx + 1) +
-            ", file " + std::to_string(fileIdx + 1) +
-            ", savegame " + std::to_string(saveIdx + 1) + ".",
-            Debug::LogLevel::Info);
+        Debug::Log(fmt::format("Loaded game from slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1), Debug::LogLevel::Info);
     }
 
     const Savegame* SavegameManager::operator->() const
@@ -142,7 +134,7 @@ namespace Silent::Savegame
         auto inputFile = std::ifstream(saveFile, std::ios::binary);
         if (!inputFile.is_open())
         {
-            Debug::Log("Attempted to get metadata for missing savegame file `" + saveFile.string() + "'.", Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(fmt::format("Attempted to get metadata for missing savegame file `{}`.", saveFile.string()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return SavegameMetadata
             {
                 .SlotIdx        = NO_VALUE,

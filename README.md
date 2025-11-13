@@ -1,4 +1,4 @@
-# <img src="https://github.com/Sezzary/SilentMath/blob/master/Icon.png" alt="Icon" width="64" height="64"/> Silent Engine
+# <img src="https://github.com/Sezzary/SilentEngine/blob/master/Icon.png" alt="Icon" width="64" height="64"/> Silent Engine
 
 Track decompilation progress here: https://github.com/Vatuu/silent-hill-decomp
 
@@ -14,9 +14,11 @@ Track decompilation progress here: https://github.com/Vatuu/silent-hill-decomp
 - Parallel task handling
 - Filesystem handling
 - Clean logging
-- Renderer with swappable backends.
+- Renderer with swappable backends
 - Sound system
-- Various utilities pulled from other projects including a `Bitfield` class and a `BoundingVolumeHierarchy` class.
+- Translator for internationalized scripts
+- Font manager
+- Various utilities pulled from other projects.
 
 All considerations are being made to make this a flexible, readable, and extendable foundation. Portability is in mind as a top priority for multi-platform support from inception.
 
@@ -43,7 +45,7 @@ The project has the following requirements:
 
 ### Clone the repository
 
-Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning recursively will ensure the following submodules are included in the process:
+Clone https://github.com/Sezzary/SilentEngine to your desired directory. Cloning recursively will ensure the following submodules are included in the process:
 - assimp
 - FlatBuffers
 - FreeType
@@ -56,11 +58,11 @@ Clone https://github.com/Sezzary/SilentMath to your desired directory. Cloning r
 - rectpack2D
 - SDL3
 - sol2
-- spdlog
+- spdlog (with {fmt} bundled)
 - stb
 - UTF8-CPP
 ```
-git clone --recursive https://github.com/Sezzary/SilentMath
+git clone --recursive https://github.com/Sezzary/SilentEngine
 git submodule update --init --recursive
 ```
 

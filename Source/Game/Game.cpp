@@ -1,5 +1,5 @@
 #include "Framework.h"
-#include "Game/main.h"
+#include "Game/Game.h"
 
 #include "Application.h"
 #include "Assets/Assets.h"
@@ -35,23 +35,23 @@ namespace Silent
                 continue;
             }*/
 
-            //g_ObjectTableIdx = GsGetActiveBuff();
+            //g_ActiveBufferIdx = GsGetActiveBuff();
 
             /*if (g_GameWork.gameState_594 >= GameState_MainLoadScreen && g_GameWork.gameState_594 < GameState_MapEvent)
             {
-                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ObjectTableIdx << 17));
+                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ActiveBufferIdx << 17));
             }
             else if (g_GameWork.gameState_594 == GameState_InventoryScreen)
             {
-                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ObjectTableIdx * 40000));
+                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ActiveBufferIdx * 40000));
             }
             else
             {
-                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ObjectTableIdx << 15));
+                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ActiveBufferIdx << 15));
             }*/
 
-            /*GsClearOt(0, 0, &g_ObjectTable0[g_ObjectTableIdx]);
-            GsClearOt(0, 0, &g_ObjectTable1[g_ObjectTableIdx]);*/
+            /*GsClearOt(0, 0, &g_ObjectTable0[g_ActiveBufferIdx]);
+            GsClearOt(0, 0, &g_ObjectTable1[g_ActiveBufferIdx]);*/
 
             //g_SysWork.field_22A0 = 0;
 
@@ -67,7 +67,7 @@ namespace Silent
                 continue;
             }*/
 
-            /*func_8003260C();
+            /*Screen_FadeUpdate();
             func_8002EB88();
             func_800485D8();*/
 

@@ -9,6 +9,8 @@ namespace Silent::Utils
 {
     Font::Font(FT_Library& fontLib, const std::filesystem::path& path, int pointSize, const std::string& precacheGlyphs)
     {
+        constexpr int POINT_SIZE_MAX = ATLAS_SIZE / 8;
+
         _name = path.filename().string();
 
         // Load FreeType and HarfBuzz data.
@@ -18,7 +20,17 @@ namespace Silent::Utils
         }
         _hbFont = hb_ft_font_create(_ftFace, nullptr);
 
-        if (FT_Set_Pixel_Sizes(_ftFace, 0, std::min<int>(pointSize, ATLAS_SIZE / 4)))
+        // Clamp point size.
+        if (pointSize > POINT_SIZE_MAX)
+        {
+            Debug::Log(fmt::format("Attempted to initialize font `{}` with invalid point size {}. Max is {}.", _name, pointSize, POINT_SIZE_MAX),
+                       Debug::LogLevel::Warning);
+
+            pointSize = std::min<int>(pointSize, POINT_SIZE_MAX);
+        }
+
+        // Set point size.
+        if (FT_Set_Pixel_Sizes(_ftFace, 0, pointSize))
         {
             throw std::runtime_error("Failed to set font point size.");
         }
@@ -37,7 +49,7 @@ namespace Silent::Utils
         }
 
         // Debug.
-        //stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + "_Atlas.png")).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlases.front().data(), ATLAS_SIZE);
+        stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + "_Atlas.png")).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlases.front().data(), ATLAS_SIZE);
     }
 
     Font::~Font()
@@ -56,7 +68,7 @@ namespace Silent::Utils
         return _atlases;
     }
 
-    std::vector<ShapedGlyph> Font::GetShapedGlyphs(const std::string& msg)
+    ShapedText Font::GetShapedText(const std::string& msg)
     {
         // Cache new glyphs.
         auto codePoints = GetCodePoints(msg);
@@ -73,7 +85,7 @@ namespace Silent::Utils
         auto* buffer = hb_buffer_create();
         if (!hb_buffer_allocation_successful(buffer))
         {
-            Debug::Log("Failed to get shaped glyphs for message `" + msg + "`.", Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to get shaped glyphs for message `{}", msg), Debug::LogLevel::Error);
             return {};
         }
         hb_buffer_add_utf8(buffer, msg.c_str(), msg.size(), 0, msg.size());
@@ -90,26 +102,27 @@ namespace Silent::Utils
         auto* glyphInfos     = hb_buffer_get_glyph_infos(buffer, &glyphCount);
         auto* glyphPositions = hb_buffer_get_glyph_positions(buffer, &glyphCount);
 
-        // Collect shaped glyphs.
-        auto shapedGlyphs = std::vector<ShapedGlyph>{};
-        shapedGlyphs.reserve(glyphCount);
+        // Build shaped text.
+        auto shapedText = ShapedText{};
+        shapedText.Glyphs.reserve(glyphCount);
         for (int i = 0; i < glyphCount; i++)
         {
             const auto& glyphInfo = glyphInfos[i];
             const auto& glyphPos  = glyphPositions[i];
             const auto& glyph     = _glyphs[glyphInfo.codepoint];
 
-            shapedGlyphs.push_back(ShapedGlyph
+            shapedText.Glyphs.push_back(ShapedGlyph
             {
                 .Metadata = glyph,
                 .Advance  = Vector2i(glyphPos.x_advance, glyphPos.y_advance) * _scaleFactor,
                 .Offset   = Vector2i(glyphPos.x_offset,  glyphPos.y_offset)  * _scaleFactor
             });
+            shapedText.Width += shapedText.Glyphs.back().Advance.x;
         }
 
-        // Free resources and return shaped glyphs.
+        // Free resources and return shaped text.
         hb_buffer_destroy(buffer);
-        return shapedGlyphs;
+        return shapedText;
     }
 
     std::vector<char32> Font::GetCodePoints(const std::string& str) const
@@ -134,7 +147,7 @@ namespace Silent::Utils
         auto rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
         if (!rect.has_value())
         {
-            Debug::Log("Active atlas " + std::to_string(_activeAtlasIdx) + " for font `" + _name + "` is full. Creating new atlas.", Debug::LogLevel::Info);
+            Debug::Log(fmt::format("Active atlas {} for font `{}` is full. Creating new atlas.", _activeAtlasIdx, _name), Debug::LogLevel::Info);
 
             // Start new atlas.
             AddAtlas();
@@ -194,7 +207,7 @@ namespace Silent::Utils
         auto it = _fonts.find(fontName);
         if (it == _fonts.end())
         {
-            Debug::Log("Attempted to get missing font `"+ fontName + "`.", Debug::LogLevel::Warning);
+            Debug::Log(fmt::format("Attempted to get missing font `{}`.", fontName), Debug::LogLevel::Warning);
             return nullptr;
         }
 
@@ -217,11 +230,11 @@ namespace Silent::Utils
         {
             _fonts[fontName] = Font(_library, fontPath, pointSize, glyphPrecache);
 
-            Debug::Log("Loaded font `" + fontName + "` at point size " + std::to_string(pointSize) + ".");
+            Debug::Log(fmt::format("Loaded font `{}` at point size {}.", fontName, pointSize));
         }
-        catch(const std::runtime_error& ex)
+        catch (const std::runtime_error& ex)
         {
-            Debug::Log("Failed to load font `" + fontName + "`: " + ex.what(), Debug::LogLevel::Error);
+            Debug::Log(fmt::format("Failed to load font `{}`: {}", fontName, ex.what()), Debug::LogLevel::Error);
         }
     }
 }

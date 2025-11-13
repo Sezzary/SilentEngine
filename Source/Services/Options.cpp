@@ -180,12 +180,12 @@ namespace Silent::Services
     void OptionsManager::Load()
     {
         const auto& fs = g_App.GetFilesystem();
-        
+
         // Open options JSON file.
         auto stream = Stream(fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT), true, false);
         if (!stream.IsOpen())
         {
-            Debug::Log("Creating new `" + (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT) + "` file.", Debug::LogLevel::Info);
+            Debug::Log(fmt::format("Creating new `{}{}` file.", OPTIONS_FILENAME, JSON_FILE_EXT), Debug::LogLevel::Info);
 
             SetDefaultOptions();
             Save();

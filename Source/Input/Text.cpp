@@ -68,7 +68,7 @@ namespace Silent::Input
         auto it = _buffers.find(bufferId);
         if (it == _buffers.end())
         {
-            Debug::Log("Attempted to get text for missing text buffer '" + bufferId + "'.", Debug::LogLevel::Warning);
+            Debug::Log(fmt::format("Attempted to get text for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return EMPTY;
         }
 
@@ -81,7 +81,7 @@ namespace Silent::Input
         auto it = _buffers.find(bufferId);
         if (it == _buffers.end())
         {
-            Debug::Log("Attempted to get text lines for missing text buffer '" + bufferId + "'.", Debug::LogLevel::Warning);
+            Debug::Log(fmt::format("Attempted to get text lines for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return {};
         }
 
@@ -121,7 +121,7 @@ namespace Silent::Input
         auto it = _buffers.find(bufferId);
         if (it == _buffers.end())
         {
-            Debug::Log("Attempted to get cursor position for missing text buffer '" + bufferId + "'.", Debug::LogLevel::Warning);
+            Debug::Log(fmt::format("Attempted to get cursor position for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return 0;
         }
 
@@ -133,9 +133,9 @@ namespace Silent::Input
     {
         if (lineWidthMax == 0 || charCountMax == 0)
         {
-            Debug::Log("Attempted to insert invalid text buffer '" + bufferId +
-                "' with max line width " + std::to_string(lineWidthMax) +
-                " and character limit " + std::to_string(charCountMax) + ".", Debug::LogLevel::Warning);
+            Debug::Log(fmt::format("Attempted to insert invalid text buffer `{}` with max line width {} and character limit {}.",
+                                   bufferId, lineWidthMax, charCountMax),
+                       Debug::LogLevel::Warning);
             return;
         }
 
@@ -151,7 +151,7 @@ namespace Silent::Input
         auto it = _buffers.find(bufferId);
         if (it == _buffers.end())
         {
-            Debug::Log("Attempted to update missing text buffer '" + bufferId + "'.", Debug::LogLevel::Warning);
+            Debug::Log(fmt::format("Attempted to update missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return;
         }
 
@@ -197,7 +197,7 @@ namespace Silent::Input
         auto it = _buffers.find(bufferId);
         if (it == _buffers.end())
         {
-            Debug::Log("Attempted to clear missing text buffer '" + bufferId + "'.", Debug::LogLevel::Warning);
+            Debug::Log(fmt::format("Attempted to clear missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return;
         }
 
@@ -473,9 +473,7 @@ namespace Silent::Input
                 else if (shiftAction.IsHeld() && ctrlAction.IsHeld())
                 {
                     buffer.Snapshot.Text.erase(buffer.Snapshot.Cursor, buffer.Snapshot.Text.size() - (buffer.Snapshot.Cursor - 1));
-                    Debug::Log(std::to_string(buffer.Snapshot.Text.size()) +
-                        ". " + std::to_string(buffer.Snapshot.Cursor) + ", " +
-                        std::to_string(buffer.Snapshot.Text.size() - (buffer.Snapshot.Cursor - 1)));
+                    Debug::Log(fmt::format("{}. {}, {}", buffer.Snapshot.Text.size(), buffer.Snapshot.Cursor, buffer.Snapshot.Text.size() - (buffer.Snapshot.Cursor - 1)));
                 }
                 // Erase forward to next space.
                 else if (ctrlAction.IsHeld())

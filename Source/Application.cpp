@@ -5,8 +5,8 @@
 #include "Assets/Fonts.h"
 #include "Assets/Locales.h"
 #include "Audio/Audio.h"
+#include "Game/Game.h"
 #include "Input/Input.h"
-#include "Game/main.h"
 #include "Renderer/Renderer.h"
 #include "Savegame/Savegame.h"
 #include "Services/Filesystem.h"
@@ -105,7 +105,7 @@ namespace Silent
 
         // Debug.
         Debug::Initialize();
-        Debug::Log("Starting " + std::string(APP_NAME) + " " + APP_VERSION + "...");
+        Debug::Log(fmt::format("Starting {} {}...", APP_NAME, APP_VERSION));
 
         // Options.
         _work.Options.Initialize();
@@ -114,7 +114,7 @@ namespace Silent
         // SDL.
         if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO))
         {
-            throw std::runtime_error("Failed to initialize SDL: " + std::string(SDL_GetError()));
+            throw std::runtime_error(fmt::format("Failed to initialize SDL: {}", SDL_GetError()));
         }
 
         // Collect window flags.
@@ -126,7 +126,7 @@ namespace Silent
         _window = SDL_CreateWindow(APP_NAME, _work.Options->WindowedSize.x, _work.Options->WindowedSize.y, flags);
         if (_window == nullptr)
         {
-            throw std::runtime_error("Failed to create window: " + std::string(SDL_GetError()));
+            throw std::runtime_error(fmt::format("Failed to create window: {}", SDL_GetError()));
         }
 
         // Assets.
@@ -135,7 +135,7 @@ namespace Silent
 
         for (const auto& fontMetadata : FONTS_METADATA)
         {
-            _work.Fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / fontMetadata.Name, fontMetadata.PointSize, fontMetadata.Precache);
+            _work.Fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / fontMetadata.Name, fontMetadata.PointSize, GLYPH_PRECACHE);
         }
 
         // Renderer.
@@ -204,7 +204,7 @@ namespace Silent
             return;
         }
 
-        Debug::Log("Failed to toggle fullscreen mode: " + std::string(SDL_GetError()), Debug::LogLevel::Warning);
+        Debug::Log(fmt::format("Failed to toggle fullscreen mode: {}", SDL_GetError()), Debug::LogLevel::Warning);
     }
 
     void ApplicationManager::ToggleCursor()
@@ -214,7 +214,7 @@ namespace Silent
         {
             if (!SDL_ShowCursor())
             {
-                Debug::Log("Failed to show cursor: " + std::string(SDL_GetError()), Debug::LogLevel::Warning);
+                Debug::Log(fmt::format("Failed to show cursor: {}", SDL_GetError()), Debug::LogLevel::Warning);
             }
 
             // Move cursor to window center.
@@ -226,7 +226,7 @@ namespace Silent
         {
             if (!SDL_HideCursor())
             {
-                Debug::Log("Failed to hide cursor: " + std::string(SDL_GetError()), Debug::LogLevel::Warning);
+                Debug::Log(fmt::format("Failed to hide cursor: {}", SDL_GetError()), Debug::LogLevel::Warning);
             }
         }
     }

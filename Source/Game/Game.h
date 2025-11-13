@@ -10,7 +10,7 @@ namespace Silent
      */
     enum e_FsFile
     {
-        #include "Game/fileenum.h.inc"
+        #include "Game/FileEnum.h.inc"
     };
  
     void Entry();

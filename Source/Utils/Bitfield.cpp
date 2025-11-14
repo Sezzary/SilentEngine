@@ -1,6 +1,8 @@
 #include "Framework.h"
 #include "Utils/Bitfield.h"
 
+#include "Utils/Utils.h"
+
 namespace Silent::Utils
 {
     const Bitfield Bitfield::Empty   = Bitfield(0);
@@ -438,7 +440,7 @@ namespace Silent::Utils
     void Bitfield::Fill(bool state)
     {
         auto fillChunk = state ? ~(ChunkType)0 : (ChunkType)0;
-        std::fill(_chunks.begin(), _chunks.end(), fillChunk);
+        Utils::Fill(_chunks, fillChunk);
 
         uint endBitCount = _size % CHUNK_SIZE;
         if (endBitCount > 0 && state)

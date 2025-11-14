@@ -1,6 +1,8 @@
 #include "Framework.h"
 #include "Utils/BoundingVolumeHierarchy.h"
 
+#include "Utils/Utils.h"
+
 namespace Silent::Utils
 {
     bool BoundingVolumeHierarchy::Node::IsLeaf() const
@@ -92,8 +94,7 @@ namespace Silent::Utils
     void BoundingVolumeHierarchy::Insert(int objectId, const AxisAlignedBoundingBox& aabb, float boundary)
     {
         // Find leaf containing object ID.
-        auto it = _leafIdMap.find(objectId);
-        if (it != _leafIdMap.end())
+        if (Find(_leafIdMap, objectId) != nullptr)
         {
             Debug::Log(fmt::format("BVH attempted to insert leaf with existing object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
@@ -115,16 +116,15 @@ namespace Silent::Utils
     void BoundingVolumeHierarchy::Move(int objectId, const AxisAlignedBoundingBox& aabb, float boundary)
     {
         // Find leaf containing object ID.
-        auto it = _leafIdMap.find(objectId);
-        if (it == _leafIdMap.end())
+        const int* leafId = Find(_leafIdMap, objectId);
+        if (leafId == nullptr)
         {
             Debug::Log(fmt::format("BVH attempted to move missing leaf with object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
         }
 
         // Get leaf.
-        const auto& [keyObjectId, leafId] = *it;
-        auto&       leaf                  = _nodes[leafId];
+        auto& leaf = _nodes[*leafId];
 
         // Test if object AABB is inside node AABB.
         if (leaf.Aabb.Contains(aabb) == ContainmentType::Contains)
@@ -142,23 +142,22 @@ namespace Silent::Utils
         }
 
         // Reinsert leaf.
-        RemoveLeaf(leafId);
+        RemoveLeaf(*leafId);
         Insert(objectId, aabb, boundary);
     }
 
     void BoundingVolumeHierarchy::Remove(int objectId)
     {
         // Find leaf containing object ID.
-        auto it = _leafIdMap.find(objectId);
-        if (it == _leafIdMap.end())
+        const int* leafId = Find(_leafIdMap, objectId);
+        if (leafId == nullptr)
         {
             Debug::Log(fmt::format("BVH attempted to remove missing leaf with object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
         }
 
         // Remove leaf.
-        const auto& [keyObjectId, leafId] = *it;
-        RemoveLeaf(leafId);
+        RemoveLeaf(*leafId);
     }
 
     std::vector<int> BoundingVolumeHierarchy::GetBoundedObjectIds(const std::function<bool(const Node& node)>& testCollRoutine) const

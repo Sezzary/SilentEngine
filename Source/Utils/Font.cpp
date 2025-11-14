@@ -97,8 +97,7 @@ namespace Silent::Utils
         auto codePoints = GetCodePoints(msg);
         for (char32 codePoint : codePoints)
         {
-            auto it = _glyphs.find(codePoint);
-            if (it == _glyphs.end())
+            if (Find(_glyphs, codePoint) == nullptr)
             {
                 CacheGlyph(codePoint);
             }
@@ -287,15 +286,14 @@ namespace Silent::Utils
     Font* FontManager::GetFont(const std::string& name)
     {
         // Check if font exists.
-        auto it = _fonts.find(name);
-        if (it == _fonts.end())
+        auto* font = Find(_fonts, name);
+        if (font == nullptr)
         {
             Debug::Log(fmt::format("Attempted to get missing font `{}`.", name), Debug::LogLevel::Warning);
             return nullptr;
         }
 
-        auto& [keyFontName, font] = *it;
-        return &font;
+        return font;
     }
 
     void FontManager::LoadFont(const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path, int pointSize,
@@ -303,7 +301,7 @@ namespace Silent::Utils
     {
         // Check if font is already loaded.
         auto it = _fonts.find(name);
-        if (it != _fonts.end())
+        if (Find(_fonts, name) != nullptr)
         {
             return;
         }

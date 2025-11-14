@@ -93,16 +93,15 @@ namespace Silent::Assets
     const std::shared_ptr<Asset> AssetManager::GetAsset(const std::string& assetName)
     {
         // Check if asset exists.
-        auto it = _idxs.find(assetName);
-        if (it == _idxs.end())
+        int* assetIdx = Find(_idxs, assetName);
+        if (assetIdx == nullptr)
         {
             Debug::Log(fmt::format("Attempted to get invalid asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return nullptr;
         }
 
         // Get asset by index.
-        const auto& [keyName, assetIdx] = *it;
-        return GetAsset(assetIdx);
+        return GetAsset(*assetIdx);
     }
 
     bool AssetManager::IsBusy() const
@@ -131,7 +130,7 @@ namespace Silent::Assets
 
             // Check if type is known.
             auto ext = ToUpper(file.extension().string());
-            if (ASSET_TYPES.find(ext) == ASSET_TYPES.end())
+            if (Find(ASSET_TYPES, ext) == nullptr)
             {
                 Debug::Log(fmt::format("Unknown asset type for file `{}`.", file.string()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
                 continue;
@@ -196,8 +195,8 @@ namespace Silent::Assets
         _loadFutures[assetIdx] = executor.AddTask([&]()
         {
             // Get parser function.
-            auto parserFuncIt = PARSER_FUNCS.find(asset->Type);
-            if (parserFuncIt == PARSER_FUNCS.end())
+            const auto* parserFunc = Find(PARSER_FUNCS, asset->Type);
+            if (parserFunc == nullptr)
             {
                 Debug::Log(fmt::format("Attempted to load asset `{}` with no parser function for asset type {}.", asset->Name, (int)asset->Type),
                            Debug::LogLevel::Error);
@@ -206,12 +205,11 @@ namespace Silent::Assets
                 _loadingCount--;
                 return;
             }
-            const auto& parserFunc = parserFuncIt->second;
 
             // Parse asset data from file.
             try
             {
-                asset->Data  = parserFunc(asset->File);
+                asset->Data  = (*parserFunc)(asset->File);
                 asset->State = AssetState::Loaded;
 
                 Debug::Log(fmt::format("Loaded asset `{}`.", asset->Name), Debug::LogLevel::Info, Debug::LogMode::Debug);
@@ -272,16 +270,15 @@ namespace Silent::Assets
     void AssetManager::UnloadAsset(const std::string& assetName)
     {
         // Check if asset exists.
-        auto it = _idxs.find(assetName);
-        if (it == _idxs.end())
+        int* assetIdx = Find(_idxs, assetName);
+        if (assetIdx == nullptr)
         {
             Debug::Log(fmt::format("Attempted to unload unregistered asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
 
         // Unload asset by index.
-        const auto& [keyName, assetIdx] = *it;
-        UnloadAsset(assetIdx);
+        UnloadAsset(*assetIdx);
     }
 
     void AssetManager::UnloadAllAssets()

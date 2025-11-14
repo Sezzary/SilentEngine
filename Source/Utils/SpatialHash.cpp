@@ -1,6 +1,8 @@
 #include "Framework.h"
 #include "Utils/SpatialHash.h"
 
+#include "Utils/Utils.h"
+
 namespace Silent::Utils
 {
     SpatialHash::Cell::Cell(const AxisAlignedBoundingBox& aabb)
@@ -43,15 +45,14 @@ namespace Silent::Utils
         auto key = GetCellKey(pos);
 
         // Check if cell exists.
-        auto it = _cells.find(key);
-        if (it == _cells.end())
+        auto* cell = Find(_cells, key);
+        if (cell == nullptr)
         {
             return {};
         }
 
         // Return object IDs from cell.
-        const auto& [keyPos, cell] = *it;
-        return cell.ObjectIds;
+        return cell->ObjectIds;
     }
 
     std::set<int> SpatialHash::GetBoundedObjectIds(const Ray& ray, float dist) const
@@ -68,15 +69,14 @@ namespace Silent::Utils
         for (const auto& key : keys)
         {
             // Check if cell exists.
-            auto it = _cells.find(key);
-            if (it == _cells.end())
+            auto* cell = Find(_cells, key);
+            if (cell == nullptr)
             {
                 continue;
             }
 
             // Collect object IDs from cell.
-            const auto& [keyPos, cell] = *it;
-            objectIds.insert(cell.ObjectIds.begin(), cell.ObjectIds.end());
+            objectIds.insert(cell->ObjectIds.begin(), cell->ObjectIds.end());
         }
 
         return objectIds;
@@ -96,15 +96,14 @@ namespace Silent::Utils
         for (const auto& key : keys)
         {
             // Check if cell exists.
-            auto it = _cells.find(key);
-            if (it == _cells.end())
+            auto* cell = Find(_cells, key);
+            if (cell == nullptr)
             {
                 continue;
             }
 
             // Collect object IDs from cell.
-            const auto& [keyPos, cell] = *it;
-            objectIds.insert(cell.ObjectIds.begin(), cell.ObjectIds.end());
+            objectIds.insert(cell->ObjectIds.begin(), cell->ObjectIds.end());
         }
 
         return objectIds;
@@ -124,15 +123,14 @@ namespace Silent::Utils
         for (const auto& key : keys)
         {
             // Check if cell exists.
-            auto it = _cells.find(key);
-            if (it == _cells.end())
+            auto* cell = Find(_cells, key);
+            if (cell == nullptr)
             {
                 continue;
             }
 
             // Collect object IDs from cell.
-            const auto& [keyPos, cell] = *it;
-            objectIds.insert(cell.ObjectIds.begin(), cell.ObjectIds.end());
+            objectIds.insert(cell->ObjectIds.begin(), cell->ObjectIds.end());
         }
 
         return objectIds;
@@ -152,15 +150,14 @@ namespace Silent::Utils
         for (const auto& key : keys)
         {
             // Check if cell exists.
-            auto it = _cells.find(key);
-            if (it == _cells.end())
+            auto* cell = Find(_cells, key);
+            if (cell == nullptr)
             {
                 continue;
             }
 
             // Collect object IDs from cell.
-            const auto& [keyPos, cell] = *it;
-            objectIds.insert(cell.ObjectIds.begin(), cell.ObjectIds.end());
+            objectIds.insert(cell->ObjectIds.begin(), cell->ObjectIds.end());
         }
 
         return objectIds;

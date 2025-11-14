@@ -3,6 +3,9 @@
 
 #include "Application.h"
 #include "Input/Input.h"
+#include "Utils/Utils.h"
+
+using namespace Silent::Utils;
 
 namespace Silent::Input
 {
@@ -302,26 +305,25 @@ namespace Silent::Input
     {
         static const auto DEFAULT_NAME = std::string("None");
 
-        auto it = EVENT_NAMES.find(eventId);
-        if (it == EVENT_NAMES.end())
+        const auto* names = Find(EVENT_NAMES, eventId);
+        if (names == nullptr)
         {
             return DEFAULT_NAME;
         }
-        const auto& [keyEventId, names] = *it;
 
         // Pick vendor-appropriate name.
-        if (names.size() == 1)
+        if (names->size() == 1)
         {
-            return names.front();
+            return names->front();
         }
-        else if (names.size() > 1)
+        else if (names->size() > 1)
         {
             const auto& input = g_App.GetInput();
 
             int nameIdx = (int)input.GetGamepadVendorId();
-            if (nameIdx < names.size())
+            if (nameIdx < names->size())
             {
-                return names[nameIdx];
+                return (*names)[nameIdx];
             }
         }
 

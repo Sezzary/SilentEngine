@@ -12,13 +12,17 @@ project(SilentEngine)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 23)
 
+# Specify C and C++ compilers. @todo Not working for some reason.
+#set(CMAKE_C_COMPILER gcc)
+#set(CMAKE_CXX_COMPILER g++)
+
 # Set compiler options.
 if(MSVC)
     add_compile_options(/std:c++20) # Enable modules.
     add_compile_options(/wd4018)    # Suppress sign comparison warnings.
     add_compile_options(/wd4244)    # Suppress type conversion warnings.
     add_compile_options(/wd4267)    # Suppress type conversion warnings.
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     add_compile_options(-fmodules)         # Enable modules.
     add_compile_options(-Wno-sign-compare) # Suppress sign comparison warnings.
     add_compile_options(-Wno-conversion)   # Suppress type conversion warnings.

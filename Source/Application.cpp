@@ -98,7 +98,8 @@ namespace Silent
 
     void ApplicationManager::Initialize()
     {
-        _quit = false;
+        _isPaused = false;
+        _quit     = false;
 
         // Filesystem.
         _work.Filesystem.Initialize();
@@ -182,10 +183,14 @@ namespace Silent
         while (!_quit)
         {
             _work.Time.Update();
+            PollEvents();
 
             // Step game state and render.
-            Update();
-            Render();
+            if (!_isPaused)
+            {
+                Update();
+                Render();
+            }
 
             _work.Time.WaitForNextTick();
         }
@@ -247,8 +252,7 @@ namespace Silent
 
     void ApplicationManager::Update()
     {
-        // Poll events and input.
-        PollEvents();
+        // Update input.
         _work.Input.Update(*_window, _mouseWheelAxis);
 
         // Update game state.
@@ -343,6 +347,7 @@ namespace Silent
                 }
                 case SDL_EVENT_MOUSE_WHEEL:
                 {
+                    // Update mouse wheel axis input state. Cannot be done by input subsystem due to SDL limitations.
                     _mouseWheelAxis = Vector2(event.wheel.x, event.wheel.y);
                     break;
                 }
@@ -356,6 +361,30 @@ namespace Silent
                 {
                     // Attempt disconnecting gamepad.
                     _work.Input.DisconnectGamepad(event.cdevice.which);
+                    break;
+                }
+                case SDL_EVENT_WINDOW_MOUSE_ENTER:
+                {
+                    // @todo
+                    break;
+                }
+                case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+                {
+                    // @todo
+                    break;
+                }
+                case SDL_EVENT_WINDOW_FOCUS_GAINED:
+                {
+                    // Unpause application.
+                    _isPaused = false;
+                    Debug::Log("Application unpaused.");
+                    break;
+                }
+                case SDL_EVENT_WINDOW_FOCUS_LOST:
+                {
+                    // Pause application.
+                    _isPaused = true;
+                    Debug::Log("Application paused.");
                     break;
                 }
             }

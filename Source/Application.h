@@ -50,11 +50,12 @@ namespace Silent
         // Fields
         // =======
 
-        bool            _quit   = false;   /** Quit procedure state. */
-        ApplicationWork _work   = {};      /** Subsystem workspace. */
-        SDL_Window*     _window = nullptr; /** Application window. */
+        SDL_Window* _window   = nullptr; /** Application window. */
+        bool        _isPaused = false;   /** "Window out of focus" state. */
+        bool        _quit     = false;   /** Quit procedure state. */
 
-        Vector2 _mouseWheelAxis = Vector2::Zero; /** Mouse wheel axis input. */
+        ApplicationWork _work           = {};            /** Subsystem workspace. */
+        Vector2         _mouseWheelAxis = Vector2::Zero; /** Mouse wheel axis input. */
 
     public:
         // =============

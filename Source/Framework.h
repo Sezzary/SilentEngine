@@ -11,6 +11,7 @@
 #include <chrono>
 #include <cmath>
 #include <condition_variable>
+#include <csignal>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
@@ -114,7 +115,7 @@ using json = nlohmann::json;
 // Resources
 // ==========
 
-#include "Config.h"
+#include "Platform.h"
 #include "Types.h"
 #include "Math/Math.h"
 

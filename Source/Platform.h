@@ -17,4 +17,13 @@ namespace Silent
 #elif defined(__linux__)
     constexpr auto OS_TYPE = OsType::Linux;
 #endif
+
+    /** @brief Initializes low-level termination and signal handling. */
+    void InitializeSignals();
+
+    /** @brief Handles a critical error.
+     *
+     * @param msg Error message.
+     */
+    void CriticalErrorHandler(const std::string& msg);
 }

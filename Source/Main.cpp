@@ -1,9 +1,12 @@
 #include "Framework.h"
 
 #include "Application.h"
+#include "Platform.h"
 
 int main()
 {
+    InitializeSignals();
+
     try
     {
         g_App.Initialize();
@@ -12,8 +15,7 @@ int main()
     }
     catch (const std::exception& ex)
     {
-        Debug::Log(ex.what(), Debug::LogLevel::Critical);
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Critical Error", ex.what(), nullptr);
+        CriticalErrorHandler(ex.what());
         return EXIT_FAILURE;
     }
 

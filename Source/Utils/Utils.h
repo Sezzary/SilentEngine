@@ -37,19 +37,48 @@ namespace Silent::Utils
         return (val >= 0) ? 1 : -1;
     }
 
-    /** @brief Checks if a container contains a matching element
+    /** @brief Checks if a container has a matching element.
      *
      * @tparam TContainer Container type.
      * @tparam TElement Element type.
      * @param cont Container to check.
      * @param element Element to check for.
-     * @return `true` if the container contains the element, `false` otherwise.
+     * @return `true` if the container has the element, `false` otherwise.
      */
     template <typename TContainer, typename TElement>
     bool Contains(const TContainer& cont, const TElement& element)
     {
-        auto it = std::find(cont.begin(), cont.end(), element);
-        return it != cont.end();
+        return std::find(cont.begin(), cont.end(), element) != cont.end();
+    }
+
+    /** @brief Finds a read-only value associated with a given pair in a hash map.
+     *
+     * @tparam TKey Key type.
+     * @tparam TValue Value type.
+     * @param cont Container to search.
+     * @param key Key to find.
+     * @return Value at the given key.
+     */
+    template <typename TKey, typename TValue>
+    const TValue* Find(const std::unordered_map<TKey, TValue>& cont, const TKey& key)
+    {
+        auto it = cont.find(key);
+        return (it != cont.end()) ? &it->second : nullptr;
+    }
+
+    /** @brief Finds a writable value associated with a given pair in a hash map.
+     *
+     * @tparam TKey Key type.
+     * @tparam TValue Value type.
+     * @param cont Container to search.
+     * @param key Key to find.
+     * @return Value at the given key.
+     */
+    template <typename TKey, typename TValue>
+    TValue* Find(std::unordered_map<TKey, TValue>& cont, const TKey& key)
+    {
+        auto it = cont.find(key);
+        return (it != cont.end()) ? &it->second : nullptr;
     }
 
     /** @brief Erases elements from a container based on a predicate.

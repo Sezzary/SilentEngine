@@ -45,6 +45,9 @@ namespace Silent::Services
         char*  buffer = nullptr;
         size_t length = 0;
 
+        // @todo Use this.
+        //SDL_GetPrefPath(APP_NAME, APP_NAME);
+
         // Set app path.
         _appDir = std::filesystem::current_path();
 

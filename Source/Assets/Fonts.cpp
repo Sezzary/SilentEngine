@@ -7,12 +7,19 @@ namespace Silent::Assets
     {
         FontMetadata
         {
-            .Name      = "SilentSmooth.ttf",
+            .Name      = "Smooth",
+            .Filenames = { "SilentSmooth.ttf" },
             .PointSize = 48
         },
         FontMetadata
         {
-            .Name      = "SilentPixel.ttf",
+            .Name      = "Retro",
+            .Filenames =
+            {
+                "Times_16.ttf",
+                //"PsxBios.ttf",
+                "UnifontExMono.ttf"
+            },
             .PointSize = 32
         }
     };

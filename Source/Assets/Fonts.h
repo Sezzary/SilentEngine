@@ -12,8 +12,9 @@ namespace Silent::Assets
 
     struct FontMetadata
     {
-        std::string Name      = {};
-        int         PointSize = 0;
+        std::string              Name      = {};
+        std::vector<std::string> Filenames = {};
+        int                      PointSize = 0;
     };
 
     extern const std::vector<FontMetadata> FONTS_METADATA;

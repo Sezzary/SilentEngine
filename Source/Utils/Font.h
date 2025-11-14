@@ -47,16 +47,18 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string                               _name      = {}; /** Font name. */
-        int                                       _pointSize = 0;  /** Point size. */
-        std::unordered_map<char32, GlyphMetadata> _glyphs    = {}; /** Key = code point, value = rasterized glyph metadata. */
-        std::vector<PackedRects>                  _rectPacks = {}; /** Glyph rectangle packs. */
-        std::vector<std::vector<byte>>            _atlases   = {}; /** Monochrome glyph texture atlases. */
-
-        int        _activeAtlasIdx = 0;       /** Index of the atlas currently used for caching. */
-        float      _scaleFactor    = 0.0f;    /** Relative pixel space scale factor. */
-        FT_Face    _ftFace         = {};      /** FreeType typeface handle. */
-        hb_font_t* _hbFont         = nullptr; /** HarfBuzz font handle. */
+        std::string                               _name        = {};   /** Font name. */
+        int                                       _pointSize   = 0;    /** Point size. */
+        float                                     _scaleFactor = 0.0f; /** Relative pixel space scale factor. */
+        std::unordered_map<char32, GlyphMetadata> _glyphs      = {};   /** Key = code point, value = rasterized glyph metadata. */
+        
+        std::vector<PackedRects>       _rectPacks = {};     /** Glyph rectangle packs. */
+        std::vector<std::vector<byte>> _atlases   = {};     /** Monochrome glyph texture atlases. */
+        int                            _activeAtlasIdx = 0; /** Index of the atlas currently used for caching. */
+        
+        int                     _fontCount = 0;  /** Number of associated font files. */
+        std::vector<FT_Face>    _ftFaces   = {}; /** FreeType typeface handles. */
+        std::vector<hb_font_t*> _hbFonts   = {}; /** HarfBuzz font handles. */
 
     public:
         // =============
@@ -69,11 +71,14 @@ namespace Silent::Utils
         /** @brief Constructs a `Font` from a font file and adds it to a library, precaching a set of glyphs in the bitmat texture atlas.
          *
          * @param fontLib Library to load the font into.
-         * @param path Font file path.
+         * @param name Font name to use for retrieval.
+         * @param filenames Font filenames in order of priority. Subsequent entries are used as fallbacks.
+         * @param path Path containing font files.
          * @param pointSize Point size at which to load the font.
          * @param precacheGlyphs Glyphs to precache.
          */
-        Font(FT_Library& fontLib, const std::filesystem::path& path, int pointSize, const std::string& precacheGlyphs);
+        Font(FT_Library& fontLib, const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path, int pointSize,
+             const std::string& precacheGlyphs);
 
         /** @brief Gracefully destroys the `Font`, freeing resources. */
         ~Font();
@@ -106,12 +111,19 @@ namespace Silent::Utils
         // Helpers
         // ========
 
-        /** @brief Gets the code points for the glyphs in a string.
+        /** @brief Gets the code points for the glyphs in a message.
          *
-         * @param str String to parse.
+         * @param msg Message to parse.
          * @return Code points for each glyph.
          */
-        std::vector<char32> GetCodePoints(const std::string& str) const;
+        std::vector<char32> GetCodePoints(const std::string& msg) const;
+
+        /** @brief Gets a shaping buffer for a given message.
+         *
+         * @param msg Message to create the buffer for.
+         * @return Shaping buffer.
+         */
+        hb_buffer_t* GetShapingBuffer(const std::string& msg) const;
 
         /** @brief Caches a new glyph in the texture atlas.
          *
@@ -151,10 +163,10 @@ namespace Silent::Utils
 
         /** @brief Gets a loaded font. If the font is missing, it returns `nullptr`.
          *
-         * @param fontName Name of the font to retrieve.
+         * @param name Name of the font to retrieve.
          * @return Loaded font.
          */
-        Font* GetFont(const std::string& fontName);
+        Font* GetFont(const std::string& name);
 
         // ==========
         // Utilities
@@ -162,10 +174,13 @@ namespace Silent::Utils
 
         /** @brief Loads and registers a font file.
          *
-         * @param fontPath Font file path.
+         * @param name Font name to use for retrieval.
+         * @param filenames Font filenames in order of priority. Subsequent fonts are used as fallbacks.
+         * @param path Path containing font files.
          * @param pointSize Vertical rasterization point size.
          * @param precacheGlyphs Glyphs to precache in the atlas upon font initialization.
          */
-        void LoadFont(const std::filesystem::path& fontPath, int pointSize, const std::string& precacheGlyphs = {});
+        void LoadFont(const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path, int pointSize,
+                      const std::string& precacheGlyphs = {});
     };
 }

@@ -232,16 +232,15 @@ namespace Silent::Assets
     const std::future<void>& AssetManager::LoadAsset(const std::string& assetName)
     {
         // Check if asset exists.
-        auto it = _idxs.find(assetName);
-        if (it == _idxs.end())
+        int* assetIdx = Find(_idxs, assetName);
+        if (assetIdx == nullptr)
         {
             Debug::Log(fmt::format("Attempted to load unregistered asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return _loadFutures[NO_VALUE];
         }
 
         // Load asset by index.
-        const auto& [keyName, assetIdx] = *it;
-        return LoadAsset(assetIdx);
+        return LoadAsset(*assetIdx);
     }
 
     void AssetManager::UnloadAsset(int assetIdx)

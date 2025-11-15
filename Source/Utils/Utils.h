@@ -43,7 +43,7 @@ namespace Silent::Utils
      * @tparam TValue Value type.
      * @param cont Container to search.
      * @param key Key to find.
-     * @return Read-only alue at the given key.
+     * @return Read-only value at the given key, `nullptr` if it doesn't exist.
      */
     template <typename TKey, typename TValue>
     const TValue* Find(const std::unordered_map<TKey, TValue>& cont, const TKey& key)
@@ -58,7 +58,7 @@ namespace Silent::Utils
      * @tparam TValue Value type.
      * @param cont Container to search.
      * @param key Key to find.
-     * @return Writable value at the given key.
+     * @return Writable value at the given key, `nullptr` if it doesn't exist.
      */
     template <typename TKey, typename TValue>
     TValue* Find(std::unordered_map<TKey, TValue>& cont, const TKey& key)

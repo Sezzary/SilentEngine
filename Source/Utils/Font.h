@@ -57,7 +57,7 @@ namespace Silent::Utils
         int                            _activeAtlasIdx = 0; /** Index of the atlas currently used for caching. */
         
         int                     _fontCount = 0;  /** Number of associated font files. */
-        std::vector<FT_Face>    _ftFaces   = {}; /** FreeType typeface handles. */
+        std::vector<FT_Face>    _ftFonts   = {}; /** FreeType font face handles. */
         std::vector<hb_font_t*> _hbFonts   = {}; /** HarfBuzz font handles. */
 
     public:

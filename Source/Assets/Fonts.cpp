@@ -35,7 +35,12 @@ namespace Silent::Assets
         FontMetadata
         {
             .Name      = "Smooth",
-            .Filenames = { "SilentSmooth.ttf" },
+            .Filenames =
+            {
+                "FreeSerif.otf",
+                "NotoSerifJP-Medium.ttf",
+                "NotoSerifKR-Medium.ttf"
+            },
             .PointSize = 48
         },
         FontMetadata

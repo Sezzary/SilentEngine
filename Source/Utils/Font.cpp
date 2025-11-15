@@ -35,24 +35,25 @@ namespace Silent::Utils
         // Add primary and fallback font faces to library.
         for (const auto& filename : filenames)
         {
-            FT_Face face = nullptr;
-            if (FT_New_Face(fontLib, (path / filename).string().c_str(), 0, &face))
+            FT_Face ftFont = nullptr;
+            if (FT_New_Face(fontLib, (path / filename).string().c_str(), 0, &ftFont))
             {
                 throw std::runtime_error("Failed to initialize font.");
             }
 
-            _ftFaces.push_back(face);
-            _hbFonts.push_back(hb_ft_font_create(face, nullptr));
+            _ftFonts.push_back(ftFont);
+            _hbFonts.push_back(hb_ft_font_create(ftFont, nullptr));
 
             // Set point size.
-            if (FT_Set_Pixel_Sizes(face, 0, pointSize))
+            if (FT_Set_Pixel_Sizes(ftFont, 0, pointSize))
             {
                 throw std::runtime_error("Failed to set font point size.");
             }
         }
+        Debug::Assert(_ftFonts.size() == _fontCount && _hbFonts.size() == _fontCount, fmt::format("Invalid initialization for font `{}`.", name));
 
         // Set scale factor.
-        _scaleFactor = (float)pointSize / (float)_ftFaces.front()->size->metrics.x_ppem;
+        _scaleFactor = (float)pointSize / (float)_ftFonts.front()->size->metrics.x_ppem;
 
         // Add first atlas.
         AddAtlas();
@@ -70,9 +71,9 @@ namespace Silent::Utils
 
     Font::~Font()
     {
-        for (auto& ftFace : _ftFaces)
+        for (auto& ftFont : _ftFonts)
         {
-            FT_Done_Face(ftFace);
+            FT_Done_Face(ftFont);
         }
 
         for (auto& hbFont : _hbFonts)
@@ -103,18 +104,20 @@ namespace Silent::Utils
             }
         }
 
-        auto shapingInfos = std::unordered_map<int, ShapingInfo>{}; // Key = font index, value = shaping info.
-
-        // Build shaped text.
         auto shapedText = ShapedText{};
         shapedText.Glyphs.reserve(codePoints.size());
+
+        auto shapingInfos = std::unordered_map<int, ShapingInfo>{}; // Key = font index, value = shaping info.
+        int  prevFontIdx  = 0;
+
+        // Build shaped text.
         for (int i = 0; i < codePoints.size(); i++)
         {
             // Run through font fallbacks.
             for (int j = 0; j < _fontCount; j++)
             {
                 // Check if glyph is valid.
-                uint charIdx = FT_Get_Char_Index(_ftFaces[j], codePoints[i]);
+                uint charIdx = FT_Get_Char_Index(_ftFonts[j], codePoints[i]);
                 if (charIdx == 0)
                 {
                     // If more fonts, skip to next.
@@ -208,21 +211,21 @@ namespace Silent::Utils
     void Font::CacheGlyph(char32 codePoint)
     {
         // Load valid glyph from fallback chain.
-        auto face = _ftFaces.front();
-        for (const auto& curFace : _ftFaces)
+        auto ftFont = _ftFonts.front();
+        for (const auto& curFtFont : _ftFonts)
         {
             // @todo Optimise.
-            uint charIdx = FT_Get_Char_Index(curFace, codePoint);
-            FT_Load_Glyph(curFace, charIdx, FT_LOAD_DEFAULT);
+            uint charIdx = FT_Get_Char_Index(curFtFont, codePoint);
+            FT_Load_Glyph(curFtFont, charIdx, FT_LOAD_DEFAULT);
 
             if (charIdx != 0)
             {
-                face = curFace;
+                ftFont = curFtFont;
                 break;
             }
         }
 
-        const auto& metrics = face->glyph->metrics;
+        const auto& metrics = ftFont->glyph->metrics;
 
         // Pack glyph rectangle.
         auto size = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
@@ -247,8 +250,8 @@ namespace Silent::Utils
         const auto& glyph = _glyphs[codePoint];
 
         // Rasterize.
-        FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
-        const auto& bitmap     = face->glyph->bitmap;
+        FT_Render_Glyph(ftFont->glyph, FT_RENDER_MODE_NORMAL);
+        const auto& bitmap     = ftFont->glyph->bitmap;
         byte*       pixelsTo   = &_atlases.back()[(glyph.Position.y * ATLAS_SIZE) + glyph.Position.x];
         byte*       pixelsFrom = (byte*)bitmap.buffer;
 
@@ -290,7 +293,6 @@ namespace Silent::Utils
         if (font == nullptr)
         {
             Debug::Log(fmt::format("Attempted to get missing font `{}`.", name), Debug::LogLevel::Warning);
-            return nullptr;
         }
 
         return font;
@@ -300,7 +302,6 @@ namespace Silent::Utils
                                const std::string& glyphPrecache)
     {
         // Check if font is already loaded.
-        auto it = _fonts.find(name);
         if (Find(_fonts, name) != nullptr)
         {
             return;

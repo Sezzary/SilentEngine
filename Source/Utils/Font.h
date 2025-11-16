@@ -26,7 +26,7 @@ namespace Silent::Utils
         int                      Width  = 0;  /** Line width in pixels. */
     };
 
-    /** @brief Atlased font. */
+    /** @brief Atlased font chain. */
     class Font
     {
     private:
@@ -56,7 +56,7 @@ namespace Silent::Utils
         std::vector<std::vector<byte>> _atlases   = {};     /** Monochrome glyph texture atlases. */
         int                            _activeAtlasIdx = 0; /** Index of the atlas currently used for caching. */
         
-        int                     _fontCount = 0;  /** Number of associated font files. */
+        int                     _fontCount = 0;  /** Number of font files in the chain. */
         std::vector<FT_Face>    _ftFonts   = {}; /** FreeType font face handles. */
         std::vector<hb_font_t*> _hbFonts   = {}; /** HarfBuzz font handles. */
 
@@ -68,11 +68,11 @@ namespace Silent::Utils
         /** @brief Constructs an uninitialized default `Font`. */
         Font() = default;
 
-        /** @brief Constructs a `Font` from a font file and adds it to a library, precaching a set of glyphs in the bitmat texture atlas.
+        /** @brief Constructs a `Font` from a chain of font file and adds it to a library, precaching a set of glyphs in its texture atlas.
          *
          * @param fontLib Library to load the font into.
          * @param name Font name to use for retrieval.
-         * @param filenames Font filenames in order of priority. Subsequent entries are used as fallbacks.
+         * @param filenames Font chain filenames.
          * @param path Path containing font files.
          * @param pointSize Point size at which to load the font.
          * @param precacheGlyphs Glyphs to precache.
@@ -172,10 +172,10 @@ namespace Silent::Utils
         // Utilities
         // ==========
 
-        /** @brief Loads and registers a font file.
+        /** @brief Loads and registers a font chain.
          *
          * @param name Font name to use for retrieval.
-         * @param filenames Font filenames in order of priority. Subsequent fonts are used as fallbacks.
+         * @param filenames Font chain filenames.
          * @param path Path containing font files.
          * @param pointSize Vertical rasterization point size.
          * @param precacheGlyphs Glyphs to precache in the atlas upon font initialization.

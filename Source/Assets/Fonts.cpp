@@ -19,7 +19,7 @@ namespace Silent::Assets
         Count
     };
 
-    const std::array<Color, (int)e_StringColorId::Count> STRING_COLORS =
+    constexpr std::array<Color, (int)e_StringColorId::Count> STRING_COLORS =
     {
         Color::From8Bit(160, 128, 64),
         Color::From8Bit(32,  32,  32),
@@ -49,7 +49,7 @@ namespace Silent::Assets
             .Filenames =
             {
                 "Times_16.ttf",
-                //"PsxBios.ttf",
+                "PsxBios.ttf",
                 "UnifontExMono.ttf"
             },
             .PointSize = 32

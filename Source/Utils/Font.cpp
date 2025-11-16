@@ -10,9 +10,9 @@ namespace Silent::Utils
     /** @brief HarfBuzz text shaping data. */
     struct ShapingInfo
     {
-        hb_buffer_t*         Buffer    = nullptr;
         hb_glyph_info_t*     Glyphs    = nullptr;
         hb_glyph_position_t* Positions = nullptr;
+        hb_buffer_t*         Buffer    = nullptr;
     };
 
     Font::Font(FT_Library& fontLib, const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path, int pointSize,
@@ -32,7 +32,7 @@ namespace Silent::Utils
             pointSize = std::min<int>(pointSize, POINT_SIZE_MAX);
         }
 
-        // Add primary and fallback font faces to library.
+        // Add chained fonts to library.
         for (const auto& filename : filenames)
         {
             FT_Face ftFont = nullptr;

@@ -58,7 +58,7 @@ Clone https://github.com/Sezzary/SilentEngine to your desired directory. Cloning
 - rectpack2D
 - SDL3
 - sol2
-- spdlog (with {fmt} bundled)
+- spdlog + {fmt}
 - stb
 - UTF8-CPP
 ```

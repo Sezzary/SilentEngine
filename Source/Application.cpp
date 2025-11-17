@@ -135,7 +135,6 @@ namespace Silent
         // Assets.
         _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_PSX_DIR_NAME);
         _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_LOCALES_DIR_NAME, LOCALE_NAMES);
-
         for (const auto& fontMetadata : FONTS_METADATA)
         {
             _work.Fonts.LoadFont(fontMetadata.Name, fontMetadata.Filenames, _work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME, fontMetadata.PointSize, GLYPH_PRECACHE);

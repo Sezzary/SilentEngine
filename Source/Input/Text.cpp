@@ -65,35 +65,33 @@ namespace Silent::Input
     {
         static const auto EMPTY = std::string();
 
-        auto it = _buffers.find(bufferId);
-        if (it == _buffers.end())
+        const auto* buffer = Find(_buffers, bufferId);
+        if (buffer == nullptr)
         {
             Debug::Log(fmt::format("Attempted to get text for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return EMPTY;
         }
 
-        const auto& [keyId, buffer] = *it;
-        return buffer.Snapshot.Text;
+        return buffer->Snapshot.Text;
     }
 
     std::vector<std::string> TextManager::GetTextLines(const std::string& bufferId, uint low, uint high) const
     {
-        auto it = _buffers.find(bufferId);
-        if (it == _buffers.end())
+        const auto* buffer = Find(_buffers, bufferId);
+        if (buffer == nullptr)
         {
             Debug::Log(fmt::format("Attempted to get text lines for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return {};
         }
 
-        const auto& [keyId, buffer] = *it;
-        if (buffer.Snapshot.Text.empty())
+        if (buffer->Snapshot.Text.empty())
         {
             return {};
         }
 
         // Compute line range.
-        uint lineLow  = (low  == (uint)NO_VALUE) ? 0                        : std::clamp<uint>(low,  0, buffer.LineStarts.size());
-        uint lineHigh = (high == (uint)NO_VALUE) ? buffer.LineStarts.size() : std::clamp<uint>(high, 0, buffer.LineStarts.size());
+        uint lineLow  = (low  == (uint)NO_VALUE) ? 0                         : std::clamp<uint>(low,  0, buffer->LineStarts.size());
+        uint lineHigh = (high == (uint)NO_VALUE) ? buffer->LineStarts.size() : std::clamp<uint>(high, 0, buffer->LineStarts.size());
         if (lineLow > lineHigh)
         {
             std::swap(lineLow, lineHigh);
@@ -101,14 +99,14 @@ namespace Silent::Input
 
         // Collect lines.
         auto lines = std::vector<std::string>{};
-        lines.reserve((lineHigh - lineLow) / buffer.LineWidthMax);
+        lines.reserve((lineHigh - lineLow) / buffer->LineWidthMax);
         for (int i = lineLow; i < lineHigh; i++)
         {
-            uint lineStart = buffer.LineStarts[i];
-            uint lineEnd   = (i < (buffer.LineStarts.size() - 1)) ? buffer.LineStarts[i + 1] : buffer.Snapshot.Text.size();
+            uint lineStart = buffer->LineStarts[i];
+            uint lineEnd   = (i < (buffer->LineStarts.size() - 1)) ? buffer->LineStarts[i + 1] : buffer->Snapshot.Text.size();
 
-            auto start = buffer.Snapshot.Text.begin() + lineStart;
-            auto end   = buffer.Snapshot.Text.begin() + lineEnd;
+            auto start = buffer->Snapshot.Text.begin() + lineStart;
+            auto end   = buffer->Snapshot.Text.begin() + lineEnd;
             auto line  = std::string(start, end);
             lines.push_back(line);
         }
@@ -118,15 +116,14 @@ namespace Silent::Input
 
     uint TextManager::GetCursorPosition(const std::string& bufferId) const
     {
-        auto it = _buffers.find(bufferId);
-        if (it == _buffers.end())
+        const auto* buffer = Find(_buffers, bufferId);
+        if (buffer == nullptr)
         {
             Debug::Log(fmt::format("Attempted to get cursor position for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return 0;
         }
 
-        const auto& [keyId, buffer] = *it;
-        return buffer.Snapshot.Cursor;
+        return buffer->Snapshot.Cursor;
     }
 
     void TextManager::InsertBuffer(const std::string& bufferId, uint lineWidthMax, uint charCountMax)
@@ -148,45 +145,43 @@ namespace Silent::Input
 
     void TextManager::UpdateBuffer(const std::string& bufferId)
     {
-        auto it = _buffers.find(bufferId);
-        if (it == _buffers.end())
+        auto* buffer = Find(_buffers, bufferId);
+        if (buffer == nullptr)
         {
             Debug::Log(fmt::format("Attempted to update missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return;
         }
 
-        auto& [keyId, buffer] = *it;
-
         // Undo, redo.
-        if (HandleHistory(buffer))
+        if (HandleHistory(*buffer))
         {
-            UpdateLineStarts(buffer);
+            UpdateLineStarts(*buffer);
             return;
         }
 
         // Cut, copy, paste.
-        if (HandleClipboard(buffer))
+        if (HandleClipboard(*buffer))
         {
-            UpdateLineStarts(buffer);
+            UpdateLineStarts(*buffer);
             return;
         }
 
         // Add character.
-        if (HandleCharacterAdd(buffer))
+        if (HandleCharacterAdd(*buffer))
         {
-            UpdateLineStarts(buffer);
+            UpdateLineStarts(*buffer);
             return;
         }
 
         // Clear characters.
-        if (HandleCharacterClear(buffer))
+        if (HandleCharacterClear(*buffer))
         {
-            UpdateLineStarts(buffer);
+            UpdateLineStarts(*buffer);
             return;
         }
 
         // Move cursor, make selection.
-        if (HandleCursorSelection(buffer))
+        if (HandleCursorSelection(*buffer))
         {
             return;
         }
@@ -194,8 +189,8 @@ namespace Silent::Input
 
     void TextManager::RemoveBuffer(const std::string& bufferId)
     {
-        auto it = _buffers.find(bufferId);
-        if (it == _buffers.end())
+        const auto* buffer = Find(_buffers, bufferId);
+        if (buffer == nullptr)
         {
             Debug::Log(fmt::format("Attempted to clear missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return;

@@ -37,19 +37,59 @@ namespace Silent::Utils
         return (val >= 0) ? 1 : -1;
     }
 
-    /** @brief Checks if a container contains a matching element
+    /** @brief Finds a read-only value associated with a given pair in a hash map.
+     *
+     * @tparam TKey Key type.
+     * @tparam TValue Value type.
+     * @param cont Container to search.
+     * @param key Key to find.
+     * @return Read-only value at the given key, `nullptr` if it doesn't exist.
+     */
+    template <typename TKey, typename TValue>
+    const TValue* Find(const std::unordered_map<TKey, TValue>& cont, const TKey& key)
+    {
+        auto it = cont.find(key);
+        return (it != cont.end()) ? &it->second : nullptr;
+    }
+
+    /** @brief Finds a writable value associated with a given pair in a hash map.
+     *
+     * @tparam TKey Key type.
+     * @tparam TValue Value type.
+     * @param cont Container to search.
+     * @param key Key to find.
+     * @return Writable value at the given key, `nullptr` if it doesn't exist.
+     */
+    template <typename TKey, typename TValue>
+    TValue* Find(std::unordered_map<TKey, TValue>& cont, const TKey& key)
+    {
+        auto it = cont.find(key);
+        return (it != cont.end()) ? &it->second : nullptr;
+    }
+
+    /** @brief Checks if a container has a matching element.
      *
      * @tparam TContainer Container type.
      * @tparam TElement Element type.
      * @param cont Container to check.
      * @param element Element to check for.
-     * @return `true` if the container contains the element, `false` otherwise.
+     * @return `true` if the container has the element, `false` otherwise.
      */
     template <typename TContainer, typename TElement>
     bool Contains(const TContainer& cont, const TElement& element)
     {
-        auto it = std::find(cont.begin(), cont.end(), element);
-        return it != cont.end();
+        return std::find(cont.begin(), cont.end(), element) != cont.end();
+    }
+
+    /** @brief Fills all elements in a container with a specified value.
+     *
+     * @param cont Container to fill.
+     * @param val Fill value.
+     */
+    template <typename TContainer, typename TValue>
+    void Fill(TContainer& cont, const TValue& val)
+    {
+        std::fill(cont.begin(), cont.end(), val);
     }
 
     /** @brief Erases elements from a container based on a predicate.

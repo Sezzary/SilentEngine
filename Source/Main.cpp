@@ -1,12 +1,9 @@
 #include "Framework.h"
 
 #include "Application.h"
-#include "Platform.h"
 
 int main()
 {
-    InitializeSignals();
-
     try
     {
         g_App.Initialize();

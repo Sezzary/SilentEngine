@@ -289,36 +289,31 @@ namespace Silent::Input
         static const auto EMPTY = std::vector<EventId>{};
 
         // Find binding profile.
-        auto profileIt = _bindings.find(profileId);
-        if (profileIt == _bindings.end())
+        const auto* profile = Find(_bindings, profileId);
+        if (profile == nullptr)
         {
             return EMPTY;
         }
 
-        // Get binding profile.
-        const auto& [keyProfileId, profile] = *profileIt;
-
         // Find action-event binding.
-        auto eventIt = profile.find(actionId);
-        if (eventIt == profile.end())
+        const auto* eventIds = Find(*profile, actionId);
+        if (eventIds == nullptr)
         {
             return EMPTY;
         }
 
         // Return bound event IDs.
-        const auto& [keyActionId, eventIds] = *eventIt;
-        return eventIds;
+        return *eventIds;
     }
 
     const BindingProfile& BindingManager::GetBindingProfile(BindingProfileId profileId) const
     {
         // Find binding profile.
-        auto profileIt = _bindings.find(profileId);
-        Debug::Assert(profileIt != _bindings.end(), "Attempted to get missing binding profile " + std::to_string((int)profileId) + ".");
+        auto* profile = Find(_bindings, profileId);
+        Debug::Assert(profile != nullptr, "Attempted to get missing binding profile " + std::to_string((int)profileId) + ".");
 
         // Return binding profile.
-        const auto& [keyProfileId, profile] = *profileIt;
-        return profile;
+        return *profile;
     }
 
     void BindingManager::Initialize(const BindingProfile& customKeyboardMouseBinds, const BindingProfile& customGamepadBinds)

@@ -45,22 +45,17 @@ namespace Silent::Services
         char*  buffer = nullptr;
         size_t length = 0;
 
+        // Set workspace path.
+        _workDir = SDL_GetPrefPath(APP_NAME, APP_NAME);
+
         // Set app path.
         _appDir = std::filesystem::current_path();
 
-        // Set workspace and screenshots paths.
+        // Set screenshots paths.
         switch (OS_TYPE)
         {
             case OsType::Windows:
             {
-                // Use `APPDATA` directory for workspace path.
-                if (_dupenv_s(&buffer, &length, "APPDATA") == 0 && buffer != nullptr)
-                {
-                    auto path = std::filesystem::path(buffer);
-                    _workDir  = path / APP_NAME; 
-                }
-
-                // Use `Pictures` directory for screenshots path.
                 if (_dupenv_s(&buffer, &length, "USERPROFILE") == 0 && buffer != nullptr)
                 {
                     auto path       = std::filesystem::path(buffer);
@@ -70,15 +65,7 @@ namespace Silent::Services
             }
             case OsType::MacOs:
             {
-                // Use `HOME` directory for workspace path.
                 if (_dupenv_s(&buffer, &length, "HOME") == 0 && buffer != nullptr)
-                {
-                    auto path = std::filesystem::path(buffer);
-                    _workDir  = path / APP_NAME; 
-                }
-
-                // Use `Pictures` directory for screenshots path.
-                if (buffer != nullptr)
                 {
                     auto path       = std::filesystem::path(buffer);
                     _screenshotsDir = path / "Pictures" / SCREENSHOTS_DIR_NAME;
@@ -87,15 +74,7 @@ namespace Silent::Services
             }
             case OsType::Linux:
             {
-                // Use `HOME` directory for workspace path.
                 if (_dupenv_s(&buffer, &length, "HOME") == 0 && buffer != nullptr)
-                {
-                    auto path = std::filesystem::path(buffer);
-                    _workDir  = path / APP_NAME; 
-                }
-
-                // Use `Pictures` directory for screenshots path.
-                if (buffer != nullptr)
                 {
                     auto path       = std::filesystem::path(buffer);
                     _screenshotsDir = path / "Pictures" / SCREENSHOTS_DIR_NAME;
@@ -104,7 +83,8 @@ namespace Silent::Services
             }
             default:
             {
-                throw std::runtime_error("Unsupported OS.");
+                _screenshotsDir = _workDir / SCREENSHOTS_DIR_NAME;
+                break;
             }
         }
 
@@ -116,13 +96,13 @@ namespace Silent::Services
         // Check for assets directory.
         if (!std::filesystem::exists(_assetsDir))
         {
-            throw std::runtime_error("`" + std::string(ASSETS_DIR_NAME) + "` folder not found in application directory.");
+            throw std::runtime_error(fmt::format("`{}` folder not found in application directory.", ASSETS_DIR_NAME));
         }
 
         // Check for shaders directory.
         if (!std::filesystem::exists(_shadersDir))
         {
-            throw std::runtime_error("`" + std::string(SHADERS_DIR_NAME) + "` folder not found in application directory.");
+            throw std::runtime_error(fmt::format("`{}` folder not found in application directory.", SHADERS_DIR_NAME));
         }
 
         // Create workspace directories.

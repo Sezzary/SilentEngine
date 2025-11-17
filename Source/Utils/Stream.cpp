@@ -24,8 +24,7 @@ namespace Silent::Utils
 
     Stream::~Stream()
     {
-        _stream.flush();
-        _stream.close();
+        Close();
     }
 
     uint Stream::GetSize()

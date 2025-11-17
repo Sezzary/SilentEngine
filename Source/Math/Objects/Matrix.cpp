@@ -12,22 +12,22 @@ namespace Silent::Math
 
     Matrix Matrix::CreateTranslation(const Vector3& translation)
     {
-        return Matrix(glm::translate(Matrix::Identity.ToGlmMat4(), translation));
+        return Matrix(glm::translate(Matrix::Identity.ToGlmMat4(), translation.ToGlmVec3()));
     }
 
     Matrix Matrix::CreateRotationX(float rad)
     {
-       return Matrix(glm::rotate(Matrix::Identity.ToGlmMat4(), rad, Vector3::UnitX));
+       return Matrix(glm::rotate(Matrix::Identity.ToGlmMat4(), rad, Vector3::UnitX.ToGlmVec3()));
     }
 
     Matrix Matrix::CreateRotationY(float rad)
     {
-       return Matrix(glm::rotate(Matrix::Identity.ToGlmMat4(), rad, Vector3::UnitY));
+       return Matrix(glm::rotate(Matrix::Identity.ToGlmMat4(), rad, Vector3::UnitY.ToGlmVec3()));
     }
 
     Matrix Matrix::CreateRotationZ(float rad)
     {
-       return Matrix(glm::rotate(Matrix::Identity.ToGlmMat4(), rad, Vector3::UnitZ));
+       return Matrix(glm::rotate(Matrix::Identity.ToGlmMat4(), rad, Vector3::UnitZ.ToGlmVec3()));
     }
 
     Matrix Matrix::CreateScale(const Vector3& scale)
@@ -72,7 +72,7 @@ namespace Silent::Math
 
     Matrix Matrix::Translate(const Matrix& mat, const Vector3& translation)
     {
-        return Matrix(glm::translate(mat.ToGlmMat4(), translation));
+        return Matrix(glm::translate(mat.ToGlmMat4(), translation.ToGlmVec3()));
     }
 
     void Matrix::Translate(const Vector3& translation)

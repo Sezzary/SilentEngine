@@ -101,6 +101,8 @@ namespace Silent
         _isPaused = false;
         _quit     = false;
 
+        InitializeSignals();
+
         // Filesystem.
         _work.Filesystem.Initialize();
 
@@ -133,10 +135,9 @@ namespace Silent
         // Assets.
         _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_PSX_DIR_NAME);
         _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_LOCALES_DIR_NAME, LOCALE_NAMES);
-
         for (const auto& fontMetadata : FONTS_METADATA)
         {
-            _work.Fonts.LoadFont(_work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME / fontMetadata.Name, fontMetadata.PointSize, GLYPH_PRECACHE);
+            _work.Fonts.LoadFont(fontMetadata.Name, fontMetadata.Filenames, _work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME, fontMetadata.PointSize, GLYPH_PRECACHE);
         }
 
         // Renderer.
@@ -377,6 +378,7 @@ namespace Silent
                 {
                     // Unpause application.
                     _isPaused = false;
+
                     Debug::Log("Application unpaused.");
                     break;
                 }
@@ -384,6 +386,7 @@ namespace Silent
                 {
                     // Pause application.
                     _isPaused = true;
+
                     Debug::Log("Application paused.");
                     break;
                 }

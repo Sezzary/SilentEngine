@@ -57,7 +57,7 @@ namespace Silent::Math
 
     Matrix OrientedBoundingBox::GetTransformMatrix() const
     {
-        auto translationMat = glm::translate(glm::mat4(1.0f), Center);
+        auto translationMat = Center.ToTranslationMatrix();
         auto rotMat         = Rotation.ToRotationMatrix();
 
         return rotMat * translationMat;
@@ -65,8 +65,8 @@ namespace Silent::Math
     
     bool OrientedBoundingBox::Intersects(const Vector3& point) const
     {
-        auto rotMat     = Rotation.ToRotationMatrix(); // @todo Invert?
-        auto localPoint = Vector3::Transform(point - Center, rotMat);
+        auto transformMat = Matrix::Inverse(GetTransformMatrix());
+        auto localPoint   = Vector3::Transform(point - Center, transformMat);
 
         return std::abs(localPoint.x) <= Extents.x && 
                std::abs(localPoint.y) <= Extents.y && 

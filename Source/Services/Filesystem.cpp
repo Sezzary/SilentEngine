@@ -83,7 +83,7 @@ namespace Silent::Services
             }
             default:
             {
-                _screenshotsDir = _workDir / "Screenshots";
+                _screenshotsDir = _workDir / SCREENSHOTS_DIR_NAME;
                 break;
             }
         }

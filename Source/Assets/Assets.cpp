@@ -93,7 +93,7 @@ namespace Silent::Assets
     const std::shared_ptr<Asset> AssetManager::GetAsset(const std::string& assetName)
     {
         // Check if asset exists.
-        int* assetIdx = Find(_idxs, assetName);
+        const int* assetIdx = Find(_idxs, assetName);
         if (assetIdx == nullptr)
         {
             Debug::Log(fmt::format("Attempted to get invalid asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
@@ -230,7 +230,7 @@ namespace Silent::Assets
     const std::future<void>& AssetManager::LoadAsset(const std::string& assetName)
     {
         // Check if asset exists.
-        int* assetIdx = Find(_idxs, assetName);
+        const int* assetIdx = Find(_idxs, assetName);
         if (assetIdx == nullptr)
         {
             Debug::Log(fmt::format("Attempted to load unregistered asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
@@ -270,7 +270,7 @@ namespace Silent::Assets
     void AssetManager::UnloadAsset(const std::string& assetName)
     {
         // Check if asset exists.
-        int* assetIdx = Find(_idxs, assetName);
+        const int* assetIdx = Find(_idxs, assetName);
         if (assetIdx == nullptr)
         {
             Debug::Log(fmt::format("Attempted to unload unregistered asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);

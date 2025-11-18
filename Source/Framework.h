@@ -111,7 +111,7 @@ using json = nlohmann::json;
 // UTF8-CPP
 #include <utf8.h>
 
-// vlc
+// VLC
 #include <vlc/vlc.h>
 
 // ==========

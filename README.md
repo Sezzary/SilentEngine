@@ -61,7 +61,7 @@ Clone https://github.com/Sezzary/SilentEngine to your desired directory. Cloning
 - spdlog + {fmt}
 - stb
 - UTF8-CPP
-- vlc
+- VLC
 ```
 git clone --recursive https://github.com/Sezzary/SilentEngine
 git submodule update --init --recursive

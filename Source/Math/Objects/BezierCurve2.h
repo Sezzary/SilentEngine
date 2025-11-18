@@ -92,25 +92,25 @@ namespace Silent::Math
 
         /** @brief Sets the start point.
          *
-         * @return New start point.
+         * @param point New start point.
          */
         void SetStart(const Vector2& point);
 
         /** @brief Sets the end point.
          *
-         * @return New end point.
+         * @param point New end point.
          */
         void SetEnd(const Vector2& point);
 
         /** @brief Sets the start point's handle.
          *
-         * @return New start point handle.
+         * @param point New start point handle.
          */
         void SetStartHandle(const Vector2& point);
 
-        /** @brief Sets the start point's handle.
+        /** @brief Sets the end point's handle.
          *
-         * @return New end point handle.
+         * @param point New end point handle.
          */
         void SetEndHandle(const Vector2& point);
 

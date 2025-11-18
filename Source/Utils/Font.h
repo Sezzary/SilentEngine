@@ -5,25 +5,25 @@ namespace Silent::Utils
     /** @brief Rasterized glyph metadata. */
     struct GlyphMetadata
     {
-        char32   CodePoint = 0;              /** Unicode character ID. */
-        int      AtlasIdx  = 0;              /** Index of the atlas in which the glyph is cached. */
-        Vector2i Position  = Vector2i::Zero; /** Pixel position in atlas. */
-        Vector2i Size      = Vector2i::Zero; /** Pixel size in atlas. */
+        char32   CodePoint = 0;
+        int      AtlasIdx  = 0;
+        Vector2i Position  = Vector2i::Zero;
+        Vector2i Size      = Vector2i::Zero;
     };
 
     /** @brief Shaped glyph data. */
     struct ShapedGlyph
     {
-        const GlyphMetadata& Metadata;                 /** Rasterized glyph metadata. */
-        Vector2i             Advance = Vector2i::Zero; /** Pixel line advance. */
-        Vector2i             Offset  = Vector2i::Zero; /** Pixel offset. */
+        const GlyphMetadata& Metadata;
+        Vector2i             Advance = Vector2i::Zero;
+        Vector2i             Offset  = Vector2i::Zero;
     };
 
     /** @brief Shaped text line data. */
     struct ShapedText
     {
-        std::vector<ShapedGlyph> Glyphs = {}; /** Shaped glyphs. */
-        int                      Width  = 0;  /** Line width in pixels. */
+        std::vector<ShapedGlyph> Glyphs = {};
+        int                      Width  = 0;
     };
 
     /** @brief Atlased font chain. */
@@ -40,25 +40,25 @@ namespace Silent::Utils
         // Constants
         // ==========
 
-        static constexpr uint ATLAS_SIZE    = 2048;
+        static constexpr uint ATLAS_SIZE    = 1024;
         static constexpr uint GLYPH_PADDING = 1;
 
         // =======
         // Fields
         // =======
 
-        std::string                               _name        = {};   /** Font name. */
-        int                                       _pointSize   = 0;    /** Point size. */
-        float                                     _scaleFactor = 0.0f; /** Relative pixel space scale factor. */
-        std::unordered_map<char32, GlyphMetadata> _glyphs      = {};   /** Key = code point, value = rasterized glyph metadata. */
+        std::string                               _name        = {};
+        int                                       _pointSize   = 0;
+        float                                     _scaleFactor = 0.0f;
+        std::unordered_map<char32, GlyphMetadata> _glyphs      = {}; /** Key = code point, value = rasterized glyph metadata. */
         
-        std::vector<PackedRects>       _rectPacks = {};     /** Glyph rectangle packs. */
-        std::vector<std::vector<byte>> _atlases   = {};     /** Monochrome glyph texture atlases. */
-        int                            _activeAtlasIdx = 0; /** Index of the atlas currently used for caching. */
+        std::vector<PackedRects>       _rectPacks = {};
+        std::vector<std::vector<byte>> _atlases   = {};
+        int                            _activeAtlasIdx = 0;
         
-        int                     _fontCount = 0;  /** Number of font files in the chain. */
-        std::vector<FT_Face>    _ftFonts   = {}; /** FreeType font face handles. */
-        std::vector<hb_font_t*> _hbFonts   = {}; /** HarfBuzz font handles. */
+        int                     _fontCount = 0;
+        std::vector<FT_Face>    _ftFonts   = {};
+        std::vector<hb_font_t*> _hbFonts   = {};
 
     public:
         // =============

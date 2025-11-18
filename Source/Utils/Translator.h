@@ -73,7 +73,7 @@ namespace Silent::Utils
         /** @brief Locks the translator to disallow setting the active locale. */
         void Lock();
 
-        /** @brief Unlocks the translator to allow setting the active locale. If a new locale is queued, it becomes the active locale. */
+        /** @brief Unlocks the translator to allow setting the active locale. If a new locale is queued, it becomes active. */
         void Unlock();
 
         // ==========

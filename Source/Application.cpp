@@ -9,9 +9,9 @@
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Savegame/Savegame.h"
+#include "Services/Clock.h"
 #include "Services/Filesystem.h"
 #include "Services/Options.h"
-#include "Services/Time.h"
 #include "Services/Toasts.h"
 #include "Utils/Font.h"
 #include "Utils/Parallel.h"
@@ -74,9 +74,9 @@ namespace Silent
         return _work.Savegame;
     }
 
-    TimeManager& ApplicationManager::GetTime()
+    ClockManager& ApplicationManager::GetClock()
     {
-        return _work.Time;
+        return _work.Clock;
     }
 
     ToastManager& ApplicationManager::GetToaster()
@@ -179,11 +179,11 @@ namespace Silent
 
     void ApplicationManager::Run()
     {
-        _work.Time.Initialize();
+        _work.Clock.Initialize();
 
         while (!_quit)
         {
-            _work.Time.Update();
+            _work.Clock.Update();
             PollEvents();
 
             // Step game state and render.
@@ -193,7 +193,7 @@ namespace Silent
                 Render();
             }
 
-            _work.Time.WaitForNextTick();
+            _work.Clock.WaitForNextTick();
         }
     }
 
@@ -269,7 +269,7 @@ namespace Silent
 
     void ApplicationManager::Render()
     {
-        if (_work.Time.GetTicks() <= 0)
+        if (_work.Clock.GetTicks() <= 0)
         {
             return;
         }
@@ -376,7 +376,7 @@ namespace Silent
                 }
                 case SDL_EVENT_WINDOW_FOCUS_GAINED:
                 {
-                    // Unpause application.
+                    // Resume application.
                     _isPaused = false;
 
                     Debug::Log("Application unpaused.");

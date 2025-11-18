@@ -12,8 +12,8 @@
 #include "Renderer/Common/View.h"
 #include "Renderer/Renderer.h"
 #include "Services/Filesystem.h"
+#include "Services/Clock.h"
 #include "Services/Options.h"
-#include "Services/Time.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Assets;

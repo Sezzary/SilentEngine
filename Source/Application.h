@@ -5,9 +5,9 @@
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Savegame/Savegame.h"
+#include "Services/Clock.h"
 #include "Services/Filesystem.h"
 #include "Services/Options.h"
-#include "Services/Time.h"
 #include "Services/Toasts.h"
 #include "Utils/Font.h"
 #include "Utils/Parallel.h"
@@ -38,7 +38,7 @@ namespace Silent
         ParallelExecutor              Executor   = ParallelExecutor();
         std::unique_ptr<RendererBase> Renderer   = nullptr;
         SavegameManager               Savegame   = SavegameManager();
-        TimeManager                   Time       = TimeManager();
+        ClockManager                  Clock      = ClockManager();
         TranslationManager            Translator = TranslationManager();
         ToastManager                  Toaster    = ToastManager();
     };
@@ -62,6 +62,7 @@ namespace Silent
         // Constructors
         // =============
 
+        /** Constructs a default uninitialized `ApplicationManager`. */
         ApplicationManager() = default;
 
         // ========
@@ -77,7 +78,7 @@ namespace Silent
         OptionsManager&     GetOptions();
         RendererBase&       GetRenderer();
         SavegameManager&    GetSavegame();
-        TimeManager&        GetTime();
+        ClockManager&       GetClock();
         TranslationManager& GetTranslator();
         ToastManager&       GetToaster();
 

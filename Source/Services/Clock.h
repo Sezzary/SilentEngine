@@ -4,40 +4,40 @@ namespace Silent::Services
 {
     constexpr uint TICKS_PER_SECOND = 60;
 
-    /** @brief Game time manager. */
-    class TimeManager
+    /** @brief Game clock manager. */
+    class ClockManager
     {
     private:
-        static constexpr uint TICK_INTERVAL_MICROSEC = 1000000 / TICKS_PER_SECOND;
+        static constexpr uint TICK_INTERVAL_DURATION = 1000000 / TICKS_PER_SECOND;
 
         // =======
         // Fields
         // =======
 
-        uint   _ticks              = 0; /** Tick count accumulated on the previous update. */
-        uint64 _prevUptimeMicrosec = 0; /** Uptime microseconds on the previous tick. */
-        uint64 _baseMicrosec       = 0; /** Microseconds since epoch on initialization. */
+        uint   _ticks              = 0;
+        uint64 _prevUptimeDuration = 0;
+        uint64 _startDuration      = 0;
 
     public:
         // =============
         // Constructors
         // =============
 
-        /** @brief Constructs an uninitialized default `TimeManager`. */
-        TimeManager() = default;
+        /** @brief Constructs an uninitialized default `ClockManager`. */
+        ClockManager() = default;
 
         // ========
         // Getters
         // ========
 
-        /** @brief Gets the delta time since the previous tick.
+        /** @brief Gets the delta time in seconds since the previous tick.
          *
          * @return Delta time.
          */
         float GetDeltaTime() const;
 
         /** @brief Gets the accumulated ticks since the previous update.
-         * If the main loop takes too long, it returns >1 tick to compensate.
+         * If the main loop takes too long, it returns more than one tick to compensate.
          *
          * @return Accumulated ticks.
          */
@@ -59,14 +59,14 @@ namespace Silent::Services
         // Utilities
         // ==========
 
-        /** @brief Initializes the time manager */
+        /** @brief Initializes the clock manager */
         void Initialize();
 
-        /** @brief Updates the time manager, setting accumulated ticks. */
+        /** @brief Updates the clock manager, setting accumulated ticks. */
         void Update();
 
         /** @brief Blocks the current thread until the next tick.
-         * Used to avoid busy-waiting in the main loop if an iteration has finished early.
+         * Used to avoid busy-waiting in the main loop if a logic iteration has finished early.
          */
         void WaitForNextTick() const;
 
@@ -79,13 +79,13 @@ namespace Silent::Services
          *
          * @return Uptime in microseconds.
          */
-        uint64 GetUptimeMicrosec() const;
+        uint64 GetUptimeDuration() const;
 
         /** @brief Gets the elapsed microseconds since the epoch (January 1st, 1970).
          *
          * @return Elapsed microseconds since the epoch.
          */
-        uint64 GetEpochMicrosec() const;
+        uint64 GetEpochDuration() const;
     };
 
     /** @brief Converts seconds to ticks.

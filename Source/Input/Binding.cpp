@@ -310,7 +310,7 @@ namespace Silent::Input
     {
         // Find binding profile.
         auto* profile = Find(_bindings, profileId);
-        Debug::Assert(profile != nullptr, "Attempted to get missing binding profile " + std::to_string((int)profileId) + ".");
+        Debug::Assert(profile != nullptr, Fmt("Attempted to get missing binding profile {}.", (int)profileId));
 
         // Return binding profile.
         return *profile;

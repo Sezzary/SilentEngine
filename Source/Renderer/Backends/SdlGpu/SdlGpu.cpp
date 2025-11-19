@@ -279,7 +279,7 @@ namespace Silent::Renderer
         auto* surface = SDL_GetWindowSurface(_window);
         if (surface == nullptr)
         {
-            Debug::Log(Fmt("Failed to save screenshot: {}", std::string(SDL_GetError())), Debug::LogLevel::Warning, Debug::LogMode::All, true);
+            Debug::Log(Fmt("Failed to save screenshot: {}", SDL_GetError()), Debug::LogLevel::Warning, Debug::LogMode::All, true);
             return;
         }
 

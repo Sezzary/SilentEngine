@@ -93,8 +93,7 @@ namespace Silent::Renderer
             _pipelines[piplineHash] = SDL_CreateGPUGraphicsPipeline(_device, &pipelineInfo);
             if (_pipelines[piplineHash] == nullptr) 
             {
-                throw std::runtime_error(Fmt("Failed to create graphics pipeline for render stage {}, blend mode {}: {}",
-                                                     (int)config.Stage, i, SDL_GetError()));
+                throw std::runtime_error(Fmt("Failed to create graphics pipeline for render stage {}, blend mode {}: {}", (int)config.Stage, i, SDL_GetError()));
             }
         }
 

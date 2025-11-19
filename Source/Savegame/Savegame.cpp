@@ -122,9 +122,9 @@ namespace Silent::Savegame
 
         const auto& fs = g_App.GetFilesystem();
 
-        auto slotDirName = SAVEGAME_SLOT_DIR_NAME_BASE + std::to_string(slotIdx + 1);
-        auto fileDirName = SAVEGAME_SLOT_FILE_DIR_NAME_BASE + std::to_string(fileIdx + 1);
-        auto saveFilename   = std::to_string(saveIdx + 1) + SAVEGAME_FILE_EXT;
+        auto slotDirName  = SAVEGAME_SLOT_DIR_NAME_BASE      + std::to_string(slotIdx + 1);
+        auto fileDirName  = SAVEGAME_SLOT_FILE_DIR_NAME_BASE + std::to_string(fileIdx + 1);
+        auto saveFilename = std::to_string(saveIdx + 1)      + SAVEGAME_FILE_EXT;
         return fs.GetSavegameDirectory() / slotDirName / fileDirName / saveFilename;
     }
 

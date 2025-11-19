@@ -230,6 +230,7 @@ namespace Silent::Utils
 
         const auto& metrics = ftFont->glyph->metrics;
 
+        // @todo Makes new atlas even when active one isn't full yet.
         // Pack glyph rectangle.
         auto size = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
         auto rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
@@ -239,6 +240,7 @@ namespace Silent::Utils
 
             // Start new atlas.
             AddAtlas();
+            _activeAtlasIdx++;
             rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
         }
 
@@ -272,7 +274,6 @@ namespace Silent::Utils
     {
         _rectPacks.push_back(PackedRects(rectpack2D::rect_wh(ATLAS_SIZE, ATLAS_SIZE)));
         _atlases.push_back(std::vector<byte>(ATLAS_SIZE * ATLAS_SIZE));
-        _activeAtlasIdx++;
     }
 
     FontManager::FontManager()

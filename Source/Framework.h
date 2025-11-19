@@ -104,6 +104,8 @@ using json = nlohmann::json;
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+#define Fmt fmt::format
+
 // stb
 #include <stb_image.h>
 #include <stb_image_write.h>

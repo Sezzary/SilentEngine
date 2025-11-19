@@ -30,7 +30,7 @@ namespace Silent::Assets
         auto file = std::ifstream(filename, std::ios::binary);
         if (!file.is_open())
         {
-            throw std::runtime_error(fmt::format("Couldn't open TIM `{}`.", filename.string()));
+            throw std::runtime_error(Fmt("Couldn't open TIM `{}`.", filename.string()));
         }
 
         // Confirm TIM format magic.
@@ -38,7 +38,7 @@ namespace Silent::Assets
         file.read((byte*)&magic, 4);
         if (magic != HEADER_MAGIC)
         {
-            throw std::runtime_error(fmt::format("Invalid TIM `{}`.", filename.string()));
+            throw std::runtime_error(Fmt("Invalid TIM `{}`.", filename.string()));
         }
 
         // Read CLUT and BPP flags.

@@ -108,7 +108,7 @@ namespace Silent
 
         // Debug.
         Debug::Initialize();
-        Debug::Log(fmt::format("Starting {} {}...", APP_NAME, APP_VERSION));
+        Debug::Log(Fmt("Starting {} {}...", APP_NAME, APP_VERSION));
 
         // Options.
         _work.Options.Initialize();
@@ -117,7 +117,7 @@ namespace Silent
         // SDL.
         if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO))
         {
-            throw std::runtime_error(fmt::format("Failed to initialize SDL: {}", SDL_GetError()));
+            throw std::runtime_error(Fmt("Failed to initialize SDL: {}", SDL_GetError()));
         }
 
         // Collect window flags.
@@ -129,7 +129,7 @@ namespace Silent
         _window = SDL_CreateWindow(APP_NAME, _work.Options->WindowedSize.x, _work.Options->WindowedSize.y, flags);
         if (_window == nullptr)
         {
-            throw std::runtime_error(fmt::format("Failed to create window: {}", SDL_GetError()));
+            throw std::runtime_error(Fmt("Failed to create window: {}", SDL_GetError()));
         }
 
         // Assets.
@@ -210,7 +210,7 @@ namespace Silent
             return;
         }
 
-        Debug::Log(fmt::format("Failed to toggle fullscreen mode: {}", SDL_GetError()), Debug::LogLevel::Warning);
+        Debug::Log(Fmt("Failed to toggle fullscreen mode: {}", SDL_GetError()), Debug::LogLevel::Warning);
     }
 
     void ApplicationManager::ToggleCursor()
@@ -220,7 +220,7 @@ namespace Silent
         {
             if (!SDL_ShowCursor())
             {
-                Debug::Log(fmt::format("Failed to show cursor: {}", SDL_GetError()), Debug::LogLevel::Warning);
+                Debug::Log(Fmt("Failed to show cursor: {}", SDL_GetError()), Debug::LogLevel::Warning);
             }
 
             // Move cursor to window center.
@@ -232,7 +232,7 @@ namespace Silent
         {
             if (!SDL_HideCursor())
             {
-                Debug::Log(fmt::format("Failed to hide cursor: {}", SDL_GetError()), Debug::LogLevel::Warning);
+                Debug::Log(Fmt("Failed to hide cursor: {}", SDL_GetError()), Debug::LogLevel::Warning);
             }
         }
     }

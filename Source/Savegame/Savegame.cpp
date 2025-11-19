@@ -74,7 +74,7 @@ namespace Silent::Savegame
             outputFile.close();
         }
 
-        Debug::Log(fmt::format("Saved game to slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1), Debug::LogLevel::Info);
+        Debug::Log(Fmt("Saved game to slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1), Debug::LogLevel::Info);
     }
 
     void SavegameManager::Load(int slotIdx, int fileIdx, int saveIdx)
@@ -85,7 +85,7 @@ namespace Silent::Savegame
         auto inputFile = std::ifstream(saveFile, std::ios::binary);
         if (!inputFile.is_open())
         {
-            Debug::Log(fmt::format("Attempted to load missing savegame for slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1),
+            Debug::Log(Fmt("Attempted to load missing savegame for slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1),
                        Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
@@ -103,7 +103,7 @@ namespace Silent::Savegame
         // Read savegame buffer.
         _savegame = std::move(*FromSavegameBuffer(*saveBuffer));
 
-        Debug::Log(fmt::format("Loaded game from slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1), Debug::LogLevel::Info);
+        Debug::Log(Fmt("Loaded game from slot {}, file {}, savegame {}.", slotIdx + 1, fileIdx + 1, saveIdx + 1), Debug::LogLevel::Info);
     }
 
     const Savegame* SavegameManager::operator->() const
@@ -134,7 +134,7 @@ namespace Silent::Savegame
         auto inputFile = std::ifstream(saveFile, std::ios::binary);
         if (!inputFile.is_open())
         {
-            Debug::Log(fmt::format("Attempted to get metadata for missing savegame file `{}`.", saveFile.string()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Attempted to get metadata for missing savegame file `{}`.", saveFile.string()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return SavegameMetadata
             {
                 .SlotIdx        = NO_VALUE,

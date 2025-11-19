@@ -185,7 +185,7 @@ namespace Silent::Services
         auto stream = Stream(fs.GetWorkDirectory() / (std::string(OPTIONS_FILENAME) + JSON_FILE_EXT), true, false);
         if (!stream.IsOpen())
         {
-            Debug::Log(fmt::format("Creating new `{}{}` file.", OPTIONS_FILENAME, JSON_FILE_EXT), Debug::LogLevel::Info);
+            Debug::Log(Fmt("Creating new `{}{}` file.", OPTIONS_FILENAME, JSON_FILE_EXT), Debug::LogLevel::Info);
 
             SetDefaultOptions();
             Save();

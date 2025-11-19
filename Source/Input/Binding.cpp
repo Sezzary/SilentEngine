@@ -340,7 +340,7 @@ namespace Silent::Input
     {
         if (Contains(_bindings[profileId][actionId], eventId))
         {
-            Debug::Log(fmt::format("Attempted to bind existing event {} to action {} in binding profile {}.", (int)eventId, (int)actionId, (int)profileId),
+            Debug::Log(Fmt("Attempted to bind existing event {} to action {} in binding profile {}.", (int)eventId, (int)actionId, (int)profileId),
                        Debug::LogLevel::Warning);
             return;
         }

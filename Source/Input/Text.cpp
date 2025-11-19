@@ -68,7 +68,7 @@ namespace Silent::Input
         const auto* buffer = Find(_buffers, bufferId);
         if (buffer == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to get text for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Attempted to get text for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return EMPTY;
         }
 
@@ -80,7 +80,7 @@ namespace Silent::Input
         const auto* buffer = Find(_buffers, bufferId);
         if (buffer == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to get text lines for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Attempted to get text lines for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return {};
         }
 
@@ -119,7 +119,7 @@ namespace Silent::Input
         const auto* buffer = Find(_buffers, bufferId);
         if (buffer == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to get cursor position for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Attempted to get cursor position for missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return 0;
         }
 
@@ -130,7 +130,7 @@ namespace Silent::Input
     {
         if (lineWidthMax == 0 || charCountMax == 0)
         {
-            Debug::Log(fmt::format("Attempted to insert invalid text buffer `{}` with max line width {} and character limit {}.",
+            Debug::Log(Fmt("Attempted to insert invalid text buffer `{}` with max line width {} and character limit {}.",
                                    bufferId, lineWidthMax, charCountMax),
                        Debug::LogLevel::Warning);
             return;
@@ -148,7 +148,7 @@ namespace Silent::Input
         auto* buffer = Find(_buffers, bufferId);
         if (buffer == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to update missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Attempted to update missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return;
         }
 
@@ -192,7 +192,7 @@ namespace Silent::Input
         const auto* buffer = Find(_buffers, bufferId);
         if (buffer == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to clear missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Attempted to clear missing text buffer `{}`.", bufferId), Debug::LogLevel::Warning);
             return;
         }
 
@@ -468,7 +468,7 @@ namespace Silent::Input
                 else if (shiftAction.IsHeld() && ctrlAction.IsHeld())
                 {
                     buffer.Snapshot.Text.erase(buffer.Snapshot.Cursor, buffer.Snapshot.Text.size() - (buffer.Snapshot.Cursor - 1));
-                    Debug::Log(fmt::format("{}. {}, {}", buffer.Snapshot.Text.size(), buffer.Snapshot.Cursor, buffer.Snapshot.Text.size() - (buffer.Snapshot.Cursor - 1)));
+                    Debug::Log(Fmt("{}. {}, {}", buffer.Snapshot.Text.size(), buffer.Snapshot.Cursor, buffer.Snapshot.Text.size() - (buffer.Snapshot.Cursor - 1)));
                 }
                 // Erase forward to next space.
                 else if (ctrlAction.IsHeld())

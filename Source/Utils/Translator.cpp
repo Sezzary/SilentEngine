@@ -56,7 +56,7 @@ namespace Silent::Utils
         // Check if new locale is registered.
         if (!Contains(_localeNames, localeName))
         {
-            Debug::Log(fmt::format("Attempted to set unregistered translator locale `{}`.", localeName), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Attempted to set unregistered translator locale `{}`.", localeName), Debug::LogLevel::Warning);
             return;
         }
 
@@ -102,7 +102,7 @@ namespace Silent::Utils
         auto stream     = Stream(localePath, true, false);
         if (!stream.IsOpen())
         {
-            Debug::Log(fmt::format("Failed to load translator locale `{}`.", localeName), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Failed to load translator locale `{}`.", localeName), Debug::LogLevel::Warning);
             _activeLocale = json();
         }
         else

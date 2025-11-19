@@ -146,7 +146,7 @@ namespace Silent::Renderer
         auto input = std::ifstream(filename, std::ios::binary);
         if (!input)
         {
-            throw std::runtime_error(fmt::format("Failed to open shader file `{}`.", filename));
+            throw std::runtime_error(Fmt("Failed to open shader file `{}`.", filename));
         }
 
         auto contents = std::string();
@@ -165,7 +165,7 @@ namespace Silent::Renderer
         {
             if (uniLoc == NO_VALUE)
             {
-                Debug::Log(fmt::format("Attempted to set invalid uniform `{}`.", uniName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+                Debug::Log(Fmt("Attempted to set invalid uniform `{}`.", uniName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             }
         }
 
@@ -183,7 +183,7 @@ namespace Silent::Renderer
         if (!success)
         {
             glGetShaderInfoLog(shaderId, MSG_BUFFER_SIZE, nullptr, msgBuffer);
-            Debug::Log(fmt::format("Failed to compile `{}` shader: {}", type, msgBuffer), Debug::LogLevel::Error);
+            Debug::Log(Fmt("Failed to compile `{}` shader: {}", type, msgBuffer), Debug::LogLevel::Error);
         }
     }
 
@@ -198,7 +198,7 @@ namespace Silent::Renderer
         if (!success)
         {
             glGetProgramInfoLog(progId, MSG_BUFFER_SIZE, nullptr, msgBuffer);
-            Debug::Log(fmt::format("Failed to create `{}` shader program: ", progId, msgBuffer), Debug::LogLevel::Error);
+            Debug::Log(Fmt("Failed to create `{}` shader program: ", progId, msgBuffer), Debug::LogLevel::Error);
         }
     }
 }

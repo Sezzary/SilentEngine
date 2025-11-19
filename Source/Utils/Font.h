@@ -40,8 +40,8 @@ namespace Silent::Utils
         // Constants
         // ==========
 
-        static constexpr uint ATLAS_SIZE    = 1024;
-        static constexpr uint GLYPH_PADDING = 1;
+        static constexpr int ATLAS_SIZE    = 1024;
+        static constexpr int GLYPH_PADDING = 1;
 
         // =======
         // Fields

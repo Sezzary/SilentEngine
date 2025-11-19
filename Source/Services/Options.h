@@ -28,9 +28,9 @@ namespace Silent::Services
 
     enum class AspectRatioType
     {
-        Native,     /** Fits the screen. */
-        Widescreen, /** Forced 16:9. */
-        Retro       /** Forced 4:3. */
+        Native,
+        Widescreen,
+        Retro
     };
 
     enum class TextureFilterType
@@ -41,8 +41,8 @@ namespace Silent::Services
 
     enum class TextQualityType
     {
-        Smooth, /** High-resolution glyphs. */
-        Retro   /** Pixelated glyphs. */
+        Smooth,
+        Retro
     };
 
     enum class LightingType
@@ -85,25 +85,29 @@ namespace Silent::Services
 
     enum class ViewMode
     {
-        Normal,  /** Third-person. */
-        SelfView /** First-person. */
+        Normal,
+        SelfView
     };
 
     enum class DialogPauseType
     {
-        Retro,    /** Original pause length between dialog lines. */
-        Condensed /** Shorter pause length between dialog lines. */
+        Condensed,
+        Retro
     };
 
     /** @brief User options configuration data. */
     struct Options
     {
-        /** Graphics (internal) */
+        // ====================
+        // Graphics (internal)
+        // ====================
 
         Vector2i WindowedSize    = Vector2i::Zero;
         bool     EnableMaximized = false;
 
-        /** Graphics (user) */
+        // ================
+        // Graphics (user)
+        // ================
 
         bool              EnableFullscreen   = false;
         int               BrightnessLevel    = 0;
@@ -118,7 +122,9 @@ namespace Silent::Services
         bool              EnableVignette     = false;
         bool              EnableCrtFilter    = false;
 
-        /** Gameplay */
+        // =========
+        // Gameplay
+        // =========
 
         bool           EnableAutoLoad  = false;
         bool           EnableSubtitles = false;
@@ -129,17 +135,23 @@ namespace Silent::Services
         BloodColorType BloodColor      = BloodColorType::Normal;
         int            BulletAdjust    = 0;
 
-        /** Input (keyboard/mouse bindings) */
+        // ================================
+        // Input (keyboard/mouse bindings)
+        // ================================
 
         BindingProfile   KeyboardMouseBindings        = {};
         BindingProfileId ActiveKeyboardMouseProfileId = BindingProfileId::KeyboardMouseType1;
 
-        /** Input (gamepad bindings) */
+        // =========================
+        // Input (gamepad bindings)
+        // =========================
 
         BindingProfile   GamepadBindings        = {};
         BindingProfileId ActiveGamepadProfileId = BindingProfileId::GamepadType1;
 
-        /** Input (controls) */
+        // =================
+        // Input (controls)
+        // =================
 
         bool                 EnableVibration    = false;
         int                  MouseSensitivity   = 0;
@@ -150,17 +162,23 @@ namespace Silent::Services
         bool                 DisableAutoAiming  = false;
         ViewMode             ViewMode           = ViewMode::Normal;
 
-        /** Enhancements */
+        // =============
+        // Enhancements
+        // =============
 
         DialogPauseType DialogPause = DialogPauseType::Retro;
 
-        /** System (internal) */
+        // ==================
+        // System (internal)
+        // ==================
 
         bool EnableDebugMode = true;
         bool EnableDebugGui  = false;
-        
-        /** System (user) */
-        
+
+        // ==============
+        // System (user)
+        // ==============
+
         bool EnableToasts      = false;
         bool EnableParallelism = false;
     };
@@ -215,18 +233,18 @@ namespace Silent::Services
         /** @brief Initializes the options configurations to startup defaults, taking the build mode into account. */
         void Initialize();
 
-        /** @brief Saves the current options configuration to a JSON file on the user system's game work folder. */
+        /** @brief Saves the current options configuration to a JSON file on the platforms's workspace folder. */
         void Save();
 
-        /** @brief Loads the options configuration from a JSON file on the user system's game work folder. */
+        /** @brief Loads the options configuration from a JSON file on the platforms's workspace folder. */
         void Load();
 
         // ==========
         // Operators
         // ==========
 
-        const Options* operator->() const; /** Accesses the internal options object. */
-        Options*       operator->();       /** Accesses the internal options object. */
+        const Options* operator->() const;
+        Options*       operator->();
 
     private:
         // ========

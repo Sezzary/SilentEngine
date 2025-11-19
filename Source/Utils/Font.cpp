@@ -229,11 +229,11 @@ namespace Silent::Utils
         Debug::Assert(ftFont != nullptr, Fmt("Failed to cache glyph U+{:X} for font `{}`.", (int)codePoint, _name));
 
         const auto& metrics = ftFont->glyph->metrics;
+        auto        size    = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
 
         // @todo Makes new atlas even when active one isn't full yet.
         // Pack glyph rectangle.
-        auto size = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
-        auto rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
+        auto rect = _rectPacks[_activeAtlasIdx].insert(rectpack2D::rect_wh(size.x, size.y));
         if (!rect.has_value())
         {
             Debug::Log(Fmt("Active atlas {} for font `{}` is full. Creating new atlas.", _activeAtlasIdx, _name), Debug::LogLevel::Info);
@@ -241,7 +241,7 @@ namespace Silent::Utils
             // Start new atlas.
             AddAtlas();
             _activeAtlasIdx++;
-            rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
+            rect = _rectPacks[_activeAtlasIdx].insert(rectpack2D::rect_wh(size.x, size.y));
         }
 
         // Register new glyph.

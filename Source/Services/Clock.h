@@ -59,7 +59,7 @@ namespace Silent::Services
         // Utilities
         // ==========
 
-        /** @brief Initializes the clock manager */
+        /** @brief Initializes the clock manager. */
         void Initialize();
 
         /** @brief Updates the clock manager, setting accumulated ticks. */
@@ -75,13 +75,13 @@ namespace Silent::Services
         // Helpers
         // ========
 
-        /** @brief Gets the application uptime in microseconds.
+        /** @brief Gets the clock uptime duration in microseconds.
          *
          * @return Uptime in microseconds.
          */
         uint64 GetUptimeDuration() const;
 
-        /** @brief Gets the elapsed microseconds since the epoch (January 1st, 1970).
+        /** @brief Gets the elapsed duration in microseconds since the epoch (January 1st, 1970).
          *
          * @return Elapsed microseconds since the epoch.
          */

@@ -104,28 +104,25 @@ namespace Silent::Utils
             }
         }
 
-        auto shapedText = ShapedText{};
+        auto shapingInfos = std::vector<ShapingInfo>(_fontCount);
+        auto shapedText   = ShapedText{};
         shapedText.Glyphs.reserve(codePoints.size());
-
-        auto shapingInfos = std::unordered_map<int, ShapingInfo>{}; // Key = font index, value = shaping info.
-        int  prevFontIdx  = 0;
 
         // Build shaped text.
         for (int i = 0; i < codePoints.size(); i++)
         {
-            // Run through font fallbacks.
+            // Run through font chain.
             for (int j = 0; j < _fontCount; j++)
             {
                 // Check if glyph is valid.
                 uint charIdx = FT_Get_Char_Index(_ftFonts[j], codePoints[i]);
                 if (charIdx == 0)
                 {
-                    // If more fonts, skip to next.
-                    if (j < _fontCount)
+                    // If no valid glyphs exist, use first font's invalid glyph.
+                    if (j < (_fontCount - 1))
                     {
                         continue;
                     }
-                    // If no more fonts, use primary.
                     else
                     {
                         j = 0;
@@ -136,7 +133,6 @@ namespace Silent::Utils
                 auto& shapingInfo = shapingInfos[j];
                 if (shapingInfo.Buffer == nullptr)
                 {
-                    // @todo Better handling?
                     // Get buffer.
                     shapingInfo.Buffer = GetShapingBuffer(msg);
                     if (shapingInfo.Buffer == nullptr)
@@ -159,17 +155,14 @@ namespace Silent::Utils
                     .Offset   = Vector2i(shapingInfo.Positions[i].x_offset,  shapingInfo.Positions[i].y_offset)  * _scaleFactor
                 });
                 shapedText.Width += shapedText.Glyphs.back().Advance.x;
-
                 break;
             }
-
-            // @todo What if shaping failed?
         }
 
         // Free resources.
-        for (auto& [keyFontIdx, shaping] : shapingInfos)
+        for (auto& shapingInfo : shapingInfos)
         {
-            hb_buffer_destroy(shaping.Buffer);
+            hb_buffer_destroy(shapingInfo.Buffer);
         }
 
         return shapedText;
@@ -210,20 +203,30 @@ namespace Silent::Utils
 
     void Font::CacheGlyph(char32 codePoint)
     {
-        // Load valid glyph from fallback chain.
-        auto ftFont = _ftFonts.front();
-        for (const auto& curFtFont : _ftFonts)
+        // Load valid glyph from font chain.
+        FT_Face ftFont = nullptr;
+        for (int i = 0; i < _ftFonts.size(); i++)
         {
-            // @todo Optimise.
-            uint charIdx = FT_Get_Char_Index(curFtFont, codePoint);
-            FT_Load_Glyph(curFtFont, charIdx, FT_LOAD_DEFAULT);
-
-            if (charIdx != 0)
+            // Check if glyph is valid.
+            uint charIdx = FT_Get_Char_Index(_ftFonts[i], codePoint);
+            if (charIdx == 0)
             {
-                ftFont = curFtFont;
-                break;
+                // If no valid glyphs exist, use first font's invalid glyph.
+                if (i < (_ftFonts.size() - 1))
+                {
+                    continue;
+                }
+                else
+                {
+                    i = 0;
+                }
             }
+
+            FT_Load_Glyph(_ftFonts[i], charIdx, FT_LOAD_DEFAULT);
+            ftFont = _ftFonts[i];
+            break;
         }
+        Debug::Assert(ftFont != nullptr, fmt::format("Failed to cache glyph U+{:X} for for font `{}`.", codePoint, _name));
 
         const auto& metrics = ftFont->glyph->metrics;
 

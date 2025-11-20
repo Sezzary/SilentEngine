@@ -29,18 +29,13 @@ namespace Silent::Utils
     /** @brief Atlased font chain. */
     class Font
     {
-    private:
-        // ========
-        // Aliases
-        // ========
-
-        using PackedRects = rectpack2D::empty_spaces<false, rectpack2D::default_empty_spaces>;
-
         // ==========
         // Constants
         // ==========
 
-        static constexpr int ATLAS_SIZE    = 1024;
+        static constexpr int ATLAS_SIZE = 1024;
+
+    private:
         static constexpr int GLYPH_PADDING = 1;
 
         // =======
@@ -52,8 +47,8 @@ namespace Silent::Utils
         float                                     _scaleFactor = 0.0f;
         std::unordered_map<char32, GlyphMetadata> _glyphs      = {}; /** Key = code point, value = rasterized glyph metadata. */
         
-        std::vector<PackedRects>       _rectPacks = {};
-        std::vector<std::vector<byte>> _atlases   = {};
+        std::vector<smol_atlas_t*>     _rectAtlases    = {};
+        std::vector<std::vector<byte>> _textureAtlases = {};
         int                            _activeAtlasIdx = 0;
         
         int                     _fontCount = 0;
@@ -93,11 +88,11 @@ namespace Silent::Utils
          */
         int GetPointSize() const;
 
-        /** @brief Gets the monochrome texture atlases containing cached glyphs.
+        /** @brief Gets the monochrome texture atlases containing cached font glyphs.
          *
          * @return Glyph texture atlases.
          */
-        const std::vector<std::vector<byte>>& GetAtlases() const;
+        const std::vector<std::vector<byte>>& GetTextureAtlases() const;
 
         /** @brief Gets the shaped text for a message.
          *

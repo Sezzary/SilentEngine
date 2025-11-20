@@ -51,7 +51,7 @@ namespace Silent::Renderer
                                       config.FragShaderStorageBufferCount, config.FragShaderUniBufferCount);
         if (fragShader == nullptr)
         {
-            throw std::runtime_error(Fmt("Failed to create fragment shader `{}`.",  config.FragmentShaderName));
+            throw std::runtime_error(Fmt("Failed to create fragment shader `{}`.", config.FragmentShaderName));
         }
 
         // @todo Post-process pipelines don't need every variant.

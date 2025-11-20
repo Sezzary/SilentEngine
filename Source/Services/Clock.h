@@ -8,6 +8,10 @@ namespace Silent::Services
     class ClockManager
     {
     private:
+        // ==========
+        // Constants
+        // ==========
+
         static constexpr uint TICK_INTERVAL_DURATION = 1000000 / TICKS_PER_SECOND;
 
         // =======

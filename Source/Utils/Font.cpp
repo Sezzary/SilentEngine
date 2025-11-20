@@ -66,11 +66,20 @@ namespace Silent::Utils
         }
 
         // Debug.
-        stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + "_Atlas.png")).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlases.front().data(), ATLAS_SIZE);
+        for (int i = 0; i < _textureAtlases.size(); i++)
+        {
+            stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + Fmt("_Atlas{}.png", i))).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _textureAtlases[i].data(), ATLAS_SIZE);
+            break;
+        }
     }
 
     Font::~Font()
     {
+        for (auto* rectAtlas : _rectAtlases)
+        {
+            sma_atlas_destroy(rectAtlas);
+        }
+
         for (auto& ftFont : _ftFonts)
         {
             FT_Done_Face(ftFont);
@@ -87,9 +96,9 @@ namespace Silent::Utils
         return _pointSize;
     }
 
-    const std::vector<std::vector<byte>>& Font::GetAtlases() const
+    const std::vector<std::vector<byte>>& Font::GetTextureAtlases() const
     {
-        return _atlases;
+        return _textureAtlases;
     }
 
     ShapedText Font::GetShapedText(const std::string& msg)
@@ -231,17 +240,16 @@ namespace Silent::Utils
         const auto& metrics = ftFont->glyph->metrics;
         auto        size    = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
 
-        // @todo Makes new atlas even when active one isn't full yet.
-        // Pack glyph rectangle.
-        auto rect = _rectPacks[_activeAtlasIdx].insert(rectpack2D::rect_wh(size.x, size.y));
-        if (!rect.has_value())
+        // Add glyph rectangle.
+        auto* rect = sma_item_add(_rectAtlases[_activeAtlasIdx], size.x, size.y);
+        if (rect == nullptr)
         {
             Debug::Log(Fmt("Active atlas {} for font `{}` is full. Creating new atlas.", _activeAtlasIdx, _name), Debug::LogLevel::Info);
 
             // Start new atlas.
             AddAtlas();
             _activeAtlasIdx++;
-            rect = _rectPacks[_activeAtlasIdx].insert(rectpack2D::rect_wh(size.x, size.y));
+            rect = sma_item_add(_rectAtlases[_activeAtlasIdx], size.x, size.y);
         }
 
         // Register new glyph.
@@ -249,7 +257,7 @@ namespace Silent::Utils
         {
             .CodePoint = codePoint,
             .AtlasIdx  = _activeAtlasIdx,
-            .Position  = Vector2i(rect->x, rect->y) + Vector2i(GLYPH_PADDING),
+            .Position  = Vector2i(sma_item_x(rect), sma_item_y(rect)) + Vector2i(GLYPH_PADDING),
             .Size      = size
         };
         const auto& glyph = _glyphs[codePoint];
@@ -257,7 +265,7 @@ namespace Silent::Utils
         // Rasterize.
         FT_Render_Glyph(ftFont->glyph, FT_RENDER_MODE_NORMAL);
         const auto& bitmap     = ftFont->glyph->bitmap;
-        byte*       pixelsTo   = &_atlases.back()[(glyph.Position.y * ATLAS_SIZE) + glyph.Position.x];
+        byte*       pixelsTo   = &_textureAtlases.back()[(glyph.Position.y * ATLAS_SIZE) + glyph.Position.x];
         byte*       pixelsFrom = (byte*)bitmap.buffer;
 
         // Copy pixels to atlas.
@@ -272,8 +280,8 @@ namespace Silent::Utils
 
     void Font::AddAtlas()
     {
-        _rectPacks.emplace_back(PackedRects(rectpack2D::rect_wh(ATLAS_SIZE, ATLAS_SIZE)));
-        _atlases.emplace_back(std::vector<byte>(ATLAS_SIZE * ATLAS_SIZE));
+        _rectAtlases.push_back(sma_atlas_create(ATLAS_SIZE, ATLAS_SIZE));
+        _textureAtlases.emplace_back(std::vector<byte>(ATLAS_SIZE * ATLAS_SIZE));
     }
 
     FontManager::FontManager()

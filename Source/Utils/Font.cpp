@@ -64,7 +64,7 @@ namespace Silent::Utils
         {
             if (Find(_glyphs, codePoint) != nullptr)
             {
-                Debug::Log(Fmt("Attempted to precache existing glyph U+{:X} for font `{}`. Check the precache string for duplicates.", (int)codePoint, name),
+                Debug::Log(Fmt("Attempted to precache existing glyph U+{:X} for font `{}`. Check precache string for duplicates.", (int)codePoint, name),
                            Debug::LogLevel::Warning);
                 continue;
             }

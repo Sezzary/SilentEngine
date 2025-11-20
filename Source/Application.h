@@ -121,6 +121,9 @@ namespace Silent
         /** @brief Updates the game application at a fixed timestep. */
         void Update();
 
+        /** @brief Updates the game render buffer. */
+        void UpdateRenderBuffer();
+
         /** @brief Renders the application scene. */
         void Render();
 

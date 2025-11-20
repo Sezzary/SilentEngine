@@ -257,7 +257,10 @@ namespace Silent
         _work.Input.Update(*_window, _mouseWheelAxis);
 
         // Update game state.
-        Entry();
+        for (int i = 0; i < _work.Clock.GetTicks(); i++)
+        {
+            Entry();
+        }
 
         // Update audio.
         _work.Audio.Update();
@@ -267,6 +270,11 @@ namespace Silent
         _work.Toaster.Update();
     }
 
+    void ApplicationManager::UpdateRenderBuffer()
+    {
+        // @todo
+    }
+
     void ApplicationManager::Render()
     {
         if (_work.Clock.GetTicks() <= 0)
@@ -274,8 +282,16 @@ namespace Silent
             return;
         }
 
-        // Render scene.
-        _work.Renderer->Update();
+        // Wait for previous frame to finish rendering.
+        static auto prevFrameFuture = std::future<void>();
+        if (prevFrameFuture.valid())
+        {
+            prevFrameFuture.wait();
+        }
+
+        // Render frame asynchronously.
+        UpdateRenderBuffer();
+        prevFrameFuture = _work.Executor.AddTask(TASK(_work.Renderer->Update()));
     }
 
     void ApplicationManager::PollEvents()

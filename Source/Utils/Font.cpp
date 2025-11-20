@@ -62,6 +62,13 @@ namespace Silent::Utils
         auto codePoints = GetCodePoints(precacheGlyphs);
         for (char32 codePoint : codePoints)
         {
+            if (Find(_glyphs, codePoint) != nullptr)
+            {
+                Debug::Log(Fmt("Attempted to precache existing glyph U+{:X} for font `{}`. Check the precache string for duplicates.", (int)codePoint, name),
+                           Debug::LogLevel::Warning);
+                continue;
+            }
+
             CacheGlyph(codePoint);
         }
 
@@ -107,10 +114,12 @@ namespace Silent::Utils
         auto codePoints = GetCodePoints(msg);
         for (char32 codePoint : codePoints)
         {
-            if (Find(_glyphs, codePoint) == nullptr)
+            if (Find(_glyphs, codePoint) != nullptr)
             {
-                CacheGlyph(codePoint);
+                continue;
             }
+
+            CacheGlyph(codePoint);
         }
 
         auto shapingInfos = std::vector<ShapingInfo>(_fontCount);

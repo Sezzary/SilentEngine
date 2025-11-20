@@ -50,6 +50,10 @@
     path = Libraries/sol2
     url = https://github.com/ThePhD/sol2.git
 
+[submodule "Libraries/smol-atlas"]
+    path = Libraries/smol-atlas
+    url = https://github.com/aras-p/smol-atlas.git
+
 [submodule "Libraries/spdlog"]
     path = Libraries/spdlog
     url = https://github.com/gabime/spdlog.git

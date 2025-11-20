@@ -3,7 +3,7 @@
 
 #include "Application.h"
 #include "Assets/Assets.h"
-#include "Services/Time.h"
+#include "Services/Clock.h"
 
 namespace Silent
 {
@@ -19,7 +19,7 @@ namespace Silent
         // Run game loop.
         if (isInitComplete)
         {
-            const auto& time     = g_App.GetTime();
+            const auto& clock    = g_App.GetClock();
             auto&       renderer = g_App.GetRenderer();
 
             //g_MainLoop_FrameCount++;
@@ -148,7 +148,7 @@ namespace Silent
 
             // Update delta time.
             /*g_DeltaTime0 =
-            g_DeltaTime1 = FP_FLOAT_TO((1.0f / (float)TICKS_PER_SECOND) * time.GetTicks(), Q12_SHIFT);*/
+            g_DeltaTime1 = FP_FLOAT_TO((1.0f / (float)TICKS_PER_SECOND) * clock.GetTicks(), Q12_SHIFT);*/
 
             /*g_DeltaTime0 = FP_MULTIPLY(vCount, H_BLANKS_FP_TO_SEC_SCALE, Q12_SHIFT);
             g_DeltaTime1 = FP_MULTIPLY(vCountCopy, H_BLANKS_FP_TO_SEC_SCALE, Q12_SHIFT);

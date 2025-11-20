@@ -53,6 +53,15 @@ namespace Silent::Assets
                 "UnifontExMono.ttf"
             },
             .PointSize = 32
+        },
+        FontMetadata
+        {
+            .Name      = "Toast",
+            .Filenames =
+            {
+                "UnifontExMono.ttf"
+            },
+            .PointSize = 32
         }
     };
 }

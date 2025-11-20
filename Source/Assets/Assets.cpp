@@ -39,7 +39,7 @@ namespace Silent::Assets
         // Get asset.
         if (assetIdx < 0 || assetIdx >= _assets.size())
         {
-            Debug::Log(fmt::format("Attempted to get name of invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Attempted to get name of invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return EMPTY_STRING;
         }
         const auto asset = _assets[assetIdx];
@@ -67,7 +67,7 @@ namespace Silent::Assets
         // Get asset.
         if (assetIdx < 0 || assetIdx >= _assets.size())
         {
-            Debug::Log(fmt::format("Attempted to get invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Attempted to get invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return nullptr;
         }
         const auto asset = _assets[assetIdx];
@@ -75,7 +75,7 @@ namespace Silent::Assets
         // Load if not preloaded.
         if (asset->State != AssetState::Loaded)
         {
-            Debug::Log(fmt::format("Getting non-preloaded asset `{}`. Loading in place.", GetAssetName(assetIdx)),
+            Debug::Log(Fmt("Getting non-preloaded asset `{}`. Loading in place.", GetAssetName(assetIdx)),
                        Debug::LogLevel::Warning, Debug::LogMode::Debug);
 
             LoadAsset(assetIdx).wait();
@@ -84,7 +84,7 @@ namespace Silent::Assets
         // Check if loading failed.
         if (asset->State == AssetState::Error)
         {
-            Debug::Log(fmt::format("Failed to get asset `{}`.", GetAssetName(assetIdx)), Debug::LogLevel::Error, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Failed to get asset `{}`.", GetAssetName(assetIdx)), Debug::LogLevel::Error, Debug::LogMode::Debug);
             return nullptr;
         }
         return asset;
@@ -96,7 +96,7 @@ namespace Silent::Assets
         const int* assetIdx = Find(_idxs, assetName);
         if (assetIdx == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to get invalid asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Attempted to get invalid asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return nullptr;
         }
 
@@ -132,7 +132,7 @@ namespace Silent::Assets
             auto ext = ToUpper(file.extension().string());
             if (Find(ASSET_TYPES, ext) == nullptr)
             {
-                Debug::Log(fmt::format("Unknown asset type for file `{}`.", file.string()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+                Debug::Log(Fmt("Unknown asset type for file `{}`.", file.string()), Debug::LogLevel::Warning, Debug::LogMode::Debug);
                 continue;
             }
 
@@ -156,7 +156,7 @@ namespace Silent::Assets
         // Create fallback ready future.
         _loadFutures[NO_VALUE] = GenerateReadyFuture();
 
-        Debug::Log(fmt::format("Registered {} assets.", _assets.size()), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("Registered {} assets.", _assets.size()), Debug::LogLevel::Info, Debug::LogMode::Debug);
     }
 
     const std::future<void>& AssetManager::LoadAsset(int assetIdx)
@@ -166,7 +166,7 @@ namespace Silent::Assets
         // Get asset.
         if (assetIdx < 0 || assetIdx >= _assets.size())
         {
-            Debug::Log(fmt::format("Attempted to load invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Attempted to load invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return _loadFutures[NO_VALUE];
         }
         auto& asset = _assets[assetIdx];
@@ -180,7 +180,7 @@ namespace Silent::Assets
         // Check if file is valid.
         if (!std::filesystem::exists(asset->File))
         {
-            Debug::Log(fmt::format("Attempted to load asset `{}` from invalid file `{}`.", asset->Name, asset->File.string()),
+            Debug::Log(Fmt("Attempted to load asset `{}` from invalid file `{}`.", asset->Name, asset->File.string()),
                        Debug::LogLevel::Error, Debug::LogMode::Debug);
 
             asset->State = AssetState::Error;
@@ -198,7 +198,7 @@ namespace Silent::Assets
             const auto* parserFunc = Find(PARSER_FUNCS, asset->Type);
             if (parserFunc == nullptr)
             {
-                Debug::Log(fmt::format("Attempted to load asset `{}` with no parser function for asset type {}.", asset->Name, (int)asset->Type),
+                Debug::Log(Fmt("Attempted to load asset `{}` with no parser function for asset type {}.", asset->Name, (int)asset->Type),
                            Debug::LogLevel::Error);
 
                 asset->State = AssetState::Unloaded;
@@ -212,14 +212,14 @@ namespace Silent::Assets
                 asset->Data  = (*parserFunc)(asset->File);
                 asset->State = AssetState::Loaded;
 
-                Debug::Log(fmt::format("Loaded asset `{}`.", asset->Name), Debug::LogLevel::Info, Debug::LogMode::Debug);
+                Debug::Log(Fmt("Loaded asset `{}`.", asset->Name), Debug::LogLevel::Info, Debug::LogMode::Debug);
             }
             catch (const std::exception& ex)
             {
                 asset->Data  = nullptr;
                 asset->State = AssetState::Error;
 
-                Debug::Log(fmt::format("Failed to parse file for asset `{}`: {}", asset->Name, ex.what()), Debug::LogLevel::Error);
+                Debug::Log(Fmt("Failed to parse file for asset `{}`: {}", asset->Name, ex.what()), Debug::LogLevel::Error);
             }
             _loadingCount--;
         });
@@ -233,7 +233,7 @@ namespace Silent::Assets
         const int* assetIdx = Find(_idxs, assetName);
         if (assetIdx == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to load unregistered asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Attempted to load unregistered asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return _loadFutures[NO_VALUE];
         }
 
@@ -246,7 +246,7 @@ namespace Silent::Assets
         // Get asset.
         if (assetIdx < 0 || assetIdx >= _assets.size())
         {
-            Debug::Log(fmt::format("Attempted to unload invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Attempted to unload invalid asset {}.", assetIdx), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
         auto& asset = _assets[assetIdx];
@@ -264,7 +264,7 @@ namespace Silent::Assets
         // Remove load future.
         _loadFutures.erase(assetIdx);
 
-        Debug::Log(fmt::format("Unloaded asset `{}`.", GetAssetName(assetIdx)), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("Unloaded asset `{}`.", GetAssetName(assetIdx)), Debug::LogLevel::Info, Debug::LogMode::Debug);
     }
 
     void AssetManager::UnloadAsset(const std::string& assetName)
@@ -273,7 +273,7 @@ namespace Silent::Assets
         const int* assetIdx = Find(_idxs, assetName);
         if (assetIdx == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to unload unregistered asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            Debug::Log(Fmt("Attempted to unload unregistered asset `{}`.", assetName), Debug::LogLevel::Warning, Debug::LogMode::Debug);
             return;
         }
 

@@ -85,15 +85,15 @@ using json = nlohmann::json;
 // LuaJIT
 #include <lua.hpp>
 
-// rectpack2D
-#include <rectpack2D/finders_interface.h>
-
 // SDL
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_gpu.h>
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_opengl_glext.h>
 #include <SDL3/SDL_vulkan.h>
+
+// smol-atlas
+#include <smol-atlas.h>
 
 // sol2
 #include <sol/sol.hpp>
@@ -103,6 +103,8 @@ using json = nlohmann::json;
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+
+#define Fmt fmt::format
 
 // stb
 #include <stb_image.h>

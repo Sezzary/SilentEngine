@@ -16,13 +16,13 @@ namespace Silent::Renderer
         const auto asset = assets.GetAsset(assetIdx);
         if (asset == nullptr)
         {
-            throw std::runtime_error(fmt::format("Attempted to initialize invalid asset {} as texture.", assetIdx));
+            throw std::runtime_error(Fmt("Attempted to initialize invalid asset {} as texture.", assetIdx));
         }
 
         // Check if asset is TIM image.
         if (asset->Type != AssetType::Tim)
         {
-            throw std::runtime_error(fmt::format("Attempted to initialize non-image asset {} as texture.", assetIdx));
+            throw std::runtime_error(Fmt("Attempted to initialize non-image asset {} as texture.", assetIdx));
         }
 
         _device = &device;

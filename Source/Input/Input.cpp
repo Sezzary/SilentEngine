@@ -7,8 +7,8 @@
 #include "Input/Binding.h"
 #include "Input/Event.h"
 #include "Input/Text.h"
+#include "Services/Clock.h"
 #include "Services/Options.h"
-#include "Services/Time.h"
 #include "Services/Toasts.h"
 #include "Utils/Parallel.h"
 #include "Utils/Utils.h"
@@ -79,7 +79,7 @@ namespace Silent::Input
 
         if (!SDL_Init(SDL_INIT_GAMEPAD))
         {
-            Debug::Log(fmt::format("Failed to initialize gamepad subsystem: {}", SDL_GetError()), Debug::LogLevel::Error);
+            Debug::Log(Fmt("Failed to initialize gamepad subsystem: {}", SDL_GetError()), Debug::LogLevel::Error);
         }
 
         // Initialize event states and control axes.
@@ -185,7 +185,7 @@ namespace Silent::Input
             SetRumble(RumbleMode::Low, 0.0f, 1.0f, 0.1f);
             toaster.Add(translator(KEY_SYS_GAMEPAD_CONNECTED));
 
-            Debug::Log(fmt::format("{} gamepad connected.", GetGamepadVendorName(_gamepad.VendorId)));
+            Debug::Log(Fmt("{} gamepad connected.", GetGamepadVendorName(_gamepad.VendorId)));
         }
     }
 
@@ -336,7 +336,7 @@ namespace Silent::Input
         auto res = Vector2i::Zero;
         if (!SDL_GetWindowSize(&window, &res.x, &res.y))
         {
-            Debug::Log(fmt::format("Failed to get window size: {}", SDL_GetError()), Debug::LogLevel::Error);
+            Debug::Log(Fmt("Failed to get window size: {}", SDL_GetError()), Debug::LogLevel::Error);
         }
 
         float sensitivity = (options->MouseSensitivity * 0.1f) + 0.4f;
@@ -491,7 +491,7 @@ namespace Silent::Input
         // Rumble gamepad.
         if (!SDL_RumbleGamepad(_gamepad.Device, freqLow, freqHigh, durationMs))
         {
-            Debug::Log(fmt::format("Failed to rumble gamepad: {}", SDL_GetError()), Debug::LogLevel::Error);
+            Debug::Log(Fmt("Failed to rumble gamepad: {}", SDL_GetError()), Debug::LogLevel::Error);
         }
 
         _rumble.Ticks--;

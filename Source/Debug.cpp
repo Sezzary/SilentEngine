@@ -5,8 +5,8 @@
 #include "Assets/Locales.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "Services/Clock.h"
 #include "Services/Options.h"
-#include "Services/Time.h"
 #include "Utils/Bitfield.h"
 #include "Utils/Parallel.h"
 #include "Utils/Translator.h"
@@ -218,7 +218,7 @@ namespace Silent::Debug
             constexpr const char* CONTROL_INVERSION_ITEMS[] = { "Normal", "Reverse" };
             constexpr const char* WEAPON_CONTROL_ITEMS[]    = { "Switch", "Press" };
             constexpr const char* VIEW_MODE_ITEMS[]         = { "Normal", "Self view" };
-            constexpr const char* DIALOG_PAUSE_ITEMS[]      = { "Retro", "Condensed" };
+            constexpr const char* DIALOG_PAUSE_ITEMS[]      = { "Condensed", "Retro" };
 
             const auto& assets     = g_App.GetAssets();
             auto&       options    = g_App.GetOptions();

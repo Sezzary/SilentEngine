@@ -26,7 +26,7 @@ namespace Silent::Utils
         // Clamp point size.
         if (pointSize > POINT_SIZE_MAX)
         {
-            Debug::Log(fmt::format("Attempted to initialize font `{}` with invalid point size {}. Max is {}.", _name, pointSize, POINT_SIZE_MAX),
+            Debug::Log(Fmt("Attempted to initialize font `{}` with invalid point size {}. Max is {}.", _name, pointSize, POINT_SIZE_MAX),
                        Debug::LogLevel::Warning);
 
             pointSize = std::min<int>(pointSize, POINT_SIZE_MAX);
@@ -50,7 +50,7 @@ namespace Silent::Utils
                 throw std::runtime_error("Failed to set font point size.");
             }
         }
-        Debug::Assert(_ftFonts.size() == _fontCount && _hbFonts.size() == _fontCount, fmt::format("Invalid initialization for font `{}`.", name));
+        Debug::Assert(_ftFonts.size() == _fontCount && _hbFonts.size() == _fontCount, Fmt("Invalid initialization for font `{}`.", name));
 
         // Set scale factor.
         _scaleFactor = (float)pointSize / (float)_ftFonts.front()->size->metrics.x_ppem;
@@ -62,15 +62,31 @@ namespace Silent::Utils
         auto codePoints = GetCodePoints(precacheGlyphs);
         for (char32 codePoint : codePoints)
         {
+            if (Find(_glyphs, codePoint) != nullptr)
+            {
+                Debug::Log(Fmt("Attempted to precache existing glyph U+{:X} for font `{}`. Check precache string for duplicates.", (int)codePoint, name),
+                           Debug::LogLevel::Warning);
+                continue;
+            }
+
             CacheGlyph(codePoint);
         }
 
         // Debug.
-        stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + "_Atlas.png")).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _atlases.front().data(), ATLAS_SIZE);
+        for (int i = 0; i < _textureAtlases.size(); i++)
+        {
+            stbi_write_png((g_App.GetFilesystem().GetAppDirectory() / (_name + Fmt("_Atlas{}.png", i))).string().c_str(), ATLAS_SIZE, ATLAS_SIZE, 1, _textureAtlases[i].data(), ATLAS_SIZE);
+            break;
+        }
     }
 
     Font::~Font()
     {
+        for (auto* rectAtlas : _rectAtlases)
+        {
+            sma_atlas_destroy(rectAtlas);
+        }
+
         for (auto& ftFont : _ftFonts)
         {
             FT_Done_Face(ftFont);
@@ -87,9 +103,9 @@ namespace Silent::Utils
         return _pointSize;
     }
 
-    const std::vector<std::vector<byte>>& Font::GetAtlases() const
+    const std::vector<std::vector<byte>>& Font::GetTextureAtlases() const
     {
-        return _atlases;
+        return _textureAtlases;
     }
 
     ShapedText Font::GetShapedText(const std::string& msg)
@@ -98,34 +114,33 @@ namespace Silent::Utils
         auto codePoints = GetCodePoints(msg);
         for (char32 codePoint : codePoints)
         {
-            if (Find(_glyphs, codePoint) == nullptr)
+            if (Find(_glyphs, codePoint) != nullptr)
             {
-                CacheGlyph(codePoint);
+                continue;
             }
+
+            CacheGlyph(codePoint);
         }
 
-        auto shapedText = ShapedText{};
+        auto shapingInfos = std::vector<ShapingInfo>(_fontCount);
+        auto shapedText   = ShapedText{};
         shapedText.Glyphs.reserve(codePoints.size());
-
-        auto shapingInfos = std::unordered_map<int, ShapingInfo>{}; // Key = font index, value = shaping info.
-        int  prevFontIdx  = 0;
 
         // Build shaped text.
         for (int i = 0; i < codePoints.size(); i++)
         {
-            // Run through font fallbacks.
+            // Run through font chain.
             for (int j = 0; j < _fontCount; j++)
             {
                 // Check if glyph is valid.
                 uint charIdx = FT_Get_Char_Index(_ftFonts[j], codePoints[i]);
                 if (charIdx == 0)
                 {
-                    // If more fonts, skip to next.
-                    if (j < _fontCount)
+                    // If no valid glyphs exist, use first font's invalid glyph.
+                    if (j < (_fontCount - 1))
                     {
                         continue;
                     }
-                    // If no more fonts, use primary.
                     else
                     {
                         j = 0;
@@ -136,7 +151,6 @@ namespace Silent::Utils
                 auto& shapingInfo = shapingInfos[j];
                 if (shapingInfo.Buffer == nullptr)
                 {
-                    // @todo Better handling?
                     // Get buffer.
                     shapingInfo.Buffer = GetShapingBuffer(msg);
                     if (shapingInfo.Buffer == nullptr)
@@ -159,17 +173,14 @@ namespace Silent::Utils
                     .Offset   = Vector2i(shapingInfo.Positions[i].x_offset,  shapingInfo.Positions[i].y_offset)  * _scaleFactor
                 });
                 shapedText.Width += shapedText.Glyphs.back().Advance.x;
-
                 break;
             }
-
-            // @todo What if shaping failed?
         }
 
         // Free resources.
-        for (auto& [keyFontIdx, shaping] : shapingInfos)
+        for (auto& shapingInfo : shapingInfos)
         {
-            hb_buffer_destroy(shaping.Buffer);
+            hb_buffer_destroy(shapingInfo.Buffer);
         }
 
         return shapedText;
@@ -192,7 +203,7 @@ namespace Silent::Utils
         auto* buffer = hb_buffer_create();
         if (!hb_buffer_allocation_successful(buffer))
         {
-            Debug::Log(fmt::format("Failed to allocate shaping buffer for message `{}`", msg), Debug::LogLevel::Error);
+            Debug::Log(Fmt("Failed to allocate shaping buffer for message `{}`", msg), Debug::LogLevel::Error);
             return nullptr;
         }
 
@@ -210,33 +221,44 @@ namespace Silent::Utils
 
     void Font::CacheGlyph(char32 codePoint)
     {
-        // Load valid glyph from fallback chain.
-        auto ftFont = _ftFonts.front();
-        for (const auto& curFtFont : _ftFonts)
+        // Load valid glyph from font chain.
+        FT_Face ftFont = nullptr;
+        for (int i = 0; i < _ftFonts.size(); i++)
         {
-            // @todo Optimise.
-            uint charIdx = FT_Get_Char_Index(curFtFont, codePoint);
-            FT_Load_Glyph(curFtFont, charIdx, FT_LOAD_DEFAULT);
-
-            if (charIdx != 0)
+            // Check if glyph is valid.
+            uint charIdx = FT_Get_Char_Index(_ftFonts[i], codePoint);
+            if (charIdx == 0)
             {
-                ftFont = curFtFont;
-                break;
+                // If no valid glyphs exist, use first font's invalid glyph.
+                if (i < (_ftFonts.size() - 1))
+                {
+                    continue;
+                }
+                else
+                {
+                    i = 0;
+                }
             }
+
+            FT_Load_Glyph(_ftFonts[i], charIdx, FT_LOAD_DEFAULT);
+            ftFont = _ftFonts[i];
+            break;
         }
+        Debug::Assert(ftFont != nullptr, Fmt("Failed to cache glyph U+{:X} for font `{}`.", (int)codePoint, _name));
 
         const auto& metrics = ftFont->glyph->metrics;
+        auto        size    = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
 
-        // Pack glyph rectangle.
-        auto size = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
-        auto rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
-        if (!rect.has_value())
+        // Add glyph rectangle.
+        auto* rect = sma_item_add(_rectAtlases[_activeAtlasIdx], size.x, size.y);
+        if (rect == nullptr)
         {
-            Debug::Log(fmt::format("Active atlas {} for font `{}` is full. Creating new atlas.", _activeAtlasIdx, _name), Debug::LogLevel::Info);
+            Debug::Log(Fmt("Active atlas {} for font `{}` is full. Creating new atlas.", _activeAtlasIdx, _name), Debug::LogLevel::Info);
 
             // Start new atlas.
             AddAtlas();
-            rect = _rectPacks.back().insert(rectpack2D::rect_wh(size.x, size.y));
+            _activeAtlasIdx++;
+            rect = sma_item_add(_rectAtlases[_activeAtlasIdx], size.x, size.y);
         }
 
         // Register new glyph.
@@ -244,7 +266,7 @@ namespace Silent::Utils
         {
             .CodePoint = codePoint,
             .AtlasIdx  = _activeAtlasIdx,
-            .Position  = Vector2i(rect->x, rect->y) + Vector2i(GLYPH_PADDING),
+            .Position  = Vector2i(sma_item_x(rect), sma_item_y(rect)) + Vector2i(GLYPH_PADDING),
             .Size      = size
         };
         const auto& glyph = _glyphs[codePoint];
@@ -252,7 +274,7 @@ namespace Silent::Utils
         // Rasterize.
         FT_Render_Glyph(ftFont->glyph, FT_RENDER_MODE_NORMAL);
         const auto& bitmap     = ftFont->glyph->bitmap;
-        byte*       pixelsTo   = &_atlases.back()[(glyph.Position.y * ATLAS_SIZE) + glyph.Position.x];
+        byte*       pixelsTo   = &_textureAtlases.back()[(glyph.Position.y * ATLAS_SIZE) + glyph.Position.x];
         byte*       pixelsFrom = (byte*)bitmap.buffer;
 
         // Copy pixels to atlas.
@@ -267,9 +289,8 @@ namespace Silent::Utils
 
     void Font::AddAtlas()
     {
-        _rectPacks.push_back(PackedRects(rectpack2D::rect_wh(ATLAS_SIZE, ATLAS_SIZE)));
-        _atlases.push_back(std::vector<byte>(ATLAS_SIZE * ATLAS_SIZE));
-        _activeAtlasIdx++;
+        _rectAtlases.push_back(sma_atlas_create(ATLAS_SIZE, ATLAS_SIZE));
+        _textureAtlases.emplace_back(std::vector<byte>(ATLAS_SIZE * ATLAS_SIZE));
     }
 
     FontManager::FontManager()
@@ -292,7 +313,7 @@ namespace Silent::Utils
         auto* font = Find(_fonts, name);
         if (font == nullptr)
         {
-            Debug::Log(fmt::format("Attempted to get missing font `{}`.", name), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Attempted to get missing font `{}`.", name), Debug::LogLevel::Warning);
         }
 
         return font;
@@ -312,11 +333,11 @@ namespace Silent::Utils
         {
             _fonts[name] = Font(_library, name, filenames, path, pointSize, glyphPrecache);
 
-            Debug::Log(fmt::format("Loaded font `{}` at point size {}.", name, pointSize));
+            Debug::Log(Fmt("Loaded font `{}` at point size {}.", name, pointSize));
         }
         catch (const std::runtime_error& ex)
         {
-            Debug::Log(fmt::format("Failed to load font `{}`: {}", name, ex.what()), Debug::LogLevel::Error);
+            Debug::Log(Fmt("Failed to load font `{}`: {}", name, ex.what()), Debug::LogLevel::Error);
         }
     }
 }

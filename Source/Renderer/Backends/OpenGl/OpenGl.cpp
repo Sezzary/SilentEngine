@@ -12,8 +12,8 @@
 #include "Renderer/Common/View.h"
 #include "Renderer/Renderer.h"
 #include "Services/Filesystem.h"
+#include "Services/Clock.h"
 #include "Services/Options.h"
-#include "Services/Time.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Assets;
@@ -33,7 +33,7 @@ namespace Silent::Renderer
         _context = SDL_GL_CreateContext(_window);
         if (!_context)
         {
-            throw std::runtime_error(fmt::format("Failed to create SDL OpenGL context: {}", SDL_GetError()));
+            throw std::runtime_error(Fmt("Failed to create SDL OpenGL context: {}", SDL_GetError()));
         }
 
         // Load OpenGL functions using GLAD.
@@ -62,41 +62,41 @@ namespace Silent::Renderer
 
         auto gpu    = std::string((const char*)glGetString(GL_RENDERER));
         auto vendor = std::string((const char*)glGetString(GL_VENDOR));
-        Debug::Log(fmt::format("    GPU: {}, {}", gpu, vendor));
+        Debug::Log(Fmt("    GPU: {}, {}", gpu, vendor));
 
         auto version = std::string((const char*)glGetString(GL_VERSION));
-        Debug::Log(fmt::format("    Version: {}", version));
+        Debug::Log(Fmt("    Version: {}", version));
 
         auto shadingLangVersion = std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-        Debug::Log(fmt::format("    Shading language version: {}", shadingLangVersion));
+        Debug::Log(Fmt("    Shading language version: {}", shadingLangVersion));
 
         int attribCountMax = 0;
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attribCountMax);
-        Debug::Log(fmt::format("    {} vertex attributes available.", attribCountMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("    {} vertex attributes available.", attribCountMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int varyingVarCountMax = 0;
         glGetIntegerv(GL_MAX_VARYING_VECTORS, &varyingVarCountMax);
-        Debug::Log(fmt::format("    {} varying variables available.", varyingVarCountMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("    {} varying variables available.", varyingVarCountMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int combinedTexUnitCountMax = 0;
         glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedTexUnitCountMax);
-        Debug::Log(fmt::format("    {} combined texture image units available.", combinedTexUnitCountMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("    {} combined texture image units available.", combinedTexUnitCountMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int vertTexImageUnitCountMax = 0;
         glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &vertTexImageUnitCountMax);
-        Debug::Log(fmt::format("    {} vertex texture image units available.", vertTexImageUnitCountMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("    {} vertex texture image units available.", vertTexImageUnitCountMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int texSizeMax = 0;
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSizeMax);
-        Debug::Log(fmt::format("    {} max texture size.", texSizeMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("    {} max texture size.", texSizeMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int uniBlockSizeMax = 0;
         glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &uniBlockSizeMax);
-        Debug::Log(fmt::format("    {} max uniform block size.", uniBlockSizeMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("    {} max uniform block size.", uniBlockSizeMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
 
         int renderBufferSizeMax = 0;
         glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &renderBufferSizeMax);
-        Debug::Log(fmt::format("    {} max renderbuffer size.", renderBufferSizeMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
+        Debug::Log(Fmt("    {} max renderbuffer size.", renderBufferSizeMax), Debug::LogLevel::Info, Debug::LogMode::Debug);
     }
 
     void OpenGlRenderer::Deinitialize()
@@ -130,7 +130,7 @@ namespace Silent::Renderer
         // Swap buffers.
         if (!SDL_GL_SwapWindow(_window))
         {
-            Debug::Log(fmt::format("Failed to swap render buffer: {}", SDL_GetError()), Debug::LogLevel::Warning);
+            Debug::Log(Fmt("Failed to swap render buffer: {}", SDL_GetError()), Debug::LogLevel::Warning);
         }
 
         // Clear scene. @todo
@@ -401,7 +401,7 @@ namespace Silent::Renderer
                     }
                 }
 
-                Debug::Log(fmt::format("OpenGL {}: {} | {}({})", errorCode, msg, __FILE__, __LINE__), Debug::LogLevel::Error, Debug::LogMode::Debug);
+                Debug::Log(Fmt("OpenGL {}: {} | {}({})", errorCode, msg, __FILE__, __LINE__), Debug::LogLevel::Error, Debug::LogMode::Debug);
                 uint errorCode = glGetError();
             }
         }

@@ -96,7 +96,7 @@ namespace Silent::Utils
         // Find leaf containing object ID.
         if (Find(_leafIdMap, objectId) != nullptr)
         {
-            Debug::Log(fmt::format("BVH attempted to insert leaf with existing object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
+            Debug::Log(Fmt("BVH attempted to insert leaf with existing object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
         }
 
@@ -119,7 +119,7 @@ namespace Silent::Utils
         const int* leafId = Find(_leafIdMap, objectId);
         if (leafId == nullptr)
         {
-            Debug::Log(fmt::format("BVH attempted to move missing leaf with object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
+            Debug::Log(Fmt("BVH attempted to move missing leaf with object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
         }
 
@@ -152,7 +152,7 @@ namespace Silent::Utils
         const int* leafId = Find(_leafIdMap, objectId);
         if (leafId == nullptr)
         {
-            Debug::Log(fmt::format("BVH attempted to remove missing leaf with object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
+            Debug::Log(Fmt("BVH attempted to remove missing leaf with object ID {}.", objectId), Debug::LogLevel::Warning, Debug::LogMode::Debug, true);
             return;
         }
 

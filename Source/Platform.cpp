@@ -45,7 +45,7 @@ namespace Silent
             }
             default:
             {
-                msg = fmt::format("Unhandled signal {} occurred.", signal);
+                msg = Fmt("Unhandled signal {} occurred.", signal);
                 break;
             }
         }

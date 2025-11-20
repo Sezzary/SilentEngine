@@ -44,7 +44,8 @@ file(GLOB LIB_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_sdl3.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends/imgui_impl_sdlgpu3.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo/*.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/Libraries/vlc/src/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Libraries/smol-atlas/src/*.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/Libraries/vlc/lib/*.cpp"
 )
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${LIB_SOURCES})
 
@@ -83,7 +84,6 @@ add_subdirectory(Libraries/glad/cmake)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/harfbuzz)
 add_subdirectory(Libraries/json)
-add_subdirectory(Libraries/rectpack2D)
 add_subdirectory(Libraries/SDL)
 add_subdirectory(Libraries/sol2)
 add_subdirectory(Libraries/spdlog)
@@ -102,8 +102,8 @@ target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/LuaJIT/src
-    ${CMAKE_CURRENT_LIST_DIR}/Libraries/rectpack2D/src
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/smol-atlas/src
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/sol2/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/spdlog
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/stb
@@ -123,7 +123,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     glm
     harfbuzz
     luajit
-    rectpack2D
     sol2
     SDL3::SDL3-static
     spdlog

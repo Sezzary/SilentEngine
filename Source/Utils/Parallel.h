@@ -21,11 +21,11 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::vector<std::jthread> _threads      = {};    /** Worker threads. */
-        std::queue<ParallelTask>  _tasks        = {};    /** Pending tasks to execute. */
-        std::mutex                _taskMutex    = {};    /** Mutex to lock `_tasks` access. */
-        std::condition_variable   _taskCond     = {};    /** Condition variable to notify idle threads of new tasks. */
-        bool                      _deinitialize = false; /** Flag to notify worker threads of a shutdown. */
+        std::vector<std::jthread> _threads      = {};
+        std::queue<ParallelTask>  _tasks        = {};
+        std::mutex                _taskMutex    = {};
+        std::condition_variable   _taskCond     = {};
+        bool                      _deinitialize = false;
 
     public:
         // =============

@@ -3,7 +3,7 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-//#include "Savegame/Generated/savegame_generated.h"
+#include "Savegame/Generated/savegame_generated.h"
 #include "Services/Filesystem.h"
 #include "Utils/Utils.h"
 

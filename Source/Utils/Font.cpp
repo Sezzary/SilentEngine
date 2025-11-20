@@ -15,15 +15,17 @@ namespace Silent::Utils
         hb_buffer_t*         Buffer    = nullptr;
     };
 
-    Font::Font(FT_Library& fontLib, const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path, int pointSize,
-               const std::string& precacheGlyphs)
+    Font::Font(FT_Library& fontLib, const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path,
+               int pointSize, bool useNativeScale, const std::string& precacheGlyphs)
     {
         constexpr int POINT_SIZE_MAX = ATLAS_SIZE / 8;
 
-        _name      = name;
-        _fontCount = filenames.size();
+        _name           = name;
+        _useNativeScale = useNativeScale;
+        _fontCount      = filenames.size();
 
         // Clamp point size.
+        _pointSize = pointSize;
         if (pointSize > POINT_SIZE_MAX)
         {
             Debug::Log(Fmt("Attempted to initialize font `{}` with invalid point size {}. Max is {}.", _name, pointSize, POINT_SIZE_MAX),
@@ -240,7 +242,7 @@ namespace Silent::Utils
                 }
             }
 
-            FT_Load_Glyph(_ftFonts[i], charIdx, FT_LOAD_DEFAULT);
+            FT_Load_Glyph(_ftFonts[i], charIdx, FT_LOAD_DEFAULT | (_useNativeScale ? FT_LOAD_NO_SCALE : 0));
             ftFont = _ftFonts[i];
             break;
         }
@@ -319,8 +321,8 @@ namespace Silent::Utils
         return font;
     }
 
-    void FontManager::LoadFont(const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path, int pointSize,
-                               const std::string& glyphPrecache)
+    void FontManager::LoadFont(const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path,
+                               int pointSize, bool useNativeScale, const std::string& glyphPrecache)
     {
         // Check if font is already loaded.
         if (Find(_fonts, name) != nullptr)
@@ -331,7 +333,7 @@ namespace Silent::Utils
         // Handle load.
         try
         {
-            _fonts[name] = Font(_library, name, filenames, path, pointSize, glyphPrecache);
+            _fonts[name] = Font(_library, name, filenames, path, pointSize, useNativeScale, glyphPrecache);
 
             Debug::Log(Fmt("Loaded font `{}` at point size {}.", name, pointSize));
         }

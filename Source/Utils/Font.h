@@ -42,10 +42,11 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string                               _name        = {};
-        int                                       _pointSize   = 0;
-        float                                     _scaleFactor = 0.0f;
-        std::unordered_map<char32, GlyphMetadata> _glyphs      = {}; /** Key = code point, value = rasterized glyph metadata. */
+        std::string                               _name           = {};
+        int                                       _pointSize      = 0;
+        bool                                      _useNativeScale = false;
+        float                                     _scaleFactor    = 0.0f;
+        std::unordered_map<char32, GlyphMetadata> _glyphs         = {}; /** Key = code point, value = rasterized glyph metadata. */
         
         std::vector<smol_atlas_t*>     _rectAtlases    = {};
         std::vector<std::vector<byte>> _textureAtlases = {};
@@ -70,10 +71,11 @@ namespace Silent::Utils
          * @param filenames Font chain filenames.
          * @param path Path containing font files.
          * @param pointSize Point size at which to load the font.
+         * @param useNativeScale Use the native font scale when rasterizing.
          * @param precacheGlyphs Glyphs to precache.
          */
-        Font(FT_Library& fontLib, const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path, int pointSize,
-             const std::string& precacheGlyphs);
+        Font(FT_Library& fontLib, const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path,
+             int pointSize, bool useNativeScale, const std::string& precacheGlyphs);
 
         /** @brief Gracefully destroys the `Font`, freeing resources. */
         ~Font();
@@ -173,9 +175,10 @@ namespace Silent::Utils
          * @param filenames Font chain filenames.
          * @param path Path containing font files.
          * @param pointSize Vertical rasterization point size.
+         * @param useNativeScale Use the native font scale when rasterizing.
          * @param precacheGlyphs Glyphs to precache in the atlas upon font initialization.
          */
-        void LoadFont(const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path, int pointSize,
-                      const std::string& precacheGlyphs = {});
+        void LoadFont(const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path,
+                      int pointSize, bool useNativeScale, const std::string& precacheGlyphs = {});
     };
 }

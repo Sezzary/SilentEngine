@@ -41,7 +41,8 @@ namespace Silent::Assets
                 "NotoSerifJP-Medium.ttf",
                 "NotoSerifKR-Medium.ttf"
             },
-            .PointSize = 48
+            .PointSize      = 48,
+            .UseNativeScale = false
         },
         FontMetadata
         {
@@ -52,7 +53,8 @@ namespace Silent::Assets
                 "PsxBios.ttf",
                 "UnifontExMono.ttf"
             },
-            .PointSize = 32
+            .PointSize      = 16,
+            .UseNativeScale = true
         },
         FontMetadata
         {
@@ -61,7 +63,8 @@ namespace Silent::Assets
             {
                 "UnifontExMono.ttf"
             },
-            .PointSize = 32
+            .PointSize      = 16,
+            .UseNativeScale = true
         }
     };
 }

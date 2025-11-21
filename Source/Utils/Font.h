@@ -51,15 +51,15 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string                               _name           = {};
-        int                                       _pointSize      = 0;
-        bool                                      _useNativeScale = false;
-        float                                     _scaleFactor    = 0.0f;
+        std::string _name           = {};
+        int         _pointSize      = 0;
+        bool        _useNativeScale = false;
+        float       _scaleFactor    = 0.0f;
+
         std::unordered_map<char32, GlyphMetadata> _glyphs         = {}; /** Key = code point, value = rasterized glyph metadata. */
-        
-        std::vector<smol_atlas_t*>     _rectAtlases    = {};
-        std::vector<std::vector<byte>> _textureAtlases = {};
-        int                            _activeAtlasIdx = 0;
+        std::vector<smol_atlas_t*>                _rectAtlases    = {};
+        std::vector<std::vector<byte>>            _textureAtlases = {};
+        int                                       _activeAtlasIdx = 0;
         
         int                     _fontCount = 0;
         std::vector<FT_Face>    _ftFonts   = {};

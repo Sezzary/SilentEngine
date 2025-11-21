@@ -137,8 +137,7 @@ namespace Silent
         _work.Translator.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_LOCALES_DIR_NAME, LOCALE_NAMES);
         for (const auto& fontMetadata : FONTS_METADATA)
         {
-            _work.Fonts.LoadFont(fontMetadata.Name, fontMetadata.Filenames, _work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME,
-                                 fontMetadata.PointSize, fontMetadata.UseNativeScale, GLYPH_PRECACHE);
+            _work.Fonts.LoadFont(fontMetadata, _work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME, GLYPH_PRECACHE);
         }
 
         // Renderer.

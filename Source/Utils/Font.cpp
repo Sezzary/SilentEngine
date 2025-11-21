@@ -15,27 +15,26 @@ namespace Silent::Utils
         hb_buffer_t*         Buffer    = nullptr;
     };
 
-    Font::Font(FT_Library& fontLib, const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path,
-               int pointSize, bool useNativeScale, const std::string& precacheGlyphs)
+    Font::Font(FT_Library& fontLib, const FontMetadata& metadata, const std::filesystem::path& path, const std::string& precacheGlyphs)
     {
         constexpr int POINT_SIZE_MAX = ATLAS_SIZE / 8;
 
-        _name           = name;
-        _useNativeScale = useNativeScale;
-        _fontCount      = filenames.size();
+        _name           = metadata.Name;
+        _useNativeScale = metadata.UseNativeScale;
+        _fontCount      = metadata.Filenames.size();
 
         // Clamp point size.
-        _pointSize = pointSize;
-        if (pointSize > POINT_SIZE_MAX)
+        _pointSize = metadata.PointSize;
+        if (_pointSize > POINT_SIZE_MAX)
         {
-            Debug::Log(Fmt("Attempted to initialize font `{}` with invalid point size {}. Max is {}.", _name, pointSize, POINT_SIZE_MAX),
+            Debug::Log(Fmt("Attempted to initialize font `{}` with invalid point size {}. Max is {}.", _name, _pointSize, POINT_SIZE_MAX),
                        Debug::LogLevel::Warning);
 
-            pointSize = std::min<int>(pointSize, POINT_SIZE_MAX);
+            _pointSize = std::min<int>(_pointSize, POINT_SIZE_MAX);
         }
 
         // Add chained fonts to library.
-        for (const auto& filename : filenames)
+        for (const auto& filename : metadata.Filenames)
         {
             FT_Face ftFont = nullptr;
             if (FT_New_Face(fontLib, (path / filename).string().c_str(), 0, &ftFont))
@@ -47,15 +46,15 @@ namespace Silent::Utils
             _hbFonts.push_back(hb_ft_font_create(ftFont, nullptr));
 
             // Set point size.
-            if (FT_Set_Pixel_Sizes(ftFont, 0, pointSize))
+            if (FT_Set_Pixel_Sizes(ftFont, 0, _pointSize))
             {
                 throw std::runtime_error("Failed to set font point size.");
             }
         }
-        Debug::Assert(_ftFonts.size() == _fontCount && _hbFonts.size() == _fontCount, Fmt("Invalid initialization for font `{}`.", name));
+        Debug::Assert(_ftFonts.size() == _fontCount && _hbFonts.size() == _fontCount, Fmt("Invalid initialization for font `{}`.", _name));
 
         // Set scale factor.
-        _scaleFactor = (float)pointSize / (float)_ftFonts.front()->size->metrics.x_ppem;
+        _scaleFactor = (float)_pointSize / (float)_ftFonts.front()->size->metrics.x_ppem;
 
         // Add first atlas.
         AddAtlas();
@@ -66,7 +65,7 @@ namespace Silent::Utils
         {
             if (Find(_glyphs, codePoint) != nullptr)
             {
-                Debug::Log(Fmt("Attempted to precache existing glyph U+{:X} for font `{}`. Check precache string for duplicates.", (int)codePoint, name),
+                Debug::Log(Fmt("Attempted to precache existing glyph U+{:X} for font `{}`. Check precache string for duplicates.", (int)codePoint, _name),
                            Debug::LogLevel::Warning);
                 continue;
             }
@@ -252,7 +251,7 @@ namespace Silent::Utils
         auto        size    = Vector2i(FP_FROM(metrics.width, Q6_SHIFT), FP_FROM(metrics.height, Q6_SHIFT)) + Vector2i(GLYPH_PADDING * 2);
 
         // Add glyph rectangle.
-        auto* rect = sma_item_add(_rectAtlases[_activeAtlasIdx], size.x, size.y);
+        const auto* rect = sma_item_add(_rectAtlases[_activeAtlasIdx], size.x, size.y);
         if (rect == nullptr)
         {
             Debug::Log(Fmt("Active atlas {} for font `{}` is full. Creating new atlas.", _activeAtlasIdx, _name), Debug::LogLevel::Info);
@@ -321,11 +320,10 @@ namespace Silent::Utils
         return font;
     }
 
-    void FontManager::LoadFont(const std::string& name, const std::vector<std::string>& filenames, const std::filesystem::path& path,
-                               int pointSize, bool useNativeScale, const std::string& glyphPrecache)
+    void FontManager::LoadFont(const FontMetadata& metadata, const std::filesystem::path& path, const std::string& glyphPrecache)
     {
         // Check if font is already loaded.
-        if (Find(_fonts, name) != nullptr)
+        if (Find(_fonts, metadata.Name) != nullptr)
         {
             return;
         }
@@ -333,13 +331,13 @@ namespace Silent::Utils
         // Handle load.
         try
         {
-            _fonts[name] = Font(_library, name, filenames, path, pointSize, useNativeScale, glyphPrecache);
+            _fonts[metadata.Name] = Font(_library, metadata, path, glyphPrecache);
 
-            Debug::Log(Fmt("Loaded font `{}` at point size {}.", name, pointSize));
+            Debug::Log(Fmt("Loaded font `{}` at point size {}.", metadata.Name, metadata.PointSize));
         }
         catch (const std::runtime_error& ex)
         {
-            Debug::Log(Fmt("Failed to load font `{}`: {}", name, ex.what()), Debug::LogLevel::Error);
+            Debug::Log(Fmt("Failed to load font `{}`: {}", metadata.Name, ex.what()), Debug::LogLevel::Error);
         }
     }
 }

@@ -1,6 +1,10 @@
 #include "Framework.h"
 #include "Assets/Fonts.h"
 
+#include "Utils/Font.h"
+
+using namespace Silent::Utils;
+
 namespace Silent::Assets
 {
     /** @brief String color IDs for strings displayed in screen space.

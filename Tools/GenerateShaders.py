@@ -135,7 +135,7 @@ def get_shadercross_executable():
 
 def get_output_formats():
     """
-    Get the platform-specific shader formats to build according to the passed platform argument.
+    Get the platform-specific shader formats to build according to the passed `build_os` argument.
     """
     if len(sys.argv) > 1:
         build_os = sys.argv[1].lower()
@@ -146,9 +146,9 @@ def get_output_formats():
         elif build_os == "linux":
             formats = [".spv"]
         else:
-            raise Exception(f"Passed invalid platform argument `{build_os}`.")
+            raise Exception(f"Passed invalid `build_os` argument `{build_os}`.")
     else:
-        raise Exception("No platform argument passed.")
+        raise Exception("No `build_os` argument passed.")
 
     return formats
 

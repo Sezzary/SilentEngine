@@ -12,6 +12,12 @@ project(SilentEngine)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 23)
 
+if(MSVC)
+    # Force static linking with the C runtime library for both Debug and Release.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+endif()
+
 # Specify C and C++ compilers. @todo Not working for some reason.
 #set(CMAKE_C_COMPILER gcc)
 #set(CMAKE_CXX_COMPILER g++)
@@ -68,7 +74,16 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
 endif()
 
 # Link libraries statically.
+if(MSVC)
+    set(USE_STATIC_MSVC_RUNTIME_LIBRARY ON)
+endif()
 set(BUILD_SHARED_LIBS OFF)
+
+if(MSVC)
+    # Force static linking with the C runtime library for both Debug and Release.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+endif()
 
 # Add project header paths.
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -83,6 +98,7 @@ add_subdirectory(Libraries/freetype)
 add_subdirectory(Libraries/glad/cmake)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/harfbuzz)
+add_subdirectory(Libraries/JoltPhysics/build)
 add_subdirectory(Libraries/json)
 add_subdirectory(Libraries/SDL)
 add_subdirectory(Libraries/sol2)
@@ -100,6 +116,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} SYSTEM PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/imgui/backends
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/ImGuizmo
+    ${CMAKE_CURRENT_LIST_DIR}/Libraries/JoltPhysics
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/json/include
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/LuaJIT/src
     ${CMAKE_CURRENT_LIST_DIR}/Libraries/SDL/include
@@ -122,6 +139,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     freetype
     glm
     harfbuzz
+    Jolt
     luajit
     sol2
     SDL3::SDL3-static

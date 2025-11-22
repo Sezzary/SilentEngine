@@ -30,6 +30,10 @@
     path = Libraries/ImGuizmo
     url = https://github.com/CedricGuillemet/ImGuizmo.git
 
+[submodule "Libraries/JoltPhysics"]
+    path = Libraries/JoltPhysics
+    url = https://github.com/jrouwe/JoltPhysics.git
+
 [submodule "Libraries/json"]
     path = Libraries/json
     url = https://github.com/nlohmann/json.git

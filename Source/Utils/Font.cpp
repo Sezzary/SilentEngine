@@ -19,9 +19,9 @@ namespace Silent::Utils
     {
         constexpr int POINT_SIZE_MAX = ATLAS_SIZE / 8;
 
-        _name           = metadata.Name;
-        _useNativeScale = metadata.UseNativeScale;
-        _fontCount      = metadata.Filenames.size();
+        _name               = metadata.Name;
+        _enableAntialiasing = metadata.EnableAntialiasing;
+        _fontCount          = metadata.Filenames.size();
 
         // Clamp point size.
         _pointSize = metadata.PointSize;
@@ -241,7 +241,8 @@ namespace Silent::Utils
                 }
             }
 
-            FT_Load_Glyph(_ftFonts[i], charIdx, FT_LOAD_DEFAULT | (_useNativeScale ? FT_LOAD_NO_SCALE : 0));
+            // @todo Use `FT_LOAD_MONOCHROME` and read 1-bit pixels.
+            FT_Load_Glyph(_ftFonts[i], charIdx, _enableAntialiasing ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
             ftFont = _ftFonts[i];
             break;
         }
@@ -273,7 +274,7 @@ namespace Silent::Utils
         const auto& glyph = _glyphs[codePoint];
 
         // Rasterize.
-        FT_Render_Glyph(ftFont->glyph, FT_RENDER_MODE_NORMAL);
+        FT_Render_Glyph(ftFont->glyph, _enableAntialiasing ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO);
         const auto& bitmap     = ftFont->glyph->bitmap;
         byte*       pixelsTo   = &_textureAtlases.back()[(glyph.Position.y * ATLAS_SIZE) + glyph.Position.x];
         byte*       pixelsFrom = (byte*)bitmap.buffer;
@@ -283,7 +284,20 @@ namespace Silent::Utils
         {
             for (int x = 0; x < bitmap.width; x++)
             {
-                pixelsTo[(ATLAS_SIZE * y) + x] = pixelsFrom[(bitmap.width * y) + x];
+                if (_enableAntialiasing)
+                {
+                    pixelsTo[(ATLAS_SIZE * y) + x] = pixelsFrom[(bitmap.width * y) + x];
+                }
+                else
+                {
+                    // @todo I don't know how to solve this.
+                    int byteIdx                    = x / 8;
+                    int bitIdx                     = x % 8;
+                    pixelsTo[(ATLAS_SIZE * y) + x] = ((pixelsFrom[(y * ((bitmap.width + 7) / 8)) + byteIdx] >> (7 - bitIdx)) & 1) ? 255 : 0;
+                    //pixelsTo[(ATLAS_SIZE * y) + x] = ((pixelsFrom[(y * (bitmap.width + (8 - (bitmap.width % 8))) / 8) + byteIdx] >> (7 - bitIdx)) & 1) ? 255 : 0;
+                    //pixelsTo[(ATLAS_SIZE * y) + x] = ((pixelsFrom[(y * (bitmap.width + (8 - (bitmap.width % 8))) / 8) + byteIdx] >> (7 - bitIdx)) & 1) ? 255 : 0;
+                    //pixelsTo[(ATLAS_SIZE * y) + x] = (pixelsFrom[y * (bitmap.width / 8) + byteIdx] >> (7 - bitIdx)) & 1 ? 255 : 0;
+                }
             }
         }
     }

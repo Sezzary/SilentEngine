@@ -5,10 +5,10 @@ namespace Silent::Utils
     /** @brief Font chain metadata. */
     struct FontMetadata
     {
-        std::string              Name           = {};
-        std::vector<std::string> Filenames      = {};
-        int                      PointSize      = 0;
-        bool                     UseNativeScale = false;
+        std::string              Name               = {};
+        std::vector<std::string> Filenames          = {};
+        int                      PointSize          = 0;
+        bool                     EnableAntialiasing = false;
     };
 
     /** @brief Rasterized glyph metadata. */
@@ -51,10 +51,10 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string _name           = {};
-        int         _pointSize      = 0;
-        bool        _useNativeScale = false;
-        float       _scaleFactor    = 0.0f;
+        std::string _name               = {};
+        int         _pointSize          = 0;
+        bool        _enableAntialiasing = false;
+        float       _scaleFactor        = 0.0f;
 
         std::unordered_map<char32, GlyphMetadata> _glyphs         = {}; /** Key = code point, value = rasterized glyph metadata. */
         std::vector<smol_atlas_t*>                _rectAtlases    = {};

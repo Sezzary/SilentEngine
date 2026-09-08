@@ -19,6 +19,7 @@ using namespace Silent::Utils;
 namespace Silent::Game
 {
     static s32   g_MapMsg_CurrentIdx       = 0;
+    static int   g_MapMsg_CurrentPageIdx   = 0;
     static q3_12 g_MapMsg_SelectFlashTimer = 0;
     static auto  g_MapMsg_Cached           = ParsedMsg{};
 
@@ -28,22 +29,24 @@ namespace Silent::Game
     /** @brief Draws a string in screen space using 12x16 glyphs and returns a map message code.
      *
      * @param mapMsg Map message to draw.
-     * @param strLength Number of consecutive glyphs to draw from the map message.
-     * @return Map message return code (`e_MsgReturnCode`).
+     * @param displayLength Number of consecutive glyphs to draw from the map message.
+     * @param pageIdx Message page index.
+     * @return Message return code (`e_MsgReturnCode`).
      */
-    static e_MsgReturnCode Gfx_MapMsg_StringDraw(const std::string& mapMsg, int displayLength, bool isHalfHeight = false)
+    static e_MsgReturnCode Gfx_MapMsg_StringDraw(const std::string& mapMsg, int displayLength, int pageIdx,
+                                                 bool isHalfHeight = false)
     {
-        constexpr float SCALE = RETRO_PIXEL_SCALE.y * 16.0f;
-
-        DrawParsedMsg(g_MapMsg_Cached, ConvertRetroScreenPixelsToPercent(g_StringPosition), SCALE,
-                      (int)TextStyleFlags::Gradient | (int)TextStyleFlags::Shadow, displayLength);
+        int styleFlags = (int)TextStyleFlags::Gradient |
+                         (int)TextStyleFlags::Shadow   |
+                         g_SysWork.enableHalfHeightGlyphs ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None;
+        DrawParsedMsg(g_MapMsg_Cached, ConvertRetroScreenPixelsToPercent(g_StringPosition), SERIF_FONT_SCALE,
+                      styleFlags, displayLength, pageIdx);
     }
 
     s32 Gfx_MapMsg_Draw(s32 mapMsgIdx)
     {
-        constexpr float SCALE           = RETRO_PIXEL_SCALE.y * 16.0f;
-        constexpr int   FINISH_CUTSCENE = 0xFF;
-        constexpr int   FINISH_MAP_MSG  = 0xFF;
+        constexpr int FINISH_CUTSCENE = 0xFF;
+        constexpr int FINISH_MAP_MSG  = 0xFF;
 
         const auto& input   = g_App.GetInput();
         const auto& options = g_App.GetOptions();
@@ -74,7 +77,7 @@ namespace Silent::Game
         auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
         if (activeMapMsgIdx != mapMsgIdx || fontName != g_MapMsg_Cached.FontName)
         {
-            g_MapMsg_Cached = GetParsedMsg(g_MapOverlayHdr.mapMessages[mapMsgIdx], fontName, SCALE);
+            g_MapMsg_Cached = GetParsedMsg(g_MapOverlayHdr.mapMessages[mapMsgIdx], fontName, SERIF_FONT_SCALE);
 
             if (activeMapMsgIdx != mapMsgIdx)
             {
@@ -269,7 +272,8 @@ namespace Silent::Game
     {
         constexpr int STRING_LINE_OFFSET = 16;
 
-        int mapMsgCode = Gfx_MapMsg_StringDraw(g_MapOverlayHdr.mapMessages[mapMsgIdx], *displayLength);
+        int mapMsgCode = Gfx_MapMsg_StringDraw(g_MapOverlayHdr.mapMessages[mapMsgIdx], *displayLength,
+                                               g_MapMsg_CurrentPageIdx);
 
         g_MapMsg_SelectFlashTimer += g_DeltaTimeRaw;
         if (g_MapMsg_SelectFlashTimer >= Q12(0.5f))
@@ -284,11 +288,19 @@ namespace Silent::Game
                 g_MapMsg_SelectFlashTimer = Q12(0.0f);
                 break;
 
+            case MsgReturnCode_EndPage:
+                g_MapMsg_CurrentPageIdx++;
+                break;
+
+            case MsgReturnCode_End:
+                g_MapMsg_CurrentPageIdx = 0;
+                break;
+
             case MsgReturnCode_Select2:
             case MsgReturnCode_Select3:
             case MsgReturnCode_Select4:
-                g_MapMsg_Select.maxIdx  = 1;
-                g_MapMsg_SelectCancelIdx = (mapMsgCode == 3) ? 2 : 1;
+                g_MapMsg_Select.maxIdx   = 1;
+                g_MapMsg_SelectCancelIdx = (mapMsgCode == MsgReturnCode_Select3) ? 2 : 1;
 
                 if (mapMsgCode == MsgReturnCode_Select4)
                 {
@@ -309,7 +321,7 @@ namespace Silent::Game
                         Gfx_StringDraw(g_MapOverlayHdr.mapMessages[i], MAP_MESSAGE_DISPLAY_ALL_LENGTH);
                     }
 
-                    mapMsgCode = 2;
+                    mapMsgCode = MsgReturnCode_Select2;
                 }
                 else
                 {
@@ -356,9 +368,15 @@ namespace Silent::Game
                 mapMsgCode = NO_VALUE;
                 break;
 
-            //case MsgReturnCode_DisplayAll:
-            //    *displayLength = MAP_MESSAGE_DISPLAY_ALL_LENGTH;
-            //    break;
+            // @todo This case is inactive.
+            case MsgReturnCode_DisplayAll:
+                *displayLength = MAP_MESSAGE_DISPLAY_ALL_LENGTH;
+                break;
+        }
+
+        if (g_SysWork.mapMsgDisplayAll)
+        {
+            *displayLength = MAP_MESSAGE_DISPLAY_ALL_LENGTH;
         }
 
         return mapMsgCode;

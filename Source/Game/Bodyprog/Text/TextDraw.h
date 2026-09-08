@@ -1,40 +1,38 @@
 #pragma once
 
+#include "Renderer/Common/Constants.h"
 #include "Renderer/Common/Enums.h"
 
 using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
-    constexpr char MAP_MSG_CODE_COLOR         = 'C'; /** Set color. */
-    constexpr char MAP_MSG_CODE_DISPLAY_ALL   = 'D'; /** Display message instantly with no rollout. */
-    constexpr char MAP_MSG_CODE_END           = 'E'; /** End message. */
-    constexpr char MAP_MSG_CODE_HALF_HEIGHT   = 'H'; /** Half-height glyphs. */
-    constexpr char MAP_MSG_CODE_JUMP          = 'J'; /** Jump timer. */
-    constexpr char MAP_MSG_CODE_LINE_POSITION = 'L'; /** Set next line position override. */
-    constexpr char MAP_MSG_CODE_ALIGN_CENTER  = 'M'; /** Align center. */
-    constexpr char MAP_MSG_CODE_NEWLINE       = 'N'; /** Newline. */
-    constexpr char MAP_MSG_CODE_SELECT        = 'S'; /** Display dialog prompt with selectable entries. */
-    constexpr char MAP_MSG_CODE_TAB           = 'T'; /** Inset line. */
-    constexpr char MAP_MSG_CODE_END_PAGE      = 'P'; /** End page. */ // @todo New.
-    constexpr char MAP_MSG_CODE_ALIGN_RIGHT   = 'R'; /** Align right. */
+    constexpr char MSG_CODE_COLOR         = 'C'; /** Set color. */
+    constexpr char MSG_CODE_DISPLAY_ALL   = 'D'; /** Display message instantly with no rollout. */
+    constexpr char MSG_CODE_END           = 'E'; /** End message. */
+    constexpr char MSG_CODE_HALF_HEIGHT   = 'H'; /** Half-height glyphs. */
+    constexpr char MSG_CODE_JUMP          = 'J'; /** Jump timer. */
+    constexpr char MSG_CODE_LINE_POSITION = 'L'; /** Set next line position override. */
+    constexpr char MSG_CODE_ALIGN_CENTER  = 'M'; /** Align center. */
+    constexpr char MSG_CODE_NEWLINE       = 'N'; /** Newline. */
+    constexpr char MSG_CODE_SELECT        = 'S'; /** Display dialog prompt with selectable entries. */
+    constexpr char MSG_CODE_TAB           = 'T'; /** Inset line. */
+    constexpr char MSG_CODE_END_PAGE      = 'P'; /** End page. */ // @todo New.
+    constexpr char MSG_CODE_ALIGN_RIGHT   = 'R'; /** Align right. */
 
-    /** @brief Processed message node types. */
-    enum class NodeType
-    {
-        Text,
-        Command
-    };
+    constexpr float SERIF_FONT_SCALE = RETRO_PIXEL_SCALE.y * 16.0f;
 
-    /** @brief Message return codes. */
+    /** @brief Message return codes. @todo Convert to flags. */
     enum e_MsgReturnCode
     {
         MsgReturnCode_None    = 0,
-        MsgReturnCode_EndPage = -2, // @todo Implement this.
         MsgReturnCode_End     = 1,
         MsgReturnCode_Select2 = 2,
         MsgReturnCode_Select3 = 3,
-        MsgReturnCode_Select4 = 4
+        MsgReturnCode_Select4 = 4,
+
+        MsgReturnCode_EndPage    = 19,
+        MsgReturnCode_DisplayAll = 20
     };
 
     /** @brief String color IDs for strings displayed in screen space.
@@ -55,19 +53,36 @@ namespace Silent::Game
         StringColorId_Count
     };
 
+    /** @brief Processed message node types. */
+    enum class NodeType
+    {
+        Text,
+        Command
+    };
+
     /** @brief Processed message node. */
     struct MsgNode
     {
         NodeType    Type  = NodeType::Text;
         std::string Value = {};
+
+        char  GetCode() const;
+        int   GetIntArg() const;
+        float GetTimeArg() const;
     };
 
-    /** @brief Parsed message data. */
-    struct ParsedMsg
+    /** @brief Message page. */
+    struct MsgPage
     {
-        std::string          FontName   = {};
         std::vector<MsgNode> Nodes      = {};
         std::vector<float>   LineWidths = {};
+    };
+
+    /** @brief Parsed message. */
+    struct ParsedMsg
+    {
+        std::vector<MsgPage> Pages      = {};
+        std::string          FontName   = {};
         float                LineHeight = 0.0f;
     };
 
@@ -102,10 +117,11 @@ namespace Silent::Game
      * @param pos Start position in screen percent.
      * @param scale Scale relative to the screen height.
      * @param glyphCount Consecutive glyphs to draw from the message. Used for rollout.
-     * @return Map message return code.
+     * @param pageIdx Index of the page to draw in the message.
+     * @return Message return code.
      */
     e_MsgReturnCode DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
-                                  int styleFlags, int displayLength = INT_MAX);
+                                  int styleFlags, int displayLength = INT_MAX, int pageIdx = 0);
 
     /** @brief Sets the global position of the next string to be drawn by `Gfx_StringDraw`.
      *

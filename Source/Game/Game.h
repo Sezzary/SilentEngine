@@ -443,10 +443,12 @@ namespace Silent::Game
         u8               field_234B_0 : 4; /** `bool` | Related to particles. Used to trigger SFX? */
         u8               field_234B_4 : 4; // Related to particles.
         q19_12           mapMsgTimer;
-        u8               silentYesSelection  : 4; /** `bool` */
-        u32              invItemSelectedIdx  : 8;
-        u32              invItemLoadFlags    : 8; /** `e_InvItemLoadFlags` */
-        s8               targetNpcIdx;            /** Index of the NPC in `npcs` being targeted by the player. */
+        bool             mapMsgDisplayAll;
+        bool             enableHalfHeightGlyphs;
+        u8               silentYesSelection : 4; /** `bool` */
+        u32              invItemSelectedIdx : 8;
+        u32              invItemLoadFlags   : 8; /** `e_InvItemLoadFlags` */
+        s8               targetNpcIdx;           /** Index of the NPC in `npcs` being targeted by the player. */
         s8               npcIdxs[CHARA_GROUP_COUNT];
         u8               enablePlayerMatchAnim; /** `bool` | Activates the animation performed by Harry when lighting a match at the beginning of the game. */
         s8               unused_2359;           /** @unused */

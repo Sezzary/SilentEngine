@@ -48,7 +48,7 @@ namespace Silent::Game
     
     char MsgNode::GetCode() const
     {
-        Debug::Assert(Value.size() == 2, "Attempted to get invalid code from message node.");
+        //Debug::Assert(Value.size() == 2, "Attempted to get invalid code from message node.");
 
         // Retrieve code argument, e.g. `C` in `C1`.
         return Value[0];
@@ -59,7 +59,7 @@ namespace Silent::Game
         Debug::Assert(Value.size() == 2, "Attempted to get invalid integer argument from message node.");
 
         // Retrieve `int` argument, e.g. `1` in `C1`.
-        return Value[1];
+        return Value[1]- '0';
     }
 
     float MsgNode::GetTimeArg() const
@@ -84,19 +84,8 @@ namespace Silent::Game
         return std::stof(timeStr);
     }
 
-    ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight)
+    static std::vector<MsgNode> GetMsgNodes(const std::string& msg)
     {
-        auto& fonts = g_App.GetFonts();
-
-        // Get font.
-        auto* font = fonts.GetFont(fontName);
-        if (font == nullptr)
-        {
-            Debug::Log(Fmt("Attempted to parse tagged message with invalid font `{}`.", fontName),
-                       Debug::LogLevel::Error);
-            return {};
-        }
-
         auto buffer = std::string();
         bool inCmd  = false;
 
@@ -138,7 +127,36 @@ namespace Silent::Game
                 buffer += c;
             }
         }
-        
+
+        // Flush anything left in buffer.
+        if (!buffer.empty())
+        {
+            nodes.push_back(MsgNode
+            {
+                .Type  = inCmd ? NodeType::Command : NodeType::Text,
+                .Value = buffer
+            });
+        }
+
+        return nodes;
+    }
+
+    ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight)
+    {
+        auto& fonts = g_App.GetFonts();
+
+        // Get font.
+        auto* font = fonts.GetFont(fontName);
+        if (font == nullptr)
+        {
+            Debug::Log(Fmt("Attempted to parse tagged message with invalid font `{}`.", fontName),
+                       Debug::LogLevel::Error);
+            return {};
+        }
+
+        // Get nodes.
+        auto nodes = GetMsgNodes(msg);
+
         // Parse message pages.
         auto pages      = std::vector<MsgPage>{};
         auto curPage    = MsgPage{};
@@ -177,6 +195,12 @@ namespace Silent::Game
             }
         }
 
+        // Flush last page.
+        if (!curPage.Nodes.empty())
+        {
+            pages.push_back(std::move(curPage));
+        }
+
         return ParsedMsg
         {
             .Pages      = std::move(pages),
@@ -185,8 +209,8 @@ namespace Silent::Game
         };
     }
 
-    void DrawString(const std::string& str, const std::string& fontName, const Vector2& pos, float scale,
-                    const Color& color, int styleFlags, AlignMode alignMode)
+    float DrawString(const std::string& str, const std::string& fontName, const Vector2& pos, float scale,
+                     const Color& color, int styleFlags, AlignMode alignMode)
     {
         auto& renderer = g_App.GetRenderer();
 
@@ -196,23 +220,25 @@ namespace Silent::Game
                                          color, styleFlags,
                                          TEXT_DEPTH, alignMode);
         renderer.SubmitText2d(text);
+
+        return text.Shape.Width;
     }
 
     e_MsgReturnCode DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
                                   int styleFlags, int displayLength, int pageIdx)
     {
         constexpr float TAB_SIZE = (40.0f / RETRO_SCREEN_SPACE_RES.x) * SCREEN_SPACE_RES.x;
-        constexpr float MARGIN   = (8.0f /  RETRO_SCREEN_SPACE_RES.y) * SCREEN_SPACE_RES.y;
+        constexpr float MARGIN   = (8.0f  / RETRO_SCREEN_SPACE_RES.y) * SCREEN_SPACE_RES.y;
 
         struct State
         {
-            Vector2         Position   = Vector2::Zero;
-            Vector2         Offset     = Vector2::Zero;
-            float           LineOffset = 0.0f; // @todo
-            float           LineHeight = 0.0f;
-            e_StringColorId ColorId    = StringColorId_White;
-            int             StyleFlags = (int)TextStyleFlags::None;
-            AlignMode       AlignMd    = AlignMode::BottomLeft;
+            Vector2         Position     = Vector2::Zero;
+            Vector2         LineOffset   = Vector2::Zero;
+            Vector2         StringOffset = Vector2::Zero;
+            float           LineHeight   = 0.0f;
+            e_StringColorId ColorId      = StringColorId_White;
+            int             StyleFlags   = (int)TextStyleFlags::None;
+            AlignMode       AlignMd      = AlignMode::BottomLeft;
         };
 
         auto state = State
@@ -237,11 +263,16 @@ namespace Silent::Game
             if (node.Type == NodeType::Text)
             {
                 // Draw text string.
-                int  glyphCount = GetCodePoints(node.Value).size();
-                auto str        = node.Value.substr(0, std::min(glyphCount, displayLength - 1));
-                DrawString(str, msg.FontName, state.Position, scale,
-                           STRING_COLORS[state.ColorId], state.StyleFlags,
-                           state.AlignMd);
+                int   glyphCount    = GetCodePoints(node.Value).size();
+                auto  str           = node.Value.substr(0, std::min(glyphCount, displayLength - 1));
+                auto  pos           = (state.Position + state.LineOffset) + state.StringOffset;
+                float strWidth      = DrawString(str, msg.FontName, pos, scale,
+                                                 STRING_COLORS[state.ColorId], state.StyleFlags,
+                                                 state.AlignMd);
+
+                // Accumulate offset. // @todo Needs more work.
+                auto aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
+                state.StringOffset.x += strWidth * aspectCorrection.x;
 
                 // Stop drawing if length exceeded.
                 displayLength -= glyphCount;
@@ -297,7 +328,8 @@ namespace Silent::Game
                     }
                     case MSG_CODE_LINE_POSITION:
                     {
-                        switch ((MsgLinePositionType)node.GetIntArg())
+                        int bleh = node.GetIntArg();
+                        switch ((MsgLinePositionType)bleh)
                         {
                             case MsgLinePositionType::Subtitle:
                             {
@@ -337,7 +369,8 @@ namespace Silent::Game
                     }
                     case MSG_CODE_NEWLINE:
                     {
-                        state.Offset.y += state.LineHeight * GetScreenAspectCorrection(GLYPH_SCALE_MODE).y;
+                        state.LineOffset.y += state.LineHeight * GetScreenAspectCorrection(GLYPH_SCALE_MODE).y;
+                        state.StringOffset  = 0.0f;
                         break;
                     }
                     case MSG_CODE_SELECT:
@@ -347,7 +380,7 @@ namespace Silent::Game
                     }
                     case MSG_CODE_TAB:
                     {
-                        state.Offset.x += TAB_SIZE * GetScreenAspectCorrection(GLYPH_SCALE_MODE).x;
+                        state.LineOffset.x += TAB_SIZE * GetScreenAspectCorrection(GLYPH_SCALE_MODE).x;
                         break;
                     }
                     case MSG_CODE_END_PAGE:

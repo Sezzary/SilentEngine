@@ -107,9 +107,10 @@ namespace Silent::Game
      * @param color Color.
      * @param styleFlags Style flags.
      * @param alignMode Alignment mode.
+     * @return String width.
      */
-    void DrawString(const std::string& str, const std::string& fontName, const Vector2& pos, float scale,
-                    const Color& color, int styleFlags, AlignMode alignMode);
+    float DrawString(const std::string& str, const std::string& fontName, const Vector2& pos, float scale,
+                     const Color& color, int styleFlags, AlignMode alignMode);
 
     /** @brief Draws a parsed message in screen space.
      *

@@ -11,6 +11,8 @@
 #include "Utils/Parallel.h"
 
 #include "Game/Screens/Options/MenuGraphics.h"
+#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 
 using namespace Silent::Game;
 
@@ -45,9 +47,19 @@ namespace Silent::Debug
     {
         if constexpr (IS_DEBUG_BUILD)
         {
-            auto& input    = g_App.GetInput();
-            auto& renderer = g_App.GetRenderer();
-            auto& fonts    = g_App.GetFonts();
+            const auto& options    = g_App.GetOptions();
+            const auto& translator = g_App.GetTranslator();
+            auto&       input      = g_App.GetInput();
+            auto&       renderer   = g_App.GetRenderer();
+            auto&       fonts      = g_App.GetFonts();
+
+            auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
+            auto msg = GetParsedMsg("{L0}""{J0(3.0)}{T}The phones are all dead,{N}{T}and the {C3}radio{C7}, too.",
+                                    fontName, 100.0f / 16.0f);
+
+            int styleFlags = (int)TextStyleFlags::Gradient |
+                         (int)TextStyleFlags::Shadow;
+            DrawParsedMsg(msg, Vector2::Zero, SERIF_FONT_SCALE, styleFlags);
 
             return;
 

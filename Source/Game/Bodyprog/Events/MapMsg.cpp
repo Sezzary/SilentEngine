@@ -61,12 +61,12 @@ namespace Silent::Game
         s32 curStateMachineIdx1;
         s32 var_a1;
 
-        // Check for user input.
-        bool hasInput = false;
+        // Check for interrupting user input.
+        bool interrupt = false;
         if (input.GetAction(In::Enter).IsClicked() ||
             input.GetAction(In::Cancel).IsClicked())
         {
-            hasInput = true;
+            interrupt = true;
         }
 
         g_SysWork.playerWork.player.properties.player.gasWeaponPowerTimer = Q12(0.0f);
@@ -112,7 +112,7 @@ namespace Silent::Game
                 displayLength += displayLengthInc;
                 displayLength  = CLAMP(displayLength, 0, MAP_MESSAGE_DISPLAY_ALL_LENGTH);
 
-                if (g_MapMsg_AudioLoadBlock != 0 && g_SysWork.mapMsgTimer > Q12(0.0f))
+                if (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer > Q12(0.0f))
                 {
                     g_SysWork.mapMsgTimer -= g_DeltaTimeRaw;
                     g_SysWork.mapMsgTimer  = CLAMP(g_SysWork.mapMsgTimer, Q12(0.0f), INT_MAX);
@@ -121,7 +121,7 @@ namespace Silent::Game
                 curStateMachineIdx0 = stateMachineIdx0;
                 if (curStateMachineIdx0 == NO_VALUE)
                 {
-                    if (g_MapMsg_AudioLoadBlock == 0)
+                    if (g_MapMsg_AudioType == MapMsgAudioType_None)
                     {
                         //Game_TimerUpdate();
                     }
@@ -131,8 +131,8 @@ namespace Silent::Game
                     {
                         if (g_MapMsg_Select.maxIdx == curStateMachineIdx1)
                         {
-                            if (!((g_MapMsg_AudioLoadBlock & (1 << 0)) || !hasInput) ||
-                                (g_MapMsg_AudioLoadBlock != 0 && g_SysWork.mapMsgTimer == Q12(0.0f)))
+                            if (!((g_MapMsg_AudioType & (1 << 0)) || !interrupt) ||
+                                (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer == Q12(0.0f)))
                             {
                                 stateMachineIdx1 = FINISH_MAP_MSG;
 
@@ -180,8 +180,8 @@ namespace Silent::Game
                             break;
                         }
                     }
-                    else if ((!(g_MapMsg_AudioLoadBlock & (1 << 0)) && hasInput && g_MapMsg_Select.maxIdx != 0) ||
-                            (g_MapMsg_AudioLoadBlock != 0 && g_SysWork.mapMsgTimer == Q12(0.0f)))
+                    else if ((!(g_MapMsg_AudioType & (1 << 0)) && interrupt && g_MapMsg_Select.maxIdx != 0) ||
+                            (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer == Q12(0.0f)))
                     {
                         if (g_MapMsg_Select.maxIdx != NO_VALUE)
                         {
@@ -195,10 +195,10 @@ namespace Silent::Game
 
                         //var_a1 = Gfx_MapMsg_WidthsCompute(g_MapMsg_CurrentIdx);
 
-                        displayLength = 0;
+                        displayLength    = 0;
                         stateMachineIdx0 = 0;
 
-                        if (g_MapMsg_AudioLoadBlock == MapMsgAudioLoadBlock_J2)
+                        if (g_MapMsg_AudioType == MapMsgAudioType_VoiceStream)
                         {
                             loadAudio = false;
                             return MapMsgState_Idle;
@@ -215,7 +215,7 @@ namespace Silent::Game
                 }
                 else
                 {
-                    if (hasInput)
+                    if (interrupt)
                     {
                         displayLength = MAP_MESSAGE_DISPLAY_ALL_LENGTH;
                     }
@@ -234,7 +234,7 @@ namespace Silent::Game
                 g_SysWork.mapMsgTimer            = NO_VALUE;
                 g_MapMsg_Select.maxIdx           = NO_VALUE;
                 g_MapMsg_Select.selectedEntryIdx = 0;
-                g_MapMsg_AudioLoadBlock          = 0;
+                g_MapMsg_AudioType          = MapMsgAudioType_None;
                 g_MapMsg_CurrentIdx              = mapMsgIdx;
                 stateMachineIdx0                 = 0;
                 stateMachineIdx1                 = 0;
@@ -257,7 +257,7 @@ namespace Silent::Game
         }
 
         g_SysWork.isMgsStringSet = false;
-        displayLength         = 0;
+        displayLength            = 0;
 
         if (g_SysWork.bgmStatusFlags & BgmStatusFlag_VoiceDialog)
         {

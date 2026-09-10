@@ -86,7 +86,7 @@ namespace Silent::Game
     };
 
     extern Vector2i g_StringPosition;
-    extern u8       g_MapMsg_AudioLoadBlock;
+    extern int      g_MapMsg_AudioType;
 
     /** @brief Parses a tagged message.
      *

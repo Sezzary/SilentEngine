@@ -85,6 +85,7 @@ namespace Silent::Renderer
     {
         const auto& renderer = g_App.GetRenderer();
 
+        // @todo Only thread-safe when used in renderer, but useful to call elsewhere too.
         float aspect = renderer.GetViewportAspectRatio();
 
         auto aspectCorrection = Vector2::One;

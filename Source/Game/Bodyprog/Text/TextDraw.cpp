@@ -41,7 +41,7 @@ namespace Silent::Game
     };
 
     Vector2i g_StringPosition;
-    u8       g_MapMsg_AudioLoadBlock;
+    int      g_MapMsg_AudioType;
 
     static auto g_StringColorId = StringColorId_White;
     
@@ -283,7 +283,8 @@ namespace Silent::Game
                 // Draw text string.
                 int   glyphCount = GetUtf8CodePoints(node.Value).size();
                 auto  str        = GetUtf8Substring(node.Value, 0, std::min(glyphCount, displayLength));
-                auto  pos        = (state.Position + state.LineOffset) + state.StringOffset;
+                auto  pos        = GetGridAlignedScreenPercent((state.Position + state.LineOffset) + state.StringOffset,
+                                                               RETRO_SCREEN_SPACE_RES.y);
                 float strWidth   = DrawString(str, msg.FontName, pos, scale,
                                               STRING_COLORS[state.ColorId], state.StyleFlags,
                                               state.AlignMd);
@@ -330,10 +331,10 @@ namespace Silent::Game
                     case MSG_CODE_JUMP:
                     {
                         // @todo What do these values mean? This was only set when computing line widths in legacy code.
-                        //if (node.GetIntArg() == 2)
-                        //{
-                        //    g_MapMsg_AudioLoadBlock = 3;
-                        //}
+                        if (node.GetIntArg() == 2)
+                        {
+                            g_MapMsg_AudioType = 3; // @todo Should use `MapMsgAudioType_VoiceStream`.
+                        }
 
                         // Skip if another message is already in progress.
                         if (g_SysWork.mapMsgTimer != NO_VALUE)
@@ -371,7 +372,6 @@ namespace Silent::Game
                             }
                             case MsgLinePositionType::Information:
                             {
-                                // @todo Needs work.
                                 auto aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
                                 state.Position        = ConvertRetroScreenPixelsToPercent(Vector2i(160, 76)) *
                                                         aspectCorrection;
@@ -382,7 +382,7 @@ namespace Silent::Game
                     }
                     case MSG_CODE_ALIGN_CENTER:
                     {
-                        state.AlignMd = AlignMode::BottomLeft;
+                        state.AlignMd = AlignMode::CenterBottom;
                         break;
                     }
                     case MSG_CODE_NEWLINE:
@@ -451,7 +451,8 @@ namespace Silent::Game
 
         // Draw string.
         auto fontName   = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
-        auto pos        = ConvertRetroScreenPixelsToPercent(g_StringPosition);//GetGridAlignedScreenPercent(ConvertRetroScreenPixelsToPercent(g_StringPosition), (int)RETRO_SCREEN_SPACE_RES.y);
+        auto pos        = GetGridAlignedScreenPercent(ConvertRetroScreenPixelsToPercent(g_StringPosition),
+                                                      RETRO_SCREEN_SPACE_RES.y);
         int  styleFlags = (int)TextStyleFlags::Gradient |
                           (int)TextStyleFlags::Shadow   |
                           (isHalfHeight ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None);
@@ -460,6 +461,6 @@ namespace Silent::Game
 
     void Gfx_StringDrawInt(s32 widthMin, s32 displayLength)
     {
-        Gfx_StringDraw(std::to_string(displayLength), 5);
+        Gfx_StringDraw(std::to_string(displayLength));
     }
 }

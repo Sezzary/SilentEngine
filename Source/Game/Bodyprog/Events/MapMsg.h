@@ -43,12 +43,13 @@ namespace Silent::Game
         MapMsgState_SelectEntry2 = 3         /** Third entry selected in selection dialog. */
     };
 
-    enum e_MapMsgAudioLoadBlock
+    /** @brief Map message audio types. */
+    enum eMapMsgAudioType
     {
-        MapMsgAudioLoadBlock_None = 0, // TODO: Some code checks only for bit 0, so it should mean something.
-        MapMsgAudioLoadBlock_Unk1 = 1,
-        MapMsgAudioLoadBlock_J2   = 3  // `J2` map messages set this, causing voice audio to not load.
-                                       // `J2` cutscenes use single audio file for all lines (e.g. video tape cutscene).
+        MapMsgAudioType_None        = 0,
+        MapMsgAudioType_VoiceClip   = 1, /** Set by `J0`. For cutscenes with individual audio files per message page. */
+        MapMsgAudioType_2           = 2, /** Set by `J1`. TODO: Similar to `MapMsgAudioType_VoiceClip`? */
+        MapMsgAudioType_VoiceStream = 3  /** Set by `J2`. For cutscenes with a single audio file (e.g. video tape cutscene). */
     };
 
     struct s_MapMsgSelect

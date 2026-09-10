@@ -347,7 +347,7 @@ namespace Silent::Renderer
             }
 
             // Update horizontal offset.
-            pixelOffset.x += shapedGlyph.Spacing + text.Tracking;
+            pixelOffset.x += shapedGlyph.Spacing;
         }
 
         return true;

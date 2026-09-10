@@ -35,7 +35,7 @@ namespace Silent::Renderer
     }
 
     Text2d Text2d::CreateText2d(const std::string& msg, const std::string& fontName,
-                                const Vector2& pos, float rot, float scale, float tracking,
+                                const Vector2& pos, float rot, float scale,
                                 const Color& color, int styleFlags,
                                 int depth, AlignMode alignMode)
     {
@@ -59,7 +59,6 @@ namespace Silent::Renderer
             .Position   = pos,
             .Rotation   = rot,
             .Scale      = scale,
-            .Tracking   = tracking,
             .Col        = color,
             .StyleFlags = styleFlags,
             .Depth      = depth,

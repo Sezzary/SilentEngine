@@ -54,10 +54,12 @@ namespace Silent::Debug
             auto&       fonts      = g_App.GetFonts();
 
             auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
-            auto msg = GetParsedMsg("{L0}""{J0(3.0)}{T}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{T}{C7}The phones are all dead,{N}and the radio, too.",
-                                    fontName, 100.0f / 12.0f);
-            //auto msg = GetParsedMsg("{L0}""{J0(3.0)}{T}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{T}{C5}and {C6}the {C7}radio, too.",
-            //                        fontName, 100.0f / 16.0f);
+            //auto msg = GetParsedMsg("{L0}""打撃系の武器は、攻撃ボタンの押し方に{N}よって攻撃方法が変化します。",
+            //                        fontName, 100.0f / 14.0f);
+            auto msg = GetParsedMsg("{L0}""{J0(3.0)}{T}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{T}{C7}and the radio, too.",
+                                    fontName, 100.0f / 14.0f);
+            //auto msg = GetParsedMsg("{L0}" + translator("m0S01Msg_26"),
+            //                        fontName, 100.0f / 14.0f);
 
             int styleFlags = (int)TextStyleFlags::Gradient |
                          (int)TextStyleFlags::Shadow;
@@ -113,12 +115,12 @@ namespace Silent::Debug
 
             // Text.
             auto text = Text2d::CreateText2d("Śliwka", "RetroSerif",
-                                             cursorPos, 0.0f, RETRO_PIXEL_SCALE.y * 16.0f, 1.0f,
+                                             cursorPos, 0.0f, RETRO_PIXEL_SCALE.y * 16.0f,
                                              Color::White, (int)TextStyleFlags::Gradient | (int)TextStyleFlags::Shadow | (int)TextStyleFlags::HalfHeight,
                                              1, AlignMode::BottomLeft);
             renderer.SubmitText2d(text);
             //auto text2 = Text2d::CreateText2d("Have you seen a little girl?", "SmoothSerif",
-            //                                  Vector2(10.0f, 20.0f), 0/*DEG_TO_RAD(45.0f)*/, 1.0f / 14.0f, 1.0f, 
+            //                                  Vector2(10.0f, 20.0f), 0/*DEG_TO_RAD(45.0f)*/, 1.0f / 14.0f,
             //                                  Color::White, (int)TextStyleFlags::Gradient | (int)TextStyleFlags::Shadow,
             //                                  1, AlignMode::CenterLeft);
             //renderer.SubmitText2d(text2);

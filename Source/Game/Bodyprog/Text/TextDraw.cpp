@@ -47,26 +47,26 @@ namespace Silent::Game
     
     char MsgNode::GetCode() const
     {
-        //Debug::Assert(Value.size() == 2, "Attempted to get invalid code from message node.");
-
         // Retrieve code argument, e.g. `C` in `C1`.
         return Value[0];
     }
 
     int MsgNode::GetIntArg() const
     {
-        Debug::Assert(Value.size() == 2, "Attempted to get invalid integer argument from message node.");
+        // Parse integer value, e.g. `1` in `C1`.
+        auto intStr = std::string();
+        for (char c : Value.substr(1, Value.size() - 1))
+        {
+            intStr += c;
+        }
 
-        // Retrieve `int` argument, e.g. `1` in `C1`.
-        return Value[1]- '0';
+        // Convert string to `int`.
+        return std::stoi(intStr);
     }
 
     float MsgNode::GetTimeArg() const
     {
-        Debug::Assert(Value.size() > 2 && Value[1] == '(' && Value.back() == ')',
-                      "Attempted to get invalid time argument from message node.");
-
-        // Parse time value, e.g. `(1.5)`.
+        // Parse time value, e.g. `(1.5)` in `J0(1.5)`.
         auto timeStr = std::string();
         for (char c : Value.substr(2, Value.size() - 1))
         {
@@ -83,6 +83,11 @@ namespace Silent::Game
         return std::stof(timeStr);
     }
 
+    /** @brief Parses a tagged message into nodes.
+     *
+     * @param msg Tagged message.
+     * @return Message nodes.
+     */
     static std::vector<MsgNode> GetMsgNodes(const std::string& msg)
     {
         auto buffer = std::string();
@@ -140,7 +145,13 @@ namespace Silent::Game
         return nodes;
     }
 
-    ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight)
+    /** @brief Parses message nodes into pages.
+     *
+     * @param nodes Message nodes.
+     * @param fontName Font name.
+     * @return Message pages.
+     */
+    static std::vector<MsgPage> GetMsgPages(const std::vector<MsgNode>& nodes, const std::string& fontName)
     {
         auto& fonts = g_App.GetFonts();
 
@@ -153,10 +164,7 @@ namespace Silent::Game
             return {};
         }
 
-        // Get nodes.
-        auto nodes = GetMsgNodes(msg);
-
-        // Parse message pages.
+        // Collect nodes into pages.
         auto pages      = std::vector<MsgPage>{};
         auto curPage    = MsgPage{};
         bool addNewLine = true;
@@ -201,6 +209,15 @@ namespace Silent::Game
             pages.push_back(std::move(curPage));
         }
 
+        return pages;
+    }
+
+    ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight)
+    {
+        // Get nodes and pages.
+        auto nodes = GetMsgNodes(msg);
+        auto pages = GetMsgPages(nodes, fontName);
+
         return ParsedMsg
         {
             .Pages      = std::move(pages),
@@ -216,7 +233,7 @@ namespace Silent::Game
 
         // Submit text.
         auto text = Text2d::CreateText2d(str, fontName,
-                                         pos, 0.0f, scale, 1.0f,
+                                         pos, 0.0f, scale,
                                          color, styleFlags,
                                          TEXT_DEPTH, alignMode);
         renderer.SubmitText2d(text);
@@ -271,7 +288,7 @@ namespace Silent::Game
                                               STRING_COLORS[state.ColorId], state.StyleFlags,
                                               state.AlignMd);
 
-                // Accumulate offset. @todo Something wrong here, spaces are too short.
+                // Accumulate string offset.
                 auto aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
                 state.StringOffset.x += (strWidth * scale) * aspectCorrection.x;
 

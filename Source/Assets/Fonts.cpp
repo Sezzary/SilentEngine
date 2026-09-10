@@ -38,9 +38,9 @@ namespace Silent::Assets
             .PointSize = 16,
             .Trackings =
             {
-                0.0f,
-                0.0f,
-                0.0f
+                1.0f / 16.0f,
+                1.0f / 16.0f,
+                1.0f / 16.0f
             },
             .EnableAntialiasing = false
         },
@@ -72,9 +72,9 @@ namespace Silent::Assets
             .PointSize = 10,
             .Trackings =
             {
-                0.0f,
-                0.0f,
-                0.0f
+                1.0f / 10.0f,
+                1.0f / 10.0f,
+                1.0f / 10.0f
             },
             .EnableAntialiasing = false
         },

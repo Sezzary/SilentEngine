@@ -54,7 +54,7 @@ namespace Silent::Debug
             auto&       fonts      = g_App.GetFonts();
 
             auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
-            auto msg = GetParsedMsg("{L0}""{J0(3.0)}{T}The phones are all dead,{N}{T}and the {C3}radio{C7}, too.",
+            auto msg = GetParsedMsg("{L0}""{J0(3.0)}{T}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{T}{C5}and {C6}the {C7}radio{C8}, too.",
                                     fontName, 100.0f / 16.0f);
 
             int styleFlags = (int)TextStyleFlags::Gradient |

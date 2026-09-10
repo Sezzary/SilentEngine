@@ -33,8 +33,7 @@ namespace Silent::Game
      * @param pageIdx Message page index.
      * @return Message return code (`e_MsgReturnCode`).
      */
-    static e_MsgReturnCode Gfx_MapMsg_StringDraw(const std::string& mapMsg, int displayLength, int pageIdx,
-                                                 bool isHalfHeight = false)
+    static e_MsgReturnCode Gfx_MapMsg_StringDraw(const std::string& mapMsg, int displayLength, int pageIdx)
     {
         int styleFlags = (int)TextStyleFlags::Gradient |
                          (int)TextStyleFlags::Shadow   |
@@ -58,8 +57,8 @@ namespace Silent::Game
         static int  displayLengthInc;
         static bool loadAudio;
 
-        s32 temp_s1;
-        s32 temp;
+        s32 curStateMachineIdx0;
+        s32 curStateMachineIdx1;
         s32 var_a1;
 
         // Check for user input.
@@ -119,18 +118,18 @@ namespace Silent::Game
                     g_SysWork.mapMsgTimer  = CLAMP(g_SysWork.mapMsgTimer, Q12(0.0f), INT_MAX);
                 }
 
-                temp_s1 = stateMachineIdx0;
-                if (temp_s1 == NO_VALUE)
+                curStateMachineIdx0 = stateMachineIdx0;
+                if (curStateMachineIdx0 == NO_VALUE)
                 {
                     if (g_MapMsg_AudioLoadBlock == 0)
                     {
                         //Game_TimerUpdate();
                     }
 
-                    temp = stateMachineIdx1;
-                    if (temp == temp_s1)
+                    curStateMachineIdx1 = stateMachineIdx1;
+                    if (curStateMachineIdx1 == curStateMachineIdx0)
                     {
-                        if (g_MapMsg_Select.maxIdx == temp)
+                        if (g_MapMsg_Select.maxIdx == curStateMachineIdx1)
                         {
                             if (!((g_MapMsg_AudioLoadBlock & (1 << 0)) || !hasInput) ||
                                 (g_MapMsg_AudioLoadBlock != 0 && g_SysWork.mapMsgTimer == Q12(0.0f)))
@@ -146,7 +145,7 @@ namespace Silent::Game
                         }
                         else if (input.GetAction(In::Cancel).IsClicked())
                         {
-                            g_MapMsg_Select.maxIdx           = temp;
+                            g_MapMsg_Select.maxIdx           = curStateMachineIdx1;
                             g_MapMsg_Select.selectedEntryIdx = g_MapMsg_SelectCancelIdx;
 
                             //Sd_SfxPlay(Sfx_MenuCancel, 0, Q8_CLAMPED(0.25f));
@@ -161,7 +160,7 @@ namespace Silent::Game
                         }
                         else if (input.GetAction(In::Enter).IsClicked())
                         {
-                            g_MapMsg_Select.maxIdx = temp;
+                            g_MapMsg_Select.maxIdx = curStateMachineIdx1;
 
                             if (g_MapMsg_Select.selectedEntryIdx == (s8)g_MapMsg_SelectCancelIdx)
                             {

@@ -37,7 +37,7 @@ namespace Silent::Game
         Color::From8Bit(128, 0,   0),
         Color::From8Bit(24,  128, 40),
         Color::From8Bit(100, 100, 100),
-        Color::From8Bit(255, 255, 255), // @todo Originally `(128, 128, 128)`. Need to adjust the others too?
+        Color::From8Bit(128, 128, 128),
         Color::From8Bit(4,   4,   4)
     };
 
@@ -263,16 +263,16 @@ namespace Silent::Game
             if (node.Type == NodeType::Text)
             {
                 // Draw text string.
-                int   glyphCount    = GetCodePoints(node.Value).size();
-                auto  str           = node.Value.substr(0, std::min(glyphCount, displayLength - 1));
-                auto  pos           = (state.Position + state.LineOffset) + state.StringOffset;
-                float strWidth      = DrawString(str, msg.FontName, pos, scale,
-                                                 STRING_COLORS[state.ColorId], state.StyleFlags,
-                                                 state.AlignMd);
+                int   glyphCount = GetCodePoints(node.Value).size();
+                auto  str        = node.Value.substr(0, std::min(glyphCount, displayLength - 1));
+                auto  pos        = (state.Position + state.LineOffset) + state.StringOffset;
+                float strWidth   = DrawString(str, msg.FontName, pos, scale,
+                                              STRING_COLORS[state.ColorId], state.StyleFlags,
+                                              state.AlignMd);
 
-                // Accumulate offset. // @todo Needs more work.
+                // Accumulate offset.
                 auto aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
-                state.StringOffset.x += strWidth * aspectCorrection.x;
+                state.StringOffset.x += strWidth *0.4f * aspectCorrection.x;
 
                 // Stop drawing if length exceeded.
                 displayLength -= glyphCount;

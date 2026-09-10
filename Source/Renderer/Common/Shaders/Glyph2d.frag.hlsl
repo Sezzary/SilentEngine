@@ -21,7 +21,7 @@ cbuffer PerObject : register(b0, space3)
 static const float HIGHLIGHT = 248.0f / (float)Constants::UINT8_MAX;
 static const float LOWLIGHT  = 167.0f / (float)Constants::UINT8_MAX;
 
-float3 ModulateColor(float3 base, float3 tint)
+float3 BlendMultiplicativeOverbright(float3 base, float3 tint)
 {
     return saturate((base * tint) * 2.0f);
 }
@@ -37,8 +37,8 @@ float4 main(Input input) : SV_Target
     float gradientFactor = lerp(LOWLIGHT, HIGHLIGHT, saturate(1.0f - dist));
 
     // Combine color and apply gradient if active.
-    float3 glyphTex   = HasGradient ? float3(gradientFactor, gradientFactor, gradientFactor) : texColor.rgb;
-    float3 finalColor = ModulateColor(glyphTex, input.Color.rgb);
+    float3 glyphTex   = HasGradient ? gradientFactor : texColor.rgb;
+    float3 finalColor = BlendMultiplicativeOverbright(glyphTex, input.Color.rgb);
     // Old:
     //float3 finalColor = input.Color.rgb * texColor.rgb;
     //finalColor       *= lerp(1.0f, gradientFactor, float(HasGradient));

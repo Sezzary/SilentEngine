@@ -35,10 +35,9 @@ namespace Silent::Game
         Color::From8Bit(24,  128, 40),
         Color::From8Bit(8,   184, 96),
         Color::From8Bit(128, 0,   0),
-        Color::From8Bit(24,  128, 40),
+        Color::From8Bit(8,   8,   8),
         Color::From8Bit(100, 100, 100),
         Color::From8Bit(128, 128, 128),
-        Color::From8Bit(4,   4,   4)
     };
 
     Vector2i g_StringPosition;
@@ -173,8 +172,9 @@ namespace Silent::Game
                     addNewLine = false;
                 }
 
-                auto shape                 = font->GetShapedText(node.Value);
-                curPage.LineWidths.back() += shape.Width;
+                auto  shape                = font->GetShapedText(node.Value);
+                float fontScaleFactor      = SCREEN_SPACE_RES.x / (float)font->GetPointSize();
+                curPage.LineWidths.back() += shape.Width * fontScaleFactor;
             }
             else if (node.Type == NodeType::Command)
             {
@@ -221,7 +221,8 @@ namespace Silent::Game
                                          TEXT_DEPTH, alignMode);
         renderer.SubmitText2d(text);
 
-        return text.Shape.Width;
+        float fontScaleFactor = SCREEN_SPACE_RES.x / (float)text.Font->GetPointSize();
+        return text.Shape.Width * fontScaleFactor;
     }
 
     e_MsgReturnCode DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
@@ -270,9 +271,9 @@ namespace Silent::Game
                                               STRING_COLORS[state.ColorId], state.StyleFlags,
                                               state.AlignMd);
 
-                // Accumulate offset.
+                // Accumulate offset. @todo Something wrong here, spaces are too short.
                 auto aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
-                state.StringOffset.x += strWidth *0.4f * aspectCorrection.x;
+                state.StringOffset.x += (strWidth * scale) * aspectCorrection.x;
 
                 // Stop drawing if length exceeded.
                 displayLength -= glyphCount;
@@ -328,12 +329,11 @@ namespace Silent::Game
                     }
                     case MSG_CODE_LINE_POSITION:
                     {
-                        int bleh = node.GetIntArg();
-                        switch ((MsgLinePositionType)bleh)
+                        switch ((MsgLinePositionType)node.GetIntArg())
                         {
                             case MsgLinePositionType::Subtitle:
                             {
-                                // Compute widest line width. // @todo To percent?
+                                // Compute widest line width.
                                 float widestLineWidth = 0.0f;
                                 for (float lineWidth : page.LineWidths)
                                 {
@@ -343,17 +343,17 @@ namespace Silent::Game
                                     }
                                 }
 
-                                // @todo Aspect correction would have to be applied to NDC values first.
                                 // Set start line position.
-                                auto aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
-                                state.Position        = Vector2(SCREEN_SPACE_RES.x - (widestLineWidth * 0.5f),
-                                                                (SCREEN_SPACE_RES.y - (((page.LineWidths.size() - 1) * state.LineHeight))) - MARGIN) *
-                                                        aspectCorrection;
+                                float startOffset      = (widestLineWidth * scale) * 0.5f;
+                                float blockHeight      = ((page.LineWidths.size() - 1) * state.LineHeight);
+                                auto  aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
+                                state.Position         = Vector2((SCREEN_SPACE_RES.x * 0.5f) - (startOffset * aspectCorrection.x),
+                                                                 ((SCREEN_SPACE_RES.y - blockHeight) - MARGIN) * aspectCorrection.y);
                                 break;
                             }
                             case MsgLinePositionType::Information:
                             {
-                                // @todo Aspect correction would have to be applied to NDC values first.
+                                // @todo Needs work.
                                 auto aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
                                 state.Position        = ConvertRetroScreenPixelsToPercent(Vector2i(160, 76)) *
                                                         aspectCorrection;
@@ -380,7 +380,8 @@ namespace Silent::Game
                     }
                     case MSG_CODE_TAB:
                     {
-                        state.LineOffset.x += TAB_SIZE * GetScreenAspectCorrection(GLYPH_SCALE_MODE).x;
+                        // @todo How are tabs applied?
+                        //state.LineOffset.x += TAB_SIZE * GetScreenAspectCorrection(GLYPH_SCALE_MODE).x;
                         break;
                     }
                     case MSG_CODE_END_PAGE:

@@ -40,15 +40,14 @@ namespace Silent::Game
      */
     enum e_StringColorId
     {
-        StringColorId_Gold        = 0,
-        StringColorId_DarkGrey    = 1,
-        StringColorId_Green       = 2,
-        StringColorId_Nuclear     = 3,
-        StringColorId_Red         = 4,
-        StringColorId_GreenUnused = 5, // @unused Same as `StringColorId_Green`.
-        StringColorId_LightGrey   = 6,
-        StringColorId_White       = 7,
-        StringColorId_Black       = 8,
+        StringColorId_Gold      = 0,
+        StringColorId_DarkGrey  = 1,
+        StringColorId_Green     = 2,
+        StringColorId_Nuclear   = 3,
+        StringColorId_Red       = 4,
+        StringColorId_Black     = 5,
+        StringColorId_LightGrey = 6,
+        StringColorId_White     = 7,
 
         StringColorId_Count
     };

@@ -2,6 +2,7 @@
 #include "Renderer/Renderer.h"
 
 #include "Application.h"
+#include "Assets/Fonts.h"
 #include "Renderer/Backends/SdlGpu/SdlGpu.h"
 #include "Renderer/Common/Resources/Primitive/Primitive3d.h"
 #include "Renderer/Common/Resources/Primitive/Vertex2d.h"
@@ -112,10 +113,24 @@ namespace Silent::Renderer
 
     void RendererBase::PrepareFrameData()
     {
-        auto& video    = g_App.GetVideo();
         auto& executor = g_App.GetExecutor();
+        auto& fonts    = g_App.GetFonts();
+        auto& video    = g_App.GetVideo();
 
+        // Update swapchain resolution.
         _scene.Frame.Back.SwapchainResolution = g_App.GetWindowResolution();
+
+        // Swap double-buffered font atlas textures.
+        for (const auto& metadata : FONTS_METADATA)
+        {
+            auto* font = fonts.GetFont(metadata.Name);
+            if (font == nullptr)
+            {
+                continue;
+            }
+
+            font->Swap();
+        }
 
         // @todo Using parallelism here causes flickering, but even without it some 2D objects don't draw. There's
         // a severe bug somewhere.

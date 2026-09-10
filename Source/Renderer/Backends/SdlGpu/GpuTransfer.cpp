@@ -84,16 +84,18 @@ namespace Silent::Renderer::SdlGpu
         // Run through registered fonts.
         for (const auto& metadata : FONTS_METADATA)
         {
+            // Get font.
             auto* font = fonts.GetFont(metadata.Name);
             if (font == nullptr)
             {
                 continue;
             }
 
+            // Run through texture atlases.
             const auto& atlases = font->GetTextureAtlases();
-            for (int atlasIdx : font->GetDirtyGpuAtlasIdxs())
+            for (int atlasIdx : atlases.UpdatedIdxs)
             {
-                const auto& atlas = atlases[atlasIdx];
+                const auto& atlas = atlases.Textures[atlasIdx];
 
                 // Upload/update font atlas texture.
                 auto  name = metadata.Name + std::to_string(atlasIdx);
@@ -107,8 +109,6 @@ namespace Silent::Renderer::SdlGpu
                     GetTextures().Upload(copyPass, ToSpan(atlas), FONT_ATLAS_RES, name);
                 }
             }
-
-            font->ClearDirtyGpuAtlasIdxs();
         }
 
         // Upload/update video texture.

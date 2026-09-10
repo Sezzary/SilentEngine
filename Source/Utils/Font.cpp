@@ -2,6 +2,7 @@
 #include "Utils/Font.h"
 
 #include "Application.h"
+#include "Utils/DoubleBuffer.h"
 #include "Utils/Utils.h"
 
 namespace Silent::Utils
@@ -96,9 +97,9 @@ namespace Silent::Utils
         return _pointSize;
     }
 
-    const std::vector<std::vector<byte>>& Font::GetTextureAtlases() const
+    const FontTextureAtlases& Font::GetTextureAtlases() const
     {
-        return _textureAtlases;
+        return _textureAtlases.Back;
     }
 
     ShapedText Font::GetShapedText(const std::string& msg)
@@ -171,14 +172,15 @@ namespace Silent::Utils
         return shapedText;
     }
 
-    const std::set<int>& Font::GetDirtyGpuAtlasIdxs() const
+    void Font::Swap()
     {
-        return _dirtyGpuAtlasIdxs;
-    }
+        _textureAtlases.Back.UpdatedIdxs.clear();
 
-    void Font::ClearDirtyGpuAtlasIdxs()
-    {
-        _dirtyGpuAtlasIdxs.clear();
+        if (!_textureAtlases.Front.UpdatedIdxs.empty())
+        {
+            _textureAtlases.Swap();
+            _textureAtlases.Front.Textures = _textureAtlases.Back.Textures;
+        }
     }
 
     void Font::CacheGlyph(char32 codePoint)
@@ -274,8 +276,8 @@ namespace Silent::Utils
         FT_Render_Glyph(ftFont->glyph, FT_RENDER_MODE_NORMAL); // @todo Try SDF generator.
         const auto& bitmap     = ftFont->glyph->bitmap;
         byte*       pixelsFrom = (byte*)bitmap.buffer;
-        byte*       pixelsTo   = &_textureAtlases.back()[(((attribs.AtlasPosition.y) * ATLAS_SIZE) * RGBA_COMP_COUNT) +
-                                                         ((attribs.AtlasPosition.x) * RGBA_COMP_COUNT)];
+        byte*       pixelsTo   = &_textureAtlases.Front.Textures.back()[(((attribs.AtlasPosition.y) * ATLAS_SIZE) * RGBA_COMP_COUNT) +
+                                                                        ((attribs.AtlasPosition.x) * RGBA_COMP_COUNT)];
 
         // Copy pixels to atlas.
         for (int y = 0; y < bitmap.rows; y++)
@@ -294,14 +296,14 @@ namespace Silent::Utils
             }
         }
 
-        // Mark relevant GPU atlas texture as dirty.
-        _dirtyGpuAtlasIdxs.insert(_activeAtlasIdx);
+        // Mark relevant atlas texture as updated.
+        _textureAtlases.Front.UpdatedIdxs.insert(_activeAtlasIdx);
     }
 
     void Font::AddAtlas()
     {
         _rectAtlases.push_back(sma_atlas_create(ATLAS_SIZE, ATLAS_SIZE));
-        _textureAtlases.emplace_back(std::vector<byte>((ATLAS_SIZE * ATLAS_SIZE) * RGBA_COMP_COUNT));
+        _textureAtlases.Front.Textures.emplace_back(std::vector<byte>((ATLAS_SIZE * ATLAS_SIZE) * RGBA_COMP_COUNT));
         _activeAtlasIdx = _rectAtlases.size() - 1;
     }
 

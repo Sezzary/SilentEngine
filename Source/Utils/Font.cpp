@@ -50,7 +50,7 @@ namespace Silent::Utils
         AddAtlas();
 
         // Precache glyphs.
-        auto codePoints = GetCodePoints(precacheGlyphs);
+        auto codePoints = GetUtf8CodePoints(precacheGlyphs);
         for (char32 codePoint : codePoints)
         {
             if (Find(_glyphs, codePoint) != nullptr)
@@ -104,7 +104,7 @@ namespace Silent::Utils
     ShapedText Font::GetShapedText(const std::string& msg)
     {
         // Cache new glyphs.
-        auto codePoints = GetCodePoints(msg);
+        auto codePoints = GetUtf8CodePoints(msg);
         for (char32 codePoint : codePoints)
         {
             if (Find(_glyphs, codePoint) != nullptr)
@@ -351,16 +351,5 @@ namespace Silent::Utils
         {
             Debug::Log(Fmt("Failed to load font chain `{}`: {}", metadata.Name, ex.what()), Debug::LogLevel::Error);
         }
-    }
-
-    std::vector<char32> GetCodePoints(const std::string& msg)
-    {
-        // Reserve minimum size.
-        auto codePoints = std::vector<char32>{};
-        codePoints.reserve((msg.size() / 4) + 1);
-
-        // Collect code points.
-        utf8::utf8to32(msg.begin(), msg.end(), std::back_inserter(codePoints));
-        return codePoints;
     }
 }

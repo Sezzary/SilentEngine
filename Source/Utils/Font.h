@@ -213,11 +213,4 @@ namespace Silent::Utils
         void LoadFont(const FontMetadata& metadata, const stdfs::path& path,
                       const std::string& precacheGlyphs = {});
     };
-
-    /** @brief Gets the code points in a message.
-     *
-     * @param msg Message to parse.
-     * @return Code points.
-     */
-    std::vector<char32> GetCodePoints(const std::string& msg);
 }

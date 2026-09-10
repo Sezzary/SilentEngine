@@ -40,4 +40,40 @@ namespace Silent::Utils
 
         return (char*)dest;
     }
+
+    std::vector<char32> GetUtf8CodePoints(const std::string& msg)
+    {
+        if (msg.empty())
+        {
+            return {};
+        }
+
+        // Reserve minimum size.
+        auto codePoints = std::vector<char32>{};
+        codePoints.reserve((msg.size() / 4) + 1);
+
+        // Collect code points.
+        utf8::utf8to32(msg.begin(), msg.end(), std::back_inserter(codePoints));
+        return codePoints;
+    }
+
+    std::string GetUtf8Substring(const std::string& msg, int pos, int count)
+    {
+        if (msg.empty() || pos < 0 || count <= 0)
+        {
+            return {};
+        }
+
+        auto itStart = msg.begin();
+        auto itEnd   = msg.end();
+
+        // Advance to substring start.
+        utf8::advance(itStart, pos, itEnd);
+
+        // Advance to substring end.
+        auto itSubEnd = itStart;
+        utf8::advance(itSubEnd, count, itEnd);
+
+        return std::string(itStart, itSubEnd);
+    }
 }

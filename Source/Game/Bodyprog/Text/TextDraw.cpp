@@ -281,8 +281,8 @@ namespace Silent::Game
             if (node.Type == NodeType::Text)
             {
                 // Draw text string.
-                int   glyphCount = GetCodePoints(node.Value).size();
-                auto  str        = node.Value.substr(0, std::min(glyphCount, displayLength - 1));
+                int   glyphCount = GetUtf8CodePoints(node.Value).size();
+                auto  str        = GetUtf8Substring(node.Value, 0, std::min(glyphCount, displayLength));
                 auto  pos        = (state.Position + state.LineOffset) + state.StringOffset;
                 float strWidth   = DrawString(str, msg.FontName, pos, scale,
                                               STRING_COLORS[state.ColorId], state.StyleFlags,
@@ -307,6 +307,7 @@ namespace Silent::Game
                     case MSG_CODE_DISPLAY_ALL:
                     {
                         g_SysWork.mapMsgDisplayAll = true;
+                        break;
                     }
                     case MSG_CODE_COLOR:
                     {

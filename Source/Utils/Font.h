@@ -59,10 +59,10 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string _name               = {};
-        int         _pointSize          = 0;
-        float       _tracking           = 0.0f;
-        bool        _enableAntialiasing = false;
+        std::string        _name               = {};
+        int                _pointSize          = 0;
+        std::vector<float> _trackings          = {};
+        bool               _enableAntialiasing = false;
         
         std::vector<FT_Face>                     _ftFonts        = {};
         std::unordered_map<char32, GlyphAttribs> _glyphs         = {}; /** Key = code point, value = rasterized glyph attributes. */

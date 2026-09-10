@@ -14,7 +14,7 @@ namespace Silent::Utils
         // @todo Check if counts are equal for fonts and trackings.
 
         _name               = metadata.Name;
-        _tracking           = metadata.Trackings[0]; // @todo Unique tracking for each font.
+        _trackings          = metadata.Trackings;
         _enableAntialiasing = metadata.EnableAntialiasing;
 
         // Clamp point size.
@@ -154,7 +154,7 @@ namespace Silent::Utils
 
                     auto kerningDelta = FT_Vector{};
                     FT_Get_Kerning(ftFont, charIdx0, charIdx1, FT_KERNING_DEFAULT, &kerningDelta);
-                    spacing += Q6_TO_FLT(kerningDelta.x) + (_pointSize * _tracking);
+                    spacing += Q6_TO_FLT(kerningDelta.x) + (_pointSize * _trackings[j]);
                 }
 
                 // Add shaped glyph.
@@ -184,26 +184,27 @@ namespace Silent::Utils
     void Font::CacheGlyph(char32 codePoint)
     {
         // Load valid glyph from font chain.
-        FT_Face ftFont = nullptr;
-        for (int i = 0; i < _ftFonts.size(); i++)
+        FT_Face ftFont  = nullptr;
+        int     fontIdx = 0;
+        for (fontIdx = 0; fontIdx < _ftFonts.size(); fontIdx++)
         {
             // Check if glyph is valid.
-            uint charIdx = FT_Get_Char_Index(_ftFonts[i], codePoint);
+            uint charIdx = FT_Get_Char_Index(_ftFonts[fontIdx], codePoint);
             if (charIdx == 0)
             {
                 // If no valid glyphs exist, use first font's invalid glyph.
-                if (i < (_ftFonts.size() - 1))
+                if (fontIdx < (_ftFonts.size() - 1))
                 {
                     continue;
                 }
                 else
                 {
-                    i = 0;
+                    fontIdx = 0;
                 }
             }
 
-            FT_Load_Glyph(_ftFonts[i], charIdx, _enableAntialiasing ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
-            ftFont = _ftFonts[i];
+            FT_Load_Glyph(_ftFonts[fontIdx], charIdx, _enableAntialiasing ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
+            ftFont = _ftFonts[fontIdx];
             break;
         }
         Debug::Assert(ftFont != nullptr, Fmt("Failed to cache glyph U+{:X} for font chain `{}`.",
@@ -233,7 +234,7 @@ namespace Silent::Utils
             .AtlasPosition = Vector2i(sma_item_x(&rect), sma_item_y(&rect)) + Vector2i(GLYPH_PADDING),
             .AtlasSize     = size - Vector2i(GLYPH_PADDING * 2),
             .Bearing       = Vector2(Q6_TO_FLT(metrics.horiBearingX), Q6_TO_FLT(metrics.horiBearingY)),
-            .Spacing       = Q6_TO_FLT(metrics.horiAdvance) + (_pointSize * _tracking),
+            .Spacing       = Q6_TO_FLT(metrics.horiAdvance) + (_pointSize * _trackings[fontIdx]),
             .Ascender      = Q6_TO_FLT(ftFont->size->metrics.ascender),
             .Descender     = Q6_TO_FLT(ftFont->size->metrics.descender),
             .MinY          = Q6_TO_FLT(ftBox.yMin),

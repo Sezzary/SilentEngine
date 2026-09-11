@@ -44,6 +44,7 @@ namespace Silent::Game
 
     s32 Gfx_MapMsg_Draw(s32 mapMsgIdx)
     {
+        constexpr int GLYPH_ADVANCE   = 2;
         constexpr int FINISH_CUTSCENE = 0xFF;
         constexpr int FINISH_MAP_MSG  = 0xFF;
 
@@ -61,12 +62,12 @@ namespace Silent::Game
         s32 curStateMachineIdx1;
         s32 var_a1;
 
-        // Check for interrupting user input.
-        bool interrupt = false;
+        // Check for user input to skip.
+        bool skip = false;
         if (input.GetAction(In::Enter).IsClicked() ||
             input.GetAction(In::Cancel).IsClicked())
         {
-            interrupt = true;
+            skip = true;
         }
 
         g_SysWork.playerWork.player.properties.player.gasWeaponPowerTimer = Q12(0.0f);
@@ -126,12 +127,15 @@ namespace Silent::Game
                         //Game_TimerUpdate();
                     }
 
+                    bool isAudioUnskippable = g_MapMsg_AudioType == MapMsgAudioType_VoiceClipUnskippable ||
+                                              g_MapMsg_AudioType == MapMsgAudioType_VoiceStream;
+
                     curStateMachineIdx1 = stateMachineIdx1;
                     if (curStateMachineIdx1 == curStateMachineIdx0)
                     {
                         if (g_MapMsg_Select.maxIdx == curStateMachineIdx1)
                         {
-                            if (!((g_MapMsg_AudioType & (1 << 0)) || !interrupt) ||
+                            if (!(isAudioUnskippable || !skip) ||
                                 (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer == Q12(0.0f)))
                             {
                                 stateMachineIdx1 = FINISH_MAP_MSG;
@@ -143,6 +147,7 @@ namespace Silent::Game
                                 break;
                             }
                         }
+                        // Cancel selection.
                         else if (input.GetAction(In::Cancel).IsClicked())
                         {
                             g_MapMsg_Select.maxIdx           = curStateMachineIdx1;
@@ -158,6 +163,7 @@ namespace Silent::Game
                             stateMachineIdx1 = FINISH_MAP_MSG;
                             break;
                         }
+                        // Enter selection.
                         else if (input.GetAction(In::Enter).IsClicked())
                         {
                             g_MapMsg_Select.maxIdx = curStateMachineIdx1;
@@ -180,7 +186,7 @@ namespace Silent::Game
                             break;
                         }
                     }
-                    else if ((!(g_MapMsg_AudioType & (1 << 0)) && interrupt && g_MapMsg_Select.maxIdx != 0) ||
+                    else if ((!isAudioUnskippable && skip && g_MapMsg_Select.maxIdx != 0) ||
                             (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer == Q12(0.0f)))
                     {
                         if (g_MapMsg_Select.maxIdx != NO_VALUE)
@@ -215,7 +221,7 @@ namespace Silent::Game
                 }
                 else
                 {
-                    if (interrupt)
+                    if (skip)
                     {
                         displayLength = MAP_MESSAGE_DISPLAY_ALL_LENGTH;
                     }
@@ -234,13 +240,13 @@ namespace Silent::Game
                 g_SysWork.mapMsgTimer            = NO_VALUE;
                 g_MapMsg_Select.maxIdx           = NO_VALUE;
                 g_MapMsg_Select.selectedEntryIdx = 0;
-                g_MapMsg_AudioType          = MapMsgAudioType_None;
+                g_MapMsg_AudioType               = MapMsgAudioType_None;
                 g_MapMsg_CurrentIdx              = mapMsgIdx;
                 stateMachineIdx0                 = 0;
                 stateMachineIdx1                 = 0;
                 activeMapMsgIdx                  = mapMsgIdx;
                 displayLength                    = 0;
-                displayLengthInc                 = 2; // Advance 2 glyphs at a time.
+                displayLengthInc                 = GLYPH_ADVANCE;
 
                 Gfx_MapMsg_Reset();
                 //var_a1 = Gfx_MapMsg_WidthsCompute(g_MapMsg_CurrentIdx);

@@ -17,7 +17,7 @@ namespace Silent::Game
     constexpr char MSG_CODE_NEWLINE       = 'N'; /** Newline. */
     constexpr char MSG_CODE_SELECT        = 'S'; /** Display dialog prompt with selectable entries. */
     constexpr char MSG_CODE_TAB           = 'T'; /** Inset line. */
-    constexpr char MSG_CODE_END_PAGE      = 'P'; /** End page. */ // @todo New.
+    constexpr char MSG_CODE_END_PAGE      = 'P'; /** End page. */
     constexpr char MSG_CODE_ALIGN_RIGHT   = 'R'; /** Align right. */
 
     constexpr float SERIF_FONT_SCALE = RETRO_PIXEL_SCALE.y * 16.0f;

@@ -19,11 +19,11 @@ namespace Silent::Game
 {
     constexpr int TEXT_DEPTH = 6;
 
-    /** @brief Message line override position types for `MSG_CODE_LINE_POSITION` arguments. */
+    /** @brief Message line position override types for `MSG_CODE_LINE_POSITION` arguments. */
     enum class MsgLinePositionType
     {
         Subtitle    = 0,
-        Information = 4,
+        Information = 1,
 
         Count
     };
@@ -362,6 +362,7 @@ namespace Silent::Game
                                     }
                                 }
 
+                                // @todo How would alignments interact?
                                 // Set start line position.
                                 float startOffset      = (widestLineWidth * scale) * 0.5f;
                                 float blockHeight      = ((page.LineWidths.size() - 1) * state.LineHeight);

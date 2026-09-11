@@ -56,11 +56,11 @@ namespace Silent::Debug
             return;
 
             auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
-            //auto msg = GetParsedMsg("{L0}""打撃系の武器は、攻撃ボタンの押し方に{N}よって攻撃方法が変化します。",
+            //auto msg = GetParsedMsg("打撃系の武器は、攻撃ボタンの押し方に{N}よって攻撃方法が変化します。",
             //                        fontName, SERIF_FONT_LINE_HEIGHT);
-            auto msg = GetParsedMsg("{L0}""{J0(3.0)}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{C7}and the radio, too.",
+            auto msg = GetParsedMsg("{J0(3.0)}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{C7}and the radio, too.",
                                     fontName, SERIF_FONT_LINE_HEIGHT);
-            //auto msg = GetParsedMsg("{L0}" + translator("m0S00Msg_14"),
+            //auto msg = GetParsedMsg(translator("M0S00Msg_14"),
             //                        fontName, SERIF_FONT_LINE_HEIGHT);
 
             int styleFlags = (int)TextStyleFlags::Gradient |

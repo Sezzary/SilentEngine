@@ -77,16 +77,15 @@ namespace Silent::Game
     void Options_MainOptionsMenu_EntryStringsDraw()
     {
         constexpr int  LINE_BASE_X     = 64;
-        constexpr int  LINE_BASE_Y     = 56;
+        constexpr int  LINE_BASE_Y     = 64;
         constexpr int  LINE_OFFSET_X   = 16;
         constexpr int  LINE_OFFSET_Y   = 16;
-        constexpr auto HEADING_STR_POS = Vector2i(121, 20);
+        constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, 20);
         constexpr auto ENTRY_STR_KEYS  = std::array<const char*, MainOptionsMenuEntry_Count>
         {
             KEY_OPTIONS_MENU_EXIT,
             KEY_OPTIONS_MENU_BRIGHT_LEVEL,
             KEY_OPTIONS_MENU_CONT_CONFIG,
-            "Screen Position",//KEY_OPTIONS_MENU_SCREEN_POS,
             KEY_OPTIONS_MENU_VIBRATION,
             KEY_OPTIONS_MENU_AUTO_LOAD,
             KEY_OPTIONS_MENU_SOUND,
@@ -96,8 +95,9 @@ namespace Silent::Game
 
         const auto& translator = g_App.GetTranslator();
 
-        // Submit heading string.
         Gfx_StringColorSet(StringColorId_White);
+
+        // Submit heading string.
         Gfx_StringPositionSet(HEADING_STR_POS.x, HEADING_STR_POS.y);
         Gfx_StringDraw(translator(KEY_OPTIONS_MENU_HEADING));
 
@@ -172,7 +172,7 @@ namespace Silent::Game
         // @todo Dynamically retrieve string pixel width instead, allowing for automatic translation support.
         constexpr auto SELECTION_HIGHLIGHT_WIDTHS = std::array<int, MainOptionsMenuEntry_Count>
         {
-            59, 169, 174, 156, 104, 112, 75, 129, 112
+            59, 169, 174, 112, 75, 129, 112
         };
 
         static auto selectionHighlightFrom = Vector2i::Zero;

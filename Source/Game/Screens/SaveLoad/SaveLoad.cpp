@@ -1697,7 +1697,7 @@ namespace Silent::Game
 
         if (g_GameWork.gameState == GameState_SaveScreen)
         {
-            //func_800363D0();
+            //Bgm_MenuUpdate();
         }
     }
 

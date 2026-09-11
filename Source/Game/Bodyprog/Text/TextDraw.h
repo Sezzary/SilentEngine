@@ -98,7 +98,7 @@ namespace Silent::Game
      */
     ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight);
 
-    /** @brief Draws a string in screen space.
+    /** @brief Submits a string to draw in screen space.
      *
      * @param str String to draw.
      * @param fontName Name of the font to use.
@@ -112,7 +112,7 @@ namespace Silent::Game
     float DrawString(const std::string& str, const std::string& fontName, const Vector2& pos, float scale,
                      const Color& color, int styleFlags, AlignMode alignMode);
 
-    /** @brief Draws a parsed message in screen space.
+    /** @brief Submits a parsed message to draw in screen space.
      *
      * @param msg Parsed message to draw.
      * @param pos Start position in screen percent.
@@ -143,7 +143,7 @@ namespace Silent::Game
     /** @brief Resets global map message parameters to defaults. */
     void Gfx_MapMsg_Reset();
 
-    /** @brief Draws a simple tagged message in screen space using the serif font.
+    /** @brief Submits a simple tagged message to draw in screen space using the serif font.
      * The position and color must be set by * `Gfx_StringPositionSet` and `Gfx_StringColorSet` before calling this
      * function.
      *

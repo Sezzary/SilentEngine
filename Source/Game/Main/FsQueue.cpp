@@ -56,27 +56,8 @@ namespace Silent::Game
 
         while (assets.IsBusy())
         {
-            // @todo calls to this function should be deprecated. Blocking behaviours shouldn't occur the port.
+            // @todo Blocking behaviours shouldn't occur anymore.
         }
-
-        // @todo Are any of these important?
-        /*func_800892A4(0);
-        func_80089128();
-
-        while (true)
-        {
-            VSync(SyncMode_Wait);
-            if (Fs_QueueGetLength() <= 0)
-            {
-                break;
-            }
-
-            Fs_QueueUpdate();
-        }
-
-        func_800892A4(1);
-        DrawSync(SyncMode_Wait);
-        VSync(SyncMode_Wait);*/
     }
 
     const std::future<void>& Fs_QueueStartSeek(e_FsFile fileIdx)

@@ -64,7 +64,7 @@ namespace Silent::Debug
             //                        fontName, SERIF_FONT_LINE_HEIGHT);
 
             int styleFlags = (int)TextStyleFlags::Gradient |
-                         (int)TextStyleFlags::Shadow;
+                             (int)TextStyleFlags::Shadow;
             DrawParsedMsg(msg, Vector2::Zero, SERIF_FONT_SCALE, styleFlags);
 
             return;

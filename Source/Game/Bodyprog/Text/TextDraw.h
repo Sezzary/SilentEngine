@@ -20,7 +20,8 @@ namespace Silent::Game
     constexpr char MSG_CODE_END_PAGE      = 'P'; /** End page. */
     constexpr char MSG_CODE_ALIGN_RIGHT   = 'R'; /** Align right. */
 
-    constexpr float SERIF_FONT_SCALE = RETRO_PIXEL_SCALE.y * 16.0f;
+    constexpr float SERIF_FONT_SCALE       = RETRO_PIXEL_SCALE.y * 16.0f;
+    constexpr float SERIF_FONT_LINE_HEIGHT = SCREEN_SPACE_RES.y / 14.0f;
 
     /** @brief Message return codes. @todo Convert to flags. */
     enum e_MsgReturnCode
@@ -142,21 +143,22 @@ namespace Silent::Game
     /** @brief Resets global map message parameters to defaults. */
     void Gfx_MapMsg_Reset();
 
-    /** @brief Draws a string in screen space using 12x16 glyphs. The position and color must be set by
-     * `Gfx_StringPositionSet` and `Gfx_StringColorSet` before calling this function.
+    /** @brief Draws a simple tagged message in screen space using the serif font.
+     * The position and color must be set by * `Gfx_StringPositionSet` and `Gfx_StringColorSet` before calling this
+     * function.
      *
-     * @note References glyphs in `FONT16.TIM`. The texture is loaded into VRAM across multiple texture pages,
-     * hence why the texture is a single row with 4-pixel padding every 21st glyph instead of a stacked arrangement.
+     * @note The message must contain a single page.
      *
-     * @param str String to draw.
-     * @param strLength Number of consecutive glyphs to draw from the string.
+     * @param msg Tagged message to draw.
+     * @param displayLength Number of consecutive glyphs to draw from the string.
+     * @param isHalfHeight Use half-height glyphs.
      */
-    void Gfx_StringDraw(const std::string& str, int displayLength = INT_MAX, bool isHalfHeight = false, AlignMode alignMode = AlignMode::BottomLeft);
+    void Gfx_StringDraw(const std::string& str, int displayLength = INT_MAX, bool isHalfHeight = false);
 
-    /** @brief Draws an integer string in screen space using 12x16 glyphs.
+    /** @brief Draws an integer string in screen space using the serif font.
      *
      * @param widthMin Minimum width of the integer string.
-     * @param strLength Number of consecutive glyphs to draw from the integer string.
+     * @param displayLength Number of consecutive glyphs to draw from the integer string.
      */
     void Gfx_StringDrawInt(s32 widthMin, s32 displayLength = INT_MAX);
 }

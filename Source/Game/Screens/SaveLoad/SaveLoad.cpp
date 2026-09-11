@@ -275,7 +275,7 @@ namespace Silent::Game
         for (i = 0; i < MEMCARD_SLOT_COUNT_MAX; i++)
         {
             Gfx_StringPositionSet(SLOT_STR_POS_TABLE[i].vx, SLOT_STR_POS_TABLE[i].vy);
-            Gfx_StringDraw(SLOT_STRS[i], 50);
+            Gfx_StringDraw(SLOT_STRS[i]);
         }
 
         line.vertex0.x = -136;
@@ -305,7 +305,7 @@ namespace Silent::Game
 
             // Draw "FILE" string.
             Gfx_StringPositionSet((slotIdx * OFFSET_X) + FILE_STR_MARGIN_X, POS_Y);
-            Gfx_StringDraw(FILE_STR, 50);
+            Gfx_StringDraw(FILE_STR);
 
             // Draw file ID string.
             Gfx_StringPositionSet((slotIdx * OFFSET_X) + FILE_ID_STR_MARGIN_X, POS_Y);

@@ -4,14 +4,21 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
+#include "Application.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
+#include "Input/Input.h"
+
+using namespace Silent::Input;
 
 namespace Silent::Game
 {
     void Options_BrightnessMenu_Control()
     {
+        const auto& input = g_App.GetInput();
+
         // @todo
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])
@@ -31,7 +38,7 @@ namespace Silent::Game
 
             case BrightnessMenuState_2:
                 // Set config.
-                if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighLeft)
+                if (input.GetAction(In::Left).IsPulsed(0.4f, 0.2f, 0.5f))
                 {
                     if (g_GameWork.config.brightness != 0)
                     {
@@ -39,7 +46,7 @@ namespace Silent::Game
                         //Sd_SfxPlay(Sfx_Back, 0, Q8_CLAMPED(0.25f));
                     }
                 }
-                if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighRight)
+                if (input.GetAction(In::Right).IsPulsed(0.4f, 0.2f, 0.5f))
                 {
                     if (g_GameWork.config.brightness < 7)
                     {
@@ -49,10 +56,10 @@ namespace Silent::Game
                 }
 
                 // Fade screen and leave menu.
-                if (g_Controller0->buttonFlags.clicked & (g_GameWork.config.controllerConfig.enter |
-                                                    g_GameWork.config.controllerConfig.cancel))
+                if (input.GetAction(In::Enter).IsClicked() ||
+                    input.GetAction(In::Cancel).IsClicked())
                 {
-                    if (g_Controller0->buttonFlags.clicked & g_GameWork.config.controllerConfig.enter)
+                    if (input.GetAction(In::Enter).IsClicked())
                     {
                         //Sd_SfxPlay(Sfx_Confirm, 0, Q8_CLAMPED(0.25f));
                     }
@@ -102,11 +109,10 @@ namespace Silent::Game
 
     void Options_BrightnessMenu_ConfigDraw()
     {
-        // @todo
-        //Gfx_StringColorSet(StringColorId_White);
-        //Gfx_StringPositionSet(SCREEN_WIDTH / 4, 190);
-        //Gfx_StringDraw("LEVEL_________", 20);
-        //Gfx_StringDrawInt(1, g_GameWork.config.brightness);
+        Gfx_StringColorSet(StringColorId_White);
+        Gfx_StringPositionSet(SCREEN_WIDTH / 4, 190);
+        Gfx_StringDraw("LEVEL         ");
+        Gfx_StringDrawInt(1, g_GameWork.config.brightness);
     }
 
     void Options_BrightnessMenu_ArrowsDraw()
@@ -123,13 +129,15 @@ namespace Silent::Game
             { { 65, 84 }, { 55, 74 }, { 55, 94 } }
         };
 
+        const auto& input = g_App.GetInput();
+
         // Determine UI movement direction.
-        int dir      = 0;
-        if (g_Controller0->buttonFlags.held & ControllerFlag_LStickHighLeft)
+        int dir = 0;
+        if (input.GetAction(In::Left).IsHeld(0.5f))
         {
             dir = 1;
         }
-        else if (g_Controller0->buttonFlags.held & ControllerFlag_LStickHighRight)
+        else if (input.GetAction(In::Right).IsHeld(0.5f))
         {
             dir = 2;
         }

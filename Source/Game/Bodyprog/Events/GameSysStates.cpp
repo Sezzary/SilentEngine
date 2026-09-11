@@ -4,6 +4,8 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
+#include "Application.h"
+#include "Assets/TranslationKeys.h"
 #include "Game/Bodyprog/Demo.h"
 #include "Game/Bodyprog/Events/bodyprog_data_800A99B4.h"
 #include "Game/Bodyprog/Events/MapMsg.h"
@@ -24,6 +26,12 @@
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"
+#include "Input/Input.h"
+#include "Utils/Translator.h"
+
+using namespace Silent::Assets;
+using namespace Silent::Input;
+using namespace Silent::Utils;
 
 namespace Silent::Game
 {
@@ -178,9 +186,9 @@ namespace Silent::Game
 
     void SysState_Gameplay_Update() // 0x80038BD4
     {
-        s_SubCharacter* player;
+        const auto& input = g_App.GetInput();
 
-        player = &g_SysWork.playerWork.player;
+        auto* player = &g_SysWork.playerWork.player;
 
         Event_Update(player->attackReceived != NO_VALUE);
         //Savegame_MapRoomIdxUpdate();
@@ -218,7 +226,7 @@ namespace Silent::Game
             return;
         }
 
-        if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.light &&
+        if (input.GetAction(In::Light).IsClicked() &&
             g_SysWork.field_2388.field_154.effectsInfo.field_0.s_field_0.field_0 & (1 << 1))
         {
             //Game_FlashlightToggle();
@@ -228,7 +236,7 @@ namespace Silent::Game
         {
             SysWork_StateSetNext((e_SysState)g_MapEventSysState);
         }
-        else if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.pause)
+        else if (input.GetAction(In::Pause).IsClicked())
         {
             SysWork_StateSetNext(SysState_GamePaused);
         }
@@ -236,16 +244,16 @@ namespace Silent::Game
         {
             return;
         }*/
-        else if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.item)
+        else if (input.GetAction(In::Item).IsClicked())
         {
             SysWork_StateSetNext(SysState_StatusMenu);
         }
-        else if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.map)
+        else if (input.GetAction(In::Map).IsClicked())
         {
             SysWork_StateSetNext(SysState_MapScreen);
             g_SysWork.isMgsStringSet = false;
         }
-        else if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.option)
+        else if (input.GetAction(In::Option).IsClicked())
         {
             SysWork_StateSetNext(SysState_OptionsMenu);
         }
@@ -264,13 +272,17 @@ namespace Silent::Game
 
     void SysState_GamePaused_Update() // 0x800391E8
     {
+        const auto& input      = g_App.GetInput();
+        const auto& translator = g_App.GetTranslator();
+
         static s32 D_800A9A68 = 0;
 
         D_800A9A68 += g_DeltaTimeRaw;
         if (!((D_800A9A68 >> 11) & (1 << 0)))
         {
-            Gfx_StringPositionSet(131, 104);
-            Gfx_StringDraw("\x07PAUSED", DEFAULT_MAP_MESSAGE_LENGTH);
+            Gfx_StringPositionSet(SCREEN_WIDTH / 2, 104);
+            Gfx_StringColorSet(StringColorId_White);
+            Gfx_StringDraw(translator(KEY_PAUSE_MENU_HEADING));
         }
 
         //func_80091380();
@@ -284,13 +296,13 @@ namespace Silent::Game
 
         // Debug button combo to bring up save screen from pause screen.
         // DPad-Left + L2 + L1 + LS-Left + RS-Left + L3
-        if ((g_Controller0->buttonFlags.held == (ControllerFlag_L3          |
-                                             ControllerFlag_DpadLeft    |
-                                             ControllerFlag_L2          |
-                                             ControllerFlag_L1          |
-                                             ControllerFlag_LStickLowLeft |
-                                             ControllerFlag_RStickLowLeft  |
-                                             ControllerFlag_LStickHighLeft)) &&
+        if ((g_Controller0->buttonFlags.held == (ControllerFlag_L3             |
+                                                 ControllerFlag_DpadLeft       |
+                                                 ControllerFlag_L2             |
+                                                 ControllerFlag_L1             |
+                                                 ControllerFlag_LStickLowLeft  |
+                                                 ControllerFlag_RStickLowLeft  |
+                                                 ControllerFlag_LStickHighLeft)) &&
             (g_Controller0->buttonFlags.clicked & ControllerFlag_L3))
         {
             D_800A9A68 = 0;
@@ -300,7 +312,7 @@ namespace Silent::Game
             return;
         }
 
-        if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.pause)
+        if (input.GetAction(In::Pause).IsClicked())
         {
             D_800A9A68 = 0;
 
@@ -463,9 +475,11 @@ namespace Silent::Game
 
     void SysState_MapScreen_Update() // 0x800396D4
     {
+        const auto& input = g_App.GetInput();
+
         if (!HAS_PAPER_MAP(g_SavegamePtr->paperMapIdx))
         {
-            if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.map ||
+            if (input.GetAction(In::Map).IsClicked() ||
                 Gfx_MapMsg_Draw(MapMsgIdx_NoMap) > MapMsgState_Idle)
             {
                 SysWork_StateSetNext(SysState_Gameplay);
@@ -475,7 +489,7 @@ namespace Silent::Game
                 ((g_SysWork.field_2388.field_1C[0].effectsInfo.field_0.s_field_0.field_0 & (1 << 0)) ||
                 (g_SysWork.field_2388.field_1C[1].effectsInfo.field_0.s_field_0.field_0 & (1 << 0))))
         {
-            if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.map ||
+            if (input.GetAction(In::Map).IsClicked() ||
                 Gfx_MapMsg_Draw(MapMsgIdx_TooDarkForMap) > MapMsgState_Idle)
             {
                 SysWork_StateSetNext(SysState_Gameplay);
@@ -843,6 +857,9 @@ namespace Silent::Game
     {
         constexpr int TIP_COUNT = 15;
 
+        const auto& input      = g_App.GetInput();
+        const auto& translator = g_App.GetTranslator();
+
         static u8 prevTipIdx;
         u16       seenTipIdxs[1];
         s32       tipIdx;
@@ -932,12 +949,13 @@ namespace Silent::Game
                 SysWork_StateStepIncrement(0);
 
             case 3:
-                Gfx_StringPositionSet(104, 104);
-                Gfx_StringDraw("\aGAME_OVER", DEFAULT_MAP_MESSAGE_LENGTH);
+                Gfx_StringPositionSet(SCREEN_WIDTH / 2, 104);
+                Gfx_StringColorSet(StringColorId_White);
+                Gfx_StringDraw(translator(KEY_GAME_OVER_HEADING));
+
                 g_SysWork.field_28++;
 
-                if ((g_Controller0->buttonFlags.clicked & (g_GameWorkPtr->config.controllerConfig.enter |
-                                                       g_GameWorkPtr->config.controllerConfig.cancel)) ||
+                if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.field_28 > Q12(1.0f / 17.0f))
                 {
                     SysWork_StateStepIncrement(0);
@@ -945,8 +963,10 @@ namespace Silent::Game
                 break;
 
             case 4:
-                Gfx_StringPositionSet(104, 104);
-                Gfx_StringDraw("\aGAME_OVER", DEFAULT_MAP_MESSAGE_LENGTH);
+                Gfx_StringPositionSet(SCREEN_WIDTH / 2, 104);
+                Gfx_StringColorSet(StringColorId_White);
+                Gfx_StringDraw(translator(KEY_GAME_OVER_HEADING));
+
                 //SysWork_StateStepIncrementAfterFade(2, true, 0, Q12(2.0f), false);
                 break;
 
@@ -973,8 +993,7 @@ namespace Silent::Game
                 g_SysWork.field_28++;
                 //Screen_BackgroundImgDraw(&g_DeathTipImg);
 
-                if (!(g_Controller0->buttonFlags.clicked & (g_GameWorkPtr->config.controllerConfig.enter |
-                                                        g_GameWorkPtr->config.controllerConfig.cancel)))
+                if (!input.GetAction(In::Enter).IsClicked() && !input.GetAction(In::Cancel).IsClicked())
                 {
                     if (g_SysWork.field_28 <= 480)
                     {

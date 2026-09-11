@@ -53,13 +53,15 @@ namespace Silent::Debug
             auto&       renderer   = g_App.GetRenderer();
             auto&       fonts      = g_App.GetFonts();
 
+            return;
+
             auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
             //auto msg = GetParsedMsg("{L0}""打撃系の武器は、攻撃ボタンの押し方に{N}よって攻撃方法が変化します。",
-            //                        fontName, 100.0f / 14.0f);
-            auto msg = GetParsedMsg("{L0}""{J0(3.0)}{T}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{T}{C7}and the radio, too.",
-                                    fontName, 100.0f / 14.0f);
+            //                        fontName, SERIF_FONT_LINE_HEIGHT);
+            auto msg = GetParsedMsg("{L0}""{J0(3.0)}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{C7}and the radio, too.",
+                                    fontName, SERIF_FONT_LINE_HEIGHT);
             //auto msg = GetParsedMsg("{L0}" + translator("m0S00Msg_14"),
-            //                        fontName, 100.0f / 14.0f);
+            //                        fontName, SERIF_FONT_LINE_HEIGHT);
 
             int styleFlags = (int)TextStyleFlags::Gradient |
                          (int)TextStyleFlags::Shadow;

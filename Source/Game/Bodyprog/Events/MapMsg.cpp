@@ -323,7 +323,7 @@ namespace Silent::Game
                         }
 
                         Gfx_StringPositionSet(32, (STRING_LINE_OFFSET * i) + 98);
-                        Gfx_StringDraw(g_MapOverlayHdr.mapMessages[i], MAP_MESSAGE_DISPLAY_ALL_LENGTH);
+                        Gfx_StringDraw(g_MapOverlayHdr.mapMessages[i]);
                     }
 
                     mapMsgCode = MsgReturnCode_Select2;
@@ -348,7 +348,7 @@ namespace Silent::Game
                         }
 
                         Gfx_StringPositionSet(32, (STRING_LINE_OFFSET * i) + 96);
-                        Gfx_StringDraw(g_MapOverlayHdr.mapMessages[(mapMsgIdx + i) + 1], MAP_MESSAGE_DISPLAY_ALL_LENGTH);
+                        Gfx_StringDraw(g_MapOverlayHdr.mapMessages[(mapMsgIdx + i) + 1]);
                     }
                 }
 

@@ -42,6 +42,6 @@ namespace Silent::Game
     void func_80032CE8() // 0x80032CE8
     {
         Gfx_StringPositionSet(108, 104);
-        Gfx_StringDraw("\x7Now_loading.", 100);
+        Gfx_StringDraw("{7}Now loading.");
     }
 }

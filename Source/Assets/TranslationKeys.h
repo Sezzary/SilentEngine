@@ -543,7 +543,7 @@ namespace Silent::Assets
     // ==========
 
     constexpr char KEY_GAME_OVER_HEADING[]      = "GameOver_Heading";
-    constexpr char KEY_GAME_OVER_TIPS_HEADING[] = "GameOver_Heading";
+    constexpr char KEY_GAME_OVER_TIPS_HEADING[] = "GameOver_Tips";
     constexpr char KEY_GAME_OVER_TIP_1[]        = "GameOver_Tip1";
     constexpr char KEY_GAME_OVER_TIP_2[]        = "GameOver_Tip2";
     constexpr char KEY_GAME_OVER_TIP_3[]        = "GameOver_Tip3";

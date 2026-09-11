@@ -444,19 +444,20 @@ namespace Silent::Game
         g_SysWork.enableHalfHeightGlyphs = false;
     }
 
-    void Gfx_StringDraw(const std::string& str, int displayLength, bool isHalfHeight, AlignMode alignMode)
+    void Gfx_StringDraw(const std::string& msg, int displayLength, bool isHalfHeight)
     {
         const auto& options  = g_App.GetOptions();
         auto&       renderer = g_App.GetRenderer();
 
         // Draw string.
+        auto colorTag   = "{" + std::to_string((int)g_StringColorId) + "}";
         auto fontName   = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
-        auto pos        = GetGridAlignedScreenPercent(ConvertRetroScreenPixelsToPercent(g_StringPosition),
-                                                      RETRO_SCREEN_SPACE_RES.y);
+        auto parsedMsg  = GetParsedMsg(colorTag + msg, fontName, SERIF_FONT_LINE_HEIGHT);
+        auto pos        = ConvertRetroScreenPixelsToPercent(g_StringPosition);
         int  styleFlags = (int)TextStyleFlags::Gradient |
                           (int)TextStyleFlags::Shadow   |
                           (isHalfHeight ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None);
-        DrawString(str, fontName, pos, SERIF_FONT_SCALE, STRING_COLORS[g_StringColorId], styleFlags, alignMode);
+        DrawParsedMsg(parsedMsg, pos, SERIF_FONT_SCALE, styleFlags, displayLength, 0);
     }
 
     void Gfx_StringDrawInt(s32 widthMin, s32 displayLength)

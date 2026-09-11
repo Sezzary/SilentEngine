@@ -445,22 +445,16 @@ namespace Silent::Game
 
             if (i == g_MainMenu_SelectedEntry)
             {
-                auto selectedEntryStr = //"{M}" +
+                auto selectedEntryMsg = "{M}"                                      +
                                         translator(KEY_MAIN_MENU_OPENING_QUOTE)    +
                                         translator(MAIN_MENU_ENTRY_STRING_KEYS[i]) +
-                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE)
-                                        ;
-                Gfx_StringDraw(selectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterBottom);
-
-                //g_StringPosition.x -= ConvertScreenPercentToRetroPixels(Vector2(width * 0.5f, 0.0f)).x;
-                //Gfx_StringDraw(translator(KEY_MAIN_MENU_OPENING_QUOTE), DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterRight);
-                //g_StringPosition.x += ConvertScreenPercentToRetroPixels(Vector2(width, 0.0f)).x;
-                //Gfx_StringDraw(translator(KEY_MAIN_MENU_CLOSING_QUOTE), DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterLeft);
+                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE);
+                Gfx_StringDraw(selectedEntryMsg, INT_MAX, true);
             }
             else
             {
-                auto unselectedEntryStr = /*"{M}" + */translator(MAIN_MENU_ENTRY_STRING_KEYS[i]);
-                Gfx_StringDraw(unselectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterBottom);
+                auto unselectedEntryMsg = "{M}" + translator(MAIN_MENU_ENTRY_STRING_KEYS[i]);
+                Gfx_StringDraw(unselectedEntryMsg, INT_MAX, true);
             }
         }
     }
@@ -489,16 +483,16 @@ namespace Silent::Game
 
             if (i == g_MainMenu_SelectedEntry)
             {
-                auto selectedEntryStr = /*"{M}" +*/
-                                        translator(KEY_MAIN_MENU_OPENING_QUOTE) +
+                auto selectedEntryStr = "{M}"                                            +
+                                        translator(KEY_MAIN_MENU_OPENING_QUOTE)          +
                                         translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]) +
                                         translator(KEY_MAIN_MENU_CLOSING_QUOTE);
-                Gfx_StringDraw(selectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true);
+                Gfx_StringDraw(selectedEntryStr, INT_MAX, true);
             }
             else
             {
-                auto unselectedEntryStr = /*"{M}" + */translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]);
-                Gfx_StringDraw(unselectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true);
+                auto unselectedEntryStr = "{M}" + translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]);
+                Gfx_StringDraw(unselectedEntryStr, INT_MAX, true);
             }
         }
     }

@@ -5,7 +5,9 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Screens/Options/MenuGraphics.h"
 #include "Input/Input.h"
@@ -191,7 +193,7 @@ namespace Silent::Game
         Options_MainOptionsMenu_ConfigDraw();
         Options_MainOptionsMenu_SelectionHighlightDraw();
         Options_Menu_VignetteDraw();
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
         Options_MainOptionsMenu_BgmVolumeBarDraw();
         Options_MainOptionsMenu_SfxVolumeBarDraw();
 
@@ -417,7 +419,7 @@ namespace Silent::Game
         //Options_ExtraOptionsMenu_ConfigDraw();
         //Options_ExtraOptionsMenu_SelectionHighlightDraw();
         //Options_Menu_VignetteDraw();
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_ExtraOptions)
         {

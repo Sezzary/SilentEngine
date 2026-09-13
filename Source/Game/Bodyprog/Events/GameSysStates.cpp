@@ -16,6 +16,7 @@
 //#include "Game/Bodyprog/item_screens.h"
 //#include "Game/Bodyprog/memcard.h"
 #include "Game/Bodyprog/Savegame.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/CutsceneBorder.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
@@ -972,12 +973,12 @@ namespace Silent::Game
             case 6:
                 //SysWork_StateStepIncrementAfterFade(2, false, 0, Q12(2.0f), false);
                 g_SysWork.field_28 = Q12(0.0f);
-                //Screen_BackgroundImgDraw(&g_DeathTipImg);
+                Screen_BackgroundImgDraw(&g_DeathTipImg);
                 break;
 
             case 7:
                 g_SysWork.field_28++;
-                //Screen_BackgroundImgDraw(&g_DeathTipImg);
+                Screen_BackgroundImgDraw(&g_DeathTipImg);
 
                 if (!input.GetAction(In::Enter).IsClicked() && !input.GetAction(In::Cancel).IsClicked())
                 {
@@ -995,7 +996,7 @@ namespace Silent::Game
                 break;
 
             case 8:
-                //Screen_BackgroundImgDraw(&g_DeathTipImg);
+                Screen_BackgroundImgDraw(&g_DeathTipImg);
                 //SysWork_StateStepIncrementAfterFade(2, true, 0, Q12(2.0f), false);
                 break;
 
@@ -1027,6 +1028,6 @@ namespace Silent::Game
 
         g_MapOverlayHdr.mapEventFuncs[g_MapEventParam]();
 
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
     }
 }

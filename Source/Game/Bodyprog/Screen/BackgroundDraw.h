@@ -15,13 +15,14 @@ namespace Silent::Game
      */
     void Screen_BackgroundImgDraw(s_FsImageDesc* image);
 
-    void Screen_BackgroundImgTransition(s_FsImageDesc* image0, s_FsImageDesc* image1, q3_12 alpha);
-
     /** @brief Draws a background image.
      *
      * @note Only applies to background images of notes or puzzles images.
      */
     void Screen_BackgroundImgDrawAlt(s_FsImageDesc* image);
+
+    void Screen_BackgroundImgTransition(const std::string& assetName0, const std::string& assetName1, q3_12 alpha,
+                                        bool fit);
 
     /** @brief Applies motion blur to the scene.
      *

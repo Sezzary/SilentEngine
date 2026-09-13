@@ -65,7 +65,7 @@ namespace Silent::Game
     };
 
     /** @note Related to images display. */
-    s_FsImageDesc D_800A9A04             = { .tPage = { 1, 21 }, .clutX = 224, .clutY = 13 };
+    s_FsImageDesc D_800A9A04             = {};
     s32           D_800A9A0C             = 0;
     s32           g_MapEventSysState     = SysState_Gameplay;
     u32           g_MapEventParam        = 0;

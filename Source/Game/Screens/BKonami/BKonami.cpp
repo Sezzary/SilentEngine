@@ -37,7 +37,7 @@ namespace Silent::Game
                 g_ScreenFadeTimestep = Q12(0.2f);
 
                 // Load `1ST/KONAMI2.TIM` (Konami logo).
-                Fs_QueueStartReadTim(FILE_1ST_KONAMI2_TIM, FS_BUFFER_1, &g_KcetLogoImg);
+                Fs_QueueStartReadTim(FILE_1ST_KONAMI2_TIM);
 
                 //WorldGfx_HarryCharaLoad();
                 //GameFs_BgItemLoad();
@@ -80,7 +80,6 @@ namespace Silent::Game
         {
             BootScreen_KonamiScreenDraw();
             //Screen_FadeUpdate();
-            Fs_QueueUpdate();
             //MemCard_Update();
             //func_80033548();
             //VSync(SyncMode_Wait);
@@ -182,17 +181,15 @@ namespace Silent::Game
                 }
                 break;
 
+            // @deprecated
             case KcetLogoStateStep_NoMemCard:
-                Fs_QueueStartReadTim(FILE_1ST_NO_MCD_E_TIM, FS_BUFFER_1, &D_800A900C);
                 nextGameState = GameState_MovieIntroFadeIn;
-
                 Game_StateStepSet(0, KcetLogoStateStep_LogoDelay);
                 break;
 
+            // @deprecated
             case KcetLogoStateStep_NoMemCardFreeSpace:
-                Fs_QueueStartReadTim(FILE_1ST_NO_BLK_E_TIM, FS_BUFFER_1, &D_800A900C);
                 nextGameState = GameState_MovieIntroFadeIn;
-
                 Game_StateStepSet(0, KcetLogoStateStep_LogoDelay);
                 break;
 
@@ -281,7 +278,6 @@ namespace Silent::Game
 
         BootScreen_KcetScreenDraw();
         //Screen_FadeUpdate();
-        Fs_QueueUpdate();
         //MemCard_Update();
         //func_80033548();
         //VSync(SyncMode_Wait);

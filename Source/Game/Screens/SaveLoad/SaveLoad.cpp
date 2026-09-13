@@ -6,6 +6,7 @@
 #include "Application.h"
 #include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/MemCard.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
@@ -2115,7 +2116,7 @@ namespace Silent::Game
         SaveScreen_SlotStrAndBottomRectDraw();
 
         // Draws background image.
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
     }
 
     void SaveScreen_ScreenDraw() // 0x801E70C8

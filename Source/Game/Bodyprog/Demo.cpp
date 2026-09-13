@@ -58,7 +58,7 @@ namespace Silent::Game
     s_DemoFrameData* g_Demo_CurFrameData;
     s32              g_Demo_DemoStep;
     s32              g_Demo_VideoPresentInterval;
-    bool             D_800C489C;
+    bool             g_Demo_IsLoadingChunks;
     s32              g_Demo_DemoId   = 0;
     u16              g_Demo_RandSeed = 0;
 
@@ -308,10 +308,10 @@ namespace Silent::Game
 
         static s32 prevScreenFade = SCREEN_FADE_STATUS(ScreenFadeState_Reset, false);
 
-        prevScreenFadeCpy = prevScreenFade;
-        cond              = D_800C489C;
-        D_800C489C        = false;
-        prevScreenFade    = g_Screen_FadeStatus;
+        prevScreenFadeCpy      = prevScreenFade;
+        cond                   = g_Demo_IsLoadingChunks;
+        g_Demo_IsLoadingChunks = false;
+        prevScreenFade         = g_Screen_FadeStatus;
 
         if (!(g_SysWork.sysFlags & SysFlag_DemoActive))
         {

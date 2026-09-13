@@ -100,7 +100,7 @@ namespace Silent::Game
                 break;
 
             case 2:
-                Fs_QueueStartReadTim(FILE_1ST_KONAMI_TIM, FS_BUFFER_1, &g_KonamiLogoImg);
+                Fs_QueueStartReadTim(FILE_1ST_KONAMI_TIM);
 
                 ScreenFade_Start(true, false, false);
                 g_GameWork.gameStateSteps[0]++;

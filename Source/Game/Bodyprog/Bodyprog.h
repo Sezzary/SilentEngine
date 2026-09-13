@@ -593,10 +593,6 @@ namespace Silent::Game
 
     extern u_Filename D_8002B2CC;
 
-    extern s_FsImageDesc g_Font16AtlasImg;
-    extern s_FsImageDesc g_KonamiLogoImg;
-    extern s_FsImageDesc g_KcetLogoImg;
-    extern s_FsImageDesc g_TitleImg;
     extern s_FsImageDesc g_PaperMapImg;
     extern s_FsImageDesc g_PaperMapMarkingAtlasImg;
     extern s_FsImageDesc g_ItemInspectionImg;
@@ -619,8 +615,6 @@ namespace Silent::Game
     extern s_FsImageDesc D_800A908C;
 
     extern s_FsImageDesc D_800A9094;
-
-    extern s_FsImageDesc g_Font24AtlasImg;
 
     extern s_MapEffectsInfo MAP_EFFECTS_INFOS[21];
 

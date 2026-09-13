@@ -6,8 +6,9 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Text/TextDraw.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
 #include "Input/Input.h"
@@ -99,11 +100,11 @@ namespace Silent::Game
         // Draw graphics.
         if (g_GameWork.gameStatePrev == GameState_MainMenu)
         {
-            //Screen_BackgroundImgDraw(&g_BrightnessScreenImg0);
+            Screen_BackgroundImgDraw(&g_BrightnessScreenImg0);
         }
         else
         {
-            //Screen_BackgroundImgDraw(&g_BrightnessScreenImg1);
+            Screen_BackgroundImgDraw(&g_BrightnessScreenImg1);
         }
 
         //func_8003E5E8(g_GameWork.config.brightness);

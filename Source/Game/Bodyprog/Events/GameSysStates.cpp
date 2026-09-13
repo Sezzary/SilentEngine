@@ -730,7 +730,7 @@ namespace Silent::Game
             case MapMsgState_Idle:
                 break;
 
-            case MapMsgState_SelectEntry0:
+            case MapMsgState_SelectEntry1:
                 Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
 
                 //unfreezePlayerFunc = &g_MapOverlayHdr.playerControlUnfreeze;
@@ -791,7 +791,7 @@ namespace Silent::Game
                     ScreenFade_Start(true, false, false);
                     SysWork_StateStepIncrement(0);
                 }
-                /*else if (Gfx_MapMsg_Draw(MapMsgIdx_SaveGame) == MapMsgState_SelectEntry0)
+                /*else if (Gfx_MapMsg_Draw(MapMsgIdx_SaveGame) == MapMsgState_SelectEntry1)
                 {
                     Savegame_EventFlagSet(EventFlag_SeenSaveScreen);
 

@@ -37,7 +37,7 @@ namespace Silent::Game
         Color::From8Bit(128, 0,   0),
         Color::From8Bit(8,   8,   8),
         Color::From8Bit(100, 100, 100),
-        Color::From8Bit(128, 128, 128),
+        Color::From8Bit(128, 128, 128)
     };
 
     Vector2i g_StringPosition;
@@ -104,7 +104,7 @@ namespace Silent::Game
                 {
                     nodes.push_back(MsgNode
                     {
-                        .Type  = NodeType::Text,
+                        .Type  = MsgNodeType::Text,
                         .Value = buffer
                     });
 
@@ -118,7 +118,7 @@ namespace Silent::Game
             {
                 nodes.push_back(MsgNode
                 {
-                    .Type  = NodeType::Command,
+                    .Type  = MsgNodeType::Command,
                     .Value = buffer
                 });
 
@@ -137,7 +137,7 @@ namespace Silent::Game
         {
             nodes.push_back(MsgNode
             {
-                .Type  = inCmd ? NodeType::Command : NodeType::Text,
+                .Type  = inCmd ? MsgNodeType::Command : MsgNodeType::Text,
                 .Value = buffer
             });
         }
@@ -172,7 +172,7 @@ namespace Silent::Game
         {
             curPage.Nodes.push_back(node);
 
-            if (node.Type == NodeType::Text)
+            if (node.Type == MsgNodeType::Text)
             {
                 if (addNewLine)
                 {
@@ -184,7 +184,7 @@ namespace Silent::Game
                 float fontScaleFactor      = SCREEN_SPACE_RES.x / (float)font->GetPointSize();
                 curPage.LineWidths.back() += shape.Width * fontScaleFactor;
             }
-            else if (node.Type == NodeType::Command)
+            else if (node.Type == MsgNodeType::Command)
             {
                 switch (node.GetCode())
                 {
@@ -239,10 +239,10 @@ namespace Silent::Game
         renderer.SubmitText2d(text);
 
         float fontScaleFactor = SCREEN_SPACE_RES.x / (float)text.Font->GetPointSize();
-        return text.Shape.Width * fontScaleFactor;
+        return (text.Shape.Width * fontScaleFactor) * scale;
     }
 
-    e_MsgReturnCode DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
+    MsgReturnResult DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
                                   int styleFlags, int displayLength, int pageIdx)
     {
         constexpr float TAB_SIZE = (40.0f / RETRO_SCREEN_SPACE_RES.x) * SCREEN_SPACE_RES.x;
@@ -265,7 +265,9 @@ namespace Silent::Game
             .LineHeight = msg.LineHeight,
             .StyleFlags = styleFlags
         };
-        auto returnCode = MsgReturnCode_None;
+
+        auto result = MsgReturnResult{};
+        result.LineWidths.push_back(0.0f);
 
         // Run through message nodes.
         const auto& page = msg.Pages[pageIdx];
@@ -278,36 +280,38 @@ namespace Silent::Game
             }
 
             // Draw text.
-            if (node.Type == NodeType::Text)
+            if (node.Type == MsgNodeType::Text)
             {
                 // Draw text string.
                 int   glyphCount = GetUtf8CodePoints(node.Value).size();
                 auto  str        = GetUtf8Substring(node.Value, 0, std::min(glyphCount, displayLength));
                 auto  pos        = GetGridAlignedScreenPercent((state.Position + state.LineOffset) + state.StringOffset,
                                                                RETRO_SCREEN_SPACE_RES.y);
-                float strWidth   = DrawString(str, msg.FontName, pos, scale,
+                float width      = DrawString(str, msg.FontName, pos, scale,
                                               STRING_COLORS[state.ColorId], state.StyleFlags,
                                               state.AlignMd);
+                result.LineWidths.back() += width;
 
                 // Accumulate string offset.
                 auto aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
-                state.StringOffset.x += (strWidth * scale) * aspectCorrection.x;
+                state.StringOffset.x += width * aspectCorrection.x;
 
                 // Stop drawing if length exceeded.
                 displayLength -= glyphCount;
                 if (displayLength <= 0)
                 {
-                    return MsgReturnCode_None;
+                    result.Code = MsgReturnCode::None;
+                    return result;
                 }
             }
             // Handle command.
-            else if (node.Type == NodeType::Command)
+            else if (node.Type == MsgNodeType::Command)
             {
                 switch (node.GetCode())
                 {
                     case MSG_CODE_DISPLAY_ALL:
                     {
-                        g_SysWork.mapMsgDisplayAll = true;
+                        result.DisplayAll = true;
                         break;
                     }
                     case MSG_CODE_COLOR:
@@ -317,7 +321,7 @@ namespace Silent::Game
                     }
                     case MSG_CODE_END:
                     {
-                        returnCode = MsgReturnCode_End;
+                        result.Code = MsgReturnCode::End;
                         break;
                     }
                     case MSG_CODE_HALF_HEIGHT:
@@ -390,11 +394,12 @@ namespace Silent::Game
                     {
                         state.LineOffset.y += state.LineHeight * GetScreenAspectCorrection(GLYPH_SCALE_MODE).y;
                         state.StringOffset  = 0.0f;
+                        result.LineWidths.push_back(0.0f);
                         break;
                     }
                     case MSG_CODE_SELECT:
                     {
-                        returnCode = (e_MsgReturnCode)node.GetIntArg();
+                        result.Select = (MsgSelectArg)node.GetIntArg();
                         break;
                     }
                     case MSG_CODE_TAB:
@@ -405,7 +410,7 @@ namespace Silent::Game
                     }
                     case MSG_CODE_END_PAGE:
                     {
-                        returnCode = MsgReturnCode_EndPage;
+                        result.Code = MsgReturnCode::EndPage;
                         break;
                     }
                     case MSG_CODE_ALIGN_RIGHT:
@@ -417,7 +422,7 @@ namespace Silent::Game
             }
         }
 
-        return returnCode;
+        return result;
     }
 
     void Gfx_StringPositionSet(int posX, int posY)
@@ -441,11 +446,10 @@ namespace Silent::Game
     void Gfx_MapMsg_Reset()
     {
         g_StringColorId                  = StringColorId_White;
-        g_SysWork.mapMsgDisplayAll       = false;
         g_SysWork.enableHalfHeightGlyphs = false;
     }
 
-    void Gfx_StringDraw(const std::string& msg, int displayLength, bool isHalfHeight)
+    float Gfx_StringDraw(const std::string& msg, int displayLength, bool isHalfHeight)
     {
         const auto& options  = g_App.GetOptions();
         auto&       renderer = g_App.GetRenderer();
@@ -458,11 +462,13 @@ namespace Silent::Game
         int  styleFlags = (int)TextStyleFlags::Gradient |
                           (int)TextStyleFlags::Shadow   |
                           (isHalfHeight ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None);
-        DrawParsedMsg(parsedMsg, pos, SERIF_FONT_SCALE, styleFlags, displayLength, 0);
+        auto result     = DrawParsedMsg(parsedMsg, pos, SERIF_FONT_SCALE, styleFlags, displayLength, 0);
+
+        return result.LineWidths.back();
     }
 
-    void Gfx_StringDrawInt(s32 widthMin, s32 displayLength)
+    float Gfx_StringDrawInt(s32 widthMin, s32 displayLength)
     {
-        Gfx_StringDraw(std::to_string(displayLength));
+        return Gfx_StringDraw(std::to_string(displayLength));
     }
 }

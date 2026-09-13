@@ -443,7 +443,6 @@ namespace Silent::Game
         u8               field_234B_0 : 4; /** `bool` | Related to particles. Used to trigger SFX? */
         u8               field_234B_4 : 4; // Related to particles.
         q19_12           mapMsgTimer;
-        bool             mapMsgDisplayAll;
         bool             enableHalfHeightGlyphs;
         u8               silentYesSelection : 4; /** `bool` */
         u32              invItemSelectedIdx : 8;

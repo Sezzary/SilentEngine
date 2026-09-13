@@ -23,21 +23,9 @@ namespace Silent::Game
     constexpr float SERIF_FONT_SCALE       = RETRO_PIXEL_SCALE.y * 16.0f;
     constexpr float SERIF_FONT_LINE_HEIGHT = SCREEN_SPACE_RES.y / 14.0f;
 
-    /** @brief Message return codes. @todo Convert to flags. */
-    enum e_MsgReturnCode
-    {
-        MsgReturnCode_None    = 0,
-        MsgReturnCode_End     = 1,
-        MsgReturnCode_Select2 = 2,
-        MsgReturnCode_Select3 = 3,
-        MsgReturnCode_Select4 = 4,
-
-        MsgReturnCode_EndPage    = 19,
-        MsgReturnCode_DisplayAll = 20
-    };
-
     /** @brief String color IDs for strings displayed in screen space.
      * Used as indices into `STRING_COLORS`.
+     * @todo Rename to `e_MsgColorArg`.
      */
     enum e_StringColorId
     {
@@ -53,8 +41,25 @@ namespace Silent::Game
         StringColorId_Count
     };
 
+    /** @brief Message selection prompt aruments. @todo Rework values. `YesOrNo` was 4 in legacy. */
+    enum class MsgSelectArg
+    {
+        None    = NO_VALUE,
+        YesOrNo = 0,
+        Select2 = 2,
+        Select3 = 3
+    };
+
+    /** @brief Message return codes. @todo Convert to flags. */
+    enum class MsgReturnCode
+    {
+        None,
+        EndPage,
+        End
+    };
+
     /** @brief Processed message node types. */
-    enum class NodeType
+    enum class MsgNodeType
     {
         Text,
         Command
@@ -63,7 +68,7 @@ namespace Silent::Game
     /** @brief Processed message node. */
     struct MsgNode
     {
-        NodeType    Type  = NodeType::Text;
+        MsgNodeType Type  = MsgNodeType::Text;
         std::string Value = {};
 
         char  GetCode() const;
@@ -84,6 +89,15 @@ namespace Silent::Game
         std::vector<MsgPage> Pages      = {};
         std::string          FontName   = {};
         float                LineHeight = 0.0f;
+    };
+
+    /** @brief Return result for drawn parsed message. */
+    struct MsgReturnResult
+    {
+        bool               DisplayAll = false;
+        std::vector<float> LineWidths = {};
+        MsgReturnCode      Code       = MsgReturnCode::None;
+        MsgSelectArg       Select     = MsgSelectArg::None;
     };
 
     extern Vector2i g_StringPosition;
@@ -119,9 +133,9 @@ namespace Silent::Game
      * @param scale Scale relative to the screen height.
      * @param glyphCount Consecutive glyphs to draw from the message. Used for rollout.
      * @param pageIdx Index of the page to draw in the message.
-     * @return Message return code.
+     * @return Message return result.
      */
-    e_MsgReturnCode DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
+    MsgReturnResult DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
                                   int styleFlags, int displayLength = INT_MAX, int pageIdx = 0);
 
     /** @brief Sets the global position of the next string to be drawn by `Gfx_StringDraw`.
@@ -152,13 +166,15 @@ namespace Silent::Game
      * @param msg Tagged message to draw.
      * @param displayLength Number of consecutive glyphs to draw from the string.
      * @param isHalfHeight Use half-height glyphs.
+     * @return String width.
      */
-    void Gfx_StringDraw(const std::string& str, int displayLength = INT_MAX, bool isHalfHeight = false);
+    float Gfx_StringDraw(const std::string& str, int displayLength = INT_MAX, bool isHalfHeight = false);
 
     /** @brief Draws an integer string in screen space using the serif font.
      *
      * @param widthMin Minimum width of the integer string.
      * @param displayLength Number of consecutive glyphs to draw from the integer string.
+     * @return String width.
      */
-    void Gfx_StringDrawInt(s32 widthMin, s32 displayLength = INT_MAX);
+    float Gfx_StringDrawInt(s32 widthMin, s32 displayLength = INT_MAX);
 }

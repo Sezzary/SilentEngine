@@ -196,15 +196,15 @@ void Event_DisplayMapMsg(bool hasSelection, s32 mapMsgIdx, s32 step0, s32 step1,
         return;
     }
 
-    if (mapMsgState == MapMsgState_SelectEntry0)
+    if (mapMsgState == MapMsgState_SelectEntry1)
     {
         Event_SysStateStepSet(incSubStep, step0);
     }
-    if (mapMsgState == MapMsgState_SelectEntry1)
+    if (mapMsgState == MapMsgState_SelectEntry2)
     {
         Event_SysStateStepSet(incSubStep, step1);
     }
-    if (mapMsgState == MapMsgState_SelectEntry2)
+    if (mapMsgState == MapMsgState_SelectEntry3)
     {
         Event_SysStateStepSet(incSubStep, step2);
     }
@@ -564,7 +564,7 @@ void Event_DisplayMapMsgWithAudio(s32 mapMsgIdx, u8* audioIdx, const u16* audioC
     g_SysWork.bgmStatusFlags |= BgmStatusFlag_VoiceDialog;
 
     mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
-    if (mapMsgState == MapMsgState_SelectEntry0)
+    if (mapMsgState == MapMsgState_SelectEntry1)
     {
         SysWork_StateStepIncrement(0);
     }

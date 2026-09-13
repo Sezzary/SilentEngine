@@ -299,7 +299,7 @@ namespace Silent::Game
      * @param image Where to upload the TIM in VRAM.
      * @return Index of the new queue entry.
      */
-    const std::future<void>& Fs_QueueStartReadTim(e_FsFile fileIdx, void* dest, const s_FsImageDesc* image);
+    const std::future<void>& Fs_QueueStartReadTim(e_FsFile fileIdx, void* dest, const s_FsImageDesc* image = nullptr);
 
     /** @brief Add a new ANM read operation to the queue.
      * Adds a read operation with `postLoad = FsQueuePostLoadType_Anm`.

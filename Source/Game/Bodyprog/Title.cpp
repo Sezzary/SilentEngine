@@ -9,6 +9,7 @@
 #include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
 #include "Game/Bodyprog/MemCard.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
@@ -42,11 +43,10 @@ namespace Silent::Game
 
     static void MainMenu_MainTextDraw()
     {
-        constexpr int COLUMN_POS_X = SCREEN_WIDTH / 2;
-        constexpr int COLUMN_POS_Y = (SCREEN_HEIGHT / 5) * 3;
-        constexpr int STR_OFFSET_Y = 10;
-
-        static const char* MAIN_MENU_ENTRY_STRING_KEYS[] =
+        constexpr int  COLUMN_POS_X                = SCREEN_WIDTH / 2;
+        constexpr int  COLUMN_POS_Y                = (SCREEN_HEIGHT / 5) * 3;
+        constexpr int  STR_OFFSET_Y                = 10;
+        constexpr auto MAIN_MENU_ENTRY_STRING_KEYS = std::array<const char*, MainMenuEntry_Count>
         {
             KEY_MAIN_MENU_LOAD,
             KEY_MAIN_MENU_CONTINUE,
@@ -87,12 +87,11 @@ namespace Silent::Game
 
     static void MainMenu_DifficultyTextDraw(int selectedEntryIdx)
     {
-        constexpr int DIFFICULTY_MENU_SELECTION_COUNT = 3;
-        constexpr int COLUMN_POS_X                    = SCREEN_WIDTH / 2;
-        constexpr int COLUMN_POS_Y                    = 156;
-        constexpr int STR_OFFSET_Y                    = 10;
-
-        static const char* DIFFICULTY_MENU_ENTRY_STRING_KEYS[] =
+        constexpr int  COLUMN_POS_X                      = SCREEN_WIDTH / 2;
+        constexpr int  COLUMN_POS_Y                      = 156;
+        constexpr int  STR_OFFSET_Y                      = 10;
+        constexpr int  DIFFICULTY_MENU_SELECTION_COUNT   = 3;
+        constexpr auto DIFFICULTY_MENU_ENTRY_STRING_KEYS = std::array<const char*, DIFFICULTY_MENU_SELECTION_COUNT>
         {
             KEY_MAIN_MENU_EASY,
             KEY_MAIN_MENU_NORMAL,
@@ -123,7 +122,7 @@ namespace Silent::Game
         }
     }
 
-    void MainMenu_BackgroundDraw() // 0x8003B758
+    void MainMenu_BackgroundDraw()
     {
         auto& renderer = g_App.GetRenderer();
 
@@ -133,21 +132,20 @@ namespace Silent::Game
             func_8003BCF4();
         }
 
-        // Submit fullscreen sprite `TIM/TITLE_E.TIM`.
-        auto sprite = Sprite2d::CreateSprite2d("TIM/TITLE_E.TIM", Vector2::Zero, Vector2::One,
-                                               SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
-                                               100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
-        renderer.SubmitSprite2d(sprite);
-        //Screen_BackgroundImgDraw(&g_TitleImg);
-
+        Screen_BackgroundImgDraw("TIM/TITLE_E.TIM", true);
         MainMenu_FogUpdate();
     }
 
     void GameState_MainMenu_Update() // 0x8003AB28
     {
-        constexpr int MAIN_MENU_GAME_STATE_COUNT = 5;
+        constexpr int  MAIN_MENU_GAME_STATE_COUNT = 5;
 
-        s32 NEXT_GAME_STATES[MAIN_MENU_GAME_STATE_COUNT] =
+        static int newGameSelectedDifficultyIdx = 1;
+        static int prevSavegameCount            = 0;
+
+        const auto& input = g_App.GetInput();
+
+        auto NEXT_GAME_STATES = std::array<int, MAIN_MENU_GAME_STATE_COUNT>
         {
             GameState_LoadSavegameScreen,
             GameState_AutoLoadSavegame,
@@ -156,21 +154,12 @@ namespace Silent::Game
             GameState_MovieIntro
         };
 
-        bool        playInGameDemo;
-        s32         prevGameDifficultyIdx;
-        s32         nextGameDifficultyIdx;
-        e_GameState prevState;
-        static s32  newGameSelectedDifficultyIdx = 1;
-        static s32  prevSavegameCount            = 0;
-
-        const auto& input = g_App.GetInput();
-
         //func_80033548();
 
         // After staying idle in the title screen for some time, this checks if the intro FMV or a
         // demo gameplay segment should be played. If the next value from `g_Demo_ReproducedCount`
         // is a value divisible by 3, the intro FMV will play. Otherwise, it defaults to a gameplay demo.
-        playInGameDemo = ((g_Demo_ReproducedCount + 1) % 3) != 0;
+        bool playInGameDemo = ((g_Demo_ReproducedCount + 1) % 3) != 0;
 
         if (g_GameWork.gameStateSteps[0] == 0)
         {
@@ -192,9 +181,6 @@ namespace Silent::Game
                 g_GameWork.background2dColor.r = 0;
                 g_GameWork.background2dColor.g = 0;
                 g_GameWork.background2dColor.b = 0;
-
-                Screen_RectInterlacedClear(0, 32, SCREEN_WIDTH, FRAMEBUFFER_HEIGHT_INTERLACED, 0, 0, 0);
-                Screen_Init(SCREEN_WIDTH, true);
 
                 g_IntervalVBlanks = 1;
                 ScreenFade_Start(true, true, false);
@@ -331,7 +317,6 @@ namespace Silent::Game
                             break;
 
                         case MainMenuEntry_Quit:
-                            // @todo Add "Are you sure?" submenu.
                             g_App.Quit();
                             break;
                     }
@@ -375,7 +360,7 @@ namespace Silent::Game
                 // Scroll game difficulty options.
                 if (input.GetAction(In::Up).IsPulsed(0.2f, 0.4f))
                 {
-                    prevGameDifficultyIdx = 2;
+                    int prevGameDifficultyIdx = 2;
                     if (newGameSelectedDifficultyIdx > 0)
                     {
                         prevGameDifficultyIdx = newGameSelectedDifficultyIdx - 1;
@@ -384,7 +369,7 @@ namespace Silent::Game
                 }
                 if (input.GetAction(In::Down).IsPulsed(0.2f, 0.4f))
                 {
-                    nextGameDifficultyIdx = 0;
+                    int nextGameDifficultyIdx = 0;
                     if (newGameSelectedDifficultyIdx < 2)
                     {
                         nextGameDifficultyIdx = newGameSelectedDifficultyIdx + 1;
@@ -441,13 +426,13 @@ namespace Silent::Game
 
                     //MemCard_SysDisable();
 
-                    prevState                       = g_GameWork.gameState;
+                    auto prevState               = g_GameWork.gameState;
                     g_GameWork.gameStateSteps[0] = prevState;
-                    g_GameWork.gameState        = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
-                    g_SysWork.counters_1C[0]              = 0;
-                    g_GameWork.gameStatePrev    = prevState;
+                    g_GameWork.gameState         = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
+                    g_SysWork.counters_1C[0]     = 0;
+                    g_GameWork.gameStatePrev     = prevState;
                     g_GameWork.gameStateSteps[0] = 0;
-                    g_SysWork.counters_1C[1]              = 0;
+                    g_SysWork.counters_1C[1]     = 0;
                     g_GameWork.gameStateSteps[1] = 0;
                     g_GameWork.gameStateSteps[2] = 0;
 
@@ -507,7 +492,6 @@ namespace Silent::Game
             //*(s32*)0x1F800000 = 0x200000;
             //*(s32*)0x1F800004 = 0x01C00140;
             //ClearImage2((RECT*)0x1F800000, 0u, 0u, 0u);
-            //Screen_Init(SCREEN_WIDTH, false);
             return;
         }
     }

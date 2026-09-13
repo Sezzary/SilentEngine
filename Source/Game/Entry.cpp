@@ -6,6 +6,7 @@
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
@@ -88,7 +89,6 @@ namespace Silent::Game
 
             /*func_80089128();
             func_8008D78C(); // Camera update?*/
-            //DrawSync(0);
 
             // Handle V sync.
             /*if (g_SysWork.sysState & SysFlag_DemoActive)
@@ -207,11 +207,7 @@ namespace Silent::Game
             }
             else
             {
-                // Submit fullscreen sprite `1ST/2ZANKO_E.TIM.
-                auto sprite = Sprite2d::CreateSprite2d("1ST/2ZANKO_E.TIM", Vector2::Zero, Vector2::One,
-                                                       SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
-                                                       100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
-                renderer.SubmitSprite2d(sprite);
+                Screen_BackgroundImgDraw("1ST/2ZANKO_E.TIM", true);
 
                 // Update luma fade.
                 renderer.SetLumaFade(Q8_TO_FLT(fade), false);

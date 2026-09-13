@@ -82,7 +82,6 @@ namespace Silent::Game
                 g_GameWork.gameStateSteps[0] = 1;
 
             case 1:
-                //DrawSync(SyncMode_Wait);
                 func_80037154();
                 //Savegame_MapRoomIdxUpdate();
                 //func_800892A4(1);
@@ -447,7 +446,6 @@ namespace Silent::Game
 
         if (g_GameWork.gameStateSteps[0] == 0)
         {
-            //DrawSync(SyncMode_Wait);
             g_IntervalVBlanks = 1;
             ScreenFade_Reset();
 
@@ -522,7 +520,6 @@ namespace Silent::Game
     {
         if (g_GameWork.gameStateSteps[0] == 0)
         {
-            //DrawSync(SyncMode_Wait);
             g_IntervalVBlanks = 1;
 
             func_8003943C();
@@ -572,24 +569,13 @@ namespace Silent::Game
             return;
         }
 
-        // Copy framebuffer into `IMAGE_BUFFER_0` before movie playback.
-        //DrawSync(SyncMode_Wait);
-        //StoreImage(&D_800A9A6C, (u32*)IMAGE_BUFFER_0);
-        //DrawSync(SyncMode_Wait);
-
+        // @todo Implement new FMV playback functionality.
         //func_800892A4(0);
         //func_80089128();
-
         // Start playing movie. File to play is based on file ID `BASE_AUDIO_FILE_IDX - g_MapEventParam`.
         // Blocks until movie has finished playback or user has skipped it.
         //open_main(BASE_AUDIO_FILE_IDX - g_MapEventParam, g_FileTable[BASE_AUDIO_FILE_IDX - g_MapEventParam].blockCount);
-
         //func_800892A4(1);
-
-        // Restore copied framebuffer from `IMAGE_BUFFER_0`.
-        //GsSwapDispBuff();
-        //LoadImage(&D_800A9A6C, (u32*)IMAGE_BUFFER_0);
-        //DrawSync(SyncMode_Wait);
 
         // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
         Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);

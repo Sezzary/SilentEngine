@@ -121,7 +121,7 @@ namespace Silent::Game
     #define CLEAR_FLAG(ptr, idx) \
         ((((u32*)ptr)[(idx) >> 5] &= ~((1 << 0) << ((idx) & 0x1F))))
 
-    /** @brief Sync modes used by `DrawSync` and `VSync`. */
+    /** @brief @deprecated Sync modes used by `DrawSync` and `VSync`. */
     enum e_SyncMode
     {
         SyncMode_Count     = -1,

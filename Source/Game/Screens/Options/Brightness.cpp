@@ -5,13 +5,17 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
+#include "Assets/TranslationKeys.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
 #include "Input/Input.h"
+#include "Utils/Translator.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Input;
+using namespace Silent::Utils;
 
 namespace Silent::Game
 {
@@ -80,10 +84,10 @@ namespace Silent::Game
                 if (g_Screen_FadeStatus & (1 << 2) && !(g_Screen_FadeStatus & (1 << 1)) && g_Screen_FadeStatus & (1 << 0))
                 {
                     ScreenFade_Start(true, true, false);
-                    g_GameWork.gameStateSteps[0]    = OptionsMenuState_LeaveBrightness;
-                    g_SysWork.counters_1C[1]                 = 0;
-                    g_GameWork.gameStateSteps[1]    = 0;
-                    g_GameWork.gameStateSteps[2]    = 0;
+                    g_GameWork.gameStateSteps[0]   = OptionsMenuState_LeaveBrightness;
+                    g_SysWork.counters_1C[1]       = 0;
+                    g_GameWork.gameStateSteps[1]   = 0;
+                    g_GameWork.gameStateSteps[2]   = 0;
                     g_GameWork.background2dColor.r = 0;
                     g_GameWork.background2dColor.g = 0;
                     g_GameWork.background2dColor.b = 0;
@@ -109,9 +113,14 @@ namespace Silent::Game
 
     void Options_BrightnessMenu_ConfigDraw()
     {
+        const auto& translator = g_App.GetTranslator();
+
         Gfx_StringColorSet(StringColorId_White);
+
         Gfx_StringPositionSet(SCREEN_WIDTH / 4, 190);
-        Gfx_StringDraw("LEVEL         ");
+        Gfx_StringDraw(translator(KEY_BRIGHT_MENU_LEVEL));
+
+        Gfx_StringPositionSet(SCREEN_WIDTH / 2, 190);
         Gfx_StringDrawInt(1, g_GameWork.config.brightness);
     }
 

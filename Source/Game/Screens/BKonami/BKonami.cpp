@@ -33,8 +33,6 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[0])
         {
             case KonamiLogoStateStep_Init:
-                Screen_Init(SCREEN_WIDTH * 2, true);
-
                 ScreenFade_Start(true, true, false);
                 g_ScreenFadeTimestep = Q12(0.2f);
 
@@ -257,7 +255,6 @@ namespace Silent::Game
                 if (ScreenFade_IsFinished())
                 {
                     //Settings_ScreenAndVolUpdate();
-                    Screen_Init(SCREEN_WIDTH, false);
 
                     switch (nextGameState)
                     {
@@ -297,27 +294,19 @@ namespace Silent::Game
         //GsClearOt(0, 0, &g_OrderingTable2[g_ActiveBufferIdx]);
     }
 
-    void BootScreen_KonamiScreenDraw() // 0x800C9FB8
+    void BootScreen_KonamiScreenDraw()
     {
         auto& renderer = g_App.GetRenderer();
 
-        // Submit fullscreen sprite `1ST/KONAMI.TIM`.
-        auto sprite = Sprite2d::CreateSprite2d("1ST/KONAMI.TIM", Vector2::Zero, Vector2::One,
-                                               SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
-                                               100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
-        renderer.SubmitSprite2d(sprite);
+        Screen_BackgroundImgDraw("1ST/KONAMI.TIM", true);
         renderer.SetLumaFade(Q8_TO_FLT(g_ScreenFadeProgress), false);
     }
 
-    void BootScreen_KcetScreenDraw() // 0x800CA120
+    void BootScreen_KcetScreenDraw()
     {
         auto& renderer = g_App.GetRenderer();
 
-        // Submit fullscreen sprite `1ST/KONAMI2.TIM`.
-        auto sprite = Sprite2d::CreateSprite2d("1ST/KONAMI2.TIM", Vector2::Zero, Vector2::One,
-                                               SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
-                                               100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
-        renderer.SubmitSprite2d(sprite);
+        Screen_BackgroundImgDraw("1ST/KONAMI2.TIM", true);
 
         // Update luma fade.
         renderer.SetLumaFade(Q8_TO_FLT(g_ScreenFadeProgress), false);

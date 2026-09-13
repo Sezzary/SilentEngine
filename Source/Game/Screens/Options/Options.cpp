@@ -43,8 +43,6 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[0])
         {
             case OptionsMenuState_EnterMainOptions:
-                //DrawSync(SyncMode_Wait);
-
                 if (g_GameWork.gameStatePrev != GameState_InGame)
                 {
                     //VSync(SyncMode_Wait8);

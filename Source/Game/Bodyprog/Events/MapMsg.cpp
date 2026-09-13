@@ -383,6 +383,5 @@ namespace Silent::Game
     {
         g_MapMsg_Select.maxIdx = NO_VALUE;
         //func_8003652C();
-        //DrawSync(SyncMode_Wait);
     }
 }

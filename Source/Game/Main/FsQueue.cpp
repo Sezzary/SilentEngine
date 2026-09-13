@@ -62,9 +62,7 @@ namespace Silent::Game
 
     const std::future<void>& Fs_QueueStartSeek(e_FsFile fileIdx)
     {
-        auto& assets = g_App.GetAssets();
-
-        return assets.Load(fileIdx);
+        return Fs_QueueStartRead(fileIdx);
     }
 
     const std::future<void>& Fs_QueueStartRead(e_FsFile fileIdx)
@@ -76,16 +74,12 @@ namespace Silent::Game
 
     const std::future<void>& Fs_QueueStartRead(e_FsFile fileIdx, void* dest)
     {
-        auto& assets = g_App.GetAssets();
-
-        return assets.Load(fileIdx);
+        return Fs_QueueStartRead(fileIdx);
     }
 
     const std::future<void>& Fs_QueueStartReadTim(e_FsFile fileIdx, void* dest, const s_FsImageDesc* image)
     {
-        auto& assets = g_App.GetAssets();
-
-        return assets.Load(fileIdx);
+        return Fs_QueueStartRead(fileIdx);
     }
 
     const std::future<void>& Fs_QueueStartReadAnm(s32 idx, s32 charaId, void* dest, GsCOORDINATE2* coords)

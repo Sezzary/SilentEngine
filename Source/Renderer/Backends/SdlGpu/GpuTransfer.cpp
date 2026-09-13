@@ -144,7 +144,7 @@ namespace Silent::Renderer::SdlGpu
             // Add vertices.
             for (int i = 0; i < prim.Vertices.size(); i++)
             {
-                float depthZ = std::clamp((float)prim.Depth / (float)DEPTH_2D_MAX, 0.0f, 1.0f);
+                float depthZ = std::clamp((float)prim.Depth / (float)DEPTH_2D_MAX, 0.0f, 1.0f - EPSILON);
                 auto  pos    = Vector3(prim.Vertices[i].Position.x, prim.Vertices[i].Position.y, depthZ);
                 bufferVerts.push_back(BufferVertex2d
                 {

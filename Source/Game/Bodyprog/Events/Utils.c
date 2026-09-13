@@ -348,9 +348,7 @@ void Event_BgTextureCmd(e_BgTextureCmd cmd, e_FsFile texFileIdx, bool incSubStep
             break;
 
         case BgTextureCmd_StoreVram:
-            DrawSync(SyncMode_Wait);
             StoreImage(&D_8002AB10, IMAGE_BUFFER_2);
-            DrawSync(SyncMode_Wait);
             break;
 
         case BgTextureCmd_QueueReadSecondary:
@@ -368,7 +366,6 @@ void Event_BgTextureCmd(e_BgTextureCmd cmd, e_FsFile texFileIdx, bool incSubStep
 
         case BgTextureCmd_RestoreVram:
             LoadImage(&D_8002AB10, IMAGE_BUFFER_2);
-            DrawSync(SyncMode_Wait);
             break;
     }
 }
@@ -502,14 +499,11 @@ void Event_PaperMapCmd(e_PaperMapCmd cmd, s32 paperMapIdx) // 0x800867B4
     switch (cmd)
     {
         case PaperMapCmd_Load:
-            DrawSync(SyncMode_Wait);
             StoreImage(&D_8002AB10, IMAGE_BUFFER_2);
-            DrawSync(SyncMode_Wait);
 
             Fs_QueueStartReadTim(FILE_TIM_MP_0TOWN_TIM + g_PaperMapFileIdxs[paperMapIdx], FS_BUFFER_2, &g_PaperMapImg);
             Fs_QueueStartReadTim(FILE_TIM_MR_0TOWN_TIM + g_PaperMapMarkingFileIdxs[paperMapIdx], FS_BUFFER_1, &g_PaperMapMarkingAtlasImg);
 
-            Screen_Init(SCREEN_WIDTH, true);
             GsSwapDispBuff();
             Fs_QueueWaitForEmpty();
             break;
@@ -520,8 +514,6 @@ void Event_PaperMapCmd(e_PaperMapCmd cmd, s32 paperMapIdx) // 0x800867B4
 
         case PaperMapCmd_Unload:
             LoadImage(&D_8002AB10, IMAGE_BUFFER_2);
-            DrawSync(SyncMode_Wait);
-            Screen_Init(SCREEN_WIDTH, false);
             break;
     }
 }
@@ -1165,11 +1157,8 @@ void Event_PaperMapTake(s32 paperMapFlagIdx, e_EventFlag eventFlagIdx, s32 mapMs
             break;
 
         case 2:
-            DrawSync(SyncMode_Wait);
             StoreImage(&RECT, IMAGE_BUFFER);
-            DrawSync(SyncMode_Wait);
             Fs_QueueStartReadTim(FILE_TIM_MP_0TOWN_TIM + g_PaperMapFileIdxs[paperMapFlagIdx], FS_BUFFER_2, &g_PaperMapImg);
-            Screen_Init(SCREEN_WIDTH, true);
 
             g_IntervalVBlanks = 1;
 
@@ -1231,8 +1220,6 @@ void Event_PaperMapTake(s32 paperMapFlagIdx, e_EventFlag eventFlagIdx, s32 mapMs
 
         default:
             LoadImage(&RECT, IMAGE_BUFFER);
-            DrawSync(SyncMode_Wait);
-            Screen_Init(SCREEN_WIDTH, false);
             Event_ScreenFadeCmd(ScreenFadeCmd_Start, false, 0, Q12(0.0f), false);
 
             // Restore player control.

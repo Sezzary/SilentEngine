@@ -122,7 +122,7 @@ namespace Silent::Game
 
         // Submit fullscreen video sprite.
         auto  sprite = Sprite2d::CreateSprite2d(video.GetName(), Vector2::Zero, Vector2::One,
-                                                SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, video.GetAspectRatio(),
+                                                SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, video.GetAspectRatio(),
                                                 Color::White, NO_VALUE,
                                                 100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
         renderer.SubmitSprite2d(sprite);

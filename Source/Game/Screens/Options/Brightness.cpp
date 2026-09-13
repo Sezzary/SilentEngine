@@ -38,7 +38,7 @@ namespace Silent::Game
 
             case BrightnessMenuState_2:
                 // Set config.
-                if (input.GetAction(In::Left).IsPulsed(0.4f, 0.2f, 0.5f))
+                if (input.GetAction(In::Left).IsPulsed(0.2f, 0.4f, 0.5f))
                 {
                     if (g_GameWork.config.brightness != 0)
                     {
@@ -46,7 +46,7 @@ namespace Silent::Game
                         //Sd_SfxPlay(Sfx_Back, 0, Q8_CLAMPED(0.25f));
                     }
                 }
-                if (input.GetAction(In::Right).IsPulsed(0.4f, 0.2f, 0.5f))
+                if (input.GetAction(In::Right).IsPulsed(0.2f, 0.4f, 0.5f))
                 {
                     if (g_GameWork.config.brightness < 7)
                     {

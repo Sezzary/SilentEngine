@@ -4,10 +4,6 @@ namespace Silent::Game
 {
     void MainMenu_SelectedOptionIdxReset();
 
-    void MainMenu_MainTextDraw();
-
-    void MainMenu_DifficultyTextDraw(s32 idx);
-
     void MainMenu_BackgroundDraw();
 
     void func_8003B7BC();

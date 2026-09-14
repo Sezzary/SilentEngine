@@ -1765,7 +1765,7 @@ namespace Silent::Game
                     g_MemCard_ActiveMemCardSlotSaves = MemCard_ActiveMemCardSlotGet(g_SelectedSaveSlotIdx);
 
                     // Move down savegame entry.
-                    if (input.GetAction(In::Up).IsPulsed(0.2f, 0.4f, 0.5f))
+                    if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f, 0.5f))
                     {
                         if (g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx] != 0)
                         {
@@ -1775,7 +1775,7 @@ namespace Silent::Game
                     }
 
                     // Move up savegame entry.
-                    if (input.GetAction(In::Down).IsPulsed(0.2f, 0.4f, 0.5f))
+                    if (input.GetAction(In::Down).IsPulsed(0.1f, 0.4f, 0.5f))
                     {
                         if (g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx] < g_Savegame_ElementCount0[g_SelectedSaveSlotIdx] - 1)
                         {

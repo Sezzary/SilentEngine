@@ -44,7 +44,7 @@ namespace Silent::Game
     static void MainMenu_MainTextDraw()
     {
         constexpr int  COLUMN_POS_X                = SCREEN_WIDTH / 2;
-        constexpr int  COLUMN_POS_Y                = (SCREEN_HEIGHT / 5) * 3;
+        constexpr int  COLUMN_POS_Y                = 164; // @todo Revise function to avoid hiding background.
         constexpr int  STR_OFFSET_Y                = 10;
         constexpr auto MAIN_MENU_ENTRY_STRING_KEYS = std::array<const char*, MainMenuEntry_Count>
         {
@@ -237,8 +237,8 @@ namespace Silent::Game
 
                 g_MainMenu_VisibleEntryFlags |= g_MainMenu_VisibleEntryFlags << MainMenuEntry_Count;
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.4f),
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f),
+                    input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
                 {
                     SD_Call(Sfx_MenuMove);
                     g_GameWork.gameState = GameState_MainMenu;
@@ -250,13 +250,13 @@ namespace Silent::Game
                     }
                 }
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f))
                 {
                     g_MainMenu_SelectedEntry += MainMenuEntry_Count;
                     while (!(g_MainMenu_VisibleEntryFlags & (1 << --g_MainMenu_SelectedEntry)));
                 }
 
-                if (input.GetAction(In::Down).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
                 {
                     while (!(g_MainMenu_VisibleEntryFlags & (1 << ++g_MainMenu_SelectedEntry)));
                 }
@@ -343,8 +343,8 @@ namespace Silent::Game
                     }
                 }
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.4f) ||
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.4f) ||
+                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f) ||
+                    input.GetAction(In::Down).IsPulsed(0.1f, 0.4f) ||
                     input.GetAction(In::Enter).IsClicked() ||
                     input.GetAction(In::Cancel).IsClicked())
                 {
@@ -358,7 +358,7 @@ namespace Silent::Game
                 }
 
                 // Scroll game difficulty options.
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f))
                 {
                     int prevGameDifficultyIdx = 2;
                     if (newGameSelectedDifficultyIdx > 0)
@@ -367,7 +367,7 @@ namespace Silent::Game
                     }
                     newGameSelectedDifficultyIdx = prevGameDifficultyIdx;
                 }
-                if (input.GetAction(In::Down).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
                 {
                     int nextGameDifficultyIdx = 0;
                     if (newGameSelectedDifficultyIdx < 2)
@@ -378,8 +378,8 @@ namespace Silent::Game
                 }
 
                 // Play scroll sound.
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.4f) ||
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f) ||
+                    input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
                 {
                     SD_Call(Sfx_MenuMove);
                 }

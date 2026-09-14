@@ -7,7 +7,7 @@ namespace Silent::Game
     /** @brief Gamma intensity of background images. */
     extern q0_8 g_Screen_BackgroundImgGamma;
 
-    void Screen_BackgroundImgDraw(const std::string& assetName, bool fit = true);
+    void Screen_BackgroundImgDraw(const std::string& assetName, bool fit = true, int paletteIdx = 0);
 
     /** @brief Draws a background image.
      *

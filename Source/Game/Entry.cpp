@@ -209,10 +209,10 @@ namespace Silent::Game
             // Set clear color.
             renderer.SetClearColor(Color::Clear);
 
-            // Load `1ST/2ZANKO_E.TIM` ("There are violent and disturbing images...").
-            assets.Load("1ST/2ZANKO_E.TIM").wait();
+            // Load `Textures/SplashScreen.png` ("There are violent and disturbing images in this game.").
+            assets.Load("Textures/SplashScreen.png").wait();
 
-            // Fade in `1ST/2ZANKO_E.TIM` with luma-multiply blending.
+            // Fade in `Textures/SplashScreen.png` with luma-multiply blending.
             static q23_8 fade = Q8(0.0f);
             if (fade >= Q8_COLOR(1.0f))
             {
@@ -220,10 +220,10 @@ namespace Silent::Game
             }
             else
             {
-                Screen_BackgroundImgDraw("1ST/2ZANKO_E.TIM", true);
+                Screen_BackgroundImgDraw("Textures/SplashScreen.png", true, NO_VALUE);
 
                 // @todo Style it properly.
-                Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 5) * 2);
+                Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 7) * 3);
                 Gfx_StringColorSet(StringColorId_White);
                 Gfx_StringDraw(translator(KEY_INTRO_WARNING));
 

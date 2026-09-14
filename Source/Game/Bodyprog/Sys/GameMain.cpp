@@ -134,7 +134,7 @@ namespace Silent::Game
                 break;
         }
 
-        Screen_BackgroundImgDraw("1ST/2ZANKO_E.TIM", true);
+        Screen_BackgroundImgDraw("Textures/SplashScreen.png", true, NO_VALUE);
 
         // Update luma fade.
         renderer.SetLumaFade(Q8_TO_FLT(g_ScreenFadeProgress), false);

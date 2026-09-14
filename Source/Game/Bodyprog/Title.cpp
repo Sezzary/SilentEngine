@@ -132,7 +132,7 @@ namespace Silent::Game
             func_8003BCF4();
         }
 
-        Screen_BackgroundImgDraw("TIM/TITLE_E.TIM", true);
+        Screen_BackgroundImgDraw("Psx/TIM/TITLE_E.TIM", true);
         MainMenu_FogUpdate();
     }
 

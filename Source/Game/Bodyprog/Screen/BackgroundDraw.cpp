@@ -17,7 +17,7 @@ namespace Silent::Game
 {
     q0_8 g_Screen_BackgroundImgGamma = Q8(0.5f);
 
-    void Screen_BackgroundImgDraw(const std::string& assetName, bool fit)
+    void Screen_BackgroundImgDraw(const std::string& assetName, bool fit, int paletteIdx)
     {
         auto& renderer = g_App.GetRenderer();
 
@@ -26,7 +26,7 @@ namespace Silent::Game
 
         // Submit fullscreen background sprite.
         auto sprite = Sprite2d::CreateSprite2d(assetName, Vector2::Zero, Vector2::One,
-                                               SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
+                                               SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, Color::White, paletteIdx,
                                                DEPTH_2D_MAX, AlignMode::Center, scaleMode, BlendMode::Opaque);
         renderer.SubmitSprite2d(sprite);
 
@@ -36,7 +36,7 @@ namespace Silent::Game
         {
             auto gammaColor  = Color(1.0f, 1.0f, 1.0f, gamma);
             auto gammaSprite = Sprite2d::CreateSprite2d(assetName, Vector2::Zero, Vector2::One,
-                                                        SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, gammaColor, 0,
+                                                        SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, gammaColor, paletteIdx,
                                                         DEPTH_2D_MAX - 1, AlignMode::Center, scaleMode, BlendMode::Add);
             renderer.SubmitSprite2d(gammaSprite);
         }

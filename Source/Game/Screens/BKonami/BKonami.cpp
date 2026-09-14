@@ -36,14 +36,14 @@ namespace Silent::Game
                 ScreenFade_Start(true, true, false);
                 g_ScreenFadeTimestep = Q12(0.2f);
 
-                // Load `1ST/KONAMI2.TIM` (Konami logo).
+                // Load `Psx/1ST/KONAMI2.TIM` (Konami logo).
                 Fs_QueueStartReadTim(FILE_1ST_KONAMI2_TIM);
 
                 //WorldGfx_HarryCharaLoad();
                 //GameFs_BgItemLoad();
                 //Map_EffectTexturesLoad(NO_VALUE);
 
-                // Start loading `ANIM/HB_BASE.ANM` (base Harry animations).
+                // Start loading `Psx/ANIM/HB_BASE.ANM` (base Harry animations).
                 Fs_QueueStartRead(FILE_ANIM_HB_BASE_ANM, FS_BUFFER_0);
 
                 g_GameWork.gameStateSteps[0]++;
@@ -219,7 +219,7 @@ namespace Silent::Game
                         case 2:
                             if (g_GameWorkConst->config.autoLoad)
                             {
-                                g_App.GetAssets().Load("TIM/SAVELOAD.TIM");
+                                g_App.GetAssets().Load("Psx/TIM/SAVELOAD.TIM");
                                 nextGameState = GameState_AutoLoadSavegame;
                             }
                             else
@@ -294,7 +294,7 @@ namespace Silent::Game
     {
         auto& renderer = g_App.GetRenderer();
 
-        Screen_BackgroundImgDraw("1ST/KONAMI.TIM", true);
+        Screen_BackgroundImgDraw("Psx/1ST/KONAMI.TIM", true);
         renderer.SetLumaFade(Q8_TO_FLT(g_ScreenFadeProgress), false);
     }
 
@@ -302,7 +302,7 @@ namespace Silent::Game
     {
         auto& renderer = g_App.GetRenderer();
 
-        Screen_BackgroundImgDraw("1ST/KONAMI2.TIM", true);
+        Screen_BackgroundImgDraw("Psx/1ST/KONAMI2.TIM", true);
 
         // Update luma fade.
         renderer.SetLumaFade(Q8_TO_FLT(g_ScreenFadeProgress), false);

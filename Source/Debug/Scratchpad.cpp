@@ -101,14 +101,14 @@ namespace Silent::Debug
 
             // Cursor.
             auto cursorPos    = SnapToGrid(input.GetCursorPosition(), g_App.GetWindowResolution().ToVector2(), RETRO_SCREEN_SPACE_RES.y);
-            auto cursorSprite = Sprite2d::CreateSprite2d("TIM/BG_ETC.TIM", Vector2(0.0f, 64.0f / 256.0f), Vector2(32.0f / 128.0f, 96.0f / 256.0f),
+            auto cursorSprite = Sprite2d::CreateSprite2d("Psx/TIM/BG_ETC.TIM", Vector2(0.0f, 64.0f / 256.0f), Vector2(32.0f / 128.0f, 96.0f / 256.0f),
                                                          SCREEN_SPACE_RES * 0.5f, 0.0f, 1.0f, 0.75f, Color::White, NO_VALUE,
                                                          0, AlignMode::Center, ScaleMode::HorizontalEdge, BlendMode::Alpha);
             renderer.SubmitSprite2d(cursorSprite);
 
             //return;
 
-            //auto sprite0 = Sprite2d::CreateSprite2d("TIM/HERO_PIC.TIM", Vector2::Zero, Vector2::One,
+            //auto sprite0 = Sprite2d::CreateSprite2d("Psx/TIM/HERO_PIC.TIM", Vector2::Zero, Vector2::One,
             //                                        Vector2(50.0f, 50.0f), 0.0f, Vector2::One, Color::White, 0,
             //                                        DEPTH_2D_MAX, AlignMode::Center, ScaleMode::VerticalEdge, BlendMode::Opaque);
             //renderer.SubmitSprite2d(sprite0);

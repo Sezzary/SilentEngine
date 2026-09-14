@@ -3,6 +3,9 @@
 #include "Game/Bodyprog/Chara/Chara.h"
 #include "Game/Bodyprog/Items.h"
 #include "Game/Bodyprog/Sys/Joy.h"
+#include "Utils/Bitfield.h"
+
+using namespace Silent::Utils;
 
 namespace Silent::Game
 {
@@ -103,7 +106,7 @@ namespace Silent::Game
         s8                 extraWalkRunCtrl;    /** `bool` | Normal: `false`, Reverse: `true`, default: Normal. */
         s8                 extraAutoAiming;     /** `bool` | On: `false`, Off: `true`, default: On. */
         s8                 extraBulletAdjust;   /** x1-x6: Range [0, 5], default: x1. */
-        u16                seenGameOverTips[1]; /** Bitfield tracking seen game-over tips. Each bit corresponds to a tip index (0–14), set bits indicate seen tips. Resets after picking all 15. */
+        Bitfield           seenGameOverTips;    /** Bitfield tracking seen game-over tips. Each bit corresponds to a tip index (0–14), set bits indicate seen tips. Resets after picking all 15. */
         s8                 unk_30[4];
         u32                palLanguageId;
     };

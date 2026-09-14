@@ -31,6 +31,7 @@
 #include "Input/Input.h"
 #include "Services/Filesystem.h"
 #include "Utils/Translator.h"
+#include "Utils/Bitfield.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Assets;
@@ -42,29 +43,30 @@ namespace Silent::Game
 {
     s_MapOverlayHdr g_MapOverlayHdr; // } @todo Defined elsewhere in decomp.
 
+    // @todo Remove checklist when all are working.
     static void (*g_SysStateFuncs[])() =
     {
-        SysState_Gameplay_Update,
-        SysState_OptionsMenu_Update,
-        SysState_StatusMenu_Update,
-        SysState_MapScreen_Update,
-        SysState_Fmv_Update,
-        SysState_LoadArea_Update,
-        SysState_LoadArea_Update,
-        SysState_ReadMessage_Update,
-        SysState_SaveMenu_Update,
-        SysState_SaveMenu_Update,
-        SysState_EventCallback_Update,
-        SysState_EventSetFlag_Update,
-        SysState_EventPlaySound_Update,
-        SysState_GameOver_Update,
-        SysState_GamePaused_Update
+        SysState_Gameplay_Update,       // @todo
+        SysState_OptionsMenu_Update,    // @todo
+        SysState_StatusMenu_Update,     // @todo
+        SysState_MapScreen_Update,      // @todo
+        SysState_Fmv_Update,            // @todo
+        SysState_LoadArea_Update,       // @todo
+        SysState_LoadArea_Update,       // @todo
+        SysState_ReadMessage_Update,    // @todo
+        SysState_SaveMenu_Update,       // @todo
+        SysState_SaveMenu_Update,       // @todo
+        SysState_EventCallback_Update,  // @todo
+        SysState_EventSetFlag_Update,   // @todo
+        SysState_EventPlaySound_Update, // @todo
+        SysState_GameOver_Update,       // @todo
+        SysState_GamePaused_Update      // @todo
     };
 
     /** Used to store the previous delta time state of the delta timer. There are some instances where 2D backgrounds
      * are drawn using `g_DeltaTimeRaw` while `g_DeltaTime` is stopped.
      */
-    static s32 g_DeltaTimeCpy;
+    static q19_12 g_DeltaTimeCpy;
 
     s_EventData*   g_ItemTriggerEvents[5]; // Guessed size. Check decomp later.
     s_RadioNpcInfo g_RadioNpcInfos[2];
@@ -299,15 +301,10 @@ namespace Silent::Game
         }
 
         // Debug button combo to bring up save screen from pause screen.
-        // DPad-Left + L2 + L1 + LS-Left + RS-Left + L3
-        if ((g_Controller0->buttonFlags.held == (ControllerFlag_L3             |
-                                                 ControllerFlag_DpadLeft       |
-                                                 ControllerFlag_L2             |
-                                                 ControllerFlag_L1             |
-                                                 ControllerFlag_LStickLowLeft  |
-                                                 ControllerFlag_RStickLowLeft  |
-                                                 ControllerFlag_LStickHighLeft)) &&
-            (g_Controller0->buttonFlags.clicked & ControllerFlag_L3))
+        if (input.GetAction(In::Left).IsHeld()     &&
+            input.GetAction(In::StepLeft).IsHeld() &&
+            input.GetAction(In::Action).IsHeld()   &&
+            input.GetAction(In::Enter).IsHeld())
         {
             D_800A9A68 = 0;
             SD_Call(4);
@@ -554,10 +551,10 @@ namespace Silent::Game
         const auto& assets = g_App.GetAssets();
         const auto& fs     = g_App.GetFilesystem();
 
-        static auto videoName = std::string();
+        static int  fmvStateStep = 0;
+        static auto videoName    = std::string();
 
         // Handle FMV state step.
-        static int fmvStateStep = 0;
         switch (fmvStateStep)
         {
             case 0:
@@ -636,8 +633,8 @@ namespace Silent::Game
                     g_GameWork.gameStateSteps[0] = 1;
                 }
 
-                videoName    = {};
                 fmvStateStep = 0;
+                videoName    = {};
                 break;
             }
         }
@@ -726,29 +723,26 @@ namespace Silent::Game
 
     void SysState_ReadMessage_Update() // 0x80039FB8
     {
-        s32 i;
-        void (**unfreezePlayerFunc)(bool);
-
         // When `SysState_ReadMessage_Update` is called, the game world freezes.
         // The following conditions unfreeze:
-        // - A specific event related flag is disenabled.
-        // - A specific camera related flag is disenabled.
-        // - There is no alive enemy.
+        // - A specific event related flag is disabled.
+        // - A specific camera related flag is disabled.
+        // - All enemies are dead.
         if (!(g_MapEventData->transitionFlags & AreaTransitionFlag_UnfreezeWorld) &&
             !(g_SysWork.sysState & SysFlag_5))
         {
-            for (i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
+            for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
             {
-                if (g_SysWork.npcs[i].model.charaId >= Chara_Harry && g_SysWork.npcs[i].model.charaId <= Chara_MonsterCybil &&
+                if (g_SysWork.npcs[i].model.charaId >= Chara_Harry         &&
+                    g_SysWork.npcs[i].model.charaId <= CHARA_LAST_ENEMY_ID &&
                     g_SysWork.npcs[i].health > Q12(0.0f))
                 {
+                    if (i == ARRAY_SIZE(g_SysWork.npcs))
+                    {
+                        g_DeltaTime = g_DeltaTimeCpy;
+                    }
                     break;
                 }
-            }
-
-            if (i == ARRAY_SIZE(g_SysWork.npcs))
-            {
-                g_DeltaTime = g_DeltaTimeCpy;
             }
         }
         else
@@ -771,12 +765,8 @@ namespace Silent::Game
 
             case MapMsgState_SelectEntry1:
                 Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
-
-                //unfreezePlayerFunc = &g_MapOverlayHdr.playerControlUnfreeze;
-
                 SysWork_StateSetNext(SysState_Gameplay);
-
-                (*unfreezePlayerFunc)(false);
+                g_MapOverlayHdr.playerControlUnfreeze(false);
                 break;
         }
     }
@@ -787,7 +777,7 @@ namespace Silent::Game
 
         save = g_SavegamePtr;
 
-        save->locationId       = g_MapEventParam;
+        save->locationId      = g_MapEventParam;
         save->playerPositionX = g_SysWork.playerWork.player.position.vx;
         save->playerPositionZ = g_SysWork.playerWork.player.position.vz;
         save->playerRotationY = g_SysWork.playerWork.player.rotation.vy;
@@ -880,18 +870,6 @@ namespace Silent::Game
         g_SysWork.sysState = SysState_Gameplay;
     }
 
-    /** @brief Checks a flag state is `true` in the array of 16-bit flags.
-     *
-     * @param flags Flag array.
-     * @param flagIdx Flag index.
-     */
-    static inline s32 Flags16b_IsSet(const u16* flags, s32 flagIdx)
-    {
-        // @bug `>> 5` divides `flagId` by 32 to get array index, but array contains 16-bit values.
-        // Maybe copy-paste from `u32` version of func.
-        return (flags[flagIdx >> 5] >> (flagIdx & 0x1F)) & (1 << 0);
-    }
-
     void SysState_GameOver_Update() // 0x8003A52C
     {
         constexpr int TIP_COUNT = 15;
@@ -899,11 +877,12 @@ namespace Silent::Game
         const auto& input      = g_App.GetInput();
         const auto& translator = g_App.GetTranslator();
 
-        static u8 prevTipIdx;
-        u16       seenTipIdxs[1];
-        s32       tipIdx;
-        s32       randTipVal;
-        u16*      temp_a0;
+        static int prevTipIdx;
+
+        auto seenTipIdxs = Bitfield(TIP_COUNT);
+        int  tipIdx;
+        int  randTipVal;
+        u16* temp_a0;
 
         switch (g_SysWork.sysStateSteps[0])
         {
@@ -919,17 +898,17 @@ namespace Silent::Game
                 MainMenu_SelectedOptionIdxReset();
 
                 // If every game over tip has been seen, reset flag bits.
-                if (g_GameWork.config.seenGameOverTips[0] == SHRT_MAX)
+                if (g_GameWork.config.seenGameOverTips.TestAll())
                 {
-                    g_GameWork.config.seenGameOverTips[0] = 0;
+                    g_GameWork.config.seenGameOverTips.ClearAll();
                 }
 
                 randTipVal = 0;
 
-                seenTipIdxs[0] = g_GameWork.config.seenGameOverTips[0];
+                seenTipIdxs = g_GameWork.config.seenGameOverTips;
                 for (tipIdx = 0; tipIdx < TIP_COUNT; tipIdx++)
                 {
-                    if (!Flags16b_IsSet(seenTipIdxs, tipIdx))
+                    if (!seenTipIdxs.Test(tipIdx))
                     {
                         if ((!(g_SysWork.field_2388.field_154.effectsInfo.field_0.field_0 & 0x3) && (tipIdx - 13) >= 2u) ||
                             ( (g_SysWork.field_2388.field_154.effectsInfo.field_0.field_0 & 0x3) && (tipIdx - 13) <  2u))
@@ -949,7 +928,7 @@ namespace Silent::Game
                 // thereby affecting what `tipIdx` will contain.
                 for (tipIdx = 0; tipIdx < TIP_COUNT; tipIdx++)
                 {
-                    if (!Flags16b_IsSet(seenTipIdxs, tipIdx))
+                    if (!seenTipIdxs.Test(tipIdx))
                     {
                         if ((!(g_SysWork.field_2388.field_154.effectsInfo.field_0.field_0 & 0x3) && (tipIdx - 13) >= 2u) ||
                             ( (g_SysWork.field_2388.field_154.effectsInfo.field_0.field_0 & 0x3) && (tipIdx - 13) <  2u))
@@ -980,11 +959,11 @@ namespace Silent::Game
                 SysWork_StateStepIncrement(0);
 
             case 1:
-                //SysWork_StateStepIncrementAfterFade(2, true, 0, Q12(0.5f), false);
+                Event_ScreenFadeCmd(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(0.5f), false);
                 break;
 
             case 2:
-                //SysWork_StateStepIncrementAfterFade(0, false, 0, Q12(0.5f), false);
+                Event_ScreenFadeCmd(ScreenFadeCmd_Start, false, ScreenFadeType_Black, Q12(0.5f), false);
                 SysWork_StateStepIncrement(0);
 
             case 3:
@@ -1006,7 +985,7 @@ namespace Silent::Game
                 Gfx_StringColorSet(StringColorId_White);
                 Gfx_StringDraw(translator(KEY_GAME_OVER_HEADING));
 
-                //SysWork_StateStepIncrementAfterFade(2, true, 0, Q12(2.0f), false);
+                Event_ScreenFadeCmd(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(2.0f), false);
                 break;
 
             case 5:
@@ -1023,7 +1002,7 @@ namespace Silent::Game
                 }
 
             case 6:
-                //SysWork_StateStepIncrementAfterFade(2, false, 0, Q12(2.0f), false);
+                Event_ScreenFadeCmd(ScreenFadeCmd_Auto, false, ScreenFadeType_Black, Q12(2.0f), false);
                 g_SysWork.field_28 = Q12(0.0f);
                 Screen_BackgroundImgDraw(&g_DeathTipImg);
                 break;
@@ -1040,16 +1019,14 @@ namespace Silent::Game
                     }
                 }
 
-                // TODO: some inline FlagSet func? couldn't get matching ver, but pretty sure temp_a0 can be removed somehow
-                temp_a0 = &g_GameWork.config.seenGameOverTips[(prevTipIdx >> 5)];
-                *temp_a0 |= (1 << 0) << (prevTipIdx & 0x1F);
+                g_GameWork.config.seenGameOverTips.Set(prevTipIdx);
 
                 SysWork_StateStepIncrement(0);
                 break;
 
             case 8:
                 Screen_BackgroundImgDraw(&g_DeathTipImg);
-                //SysWork_StateStepIncrementAfterFade(2, true, 0, Q12(2.0f), false);
+                Event_ScreenFadeCmd(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(2.0f), false);
                 break;
 
             default:
@@ -1069,7 +1046,7 @@ namespace Silent::Game
     {
         if (g_GameWork.gameStateSteps[0] == 0)
         {
-            g_IntervalVBlanks               = 1;
+            g_IntervalVBlanks            = 1;
             ScreenFade_Start(true, true, false);
             g_GameWork.gameStateSteps[0] = 1;
         }
@@ -1077,9 +1054,7 @@ namespace Silent::Game
         g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
 
         Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
-
         g_MapOverlayHdr.mapEventFuncs[g_MapEventParam]();
-
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
     }
 }

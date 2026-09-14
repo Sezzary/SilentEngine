@@ -39,30 +39,31 @@ namespace Silent::Game
         0
     };
 
+    // @todo Remove checklist when all are working.
     void (*g_GameStateUpdateFuncs[])() =
     {
-        GameState_Boot_Update,
-        GameState_KonamiLogo_Update,
-        GameState_KcetLogo_Update,
-        GameState_MovieIntroFadeIn_Update,
-        GameState_AutoLoadSavegame_Update,
+        GameState_Boot_Update,                     // @todo
+        GameState_KonamiLogo_Update,               // @todo
+        GameState_KcetLogo_Update,                 // @todo
+        GameState_MovieIntroFadeIn_Update,         // @todo
+        GameState_AutoLoadSavegame_Update,         // @todo
         GameState_MovieIntroAlternate_Update,
         GameState_MovieIntro_Update,
-        GameState_MainMenu_Update,
-        GameState_LoadSavegameScreen_Update,
+        GameState_MainMenu_Update,                 // @todo
+        GameState_LoadSavegameScreen_Update,       // @todo
         GameState_MovieOpening_Update,
-        GameState_LoadScreen_Update,
-        GameState_InGame_Update,
-        GameState_MapEvent_Update,
-        GameState_ExitMovie_Update,
-        nullptr,//GameState_ItemScreens_Update,
-        nullptr,//GameState_PaperMapScreen_Update,
-        GameState_LoadSavegameScreen_Update,
-        GameState_DebugMoviePlayer_Update,
-        GameState_Options_Update,
-        GameState_LoadStatusScreen_Update,
-        GameState_LoadMapScreen_Update,
-        nullptr,//GameState_Credits_Update
+        GameState_LoadScreen_Update,               // @todo
+        GameState_InGame_Update,                   // @todo
+        GameState_MapEvent_Update,                 // @todo
+        GameState_ExitMovie_Update,                // @todo
+        nullptr,//GameState_ItemScreens_Update,    // @todo
+        nullptr,//GameState_PaperMapScreen_Update, // @todo
+        GameState_LoadSavegameScreen_Update,       // @todo
+        GameState_DebugMoviePlayer_Update,         // @todo
+        GameState_Options_Update,                  // @todo
+        GameState_LoadStatusScreen_Update,         // @todo
+        GameState_LoadMapScreen_Update,            // @todo
+        nullptr,//GameState_Credits_Update         // @todo
     };
 
     void GameState_Boot_Update() // 0x80032D1C

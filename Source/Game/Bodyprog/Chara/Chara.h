@@ -6,12 +6,13 @@
 
 namespace Silent::Game
 {
-    constexpr int NPC_COUNT_MAX        = 6;
-    constexpr int NPC_BONE_COUNT_MAX   = 10 * NPC_COUNT_MAX;
-    constexpr int CHARA_GROUP_COUNT    = 4; /** While up to 6 NPCs and a player can exist in the game world, only 4 different character
-                                             * types (including the player) can be loaded at a time.
-                                             */
-    constexpr int CHARA_FORCE_FREE_ALL = 0xFF; /** `Chara_Load` can force free already loaded models to make room for new ones. */
+    constexpr int  NPC_COUNT_MAX        = 6;
+    constexpr int  NPC_BONE_COUNT_MAX   = 10 * NPC_COUNT_MAX;
+    constexpr int  CHARA_GROUP_COUNT    = 4;                  /** While up to 6 NPCs and a player can exist in the game world, only 4 different character
+                                                               * types (including the player) can be loaded at a time.
+                                                               */
+    constexpr int  CHARA_FORCE_FREE_ALL = 0xFF;               /** `Chara_Load` can force free already loaded models to make room for new ones. */
+    constexpr auto CHARA_LAST_ENEMY_ID  = Chara_MonsterCybil; /** `e_CharaId` of the last common enemy character. */
 
     /** @brief Character flags. Used by `s_SubCharacter::flags`. */
     enum e_CharaFlags

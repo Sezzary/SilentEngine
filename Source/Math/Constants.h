@@ -216,6 +216,28 @@ namespace Silent::Math
         return (a >= 0 && b < 0) || (a < 0 && b >= 0);
     };
 
+    /** @brief Divides an integer by another using a shift.
+     *
+     * @note `b` must be a power of 2.
+     * Supported divisors: 2, 4, 8, 16, 32, 64, 128, 256.
+     *
+     * @param a Numerator.
+     * @param b Denominator.
+     * @return Result of `a` divided by `b`.
+     */
+    constexpr auto DIV_FAST = [](auto a, auto b)
+    {
+        return ((a) >> (((b) == 2)   ? 1 :
+                        ((b) == 4)   ? 2 :
+                        ((b) == 8)   ? 3 :
+                        ((b) == 16)  ? 4 :
+                        ((b) == 32)  ? 5 :
+                        ((b) == 64)  ? 6 :
+                        ((b) == 128) ? 7 :
+                        ((b) == 256) ? 8 :
+                        0))
+    }
+
     /** @brief Scales a large `x` before trigonometric multiplication.
      *
      * @note "Range-based scaling mechanism common in fixed-point DSP or min-level game engine math." - ChatGPT

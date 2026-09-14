@@ -227,6 +227,7 @@ namespace Silent
 
         // Finish.
         Debug::Log("Shutdown complete.");
+        Debug::Deinitialize();
     }
 
     void ApplicationManager::Run()

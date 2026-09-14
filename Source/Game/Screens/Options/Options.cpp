@@ -189,9 +189,9 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        Options_MainOptionsMenu_EntryStringsDraw();
+        auto widths = Options_MainOptionsMenu_EntryStringsDraw();
         Options_MainOptionsMenu_ConfigDraw();
-        Options_MainOptionsMenu_SelectionHighlightDraw();
+        Options_MainOptionsMenu_SelectionHighlightDraw(widths);
         Options_Menu_VignetteDraw();
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
         Options_MainOptionsMenu_BgmVolumeBarDraw();
@@ -209,7 +209,7 @@ namespace Silent::Game
         }
         else
         {
-            g_Options_SelectionHighlightTimer++;
+            g_Options_SelectionHighlightTimer += 2; // @todo Original menu ran at 60 FPS. Add 2 to compensate.
         }
 
         if (g_Options_SelectionHighlightTimer != LINE_CURSOR_TIMER_MAX)
@@ -269,20 +269,10 @@ namespace Silent::Game
                 }
                 break;
 
-
             case MainOptionsMenuEntry_Brightness:
                 if (input.GetAction(In::Enter).IsClicked())
                 {
                     //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-                    if (g_GameWork.gameStatePrev == GameState_MainMenu)
-                    {
-                        Fs_QueueStartReadTim(FILE_TIM_OP_BRT_E_TIM, IMAGE_BUFFER_3, &g_BrightnessScreenImg0);
-                    }
-                    else
-                    {
-                        Fs_QueueStartReadTim(FILE_TIM_OP_BRT_E_TIM, IMAGE_BUFFER_3, &g_BrightnessScreenImg1);
-                    }
-
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterBrightness);
                 }

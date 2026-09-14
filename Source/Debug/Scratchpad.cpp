@@ -97,8 +97,6 @@ namespace Silent::Debug
 
             // ====================================
 
-            Options_MainOptionsMenu_EntryStringsDraw();
-
             // Sprite test.
 
             // Cursor.

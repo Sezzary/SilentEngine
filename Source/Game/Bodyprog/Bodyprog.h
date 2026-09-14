@@ -598,8 +598,6 @@ namespace Silent::Game
     extern s_FsImageDesc g_ItemInspectionImg;
     extern s_FsImageDesc g_LoadingScreenImg;
     extern s_FsImageDesc g_ControllerButtonAtlasImg;
-    extern s_FsImageDesc g_BrightnessScreenImg0;
-    extern s_FsImageDesc g_BrightnessScreenImg1;
     extern s_FsImageDesc g_DeathTipImg;
     extern s_FsImageDesc g_HealthPortraitImg;
     extern s_FsImageDesc g_InventoryKeyItemTextureImg;

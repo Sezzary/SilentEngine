@@ -190,6 +190,11 @@ namespace Silent::Game
         // Initialize.
         else
         {
+            // @temp Skip boot.
+            g_GameWork.gameState = (e_GameState)7;
+            isInitComplete = true;
+            return;
+
             auto& assets   = g_App.GetAssets();
             auto& renderer = g_App.GetRenderer();
 

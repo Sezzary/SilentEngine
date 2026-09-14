@@ -80,8 +80,6 @@ namespace Silent::Game
     s_FsImageDesc g_ItemInspectionImg          = {};
     s_FsImageDesc g_LoadingScreenImg           = {}; // @unused? Uses a ground texture.
     s_FsImageDesc g_ControllerButtonAtlasImg   = {};
-    s_FsImageDesc g_BrightnessScreenImg0       = {};
-    s_FsImageDesc g_BrightnessScreenImg1       = {};
     s_FsImageDesc g_DeathTipImg                = {};
     s_FsImageDesc g_HealthPortraitImg          = {};
     s_FsImageDesc g_InventoryKeyItemTextureImg = {};

@@ -67,10 +67,10 @@ namespace Silent::Game
         auto scaleMode = fit ? ScaleMode::Fit : ScaleMode::Fill;
 
         // Submit first blended fullscreen background sprite.
-        auto color0  = Color(1.0f, 1.0f, 1.0f, 1.0f - Q12_TO_FLT(alpha));
+        auto color0  = Color::White;
         auto sprite0 = Sprite2d::CreateSprite2d(assetName0, Vector2::Zero, Vector2::One,
-                                                SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, color0, 0,
-                                                DEPTH_2D_MAX, AlignMode::Center, scaleMode, BlendMode::Alpha);
+                                                SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
+                                                DEPTH_2D_MAX, AlignMode::Center, scaleMode, BlendMode::Opaque);
         renderer.SubmitSprite2d(sprite0);
 
         // Submit second blended fullscreen backround sprite.

@@ -22,27 +22,25 @@ namespace Silent::Game
 {
     void Options_BrightnessMenu_Control()
     {
-        const auto& input = g_App.GetInput();
+        const auto& input      = g_App.GetInput();
+        const auto& translator = g_App.GetTranslator();
 
         // @todo
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])
         {
-            case BrightnessMenuState_0:
-                // Entry.
-                g_GameWork.gameStateSteps[1] = BrightnessMenuState_1;
+            case BrightnessMenuState_Enter:
+                g_GameWork.gameStateSteps[1] = BrightnessMenuState_StartFade;
                 g_GameWork.gameStateSteps[2] = 0;
                 break;
 
-            case BrightnessMenuState_1:
-                // Set fade.
+            case BrightnessMenuState_StartFade:
                 ScreenFade_Start(true, true, false);
-                g_GameWork.gameStateSteps[1] = BrightnessMenuState_2;
+                g_GameWork.gameStateSteps[1] = BrightnessMenuState_SetConfig;
                 g_GameWork.gameStateSteps[2] = 0;
                 break;
 
-            case BrightnessMenuState_2:
-                // Set config.
+            case BrightnessMenuState_SetConfig:
                 if (input.GetAction(In::Left).IsPulsed(0.2f, 0.4f, 0.5f))
                 {
                     if (g_GameWork.config.brightness != 0)
@@ -73,7 +71,7 @@ namespace Silent::Game
                         //Sd_SfxPlay(Sfx_Cancel, 0, Q8_CLAMPED(0.25f));
                     }
 
-                    //ScreenFade_Start(true, false, false);
+                    ScreenFade_Start(true, false, false);
                     g_GameWork.gameStateSteps[1]++;
                     g_GameWork.gameStateSteps[2] = 0;
                 }
@@ -81,8 +79,7 @@ namespace Silent::Game
 
             case BrightnessMenuState_Leave:
                 // Switch to previous menu.
-                // TODO: Odd check for `ScreenFade_IsFinished()`.
-                if (g_Screen_FadeStatus & (1 << 2) && !(g_Screen_FadeStatus & (1 << 1)) && g_Screen_FadeStatus & (1 << 0))
+                if (ScreenFade_IsFinished())
                 {
                     ScreenFade_Start(true, true, false);
                     g_GameWork.gameStateSteps[0]   = OptionsMenuState_LeaveBrightness;
@@ -96,16 +93,10 @@ namespace Silent::Game
                 break;
         }
 
-        // @todo
-        // Draw graphics.
-        if (g_GameWork.gameStatePrev == GameState_MainMenu)
-        {
-            Screen_BackgroundImgDraw(&g_BrightnessScreenImg0);
-        }
-        else
-        {
-            Screen_BackgroundImgDraw(&g_BrightnessScreenImg1);
-        }
+        // Submit text prompt.
+        Gfx_StringPositionSet(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5);
+        Gfx_StringColorSet(StringColorId_White);
+        Gfx_StringDraw(translator(KEY_BRIGHT_MENU_PROMPT));
 
         //func_8003E5E8(g_GameWork.config.brightness);
         Options_BrightnessMenu_ArrowsDraw();
@@ -129,25 +120,25 @@ namespace Silent::Game
     {
         static const auto FRONT_ARROWS = std::vector<s_Triangle2d>
         {
-            { { 8, 84  }, { 16, 76 }, { 16, 92 } },
-            { { 64, 84 }, { 56, 76 }, { 56, 92 } }
+            { { 160 + 8,  120 + 84 }, { 160 + 16, 120 + 76 }, { 160 + 16, 120 + 92 } },
+            { { 160 + 64, 120 + 84 }, { 160 + 56, 120 + 76 }, { 160 + 56, 120 + 92 } }
         };
 
         static const auto BORDER_ARROWS = std::vector<s_Triangle2d>
         {
-            { { 7, 84  }, { 17, 74 }, { 17, 94 } },
-            { { 65, 84 }, { 55, 74 }, { 55, 94 } }
+            { { 160 + 7,  120 + 84 }, { 160 + 17, 120 + 74 }, { 160 + 17, 120 + 94 } },
+            { { 160 + 65, 120 + 84 }, { 160 + 55, 120 + 74 }, { 160 + 55, 120 + 94 } }
         };
 
         const auto& input = g_App.GetInput();
 
         // Determine UI movement direction.
         int dir = 0;
-        if (input.GetAction(In::Left).IsHeld(0.5f))
+        if (input.GetAction(In::Left).IsHeld(0.0f, 0.5f))
         {
             dir = 1;
         }
-        else if (input.GetAction(In::Right).IsHeld(0.5f))
+        else if (input.GetAction(In::Right).IsHeld(0.0f, 0.5f))
         {
             dir = 2;
         }

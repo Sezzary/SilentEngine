@@ -168,7 +168,7 @@ namespace Silent::Game
      * @param isHalfHeight Use half-height glyphs.
      * @return String width.
      */
-    float Gfx_StringDraw(const std::string& str, int displayLength = INT_MAX, bool isHalfHeight = false);
+    float Gfx_StringDraw(const std::string& msg, int displayLength = INT_MAX, bool isHalfHeight = false);
 
     /** @brief Draws an integer string in screen space using the serif font.
      *

@@ -6,13 +6,19 @@
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
+#include "Assets/TranslationKeys.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sys/GameMain.h"
 #include "Game/Bodyprog/Sys/Joy.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Services/Clock.h"
+#include "Utils/Translator.h"
+
+using namespace Silent::Assets;
+using namespace Silent::Utils;
 
 namespace Silent::Game
 {
@@ -34,9 +40,9 @@ namespace Silent::Game
             g_TickCount++;
 
             // Update input.
-            Joy_ReadP1();
+            //Joy_ReadP1();
             //Demo_ControllerDataUpdate();
-            Joy_ControllerDataUpdate();
+            //Joy_ControllerDataUpdate();
 
             /*if (MainLoop_ShouldWarmReset() == 2)
             {
@@ -182,6 +188,8 @@ namespace Silent::Game
 
         static bool isInitComplete = false;
 
+        const auto& translator = g_App.GetTranslator();
+
         // Run game.
         if (isInitComplete)
         {
@@ -213,6 +221,11 @@ namespace Silent::Game
             else
             {
                 Screen_BackgroundImgDraw("1ST/2ZANKO_E.TIM", true);
+
+                // @todo Style it properly.
+                Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 5) * 2);
+                Gfx_StringColorSet(StringColorId_White);
+                Gfx_StringDraw(translator(KEY_INTRO_WARNING));
 
                 // Update luma fade.
                 renderer.SetLumaFade(Q8_TO_FLT(fade), false);

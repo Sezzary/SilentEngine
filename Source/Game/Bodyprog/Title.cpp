@@ -237,8 +237,8 @@ namespace Silent::Game
 
                 g_MainMenu_VisibleEntryFlags |= g_MainMenu_VisibleEntryFlags << MainMenuEntry_Count;
 
-                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f),
-                    input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN),
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     SD_Call(Sfx_MenuMove);
                     g_GameWork.gameState = GameState_MainMenu;
@@ -250,13 +250,13 @@ namespace Silent::Game
                     }
                 }
 
-                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     g_MainMenu_SelectedEntry += MainMenuEntry_Count;
                     while (!(g_MainMenu_VisibleEntryFlags & (1 << --g_MainMenu_SelectedEntry)));
                 }
 
-                if (input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     while (!(g_MainMenu_VisibleEntryFlags & (1 << ++g_MainMenu_SelectedEntry)));
                 }
@@ -343,8 +343,8 @@ namespace Silent::Game
                     }
                 }
 
-                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f) ||
-                    input.GetAction(In::Down).IsPulsed(0.1f, 0.4f) ||
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
                     input.GetAction(In::Enter).IsClicked() ||
                     input.GetAction(In::Cancel).IsClicked())
                 {
@@ -358,7 +358,7 @@ namespace Silent::Game
                 }
 
                 // Scroll game difficulty options.
-                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     int prevGameDifficultyIdx = 2;
                     if (newGameSelectedDifficultyIdx > 0)
@@ -367,7 +367,7 @@ namespace Silent::Game
                     }
                     newGameSelectedDifficultyIdx = prevGameDifficultyIdx;
                 }
-                if (input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     int nextGameDifficultyIdx = 0;
                     if (newGameSelectedDifficultyIdx < 2)
@@ -378,8 +378,8 @@ namespace Silent::Game
                 }
 
                 // Play scroll sound.
-                if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f) ||
-                    input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     SD_Call(Sfx_MenuMove);
                 }

@@ -230,14 +230,14 @@ namespace Silent::Game
 
         // @todo Accurate pulse delay.
         // Move selection cursor up/down.
-        if (input.GetAction(In::Up).IsPulsed(0.1f, 0.4f))
+        if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
             g_Options_SelectionHighlightTimer = 0;
             g_MainOptionsMenu_SelectedEntry   = (g_MainOptionsMenu_SelectedEntry + (MainOptionsMenuEntry_Count - 1)) % MainOptionsMenuEntry_Count;
         }
-        if (input.GetAction(In::Down).IsPulsed(0.1f, 0.4f))
+        if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
@@ -313,8 +313,8 @@ namespace Silent::Game
             case MainOptionsMenuEntry_BgmVolume:
                 vol = g_GameWork.config.volumeBgm;
 
-                /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(0.1f, 0.4f)) ||
-                    (vol > 0                    && input.GetAction(In::Left).IsPulsed(0.1f, 0.4f)))
+                /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)) ||
+                    (vol > 0                    && input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)))
                 {
                     Sd_EngineCmd(Sfx_MenuMove);
                 }
@@ -325,11 +325,11 @@ namespace Silent::Game
                 }*/
 
                 // Scroll left/right.
-                if (input.GetAction(In::Left).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     vol = vol - SOUND_VOL_STEP;
                 }
-                if (input.GetAction(In::Right).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     vol = vol + SOUND_VOL_STEP;
                 }
@@ -343,8 +343,8 @@ namespace Silent::Game
             case MainOptionsMenuEntry_SfxVolume:
                 vol = g_GameWork.config.volumeSe;
 
-                /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(0.1f, 0.4f)) ||
-                    (vol > 0                    && input.GetAction(In::Left).IsPulsed(0.1f, 0.4f)))
+                /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)) ||
+                    (vol > 0                    && input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)))
                 {
                     Sd_EngineCmd(Sfx_MenuMove);
                 }
@@ -354,11 +354,11 @@ namespace Silent::Game
                     Sd_EngineCmd(Sfx_MenuError);
                 }*/
 
-                if (input.GetAction(In::Left).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     vol = vol - SOUND_VOL_STEP;
                 }
-                if (input.GetAction(In::Right).IsPulsed(0.1f, 0.4f))
+                if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     vol = vol + SOUND_VOL_STEP;
                 }

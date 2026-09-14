@@ -27,11 +27,15 @@
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"
+#include "Game/Screens/Stream/Stream.h"
 #include "Input/Input.h"
+#include "Services/Filesystem.h"
 #include "Utils/Translator.h"
+#include "Utils/Utils.h"
 
 using namespace Silent::Assets;
 using namespace Silent::Input;
+using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Game
@@ -129,7 +133,7 @@ namespace Silent::Game
         }
         Demo_DemoRandSeedRestore();
 
-        D_800A9A0C = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
+        g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
 
         if (!(g_SysWork.bgmStatusFlags & BgmStatusFlag_Pause) && g_MapOverlayHdr.updateWorldObjects != nullptr)
         {
@@ -341,7 +345,7 @@ namespace Silent::Game
                 break;
         }
 
-        if (D_800A9A0C != 0)
+        if (g_IsLoadingFinished)
         {
             Game_StateSetNext(GameState_OptionScreen);
         }
@@ -510,7 +514,7 @@ namespace Silent::Game
                 g_SysWork.sysStateSteps[0]++;
             }
 
-            if (D_800A9A0C != 0)
+            if (g_IsLoadingFinished)
             {
                 Game_StateSetNext(GameState_PaperMapScreen);
             }
@@ -543,51 +547,99 @@ namespace Silent::Game
         }
     }
 
-    void SysState_Fmv_Update() // 0x80039A58
+    void SysState_Fmv_Update()
     {
         constexpr auto BASE_AUDIO_FILE_IDX = FILE_XA_ZC_14392;
 
-        static RECT D_800A9A6C = { 320, 256, 160, 240 };
+        const auto& assets = g_App.GetAssets();
+        const auto& fs     = g_App.GetFilesystem();
 
-        switch (g_SysWork.sysStateSteps[0])
+        static auto videoName = std::string();
+
+        // Handle FMV state step.
+        static int fmvStateStep = 0;
+        switch (fmvStateStep)
         {
             case 0:
-                ScreenFade_Start(false, false, false);
-                D_800A9A0C                  = 0;
-                g_SysWork.sysStateSteps[0] = 1;
-
-            case 1:
-                /*if (Ipd_ChunkInitCheck() != 0)
+            {
+                switch (g_SysWork.sysStateSteps[0])
                 {
-                    //GameFs_StreamBinLoad();
-                    g_SysWork.sysStateSteps[0]++;
-                }*/
+                    case 0:
+                        ScreenFade_Start(false, false, false);
+                        g_IsLoadingFinished        = false;
+                        g_SysWork.sysStateSteps[0] = 1;
+
+                    case 1:
+                        /*if (Ipd_ChunkInitCheck() != 0)
+                        {
+                            //GameFs_StreamBinLoad();
+                            g_SysWork.sysStateSteps[0]++;
+                        }*/
+                        break;
+                }
+
+                if (!g_IsLoadingFinished)
+                {
+                    break;
+                }
+
+                //func_800892A4(0);
+                //func_80089128();
+
+                fmvStateStep++;
                 break;
-        }
+            }
+            case 1:
+            {
+                // Collect files sorted alphabetically.
+                auto videosPath = fs.GetAssetsDirectory() / ASSETS_VIDEO_DIR_NAME;
+                auto videoFiles = std::vector<stdfs::path>{};
+                for (auto& entry : stdfs::recursive_directory_iterator(videosPath))
+                {
+                    if (entry.is_regular_file())
+                    {
+                        videoFiles.push_back(entry.path().generic_string());
+                    }
+                }
+                Sort(videoFiles);
 
-        if (D_800A9A0C == 0)
-        {
-            return;
-        }
+                // Set FMV video name.
+                videoName = videoFiles[assets.GetIdx("Psx/XA/ZC_14392.STR") - g_MapEventParam].filename();
 
-        // @todo Implement new FMV playback functionality.
-        //func_800892A4(0);
-        //func_80089128();
-        // Start playing movie. File to play is based on file ID `BASE_AUDIO_FILE_IDX - g_MapEventParam`.
-        // Blocks until movie has finished playback or user has skipped it.
-        //open_main(BASE_AUDIO_FILE_IDX - g_MapEventParam, g_FileTable[BASE_AUDIO_FILE_IDX - g_MapEventParam].blockCount);
-        //func_800892A4(1);
+                fmvStateStep++;
+                break;
+            }
+            case 2:
+            {
+                if (!PlayFmv(videoName))
+                {
+                    Game_StateSetNext(GameState_MainMenu);
+                    g_ScreenFadeTimestep = Q12(1.0f);
 
-        // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
-        Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
+                    fmvStateStep++;
+                }
+                break;
+            }
+            case 3:
+            {
+                //func_800892A4(1);
 
-        // Return to game.
-        Game_StateSetNext(GameState_InGame);
+                // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
+                Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
 
-        // If flag is set, returns to `GameState_InGame` with `gameStateStep[0]` = 1.
-        if (g_MapEventData->transitionFlags & AreaTransitionFlag_SkipFadeIn)
-        {
-            g_GameWork.gameStateSteps[0] = 1;
+                // Return to game.
+                Game_StateSetNext(GameState_InGame);
+
+                // If flag is set, returns to `GameState_InGame` with `gameStateStep[0]` = 1.
+                if (g_MapEventData->transitionFlags & AreaTransitionFlag_SkipFadeIn)
+                {
+                    g_GameWork.gameStateSteps[0] = 1;
+                }
+
+                videoName    = {};
+                fmvStateStep = 0;
+                break;
+            }
         }
     }
 
@@ -596,10 +648,10 @@ namespace Silent::Game
         u32           offsetZ;
         s_MapPoint2d* mapPoint;
 
-        g_SysWork.unused_229C       = 0;
-        g_SysWork.loadingScreenIdx = D_800BCDB0.loadingScreenId;
-        g_SysWork.sfxPairIdx       = g_MapEventData->sfxPairIdx_8_19;
-        g_SysWork.areaTransitionFlags       = g_MapEventData->transitionFlags;
+        g_SysWork.unused_229C         = 0;
+        g_SysWork.loadingScreenIdx    = D_800BCDB0.loadingScreenId;
+        g_SysWork.sfxPairIdx          = g_MapEventData->sfxPairIdx_8_19;
+        g_SysWork.areaTransitionFlags = g_MapEventData->transitionFlags;
 
         SD_Call(SFX_PAIRS[g_SysWork.sfxPairIdx].sfx_0);
 
@@ -790,7 +842,7 @@ namespace Silent::Game
                 break;
 
             case 1:
-                if (D_800A9A0C != 0)
+                if (g_IsLoadingFinished)
                 {
                     ScreenFade_Start(true, true, false);
                     func_8003943C();
@@ -1022,7 +1074,7 @@ namespace Silent::Game
             g_GameWork.gameStateSteps[0] = 1;
         }
 
-        D_800A9A0C = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
+        g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
 
         Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
 

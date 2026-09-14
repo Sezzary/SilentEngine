@@ -9,19 +9,18 @@
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
-#include "Game/Bodyprog/Sys/Joy.h"
-#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FileInfo.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Utils/Video.h"
-//#include "bodyprog/libsd.h"
 
 using namespace Silent::Input;
+using namespace Silent::Renderer;
+using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    void GameState_MovieIntroFadeIn_Update() // 0x801E2654
+    void GameState_MovieIntroFadeIn_Update()
     {
         const auto& input = g_App.GetInput();
 
@@ -52,59 +51,54 @@ namespace Silent::Game
         }
     }
 
-    void GameState_MovieIntro_Update() // 0x801E279C
+    void GameState_MovieIntro_Update()
     {
         const char* videoName = (g_GameWorkConst->config.extraOptionsEnabled & (1 << 0)) ? "C1_20670.MPG" :
                                                                                            "C2_20670.MPG";
-        if (!movie_main(std::string(videoName), 0, 0))
+        if (!PlayFmv(std::string(videoName)))
         {
             Game_StateSetNext(GameState_MainMenu);
             g_ScreenFadeTimestep = Q12(1.0f);
         }
     }
 
-    void GameState_MovieOpening_Update() // 0x801E2838
+    void GameState_MovieOpening_Update()
     {
-        if (!movie_main("C1_20670.MPG", 0, 0))
+        if (!PlayFmv("M1_03500.MPG"))
         {
             Game_StateSetNext(GameState_MainLoadScreen);
         }
     }
 
-    void GameState_ExitMovie_Update() // 0x801E28B0
+    void GameState_ExitMovie_Update()
     {
         Game_StateSetNext(GameState_InGame);
     }
 
-    void GameState_DebugMoviePlayer_Update() // 0x801E2908
+    void GameState_DebugMoviePlayer_Update()
     {
         // @stub
     }
 
-    void GameState_MovieIntroAlternate_Update() // 0x801E2A24
+    void GameState_MovieIntroAlternate_Update()
     {
-        if (!movie_main("C1_20670.MPG", 0, 0))
+        if (!PlayFmv("C1_20670.MPG"))
         {
             Game_StateSetNext(GameState_MainMenu);
             g_ScreenFadeTimestep = Q12(1.0f);
         }
     }
 
-    void open_main(s32 file_idx, s16 num_frames) // 0x801E2AA4
-    {
-        // @stub
-    }
-
-    bool movie_main(const std::string& file_name, s32 f_size, s32 sector) // 0x801E2B9C
+    bool PlayFmv(const std::string& name)
     {
         const auto& input    = g_App.GetInput();
         auto&       renderer = g_App.GetRenderer();
         auto&       video    = g_App.GetVideo();
 
         // Start playing new video.
-        if (!video.IsLoaded() || file_name != video.GetName())
+        if (!video.IsLoaded() || name != video.GetName())
         {
-            video.Play(file_name);
+            video.Play(name);
         }
         // Update active video playback.
         else
@@ -124,7 +118,7 @@ namespace Silent::Game
         auto  sprite = Sprite2d::CreateSprite2d(video.GetName(), Vector2::Zero, Vector2::One,
                                                 SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, video.GetAspectRatio(),
                                                 Color::White, NO_VALUE,
-                                                100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
+                                                DEPTH_2D_MAX, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
         renderer.SubmitSprite2d(sprite);
         return true;
     }

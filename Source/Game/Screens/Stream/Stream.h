@@ -20,7 +20,9 @@ namespace Silent::Game
     /** @brief Updates alternative intro movie game state. */
     void GameState_MovieIntroAlternate_Update(void);
 
-    void open_main(s32 file_idx, s16 num_frames);
-
-    bool movie_main(const std::string& file_name, s32 f_size, s32 sector);
+    /** @brief Plays a fullscreen FMV.
+     *
+     * @param name FMV name.
+     */
+    bool PlayFmv(const std::string& name);
 }

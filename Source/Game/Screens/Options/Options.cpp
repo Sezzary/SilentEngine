@@ -325,13 +325,13 @@ namespace Silent::Game
                 }*/
 
                 // Scroll left/right.
-                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
-                {
-                    vol = vol - SOUND_VOL_STEP;
-                }
                 if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    vol = vol + SOUND_VOL_STEP;
+                    vol += SOUND_VOL_STEP;
+                }
+                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
+                {
+                    vol -= SOUND_VOL_STEP;
                 }
 
                 // Set config.

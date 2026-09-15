@@ -110,8 +110,7 @@ namespace Silent::Game
 
         Chara_Padlock          = 44,
 
-        Chara_Count,
-        Chara_Hack = NO_VALUE, // @hack Force enum to be treated as `s32`.
+        Chara_Count
     };
 
     // Collision-related.
@@ -581,7 +580,7 @@ namespace Silent::Game
         q3_12             headingAngle;
         s16               flags;          /** `e_CharaFlags` */
         s8                field_40;       // In player: Index of the NPC attacking the player. Spawn index for Air Screamer?
-                                          // In NPCs: Unknown. `Game_NpcRoomInitSpawn` sugests it indicates the NPC index in `s_Savegame::ovlEnemyStates`.
+                                          // In NPCs: Unknown. `Game_NpcRoomInitSpawn` sugests it indicates the NPC index in `s_Savegame::mapEnemyStates`.
         s8                attackReceived; // Packed weapon attack indicating what attack has been performed to the character. See `WEAPON_ATTACK`.
         s_SubCharacter_44 field_44;
         q19_12            health;

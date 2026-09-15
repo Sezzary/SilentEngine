@@ -20,7 +20,7 @@ namespace Silent::Game
     {
         if (g_SavegamePtr->gameDifficulty <= GameDifficulty_Normal/* || Rng_RandQ12() >= Q12(0.3f)*/)
         {
-            g_SavegamePtr->ovlEnemyStates[g_SavegamePtr->mapIdx] &= ~(1 << chara->field_40);
+            g_SavegamePtr->mapEnemyStates[g_SavegamePtr->mapIdx] &= ~(1 << chara->field_40);
         }
     }
 
@@ -69,7 +69,7 @@ namespace Silent::Game
 
         npcIdx             = 0;
         curCharaSpawn      = g_MapOverlayHdr.charaSpawnInfos[0];
-        ovlEnemiesStatePtr = &g_SavegamePtr->ovlEnemyStates[g_SavegamePtr->mapIdx];
+        ovlEnemiesStatePtr = &g_SavegamePtr->mapEnemyStates[g_SavegamePtr->mapIdx];
 
         if (cond == false)
         {

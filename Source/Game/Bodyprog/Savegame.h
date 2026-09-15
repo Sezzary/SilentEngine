@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Bodyprog/Chara/Chara.h"
+#include "Game/Bodyprog/EventFlags.h"
 #include "Game/Bodyprog/Items.h"
 #include "Game/Bodyprog/Sys/Joy.h"
 #include "Utils/Bitfield.h"
@@ -14,31 +15,29 @@ namespace Silent::Game
     {
         s_InventoryItem items[INV_ITEM_COUNT_MAX];
         s8              field_A0;
-        s8              unused_A1[3]; /** @unused */
-        s8              mapIdx;       /** `e_MapIdx` Index to overlay `.BIN` files. */
-        s8              mapRoomIdx;   /** Index to local map geometry IPD files. */
-        s16             savegameCount;
-        s8              locationId;                  /** `e_SaveLocationId` */
-        u8              paperMapIdx;                 /** `e_PaperMapIdx` | Index of the paper map displayed when opening the map screen. */
-        u8              equippedWeapon;              /** `e_InvItemId` | Affects the visible player weapon model. */
-        u8              inventorySlotCount;          /** Item slots. */
+        int             mapIdx;       /** `e_MapIdx` Index to overlay `.BIN` files. */
+        int             mapRoomIdx;   /** Index to local map geometry IPD files. */
+        int             savegameCount;
+        int             locationId;                  /** `e_SaveLocationId` */
+        int             paperMapIdx;                 /** `e_PaperMapIdx` | Index of the paper map displayed when opening the map screen. */
+        int             equippedWeapon;              /** `e_InvItemId` | Affects the visible player weapon model. */
+        int             inventorySlotCount;          /** Item slots. */
         u32             itemToggleFlags;             /** `e_ItemToggleFlags` */
-        s32             ovlEnemyStates[45];          /** Flags indicating the enemy states in a given overlay.
+        s32             mapEnemyStates[Chara_Count]; /** Flags indicating the enemy states in a given overlay.
                                                      * All set to 1 by default. As soon as they are killed (not just stunned),
                                                      * set to 0 based on a currently unknown index value.
                                                      */
-        s32             paperMapFlags;               // See Sparagas' `HasMapsFlags` struct for details of every bit.
-        u32             eventFlags[52];              // Can be accessed through `Savegame_EventFlagGet` / `Savegame_EventFlagSet`, only tested a few, but seems all are related to events and pick-up flags
+        Bitfield        paperMapFlags;               // See Sparagas' `HasMapsFlags` struct for details of every bit.
+        Bitfield        eventFlags = Bitfield(EventFlag_Count); /** Accessed via `Savegame_EventFlagGet` and `Savegame_EventFlagSet`. */
                                                      // grouped by location and not item types.
                                                      // Also includes map marking flags - see Sparagas' `MapMarkingsFlags` struct for details of every bit.
         q19_12          healthSaturation;            /** Range: [0, 300]. Ampoules give extra stored health. If the player loses health, it will be slowly restored. */
-        s16             pickedUpItemCount;
-        s8              unused_23E;         /** @unused */
+        int             pickedUpItemCount;
         u8              inventoryItemFlags; /** `e_InvItemFlags` */
         q19_12          playerHealth;       /** Default: `Q12(100.0f)` */
         q19_12          playerPositionX;
         q3_12           playerRotationY;  /** Range [0, 0.999755859375], positive Z: 0, clockwise rotation. It can be multiplied by 360 to get degrees. */
-        u8              clearGameCount;   /** Range [0, 99] */
+        int             clearGameCount;   /** Range [0, 99] */
         u8              clearGameEndings; /** `e_GameEndingFlags` */
         q19_12          playerPositionZ;
         q20_12          gameplayTimer;
@@ -61,15 +60,15 @@ namespace Silent::Game
                                                       * special items than normal by additionally reading one of the two bits
                                                       * for the Hyper Blaster beam color.
                                                       */
-        u8              meleeKillCount;
-        u8              meleeKillCountB; // Can't be packed if used as `u16`.
-        u8              rangedKillCount;
+        int             meleeKillCount;
+        int             meleeKillCountB; // Can't be packed if used as `u16`.
+        int             rangedKillCount;
         u32             field_260      : 28;
         s32             gameDifficulty : 4;  /** `e_GameDifficulty` */
-        u16             firedShotCount;      /** Missed shot count = firedShotCount - (closeRangeShotCount + midRangeShotCount + longRangeShotCount). */
-        u16             closeRangeShotCount; /** Only hits counted. */
-        u16             midRangeShotCount;   /** Only hits counted. */
-        u16             longRangeShotCount;  /** Only hits counted. */
+        int             firedShotCount;      /** Missed shot count = firedShotCount - (closeRangeShotCount + midRangeShotCount + longRangeShotCount). */
+        int             closeRangeShotCount; /** Only hits counted. */
+        int             midRangeShotCount;   /** Only hits counted. */
+        int             longRangeShotCount;  /** Only hits counted. */
         u16             field_26C;
         u16             field_26E; // Related to enemy kills.
         u16             field_270;
@@ -81,7 +80,7 @@ namespace Silent::Game
                                     * Similar to `clearGameEndings`, but the value is replaced with the current ending instead of ORed.
                                     * Used to identify the latest ending for the ranking screen.
                                     */
-        u8              continueCount;
+        int             continueCount;
     };
 
     /** @brief User options configuration. */
@@ -116,50 +115,30 @@ namespace Silent::Game
     /** @brief Gets an event flag state from the savegame event flags array.
      *
      * @param flagIdx Event flag index.
-     * @return Event flag state (`bool`).
+     * @return Event flag state.
      */
-    #define Savegame_EventFlagGet(flagIdx) \
-        (g_SavegamePtr->eventFlags[(flagIdx) >> 5] & (1 << ((flagIdx) & 0x1F)))
-
-    /** @brief Gets an event flag state from the savegame event flags array.
-     *
-     * @note This alternate version shifts the flags array value by the flag index for some reason
-     * and is required for some matches.
-     *
-     * @param flagIdx Event flag index.
-     * @return Event flag state (`bool`).
-     */
-    #define Savegame_EventFlagGetAlt(flagIdx) \
-        ((g_SavegamePtr->eventFlags[(flagIdx) >> 5] >> ((flagIdx) & 0x1F)) & (1 << 0))
+    static inline bool Savegame_EventFlagGet(int flagIdx)
+    {
+        return g_SavegamePtr->eventFlags.Test(flagIdx);
+    }
+    #define Savegame_EventFlagGetAlt Savegame_EventFlagGet
 
     /** @brief Clears an event flag state in the savegame event flags array.
      *
      * @param flagIdx Event flag index.
      */
-    #define Savegame_EventFlagClear(flagIdx) \
-        (g_SavegamePtr->eventFlags[(flagIdx) >> 5] &= ~(1 << ((flagIdx) & 0x1F)))
-
-    /** @brief Sets an event flag state in the savegame event flags array.
-     *
-     * @param flagIdx Event flag index.
-     */
-    #define Savegame_EventFlagSet(flagIdx) \
-        (g_SavegamePtr->eventFlags[(flagIdx) >> 5] |= 1 << ((flagIdx) & 0x1F))
-
-    /** @brief Sets an event flag state in the savegame event flags array.
-     *
-     * @note Some map event code only seems to work with this inline version.
-     *
-     * @param flagIdx Event flag index.
-     */
-    static inline void Savegame_EventFlagSetAlt(u32 flagIdx)
+    static inline void Savegame_EventFlagClear(int flagIdx)
     {
-        s16 localIdx;
-        s16 localBit;
-
-        localIdx = flagIdx / 32;
-        localBit = flagIdx % 32;
-
-        g_SavegamePtr->eventFlags[localIdx] |= 1 << localBit;
+        g_SavegamePtr->eventFlags.Clear(flagIdx);
     }
+
+    /** @brief Sets an event flag state in the savegame event flags array.
+     *
+     * @param flagIdx Event flag index.
+     */
+    static inline void Savegame_EventFlagSet(int flagIdx)
+    {
+        g_SavegamePtr->eventFlags.Set(flagIdx);
+    }
+    #define Savegame_EventFlagSetAlt Savegame_EventFlagSet
 }

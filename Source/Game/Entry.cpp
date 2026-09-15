@@ -7,6 +7,7 @@
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
 #include "Assets/TranslationKeys.h"
+#include "Game/Bodyprog/Demo.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
@@ -24,7 +25,7 @@ namespace Silent::Game
 {
     static void MainLoop()
     {
-        constexpr q19_12 DELTA_TIME_30_FPS     = Q12(1.0f / (float)(Services::TICKS_PER_SECOND));
+        constexpr q19_12 DELTA_TIME_30_FPS     = Q12(1.0f / (float)Services::TICKS_PER_SECOND);
         constexpr q19_12 GRAVITY_SPEED_PER_SEC = Q12(9.8f);
 
         s32 vBlanks;
@@ -40,7 +41,6 @@ namespace Silent::Game
             g_TickCount++;
 
             // Update input.
-            //Joy_ReadP1();
             //Demo_ControllerDataUpdate();
             //Joy_ControllerDataUpdate();
 
@@ -50,24 +50,6 @@ namespace Silent::Game
                 continue;
             }*/
 
-            /*g_ActiveBufferIdx = GsGetActiveBuff();
-
-            if (g_GameWork.gameState >= GameState_MainLoadScreen && g_GameWork.gameState < GameState_MapEvent)
-            {
-                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ActiveBufferIdx << 17));
-            }
-            else if (g_GameWork.gameState == GameState_InventoryScreen)
-            {
-                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ActiveBufferIdx * 40000));
-            }
-            else
-            {
-                GsOUT_PACKET_P = (PACKET*)(TEMP_MEMORY_ADDR + (g_ActiveBufferIdx << 15));
-            }
-
-            GsClearOt(0, 0, &g_ObjectTable0[g_ActiveBufferIdx]);
-            GsClearOt(0, 0, &g_ObjectTable1[g_ActiveBufferIdx]);*/
-
             g_SysWork.bgmStatusFlags = BgmStatusFlag_None;
 
             // Call update function for current GameState.
@@ -76,8 +58,8 @@ namespace Silent::Game
                 g_GameStateUpdateFuncs[g_GameWork.gameState]();
             }
 
-            /*Demo_Update();
-            Demo_GameRandSeedSet();*/
+            Demo_Update();
+            Demo_GameRandSeedSet();
 
             /*if (MainLoop_ShouldWarmReset() == 2)
             {
@@ -88,7 +70,7 @@ namespace Silent::Game
             Screen_FadeUpdate();
             //Sd_TaskPoolExecute();
 
-            /*if (!Sd_AudioStreamingCheck())
+            /*if (Sd_AudioStreamingCheck() == AudioStreamingState_None)
             {
                 Fs_QueueUpdate();
             }*/
@@ -96,71 +78,11 @@ namespace Silent::Game
             /*func_80089128();
             func_8008D78C(); // Camera update?*/
 
-            // Handle V sync.
-            /*if (g_SysWork.sysState & SysFlag_DemoActive)
+            // Handle demo presentation interval.
+            if (g_SysWork.sysState & SysFlag_DemoActive)
             {
-                vBlanks   = VSync(-1);
-                g_VBlanks = vBlanks - g_PrevVBlanks;
-
                 Demo_PresentIntervalUpdate();
-
-                interval      = g_Demo_VideoPresentInterval;
-                g_PrevVBlanks = vBlanks;
-
-                if (interval < g_IntervalVBlanks)
-                {
-                    interval = g_IntervalVBlanks;
-                }
-
-                do
-                {
-                    VSync(0);
-                    g_VBlanks++;
-                    g_PrevVBlanks++;
-                }
-                while (g_VBlanks < interval);
-
-                g_UncappedVBlanks = g_VBlanks;
-                g_VBlanks         = MIN(g_VBlanks, 4);
-
-                vCount     = g_Demo_VideoPresentInterval * H_BLANKS_PER_TICK;
-                vCountCopy = g_UncappedVBlanks * H_BLANKS_PER_TICK;
-                g_VBlanks  = g_Demo_VideoPresentInterval;
             }
-            else
-            {
-                if (g_SysWork.sysState != SysState_Gameplay)
-                {
-                    g_VBlanks     = VSync(-1) - g_PrevVBlanks;
-                    g_PrevVBlanks = VSync(-1);
-                    VSync(0);
-                }
-                else
-                {
-                    if (g_Gfx_ScreenFade != 1)
-                    {
-                        VSync(0);
-                    }
-
-                    g_VBlanks     = VSync(-1) - g_PrevVBlanks;
-                    g_PrevVBlanks = VSync(-1);
-
-                    if (g_VBlanks < g_IntervalVBlanks)
-                    {
-                        do
-                        {
-                            VSync(0);
-                            g_VBlanks++;
-                            g_PrevVBlanks++;
-                        }
-                        while (g_VBlanks < g_IntervalVBlanks);
-                    }
-                }
-
-                // Update V blanks.
-                g_UncappedVBlanks = g_VBlanks;
-                g_VBlanks         = MIN(g_VBlanks, V_BLANKS_MAX);
-            }*/
 
             // Update delta time.
             g_DeltaTime    =
@@ -175,8 +97,7 @@ namespace Silent::Game
         // Initialize engine.
         else
         {
-            /*func_800890B8();
-            sd_init();*/
+            //sd_init();
 
             isInitComplete = true;
         }

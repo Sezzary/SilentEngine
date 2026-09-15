@@ -462,10 +462,10 @@ namespace Silent::Game
         q19_12           cameraRadiusXz;
         q19_12           cameraY;
         s_SysWork_2388   field_2388;
-        s32              field_2510;
-        s_SysWork_2514   field_2514;
-        s8               field_254C[508]; /** Used through indirect pointer calls. Tied to `libkpad`.*/
-        q3_12            bgmLayerVolumes[BGM_LAYER_COUNT];
+        s32              field_2510;                       // } Related to libkpad.
+        s_SysWork_2514   field_2514;                       // }
+        s8               field_254C[508];                  /** Used through indirect pointer calls. Tied to `libkpad`.*/
+        q3_12            bgmLayerVolumes[BGM_LAYER_COUNT]; // Last index value is not a layer, but some sort of timer. See `Bgm_LayersUpdate`.
         q23_8            field_275C; // } SFX volumes?
         q23_8            field_2760; // }
         q23_8            field_2764; // }

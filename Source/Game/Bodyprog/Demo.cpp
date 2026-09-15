@@ -262,7 +262,7 @@ namespace Silent::Game
 
     void Demo_ExitDemo() // 0x8008F4E4
     {
-        g_Demo_FrameCount     = 999 * TICKS_PER_SECOND;
+        g_Demo_FrameCount     = SECONDS_60_FPS(999);
         g_Demo_CurFrameData   = nullptr;
         g_Demo_DemoStep       = 0;
         g_SysWork.sysFlags |= SysFlag_DoWarmReset;
@@ -334,7 +334,9 @@ namespace Silent::Game
             return false;
         }
 
-        if (!Gfx_ScreenFadeIn_IsInProgress(prevScreenFadeCpy) || !Gfx_ScreenFadeIn_IsInProgress(g_Screen_FadeStatus) || cond)
+        if (!Gfx_ScreenFadeIn_IsInProgress(prevScreenFadeCpy)   ||
+            !Gfx_ScreenFadeIn_IsInProgress(g_Screen_FadeStatus) ||
+            cond)
         {
             g_Demo_CurFrameData = nullptr;
             return true;
@@ -350,6 +352,7 @@ namespace Silent::Game
 
                 if (g_Demo_CurFrameData->gameStateExpected != gameWork->gameState)
                 {
+                    // @todo Can submit this as debug menu message instead.
                     //Text_Debug_PositionSet(8, 80);
                     //Text_Debug_Draw("STEP ERROR:[H:");
                     //Text_Debug_Draw(Text_Debug_IntToString(2, g_Demo_CurFrameData->gameStateExpected_8));
@@ -374,8 +377,6 @@ namespace Silent::Game
         g_Demo_CurFrameData = nullptr;
         return true;
     }
-
-    const s16 unkRodata_8002B2F2 = 0x8008;
 
     bool Demo_ControllerDataUpdate() // 0x8008F7CC
     {

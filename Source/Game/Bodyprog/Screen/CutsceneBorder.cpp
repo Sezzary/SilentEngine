@@ -103,9 +103,9 @@ namespace Silent::Game
 
     void Screen_CutsceneCameraStateUpdate() // 0x80032904
     {
-        GsOT*    ot;
+        //GsOT*    ot;
         POLY_G4* poly;
-        DR_MODE* drMode;
+        //DR_MODE* drMode;
 
         //drMode = &D_800A8E98[g_ActiveBufferIdx];
         //poly   = &D_800A8EB0[g_ActiveBufferIdx];
@@ -130,7 +130,7 @@ namespace Silent::Game
                     g_SysWork.cutsceneBorderState++;
                 }
 
-                //Screen_BlackBorderDraw(poly, g_BlackBorderShade);
+                Screen_BlackBorderDraw(poly, g_BlackBorderShade);
                 break;
 
             case 20:
@@ -139,7 +139,7 @@ namespace Silent::Game
                 g_SysWork.cutsceneBorderState++;
 
             case 21:
-                //Screen_BlackBorderDraw(poly, g_BlackBorderShade);
+                Screen_BlackBorderDraw(poly, g_BlackBorderShade);
                 break;
 
             case 23:
@@ -151,7 +151,7 @@ namespace Silent::Game
                     return;
                 }
 
-                //Screen_BlackBorderDraw(poly, g_BlackBorderShade);
+                Screen_BlackBorderDraw(poly, g_BlackBorderShade);
                 break;
 
             case 0:
@@ -164,7 +164,7 @@ namespace Silent::Game
                 return;
         }
 
-        ot = (GsOT*)&g_OtTags0[g_ActiveBufferIdx][4];
+        //ot = (GsOT*)&g_OtTags0[g_ActiveBufferIdx][4];
         //AddPrim(ot, poly);
         //AddPrim(ot, &poly[2]);
         //AddPrim(ot, drMode);

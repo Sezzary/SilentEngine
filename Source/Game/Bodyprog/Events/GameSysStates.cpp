@@ -11,8 +11,8 @@
 #include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/Events/EventsMain.h"
 #include "Game/Bodyprog/Events/Radio.h"
+#include "Game/Bodyprog/Events/Utils.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
-#include "Game/Bodyprog/Title.h"
 //#include "Game/Bodyprog/item_screens.h"
 //#include "Game/Bodyprog/memcard.h"
 #include "Game/Bodyprog/Savegame.h"
@@ -22,6 +22,7 @@
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
+#include "Game/Bodyprog/Title.h"
 //#include "Game/Bodyprog/player.h"
 //#include "Game/Bodyprog/ranking.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
@@ -733,8 +734,8 @@ namespace Silent::Game
         {
             for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
             {
-                if (g_SysWork.npcs[i].model.charaId >= Chara_Harry         &&
-                    g_SysWork.npcs[i].model.charaId <= CHARA_LAST_ENEMY_ID &&
+                if (g_SysWork.npcs[i].model.charaId >= Chara_Harry        &&
+                    g_SysWork.npcs[i].model.charaId <= Chara_MonsterCybil &&
                     g_SysWork.npcs[i].health > Q12(0.0f))
                 {
                     if (i == ARRAY_SIZE(g_SysWork.npcs))
@@ -872,7 +873,25 @@ namespace Silent::Game
 
     void SysState_GameOver_Update() // 0x8003A52C
     {
-        constexpr int TIP_COUNT = 15;
+        constexpr int  TIP_COUNT    = 15;
+        constexpr auto TIP_STR_KEYS = std::array<const char*, TIP_COUNT>
+        {
+            KEY_GAME_OVER_TIP_1,
+            KEY_GAME_OVER_TIP_2,
+            KEY_GAME_OVER_TIP_3,
+            KEY_GAME_OVER_TIP_4,
+            KEY_GAME_OVER_TIP_5,
+            KEY_GAME_OVER_TIP_6,
+            KEY_GAME_OVER_TIP_7,
+            KEY_GAME_OVER_TIP_8,
+            KEY_GAME_OVER_TIP_9,
+            KEY_GAME_OVER_TIP_10,
+            KEY_GAME_OVER_TIP_11,
+            KEY_GAME_OVER_TIP_12,
+            KEY_GAME_OVER_TIP_13,
+            KEY_GAME_OVER_TIP_14,
+            KEY_GAME_OVER_TIP_15
+        };
 
         const auto& input      = g_App.GetInput();
         const auto& translator = g_App.GetTranslator();
@@ -882,13 +901,12 @@ namespace Silent::Game
         auto seenTipIdxs = Bitfield(TIP_COUNT);
         int  tipIdx;
         int  randTipVal;
-        u16* temp_a0;
 
         switch (g_SysWork.sysStateSteps[0])
         {
             case 0:
                 g_MapOverlayHdr.playerControlFreeze();
-                g_SysWork.field_28 = Q12(0.0f);
+                g_SysWork.sysStateStepData[0] = Q12(0.0f);
 
                 if (g_GameWork.autosave.continueCount < 99)
                 {
@@ -954,16 +972,14 @@ namespace Silent::Game
 
                 // Store current shown `tipIdx`, later `sysStateSteps == 7` will set it inside `seenGameOverTips`.
                 prevTipIdx = tipIdx;
-
-                Fs_QueueStartReadTim((e_FsFile)((int)FILE_TIM_TIPS_E01_TIM + tipIdx), FS_BUFFER_1, &g_DeathTipImg);
                 SysWork_StateStepIncrement(0);
 
             case 1:
-                Event_ScreenFadeCmd(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(0.5f), false);
+                //(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(0.5f), false);
                 break;
 
             case 2:
-                Event_ScreenFadeCmd(ScreenFadeCmd_Start, false, ScreenFadeType_Black, Q12(0.5f), false);
+                //Event_ScreenFadeCmd(ScreenFadeCmd_Start, false, ScreenFadeType_Black, Q12(0.5f), false);
                 SysWork_StateStepIncrement(0);
 
             case 3:
@@ -971,10 +987,10 @@ namespace Silent::Game
                 Gfx_StringColorSet(StringColorId_White);
                 Gfx_StringDraw(translator(KEY_GAME_OVER_HEADING));
 
-                g_SysWork.field_28++;
+                g_SysWork.sysStateStepData[0]++;
 
                 if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked() ||
-                    g_SysWork.field_28 > Q12(1.0f / 17.0f))
+                    g_SysWork.sysStateStepData[0] > Q12(1.0f / 17.0f))
                 {
                     SysWork_StateStepIncrement(0);
                 }
@@ -985,7 +1001,7 @@ namespace Silent::Game
                 Gfx_StringColorSet(StringColorId_White);
                 Gfx_StringDraw(translator(KEY_GAME_OVER_HEADING));
 
-                Event_ScreenFadeCmd(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(2.0f), false);
+                //Event_ScreenFadeCmd(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(2.0f), false);
                 break;
 
             case 5:
@@ -1002,18 +1018,24 @@ namespace Silent::Game
                 }
 
             case 6:
-                Event_ScreenFadeCmd(ScreenFadeCmd_Auto, false, ScreenFadeType_Black, Q12(2.0f), false);
-                g_SysWork.field_28 = Q12(0.0f);
-                Screen_BackgroundImgDraw(&g_DeathTipImg);
+                Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 3) * 2);
+                Gfx_StringColorSet(StringColorId_White);
+                Gfx_StringDraw(translator(TIP_STR_KEYS[prevTipIdx]));
+
+                //Event_ScreenFadeCmd(ScreenFadeCmd_Auto, false, ScreenFadeType_Black, Q12(2.0f), false);
+                g_SysWork.sysStateStepData[0] = Q12(0.0f);
                 break;
 
             case 7:
-                g_SysWork.field_28++;
-                Screen_BackgroundImgDraw(&g_DeathTipImg);
+                Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 3) * 2);
+                Gfx_StringColorSet(StringColorId_White);
+                Gfx_StringDraw(translator(TIP_STR_KEYS[prevTipIdx]));
 
-                if (!input.GetAction(In::Enter).IsClicked() && !input.GetAction(In::Cancel).IsClicked())
+                g_SysWork.sysStateStepData[0]++;
+                if (!input.GetAction(In::Enter).IsClicked() &&
+                    !input.GetAction(In::Cancel).IsClicked())
                 {
-                    if (g_SysWork.field_28 <= 480)
+                    if (g_SysWork.sysStateStepData[0] <= SECONDS_60_FPS(8))
                     {
                         break;
                     }
@@ -1025,8 +1047,11 @@ namespace Silent::Game
                 break;
 
             case 8:
-                Screen_BackgroundImgDraw(&g_DeathTipImg);
-                Event_ScreenFadeCmd(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(2.0f), false);
+                Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 3) * 2);
+                Gfx_StringColorSet(StringColorId_White);
+                Gfx_StringDraw(translator(TIP_STR_KEYS[prevTipIdx]));
+
+                //Event_ScreenFadeCmd(ScreenFadeCmd_Auto, true, ScreenFadeType_Black, Q12(2.0f), false);
                 break;
 
             default:

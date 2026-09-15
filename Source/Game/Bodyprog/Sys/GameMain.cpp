@@ -119,8 +119,8 @@ namespace Silent::Game
 
                     gameState = g_GameWork.gameState;
 
-                    g_SysWork.counters_1C[0] = 0;
-                    g_SysWork.counters_1C[1] = 0;
+                    g_SysWork.gameStateCounter     = 0;
+                    g_SysWork.gameStateStepCounter = 0;
 
                     g_GameWork.gameStateSteps[1] = 0;
                     g_GameWork.gameStateSteps[2] = 0;

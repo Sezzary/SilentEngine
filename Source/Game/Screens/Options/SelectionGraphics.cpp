@@ -44,7 +44,7 @@ namespace Silent::Game
         auto& renderer = g_App.GetRenderer();
 
         // Compute color fade as component in range `[0.0f, 0.5f]`.
-        int colorFade = g_SysWork.counters_1C[0] & (Q8_COLOR(0.5f) - 1);
+        int colorFade = g_SysWork.gameStateCounter & (Q8_COLOR(0.5f) - 1);
 
         // Fade start color.
         int colorStart = 0;

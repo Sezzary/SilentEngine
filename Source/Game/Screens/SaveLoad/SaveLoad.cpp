@@ -743,7 +743,7 @@ namespace Silent::Game
         };
 
         g_SaveScreen_DisplaySaveInfo = false;
-        time                         = (u8)g_SysWork.counters_1C[0] & 0x3F;
+        time                         = (u8)g_SysWork.gameStateCounter & 0x3F;
         //ot                           = &g_OrderingTable2[g_ActiveBufferIdx];
 
         switch (g_SaveScreen_OverwriteActive)
@@ -957,7 +957,7 @@ namespace Silent::Game
         s8       color;
         POLY_F4* poly;
 
-        temp       = ((u8)g_SysWork.counters_1C[0]) & 0x3F;
+        temp       = ((u8)g_SysWork.gameStateCounter) & 0x3F;
         colorTimer = temp;
         //ot         = &g_OrderingTable2[g_ActiveBufferIdx];
 
@@ -1011,7 +1011,7 @@ namespace Silent::Game
         s32      i;
         s32      j;
 
-        u32 selectedSaveHighlightTimer = (u8)g_SysWork.counters_1C[0] & 0x3F;
+        u32 selectedSaveHighlightTimer = (u8)g_SysWork.gameStateCounter & 0x3F;
 
         const s_Quad2d SCROLL_BAR_TRACK_QUADS[] =
         {

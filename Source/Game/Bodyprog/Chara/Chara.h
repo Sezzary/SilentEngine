@@ -12,7 +12,6 @@ namespace Silent::Game
                                                                * types (including the player) can be loaded at a time.
                                                                */
     constexpr int  CHARA_FORCE_FREE_ALL = 0xFF;               /** `Chara_Load` can force free already loaded models to make room for new ones. */
-    constexpr auto CHARA_LAST_ENEMY_ID  = Chara_MonsterCybil; /** `e_CharaId` of the last common enemy character. */
 
     /** @brief Character flags. Used by `s_SubCharacter::flags`. */
     enum e_CharaFlags

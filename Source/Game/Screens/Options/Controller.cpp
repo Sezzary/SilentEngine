@@ -184,10 +184,10 @@ namespace Silent::Game
                 if (false)//(ScreenFade_IsFinished())
                 {
                     //ScreenFade_Start(true, true, false);
-                    g_GameWork.gameStateSteps[0] = OptionsMenuState_LeaveController;
-                    g_SysWork.counters_1C[1]              = 0;
-                    g_GameWork.gameStateSteps[1] = 0;
-                    g_GameWork.gameStateSteps[2] = 0;
+                    g_GameWork.gameStateSteps[0]   = OptionsMenuState_LeaveController;
+                    g_SysWork.gameStateStepCounter = 0;
+                    g_GameWork.gameStateSteps[1]   = 0;
+                    g_GameWork.gameStateSteps[2]   = 0;
                 }
                 break;
         }

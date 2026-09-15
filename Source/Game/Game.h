@@ -25,9 +25,13 @@ namespace Silent::Game
     constexpr int FRAMEBUFFER_HEIGHT_INTERLACED  = FRAMEBUFFER_HEIGHT_PROGRESSIVE * 2;
     constexpr int ORDERING_TABLE_SIZE            = 2048;
 
-    /** @brief Converts a floating-point X screen position in percent to a fixed-point X screen coodinate. */
-    #define SCREEN_POSITION_X(percent) \
-        (s32)(SCREEN_WIDTH * ((percent) / 100.0f))
+    /** @brief Converts seconds to frames at 60 FPS.
+     *
+     * @param sec Seconds to convert.
+     * @return Frames at 60 FPS.
+     */
+    #define SECONDS_60_FPS(sec) \
+        (s32)((sec) * TICKS_PER_SECOND)
 
     /** @brief Converts a floating-point Y screen position in percent to a fixed-point Y screen coodinate. */
     #define SCREEN_POSITION_Y(percent) \
@@ -407,15 +411,14 @@ namespace Silent::Game
     /** @brief Main system workspace. Stores key engine data. */
     struct s_SysWork
     {
-        s8               unused_0[8];      /** @unused */
-        s32              sysState;         /** `e_SysState` */
-        s32              sysStateSteps[3]; /** Temp data used by current `sysState`. Can be another state ID or other data. */
-        bool             isMgsStringSet;   /** Indicates if string have been loaded and is going (or it is) being display. */
-        s32              counters_1C[3];
-        q19_12           field_28; // Multi-purpose? Used as alpha to fade between images in `Screen_BackgroundImgTransition`.
-        q19_12           timer_2C; // Cutscene message timer?
-        s32              cutsceneBorderState; /** `e_CutsceneBorderState` */
-        s8               unused_34[4]; /** @unused */
+        s32              sysState;             /** `e_SysState` */
+        s32              sysStateSteps[3];     /** Temp data used by current `sysState`. Can be another state ID or other data. */
+        bool             isMgsStringSet;       /** Indicates if string have been loaded and is going (or it is) being display. */
+        s32              gameStateCounter;     /** Frame counter for the current `g_GameWork.gameState`. Reset when `gameState` is changed. */
+        s32              gameStateStepCounter; /** Frame counter for the current `g_GameWork.gameStateSteps[0]`. Reset when `gameStateSteps[0]` is changed. */
+        s32              sysStateCounter;      /** Frame counter for the current `sysState`. Reset when `sysState` is changed. */
+        s32              sysStateStepData[2];  /** Temporary data for `sysStateSteps[0]` and `sysStateSteps[1]`. */
+        s32              cutsceneBorderState;  /** `e_CutsceneBorderState` */
         s_PlayerCombat   playerCombat;
         s_PlayerWork     playerWork;
         s_SubCharacter   npcs[NPC_COUNT_MAX];
@@ -430,7 +433,6 @@ namespace Silent::Game
                                                              // Enabling a flag for Larval Stalkers causes them to die.
         s32              field_228C[1];
         s32              npcFlags;         // Flags related to NPCs. Each bit corresponds to an `npcs` array entry.
-        s8               unused_2294[4];   /** @unused */
         s32              processFlags;     /** `e_ProcessFlags` */
         s32              unused_229C;      /** @unused Set to `NO_VALUE` when the player has been initalized and 0 when the player changes areas. Beyond that it's dead code. */
         s32              bgmStatusFlags;   /** `e_BgmStatusFlags` */
@@ -450,7 +452,6 @@ namespace Silent::Game
         s8               targetNpcIdx;           /** Index of the NPC in `npcs` being targeted by the player. */
         s8               npcIdxs[CHARA_GROUP_COUNT];
         u8               enablePlayerMatchAnim; /** `bool` | Activates the animation performed by Harry when lighting a match at the beginning of the game. */
-        s8               unused_2359;           /** @unused */
         u8               playerStopFlags;       /** `e_PlayerStopFlags` */
         GsCOORDINATE2*   lightBoneCoord;
         VECTOR3          lightPosition;      // } Often set to DMS cutscene data.
@@ -491,11 +492,11 @@ namespace Silent::Game
 
         state                       =
         g_SysWork.sysState        = sysState;
-        g_SysWork.counters_1C[2]          = 0;
+        g_SysWork.sysStateCounter          = 0;
         g_SysWork.sysStateSteps[0] = 0;
-        g_SysWork.field_28          = 0;//Q12(0.0f);
+        g_SysWork.sysStateStepData[0]          = 0;//Q12(0.0f);
         g_SysWork.sysStateSteps[1] = 0;
-        g_SysWork.timer_2C          = 0;//Q12(0.0f);
+        g_SysWork.sysStateStepData[1]          = 0;//Q12(0.0f);
         g_SysWork.sysStateSteps[2] = 0;
         return state;
     }
@@ -508,15 +509,15 @@ namespace Silent::Game
     {
         if (stepIdx == 0)
         {
-            g_SysWork.field_28         = 0;//Q12(0.0f);
+            g_SysWork.sysStateStepData[0]         = 0;//Q12(0.0f);
             g_SysWork.sysStateSteps[1] = 0;
-            g_SysWork.timer_2C         = 0;//Q12(0.0f);
+            g_SysWork.sysStateStepData[1]         = 0;//Q12(0.0f);
             g_SysWork.sysStateSteps[2] = 0;
             g_SysWork.sysStateSteps[0]++;
         }
         else if (stepIdx == 1)
         {
-            g_SysWork.timer_2C         = 0;//Q12(0.0f);
+            g_SysWork.sysStateStepData[1]         = 0;//Q12(0.0f);
             g_SysWork.sysStateSteps[2] = 0;
             g_SysWork.sysStateSteps[1]++;
         }
@@ -540,16 +541,16 @@ namespace Silent::Game
         {
             step                        =
             g_SysWork.sysStateSteps[0] = sysStateStep;
-            g_SysWork.field_28          = 0;//Q12(0.0f);
+            g_SysWork.sysStateStepData[0]          = 0;//Q12(0.0f);
             g_SysWork.sysStateSteps[1] = 0;
-            g_SysWork.timer_2C          = 0;//Q12(0.0f);
+            g_SysWork.sysStateStepData[1]          = 0;//Q12(0.0f);
             g_SysWork.sysStateSteps[2] = 0;
         }
         else if (stepIdx == 1)
         {
             step                        =
             g_SysWork.sysStateSteps[1] = sysStateStep;
-            g_SysWork.timer_2C          = 0;//Q12(0.0f);
+            g_SysWork.sysStateStepData[1]          = 0;//Q12(0.0f);
             g_SysWork.sysStateSteps[2] = 0;
         }
         else
@@ -565,9 +566,9 @@ namespace Silent::Game
     static inline void SysWork_StateStepReset()
     {
         g_SysWork.sysStateSteps[0] = NO_VALUE;
-        g_SysWork.field_28          = 0;//Q12(0.0f);
+        g_SysWork.sysStateStepData[0]          = 0;//Q12(0.0f);
         g_SysWork.sysStateSteps[1] = 0;
-        g_SysWork.timer_2C          = 0;//Q12(0.0f);
+        g_SysWork.sysStateStepData[1]          = 0;//Q12(0.0f);
         g_SysWork.sysStateSteps[2] = 0;
     }
 
@@ -606,11 +607,11 @@ namespace Silent::Game
 
         prevState = g_GameWork.gameState;
 
-        g_GameWork.gameState         = gameState;
-        g_SysWork.counters_1C[0]        = 0;
-        g_SysWork.counters_1C[1]        = 0;
-        g_GameWork.gameStateSteps[1] = 0;
-        g_GameWork.gameStateSteps[2] = 0;
+        g_GameWork.gameState           = gameState;
+        g_SysWork.gameStateCounter     = 0;
+        g_SysWork.gameStateStepCounter = 0;
+        g_GameWork.gameStateSteps[1]   = 0;
+        g_GameWork.gameStateSteps[2]   = 0;
 
         SysWork_StateSetNext(SysState_Gameplay);
 
@@ -630,11 +631,11 @@ namespace Silent::Game
 
         prevState = g_GameWork.gameState;
 
-        g_GameWork.gameState         = gameState;
-        g_SysWork.counters_1C[0]        = 0;
-        g_SysWork.counters_1C[1]        = 0;
-        g_GameWork.gameStateSteps[1] = 0;
-        g_GameWork.gameStateSteps[2] = 0;
+        g_GameWork.gameState           = gameState;
+        g_SysWork.gameStateCounter     = 0;
+        g_SysWork.gameStateStepCounter = 0;
+        g_GameWork.gameStateSteps[1]   = 0;
+        g_GameWork.gameStateSteps[2]   = 0;
 
         SysWork_StateSetNext(SysState_Gameplay);
 
@@ -656,10 +657,10 @@ namespace Silent::Game
 
         prevState = g_GameWork.gameState;
 
-        g_SysWork.counters_1C[0]        = 0;
-        g_SysWork.counters_1C[1]        = 0;
-        g_GameWork.gameStateSteps[1] = 0;
-        g_GameWork.gameStateSteps[2] = 0;
+        g_SysWork.gameStateCounter     = 0;
+        g_SysWork.gameStateStepCounter = 0;
+        g_GameWork.gameStateSteps[1]   = 0;
+        g_GameWork.gameStateSteps[2]   = 0;
 
         SysWork_StateSetNext(SysState_Gameplay);
 
@@ -691,11 +692,11 @@ namespace Silent::Game
 
         if (stepIdx == 0)
         {
-            step                         = 
-            g_GameWork.gameStateSteps[0] = stateStep;
-            g_SysWork.counters_1C[1]     = 0;
-            g_GameWork.gameStateSteps[1] = 0;
-            g_GameWork.gameStateSteps[2] = 0;
+            step                           = 
+            g_GameWork.gameStateSteps[0]   = stateStep;
+            g_SysWork.gameStateStepCounter = 0;
+            g_GameWork.gameStateSteps[1]   = 0;
+            g_GameWork.gameStateSteps[2]   = 0;
         }
         else if (stepIdx == 1)
         {
@@ -716,10 +717,10 @@ namespace Silent::Game
         {
             s32 step = g_GameWork.gameStateSteps[0];
 
-            g_SysWork.counters_1C[1]     = 0;
-            g_GameWork.gameStateSteps[1] = 0;
-            g_GameWork.gameStateSteps[2] = 0;
-            g_GameWork.gameStateSteps[0] = step + 1;
+            g_SysWork.gameStateStepCounter = 0;
+            g_GameWork.gameStateSteps[1]   = 0;
+            g_GameWork.gameStateSteps[2]   = 0;
+            g_GameWork.gameStateSteps[0]   = step + 1;
         }
         else if(stepIdx == 1)
         {

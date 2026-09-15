@@ -383,10 +383,10 @@ namespace Silent::Game
             //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
 
             ScreenFade_Start(true, false, false);
-            g_GameWork.gameStateSteps[0] = OptionsMenuState_EnterExtraOptions;
-            g_SysWork.counters_1C[1]              = 0;
-            g_GameWork.gameStateSteps[1] = 0;
-            g_GameWork.gameStateSteps[2] = 0;
+            g_GameWork.gameStateSteps[0]   = OptionsMenuState_EnterExtraOptions;
+            g_SysWork.gameStateStepCounter = 0;
+            g_GameWork.gameStateSteps[1]   = 0;
+            g_GameWork.gameStateSteps[2]   = 0;
         }
 
         // Reset selection cursor.

@@ -192,7 +192,7 @@ namespace Silent::Game
                 {
                     //GameFs_MapStartup();
 
-                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.counters_1C[1] == 0)
+                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
                         g_Demo_ReproducedCount++;
                     }
@@ -332,7 +332,7 @@ namespace Silent::Game
                 {
                     //GameFs_MapStartup();
 
-                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.counters_1C[1] == 0)
+                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
                         g_Demo_ReproducedCount++;
                     }
@@ -426,15 +426,15 @@ namespace Silent::Game
 
                     //MemCard_SysDisable();
 
-                    auto prevState               = g_GameWork.gameState;
-                    g_GameWork.gameStateSteps[0] = prevState;
-                    g_GameWork.gameState         = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
-                    g_SysWork.counters_1C[0]     = 0;
-                    g_GameWork.gameStatePrev     = prevState;
-                    g_GameWork.gameStateSteps[0] = 0;
-                    g_SysWork.counters_1C[1]     = 0;
-                    g_GameWork.gameStateSteps[1] = 0;
-                    g_GameWork.gameStateSteps[2] = 0;
+                    auto prevState                 = g_GameWork.gameState;
+                    g_GameWork.gameStateSteps[0]   = prevState;
+                    g_GameWork.gameState           = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
+                    g_SysWork.gameStateCounter     = 0;
+                    g_GameWork.gameStatePrev       = prevState;
+                    g_GameWork.gameStateSteps[0]   = 0;
+                    g_SysWork.gameStateStepCounter = 0;
+                    g_GameWork.gameStateSteps[1]   = 0;
+                    g_GameWork.gameStateSteps[2]   = 0;
 
                     SysWork_StateSetNext(SysState_Gameplay);
                 }
@@ -443,7 +443,7 @@ namespace Silent::Game
 
         if (input.HasUserActionInput())
         {
-            g_SysWork.counters_1C[1] = 0;
+            g_SysWork.gameStateStepCounter = 0;
         }
 
         if (!playInGameDemo)
@@ -451,7 +451,7 @@ namespace Silent::Game
             switch (g_GameWork.gameStateSteps[0])
             {
                 case 1:
-                    if (g_SysWork.counters_1C[1] > 1740)
+                    if (g_SysWork.gameStateStepCounter > SECONDS_60_FPS(29))
                     {
                         GameFs_StreamBinLoad();
                         g_GameWork.gameStateSteps[0]++;

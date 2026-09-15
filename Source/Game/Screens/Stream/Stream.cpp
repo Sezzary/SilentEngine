@@ -34,7 +34,7 @@ namespace Silent::Game
                 break;
 
             case 1:
-                if (input.HasUserActionInput() || g_SysWork.counters_1C[0] > 300)
+                if (input.HasUserActionInput() || g_SysWork.gameStateCounter > SECONDS_60_FPS(5))
                 {
                     ScreenFade_Start(false, false, false);
                     g_GameWork.gameStateSteps[0] = 2;

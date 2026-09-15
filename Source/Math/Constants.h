@@ -235,8 +235,8 @@ namespace Silent::Math
                         ((b) == 64)  ? 6 :
                         ((b) == 128) ? 7 :
                         ((b) == 256) ? 8 :
-                        0))
-    }
+                        0));
+    };
 
     /** @brief Scales a large `x` before trigonometric multiplication.
      *

@@ -57,7 +57,7 @@ namespace Silent::Game
                 break;
 
             case KonamiLogoStateStep_LogoDelay:
-                if (g_Controller0->buttonFlags.held != 0 || g_SysWork.counters_1C[0] > 180)
+                if (g_Controller0->buttonFlags.held != 0 || g_SysWork.gameStateCounter > 180)
                 {
                     ScreenFade_Start(false, false, false);
                     g_ScreenFadeTimestep         = Q12(0.2f);
@@ -240,7 +240,7 @@ namespace Silent::Game
                 break;
 
             case KcetLogoStateStep_LogoDelay:
-                if (g_Controller0->buttonFlags.held != 0 || g_SysWork.counters_1C[0] > 180)
+                if (g_Controller0->buttonFlags.held != 0 || g_SysWork.gameStateCounter > 180)
                 {
                     ScreenFade_Start(false, false, false);
                     g_ScreenFadeTimestep = Q12(0.2f);

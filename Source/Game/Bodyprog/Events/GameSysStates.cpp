@@ -987,9 +987,9 @@ namespace Silent::Game
                 Gfx_StringDraw(translator(KEY_GAME_OVER_HEADING));
 
                 g_SysWork.sysStateStepData[0]++;
-
-                if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked() ||
-                    g_SysWork.sysStateStepData[0] > Q12(1.0f / 17.0f))
+                if (input.GetAction(In::Enter).IsClicked()  ||
+                    input.GetAction(In::Cancel).IsClicked() ||
+                    g_SysWork.sysStateStepData[0] > SECONDS_60_FPS(4))
                 {
                     SysWork_StateStepIncrement(0);
                 }

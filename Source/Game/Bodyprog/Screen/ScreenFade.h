@@ -70,11 +70,9 @@ namespace Silent::Game
      *              is finished, the progress variable will be reset to 0 anyway.
      * @param fadeIn `true` for fade in, `false` for fade out.
      * @param isWhite `true` for white fade, `false` for black fade.
+     * @param timestep Fade speed timestep. By default, determined by the number of assets currently being loaded.
      */
-    #define ScreenFade_Start(reset, fadeIn, isWhite)                                                                \
-        g_Screen_FadeStatus = (((((reset) == true) ? ScreenFadeState_FadeOutStart : ScreenFadeState_FadeOutSteps) + \
-                                (((fadeIn) == true) ? (1 << 2) : 0)) |                                              \
-                               (((isWhite) == true) ? (1 << 3) : 0))
+    void ScreenFade_Start(bool reset, bool fadeIn, bool isWhite, q19_12 timestep = NO_VALUE);
 
     /** @brief Resets the screen fade. */
     #define ScreenFade_Reset() \

@@ -21,15 +21,27 @@ namespace Silent::Game
     static q19_12 PrevScreenFadeProgress = Q12(0.0f);
     static bool   IsWhite                = false;
 
-    /** @brief Sets the screen fade effect to black or white according to the current status. */
-    static void Screen_FadeDrawModeSet()
+    void ScreenFade_Start(bool reset, bool fadeIn, bool isWhite, q19_12 timestep)
     {
-        IsWhite = IS_SCREEN_FADE_WHITE(g_Screen_FadeStatus);
+        g_Screen_FadeStatus = (((reset) ? ScreenFadeState_FadeOutStart : ScreenFadeState_FadeOutSteps) +
+                               ((fadeIn) ? (1 << 2) : 0)) |
+                              ((isWhite) ? (1 << 3) : 0);
+        
+        if (timestep != NO_VALUE)
+        {
+            g_ScreenFadeTimestep = timestep;
+        }
     }
 
     q19_12 Screen_FadeInProgressGet()
     {
         return Q12(1.0f) - PrevScreenFadeProgress;
+    }
+
+    /** @brief Sets the screen fade effect to black or white according to the current status. */
+    static void Screen_FadeDrawModeSet()
+    {
+        IsWhite = IS_SCREEN_FADE_WHITE(g_Screen_FadeStatus);
     }
 
     void Screen_FadeUpdate()

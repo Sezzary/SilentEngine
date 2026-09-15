@@ -31,7 +31,7 @@ namespace Silent::Game
      * @return Frames at 60 FPS.
      */
     #define SECONDS_60_FPS(sec) \
-        (s32)((sec) * TICKS_PER_SECOND)
+        (s32)((sec) * 30)
 
     /** @brief Converts a floating-point Y screen position in percent to a fixed-point Y screen coodinate. */
     #define SCREEN_POSITION_Y(percent) \
@@ -721,12 +721,14 @@ namespace Silent::Game
         }
         else if (stepIdx == 1)
         {
-            step = g_GameWork.gameStateSteps[1] = stateStep;
+            step                         =
+            g_GameWork.gameStateSteps[1] = stateStep;
             g_GameWork.gameStateSteps[2] = 0;
         }
         else
         {
-            step = g_GameWork.gameStateSteps[2] = stateStep;
+            step                         =
+            g_GameWork.gameStateSteps[2] = stateStep;
         }
 
         return step;
@@ -736,12 +738,10 @@ namespace Silent::Game
     {    
         if(stepIdx == 0)
         {
-            s32 step = g_GameWork.gameStateSteps[0];
-
             g_SysWork.gameStateStepCounter = 0;
             g_GameWork.gameStateSteps[1]   = 0;
             g_GameWork.gameStateSteps[2]   = 0;
-            g_GameWork.gameStateSteps[0]   = step + 1;
+            g_GameWork.gameStateSteps[0]++;
         }
         else if(stepIdx == 1)
         {

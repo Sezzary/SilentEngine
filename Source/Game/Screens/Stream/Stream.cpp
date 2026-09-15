@@ -5,6 +5,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
+#include "Assets/AssetStreamer.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
@@ -14,6 +15,7 @@
 #include "Renderer/Renderer.h"
 #include "Utils/Video.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Input;
 using namespace Silent::Renderer;
 using namespace Silent::Utils;
@@ -22,7 +24,8 @@ namespace Silent::Game
 {
     void GameState_MovieIntroFadeIn_Update()
     {
-        const auto& input = g_App.GetInput();
+        const auto& assets = g_App.GetAssets();
+        const auto& input  = g_App.GetInput();
 
         switch (g_GameWork.gameStateSteps[0])
         {
@@ -30,21 +33,22 @@ namespace Silent::Game
                 ScreenFade_Start(true, true, false);
                 GameFs_TitleGfxLoad();
 
-                g_GameWork.gameStateSteps[0]++;
+                Game_StateStepIncrement(0);
                 break;
 
             case 1:
+                g_SysWork.gameStateCounter++;
                 if (input.HasUserActionInput() || g_SysWork.gameStateCounter > SECONDS_60_FPS(5))
                 {
                     ScreenFade_Start(false, false, false);
-                    g_GameWork.gameStateSteps[0] = 2;
+
+                    Game_StateStepIncrement(0);
                 }
                 break;
 
             case 2:
-                if (ScreenFade_IsFinished())
+                if (ScreenFade_IsFinished() && !assets.IsBusy())
                 {
-                    Fs_QueueWaitForEmpty();
                     Game_StateSetNext(GameState_MovieIntro);
                 }
                 break;
@@ -53,18 +57,22 @@ namespace Silent::Game
 
     void GameState_MovieIntro_Update()
     {
-        // @todo Use engine's proper state step system.
-        static int fmvStateStep = 0;
-        switch (fmvStateStep)
+        enum class StateStep
         {
-            case 0:
+            FadeIn,
+            Play
+        };
+
+        switch (g_GameWork.gameStateSteps[0])
+        {
+            case (int)StateStep::FadeIn:
             {
                 ScreenFade_Start(false, true, false);
 
-                fmvStateStep++;
+                Game_StateStepIncrement(0);
                 break;
             }
-            case 1:
+            case (int)StateStep::Play:
             {
                 const char* videoName = (g_GameWorkConst->config.extraOptionsEnabled & (1 << 0)) ? "C1_20670.MPG" :
                                                                                                    "C2_20670.MPG";
@@ -72,8 +80,6 @@ namespace Silent::Game
                 {
                     Game_StateSetNext(GameState_MainMenu);
                     g_ScreenFadeTimestep = Q12(1.0f);
-
-                    fmvStateStep = 0;
                 }
                 break;
             }
@@ -82,24 +88,26 @@ namespace Silent::Game
 
     void GameState_MovieOpening_Update()
     {
-        // @todo Use engine's proper state step system.
-        static int fmvStateStep = 0;
-        switch (fmvStateStep)
+        enum class StateStep
         {
-            case 0:
+            ResetFade,
+            Play
+        };
+
+        switch (g_GameWork.gameStateSteps[0])
+        {
+            case (int)StateStep::ResetFade:
             {
                 ScreenFade_Reset();
 
-                fmvStateStep++;
+                Game_StateStepIncrement(0);
                 break;
             }
-            case 1:
+            case (int)StateStep::Play:
             {
                 if (!PlayFmv("M1_03500.MPG"))
                 {
                     Game_StateSetNext(GameState_MainLoadScreen);
-
-                    fmvStateStep = 0;
                 }
                 break;
             }
@@ -139,7 +147,9 @@ namespace Silent::Game
         // Update active video playback.
         else
         {
-            if (!video.IsPlaying() || input.GetAction(In::Enter).IsClicked())
+            if (input.GetAction(In::Enter).IsClicked()  ||
+                input.GetAction(In::Cancel).IsClicked() ||
+                !video.IsPlaying())
             {
                 video.Stop();
                 return false;

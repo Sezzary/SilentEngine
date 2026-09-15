@@ -25,8 +25,29 @@ using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
+    // Used by both `GameState_KcetLogo_MemCardCheck` and `GameState_KcetLogo_Update`.
+    enum e_KcetLogoStateStep
+    {
+        KcetLogoStateStep_Init,
+        KcetLogoStateStep_CheckMemCards,
+        KcetLogoStateStep_NoMemCard,
+        KcetLogoStateStep_NoMemCardFreeSpace,
+        KcetLogoStateStep_NoSaveGame,
+        KcetLogoStateStep_HasSavegame,
+        KcetLogoStateStep_LogoDelay,
+        KcetLogoStateStep_FinishAfterFade
+    };
+
     void GameState_KonamiLogo_Update() // 0x800C95AC
     {
+        enum e_KonamiLogoStateStep
+        {
+            KonamiLogoStateStep_Init,
+            KonamiLogoStateStep_WaitForFade,
+            KonamiLogoStateStep_LogoDelay,
+            KonamiLogoStateStep_FinishAfterFade
+        };
+
         const auto& input = g_App.GetInput();
 
         //while (g_GameWork.gameState == GameState_KonamiLogo)
@@ -57,7 +78,8 @@ namespace Silent::Game
                 break;
 
             case KonamiLogoStateStep_LogoDelay:
-                if (g_Controller0->buttonFlags.held != 0 || g_SysWork.gameStateCounter > 180)
+                if (g_Controller0->buttonFlags.held != 0 ||
+                    g_SysWork.gameStateCounter > SECONDS_60_FPS(3))
                 {
                     ScreenFade_Start(false, false, false);
                     g_ScreenFadeTimestep         = Q12(0.2f);
@@ -141,6 +163,8 @@ namespace Silent::Game
     void GameState_KcetLogo_Update() // 0x800C99A4
     {
         static e_GameState nextGameState = GameState_Init;
+
+        const auto& input = g_App.GetInput();
 
         //while (g_GameWork.gameState == GameState_KcetLogo)
         switch (g_GameWork.gameStateSteps[0])
@@ -272,31 +296,20 @@ namespace Silent::Game
         //Screen_FadeUpdate();
         //MemCard_Update();
         //func_80033548();
-        //VSync(SyncMode_Wait);
-        //GsSwapDispBuff();
-        //GsDrawOt(&g_OrderingTable2[g_ActiveBufferIdx]);
 
-        //g_ActiveBufferIdx = GsGetActiveBuff();
-        //GsOUT_PACKET_P   = (g_ActiveBufferIdx << 0xF) + (u32)TEMP_MEMORY_ADDR;
-        //GsClearOt(0, 0, &g_OrderingTable0[g_ActiveBufferIdx]);
-        //GsClearOt(0, 0, &g_OrderingTable2[g_ActiveBufferIdx]);
+        if (input.GetAction(In::Enter).IsClicked())
+        {
+            Game_StateSetNext(GameState_MovieIntroFadeIn);
+        }
     }
 
     void BootScreen_KonamiScreenDraw()
     {
-        auto& renderer = g_App.GetRenderer();
-
         Screen_BackgroundImgDraw("Psx/1ST/KONAMI.TIM", true);
-        renderer.SetLumaFade(Q8_TO_FLT(g_ScreenFadeProgress), false);
     }
 
     void BootScreen_KcetScreenDraw()
     {
-        auto& renderer = g_App.GetRenderer();
-
         Screen_BackgroundImgDraw("Psx/1ST/KONAMI2.TIM", true);
-
-        // Update luma fade.
-        renderer.SetLumaFade(Q8_TO_FLT(g_ScreenFadeProgress), false);
     }
 }

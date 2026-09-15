@@ -6,6 +6,7 @@
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
+#include "Assets/TranslationKeys.h"
 #include "Game/Bodyprog/MemCard.h"
 #include "Game/Bodyprog/Demo.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
@@ -20,9 +21,12 @@
 #include "Game/Screens/BKonami/BKonami.h"
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/SaveLoad/SaveLoad.h"
+#include "Input/Input.h"
 #include "Renderer/Renderer.h"
 
 using namespace Silent::Assets;
+using namespace Silent::Input;
+using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
@@ -42,7 +46,7 @@ namespace Silent::Game
     // @todo Remove checklist when all are working.
     void (*g_GameStateUpdateFuncs[])() =
     {
-        GameState_Boot_Update,                     // @todo
+        GameState_Init_Update,
         GameState_KonamiLogo_Update,               // @todo
         GameState_KcetLogo_Update,                 // @todo
         GameState_MovieIntroFadeIn_Update,         // @todo
@@ -66,32 +70,72 @@ namespace Silent::Game
         nullptr,//GameState_Credits_Update         // @todo
     };
 
-    void GameState_Boot_Update() // 0x80032D1C
+    static void DrawSplashScreen()
     {
-        e_GameState gameState;
-        s32         vabAudioTaskId;
+        const auto& translator = g_App.GetTranslator();
 
-        const auto& assets   = g_App.GetAssets();
+        Screen_BackgroundImgDraw("Textures/SplashScreen.png", true, NO_VALUE);
+        
+        // @todo Style it properly.
+        Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 7) * 3);
+        Gfx_StringColorSet(StringColorId_White);
+        Gfx_StringDraw(translator(KEY_INTRO_WARNING));
+
+        g_SysWork.sysStateStepData[0]++;
+    }
+
+    void GameState_Init_Update()
+    {
+        const auto& input    = g_App.GetInput();
+        auto&       assets   = g_App.GetAssets();
         auto&       renderer = g_App.GetRenderer();
 
         switch (g_GameWork.gameStateSteps[0])
         {
             case 0:
+            {
+                assets.Load("Textures/SplashScreen.png");
+                g_SysWork.sysStateStepData[0] = 0;
+
+                Game_StateStepIncrement(0);
+                break;
+            }
+            case 1:
+            {
+                if (assets["Textures/SplashScreen.png"]->State != AssetState::Loaded)
+                {
+                    break;
+                }
+
+                ScreenFade_Start(true, true, false);
+
+                Game_StateStepIncrement(0);
+                break;
+            }
+            case 2:
+            {
+                DrawSplashScreen();
+
                 g_GameWork.background2dColor.r = 0;
                 g_GameWork.background2dColor.g = 0;
                 g_GameWork.background2dColor.b = 0;
 
                 Game_StateStepIncrement(0);
                 break;
+            }
+            case 3:
+            {
+                DrawSplashScreen();
 
-            case 1:
+                //SD_Init();
+
                 //if (!Sd_AudioStreamingCheck())
                 {
-                    vabAudioTaskId = g_BaseVabAudiosTaskId[g_GameWork.gameStateSteps[1]];
+                    int vabAudioTaskId = g_BaseVabAudiosTaskId[g_GameWork.gameStateSteps[1]];
                     if (vabAudioTaskId != 0)
                     {
                         SD_Call(vabAudioTaskId);
-                        g_GameWork.gameStateSteps[1]++;
+                        Game_StateStepIncrement(1);
                     }
                     else
                     {
@@ -99,25 +143,42 @@ namespace Silent::Game
                     }
                 }
                 break;
+            }
+            case 4:
+            {
+                DrawSplashScreen();
+                assets.Load("Psx/1ST/KONAMI.TIM");
 
-            case 2:
-                Fs_QueueStartReadTim(FILE_1ST_KONAMI_TIM);
-
-                ScreenFade_Start(true, false, false);
-                g_GameWork.gameStateSteps[0]++;
+                Game_StateStepIncrement(0);
                 break;
+            }
+            case 5:
+            {
+                DrawSplashScreen();
 
-            case 3:
+                if (input.GetAction(In::Enter).IsClicked()  ||
+                    input.GetAction(In::Cancel).IsClicked() ||
+                    g_SysWork.sysStateStepData[0] >= SECONDS_60_FPS(5))
+                {
+                    ScreenFade_Start(true, false, false);
+
+                    g_SysWork.sysStateStepData[0] = 0;
+                    Game_StateStepIncrement(0);
+                }
+                break;
+            }
+            case 6:
+            {
+                DrawSplashScreen();
+
                 if (ScreenFade_IsFinished())
                 {
-                    // @todo Avoid blocking.
-                    //Fs_QueueWaitForEmpty();
                     if (assets.IsBusy())
                     {
                         break;
                     }
 
-                    gameState = g_GameWork.gameState;
+                    auto gameState = g_GameWork.gameState;
 
                     g_SysWork.gameStateCounter     = 0;
                     g_SysWork.gameStateStepCounter = 0;
@@ -131,13 +192,12 @@ namespace Silent::Game
                     g_GameWork.gameState         = (e_GameState)((int)gameState + 1);
                     g_GameWork.gameStatePrev     = gameState;
                     g_GameWork.gameStateSteps[0] = 0;
+
+                    g_SysWork.sysStateStepData[0] = 0;
+                    //assets.Unload("Textures/SplashScreen.png");
                 }
                 break;
+            }
         }
-
-        Screen_BackgroundImgDraw("Textures/SplashScreen.png", true, NO_VALUE);
-
-        // Update luma fade.
-        renderer.SetLumaFade(Q8_TO_FLT(g_ScreenFadeProgress), false);
     }
 }

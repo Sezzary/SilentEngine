@@ -88,9 +88,12 @@ namespace Silent::Game
     extern q19_12 g_ScreenFadeTimestep;
     extern q19_12 g_ScreenFadeProgress;
 
-    void Screen_FadeDrawModeSet(DR_MODE* drMode);
-
+    /** @brief Gets the screen fade effect's progress.
+     *
+     * @return Fade progress.
+     */
     q19_12 Screen_FadeInProgressGet();
 
+    /** @brief Updates the screen fade effect. */
     void Screen_FadeUpdate();
 }

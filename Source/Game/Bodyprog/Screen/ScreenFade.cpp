@@ -21,6 +21,7 @@ namespace Silent::Game
     static q19_12 PrevScreenFadeProgress = Q12(0.0f);
     static bool   IsWhite                = false;
 
+    /** @brief Sets the screen fade effect to black or white according to the current status. */
     static void Screen_FadeDrawModeSet()
     {
         IsWhite = IS_SCREEN_FADE_WHITE(g_Screen_FadeStatus);
@@ -121,6 +122,6 @@ namespace Silent::Game
             }
         }
 
-        renderer.SetLumaFade(1.0f - Q12_TO_FLT(g_ScreenFadeProgress), IsWhite);
+        renderer.SetLumaFade(Q12_TO_FLT(g_ScreenFadeProgress), IsWhite);
     }
 }

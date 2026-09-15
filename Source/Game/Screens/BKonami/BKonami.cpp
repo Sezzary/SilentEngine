@@ -160,8 +160,8 @@ namespace Silent::Game
     {
         static e_GameState nextGameState = GameState_Init;
 
-        const auto& assets = g_App.GetAssets();
         const auto& input  = g_App.GetInput();
+        auto&       assets = g_App.GetAssets();
 
         //while (g_GameWork.gameState == GameState_KcetLogo)
         switch (g_GameWork.gameStateSteps[0])
@@ -190,25 +190,25 @@ namespace Silent::Game
 
             // @deprecated
             case KcetLogoStateStep_NoMemCard:
-                nextGameState = GameState_MovieIntroFadeIn;
+                nextGameState = GameState_MovieIntro;
                 Game_StateStepSet(0, KcetLogoStateStep_LogoDelay);
                 break;
 
             // @deprecated
             case KcetLogoStateStep_NoMemCardFreeSpace:
-                nextGameState = GameState_MovieIntroFadeIn;
+                nextGameState = GameState_MovieIntro;
                 Game_StateStepSet(0, KcetLogoStateStep_LogoDelay);
                 break;
 
             case KcetLogoStateStep_NoSaveGame:
-                GameFs_TitleGfxSeek();
+                GameFs_TitleGfxLoad();
                 nextGameState = GameState_MovieIntro;
 
                 Game_StateStepSet(0, KcetLogoStateStep_LogoDelay);
                 break;
 
             case KcetLogoStateStep_HasSavegame:
-                while (g_GameWork.gameStateSteps[1] < 3)
+                while (g_GameWork.gameStateSteps[1] <= 2)
                 {
                     switch (g_GameWork.gameStateSteps[1])
                     {
@@ -226,12 +226,12 @@ namespace Silent::Game
                         case 2:
                             if (g_GameWorkConst->config.autoLoad)
                             {
-                                g_App.GetAssets().Load("Psx/TIM/SAVELOAD.TIM");
+                                assets.Load("Psx/TIM/SAVELOAD.TIM");
                                 nextGameState = GameState_AutoLoadSavegame;
                             }
                             else
                             {
-                                GameFs_TitleGfxSeek();
+                                GameFs_TitleGfxLoad();
                                 nextGameState = GameState_MovieIntro;
                             }
 
@@ -262,21 +262,6 @@ namespace Silent::Game
                 {
                     //Settings_ScreenAndVolUpdate();
 
-                    switch (nextGameState)
-                    {
-                        case GameState_AutoLoadSavegame:
-                            Fs_QueueStartReadTim(FILE_TIM_SAVELOAD_TIM, FS_BUFFER_7, &g_ItemInspectionImg);
-                            break;
-
-                        case GameState_MovieIntroFadeIn:
-                            break;
-
-                        case GameState_MovieIntroAlternate:
-                        default:
-                            GameFs_TitleGfxLoad();
-                            break;
-                    }
-
                     Demo_SequenceAdvance(0);
                     Demo_DemoDataRead();
                     Game_StateSetNext(nextGameState);
@@ -292,11 +277,11 @@ namespace Silent::Game
 
     void BootScreen_KonamiScreenDraw()
     {
-        Screen_BackgroundImgDraw("Psx/1ST/KONAMI.TIM", true);
+        Screen_BackgroundImgDraw("Psx/1ST/KONAMI.TIM", true, 0, Color::From8Bit(248, 248, 248));
     }
 
     void BootScreen_KcetScreenDraw()
     {
-        Screen_BackgroundImgDraw("Psx/1ST/KONAMI2.TIM", true);
+        Screen_BackgroundImgDraw("Psx/1ST/KONAMI2.TIM", true, 0, Color::From8Bit(248, 248, 248));
     }
 }

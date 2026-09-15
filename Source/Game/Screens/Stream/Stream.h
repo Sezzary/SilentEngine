@@ -2,9 +2,6 @@
 
 namespace Silent::Game
 {
-    /** @brief Updates intro movie fade-in game state. */
-    void GameState_MovieIntroFadeIn_Update(void);
-
     /** @brief Updates intro movie game state. */
     void GameState_MovieIntro_Update(void);
 

@@ -21,7 +21,6 @@ namespace Silent::Game
     s32 MainLoop_ShouldWarmReset();
 
     void GameState_Init_Update();
-    void GameState_MovieIntroFadeIn_Update();
     void GameState_AutoLoadSavegame_Update();
     void GameState_MovieIntroAlternate_Update();
     void GameState_MovieIntro_Update();

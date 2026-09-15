@@ -24,42 +24,6 @@ using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    void GameState_MovieIntroFadeIn_Update()
-    {
-        const auto& assets = g_App.GetAssets();
-        const auto& input  = g_App.GetInput();
-
-        // @todo This state seems redundant. Fade-in can be done in
-
-        switch (g_GameWork.gameStateSteps[0])
-        {
-            case 0:
-                ScreenFade_Start(true, true, false, Q12(1.0f));
-                GameFs_TitleGfxLoad();
-
-                Game_StateStepIncrement(0);
-                break;
-
-            case 1:
-                if (input.GetAction(In::Enter).IsClicked()  ||
-                    input.GetAction(In::Cancel).IsClicked() ||
-                    g_SysWork.gameStateCounter >= SEC_TO_TICK(5.0f))
-                {
-                    ScreenFade_Start(false, false, false, Q12(1.0f));
-
-                    Game_StateStepIncrement(0);
-                }
-                break;
-
-            case 2:
-                if (ScreenFade_IsFinished() && !assets.IsBusy())
-                {
-                    Game_StateSetNext(GameState_MovieIntro);
-                }
-                break;
-        }
-    }
-
     void GameState_MovieIntro_Update()
     {
         enum class StateStep

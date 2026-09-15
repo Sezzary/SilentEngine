@@ -9,11 +9,6 @@
 
 namespace Silent::Game
 {
-    void GameFs_TitleGfxSeek()
-    {
-        Fs_QueueStartSeek(FILE_TIM_TITLE_E_TIM);
-    }
-
     void GameFs_TitleGfxLoad()
     {
         Fs_QueueStartReadTim(FILE_TIM_TITLE_E_TIM);

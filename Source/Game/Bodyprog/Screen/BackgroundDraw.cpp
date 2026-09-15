@@ -17,9 +17,21 @@ namespace Silent::Game
 {
     q0_8 g_Screen_BackgroundImgGamma = Q8(0.5f);
 
-    void Screen_BackgroundImgDraw(const std::string& assetName, bool fit, int paletteIdx)
+    void Screen_BackgroundImgDraw(const std::string& assetName, bool fit, int paletteIdx, const Color& bgColor)
     {
         auto& renderer = g_App.GetRenderer();
+
+        // Submit fullscreen background shape.
+        if (bgColor != Color::Clear)
+        {
+            auto shape = Shape2d::CreateQuad(Vector2::Zero,
+                                             Vector2(SCREEN_SPACE_RES.x, 0.0f),
+                                             Vector2(SCREEN_SPACE_RES.x, SCREEN_SPACE_RES.y),
+                                             Vector2(0.0f, SCREEN_SPACE_RES.y),
+                                             bgColor, bgColor, bgColor, bgColor,
+                                             DEPTH_2D_MAX, ScaleMode::Fill, BlendMode::Opaque);
+            renderer.SubmitShape2d(shape);
+        }
 
         // Define scale mode.
         auto scaleMode = fit ? ScaleMode::Fit : ScaleMode::Fill;
@@ -27,7 +39,7 @@ namespace Silent::Game
         // Submit fullscreen background sprite.
         auto sprite = Sprite2d::CreateSprite2d(assetName, Vector2::Zero, Vector2::One,
                                                SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, Color::White, paletteIdx,
-                                               DEPTH_2D_MAX, AlignMode::Center, scaleMode, BlendMode::Opaque);
+                                               DEPTH_2D_MAX - 1, AlignMode::Center, scaleMode, BlendMode::Opaque);
         renderer.SubmitSprite2d(sprite);
 
         // Submit gamma overlay sprite.
@@ -37,7 +49,7 @@ namespace Silent::Game
             auto gammaColor  = Color(1.0f, 1.0f, 1.0f, gamma);
             auto gammaSprite = Sprite2d::CreateSprite2d(assetName, Vector2::Zero, Vector2::One,
                                                         SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, gammaColor, paletteIdx,
-                                                        DEPTH_2D_MAX - 1, AlignMode::Center, scaleMode, BlendMode::Add);
+                                                        DEPTH_2D_MAX - 2, AlignMode::Center, scaleMode, BlendMode::Add);
             renderer.SubmitSprite2d(gammaSprite);
         }
 

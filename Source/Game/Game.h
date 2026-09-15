@@ -224,7 +224,6 @@ namespace Silent::Game
         GameState_Init,
         GameState_KonamiLogo,
         GameState_KcetLogo,
-        GameState_MovieIntroFadeIn,
         GameState_AutoLoadSavegame,
         GameState_MovieIntroAlternate,
         GameState_MovieIntro,

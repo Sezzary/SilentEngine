@@ -84,27 +84,30 @@ namespace Silent::Game
         MapIdx_MAPX_S00 = 44  // }
     };
 
-    /** @brief Used as index into `MAP_INFOS` array.
-     * TODO: Add descriptions for which areas are included in each type.
-    */
+    /** @brief Used as index into `MAP_INFOS` array. 
+     *
+     * @note
+     * R: "Real"
+     * U: "Underworld"
+     */
     enum e_MapType
     {
-        MapType_THR = 0,
-        MapType_SC  = 1,
-        MapType_SU  = 2,
-        MapType_SPR = 3,
-        MapType_SPU = 4,
-        MapType_RSR = 5,
-        MapType_RSU = 6,
-        MapType_APR = 7,  /** @unused */
-        MapType_APU = 8,
-        MapType_ER  = 9,
-        MapType_ER2 = 10,
-        MapType_DR  = 11,
-        MapType_DRU = 12,
-        MapType_HP  = 13,
-        MapType_HU  = 14,
-        MapType_XXX = 15, /** @unused */
+        MapType_THR = 0,  /** Old Silent Hill. */
+        MapType_SC  = 1,  /** Real School. */
+        MapType_SU  = 2,  /** Alt. School. */
+        MapType_SPR = 3,  /** Real Central Town. */
+        MapType_SPU = 4,  /** Alt. Central Town */
+        MapType_RSR = 5,  /** Real Resort. */
+        MapType_RSU = 6,  /** Alt. Resort. */
+        MapType_APR = 7,  /** @unused Real Amusement Park. */
+        MapType_APU = 8,  /** Alt. Amusement Park. */
+        MapType_ER  = 9,  /** Nowhere. */
+        MapType_ER2 = 10, /** Bonus Old Town areas. */
+        MapType_DR  = 11, /** Real Sewers. */
+        MapType_DRU = 12, /** Alt. Sewers. */
+        MapType_HP  = 13, /** Real Hospital. */
+        MapType_HU  = 14, /** Alt. Hospital. */
+        MapType_XXX = 15, /** @unused Test map? */
 
         MapType_Count
     };
@@ -531,5 +534,5 @@ namespace Silent::Game
      * @return `true` if the paper map has been collected, `false` otherwise.
      */
     #define HAS_PAPER_MAP(paperMapIdx) \
-        ((((u32*)&g_SavegamePtr->paperMapFlags)[(paperMapIdx) / 32] >> ((paperMapIdx) % 32)) & (1 << 0))
+        g_SavegamePtr->paperMapFlags.Test(paperMapIdx)
 }

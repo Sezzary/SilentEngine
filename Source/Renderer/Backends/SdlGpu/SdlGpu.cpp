@@ -137,15 +137,15 @@ namespace Silent::Renderer::SdlGpu
         auto* copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
 
         // @temp
-        GetMeshes().Upload(*copyPass, "CHARA/HERO.ILM");
-        //GetMeshes().Upload(*copyPass, "CHARA/PRSD.ILM");
-        //GetTextures().Upload(*copyPass, "CHARA/PRSD.TIM");
-        GetTextures().Upload(*copyPass, "CHARA/HERO.TIM");
-        //GetTextures().Upload(*copyPass, "MISC/DEMO0000.DAT"); // Temp. load test.
-        //GetTextures().Upload(*copyPass, "ANIM/AMUSE1.DMS"); // Temp. load test.
+        GetMeshes().Upload(*copyPass, "Psx/CHARA/HERO.ILM");
+        //GetMeshes().Upload(*copyPass, "Psx/CHARA/PRSD.ILM");
+        //GetTextures().Upload(*copyPass, "Psx/CHARA/PRSD.TIM");
+        GetTextures().Upload(*copyPass, "Psx/CHARA/HERO.TIM");
+        //GetTextures().Upload(*copyPass, "Psx/MISC/DEMO0000.DAT"); // Temp. load test.
+        //GetTextures().Upload(*copyPass, "Psx/ANIM/AMUSE1.DMS"); // Temp. load test.
 
-        //GetMeshes().Upload(*copyPass, "BG/APU0002.IPD");
-        //GetMeshes().Upload(*copyPass, "ITEM/FOOK.TMD");
+        //GetMeshes().Upload(*copyPass, "Psx/BG/APU0002.IPD");
+        //GetMeshes().Upload(*copyPass, "Psx/ITEM/FOOK.TMD");
 
         GetTextures().Upload(*copyPass, ToSpan(DEFAULT_TEXTURE_PIXELS), DEFAULT_TEXTURE_RES, "");
         // @todo If atlas textures aren't updated and the texture is missing, for some reason

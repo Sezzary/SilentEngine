@@ -17,72 +17,82 @@ namespace Silent::Game
 {
     q0_8 g_Screen_BackgroundImgGamma = Q8(0.5f);
 
-    void Screen_BackgroundImgDraw(const std::string& assetName, bool fit)
+    void Screen_BackgroundImgDraw(const std::string& assetName, bool fit, int paletteIdx, const Color& bgColor)
     {
         auto& renderer = g_App.GetRenderer();
+
+        // Submit fullscreen background shape.
+        if (bgColor != Color::Clear)
+        {
+            auto shape = Shape2d::CreateQuad(Vector2::Zero,
+                                             Vector2(SCREEN_SPACE_RES.x, 0.0f),
+                                             Vector2(SCREEN_SPACE_RES.x, SCREEN_SPACE_RES.y),
+                                             Vector2(0.0f, SCREEN_SPACE_RES.y),
+                                             bgColor, bgColor, bgColor, bgColor,
+                                             DEPTH_2D_MAX, ScaleMode::Fill, BlendMode::Opaque);
+            renderer.SubmitShape2d(shape);
+        }
 
         // Define scale mode.
         auto scaleMode = fit ? ScaleMode::Fit : ScaleMode::Fill;
 
         // Submit fullscreen background sprite.
         auto sprite = Sprite2d::CreateSprite2d(assetName, Vector2::Zero, Vector2::One,
-                                               SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
-                                               DEPTH_2D_MAX, AlignMode::Center, scaleMode, BlendMode::Opaque);
+                                               SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, Color::White, paletteIdx,
+                                               DEPTH_2D_MAX - 1, AlignMode::Center, scaleMode, BlendMode::Opaque);
         renderer.SubmitSprite2d(sprite);
 
         // Submit gamma overlay sprite.
-        auto gammaColor  = Color(1.0f, 1.0f, 1.0f, Q8_TO_FLT(g_Screen_BackgroundImgGamma));
-        auto gammaSprite = Sprite2d::CreateSprite2d(assetName, Vector2::Zero, Vector2::One,
-                                                    SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
-                                                    DEPTH_2D_MAX - 1, AlignMode::Center, scaleMode, BlendMode::Add);
-        renderer.SubmitSprite2d(gammaSprite);
-
-        g_SysWork.bgmStatusFlags   |= BgmStatusFlag_Pause;
-        g_Screen_BackgroundImgGamma = Q8(0.5f);
-    }
-
-    void Screen_BackgroundImgDraw(s_FsImageDesc* image) // 0x800314EC
-    {
-        // @stub Use overload above.
-
-        g_SysWork.bgmStatusFlags   |= BgmStatusFlag_Pause;
-        g_Screen_BackgroundImgGamma = Q8(0.5f);
-    }
-
-    void Screen_BackgroundImgTransition(s_FsImageDesc* image0, s_FsImageDesc* image1, q3_12 alpha) // 0x800317CC
-    {
-        // @stub
-        // @todo Translate blending logic.
-        
-        /*for (i = 0; i < 3; i++)
+        float gamma = Q8_TO_FLT(g_Screen_BackgroundImgGamma - Q8(0.5f));
+        if (gamma != 0.0f)
         {
-            image = (i > 0) ? image0 : image1;
-            color = (i < 2) ? Q12_MULT_PRECISE(alpha, 128) : 128;
+            auto gammaColor  = Color(1.0f, 1.0f, 1.0f, gamma);
+            auto gammaSprite = Sprite2d::CreateSprite2d(assetName, Vector2::Zero, Vector2::One,
+                                                        SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, gammaColor, paletteIdx,
+                                                        DEPTH_2D_MAX - 2, AlignMode::Center, scaleMode, BlendMode::Add);
+            renderer.SubmitSprite2d(gammaSprite);
+        }
 
-            for (j = 0; j < 3; j++)
-            {
-                setSemiTrans(poly, i < 2);
+        g_SysWork.bgmStatusFlags   |= BgmStatusFlag_Pause;
+        g_Screen_BackgroundImgGamma = Q8(0.5f);
+    }
 
-                *((u16*)&poly->r0) = color + (color << 8);
-                poly->b0           = color;
-            }
-        }*/
+    void Screen_BackgroundImgDraw(s_FsImageDesc* image)
+    {
+        Screen_BackgroundImgDraw(image->AssetName, true);
+
+        g_SysWork.bgmStatusFlags   |= BgmStatusFlag_Pause;
+        g_Screen_BackgroundImgGamma = Q8(0.5f);
+    }
+
+    void Screen_BackgroundImgDrawAlt(s_FsImageDesc* image)
+    {
+        Screen_BackgroundImgDraw(image);
+    }
+
+    void Screen_BackgroundImgTransition(const std::string& assetName0, const std::string& assetName1, q3_12 alpha,
+                                        bool fit)
+    {
+        auto& renderer = g_App.GetRenderer();
+
+        // Define scale mode.
+        auto scaleMode = fit ? ScaleMode::Fit : ScaleMode::Fill;
+
+        // Submit first blended fullscreen background sprite.
+        auto color0  = Color::White;
+        auto sprite0 = Sprite2d::CreateSprite2d(assetName0, Vector2::Zero, Vector2::One,
+                                                SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
+                                                DEPTH_2D_MAX, AlignMode::Center, scaleMode, BlendMode::Opaque);
+        renderer.SubmitSprite2d(sprite0);
+
+        // Submit second blended fullscreen backround sprite.
+        auto color1  = Color(1.0f, 1.0f, 1.0f, Q12_TO_FLT(alpha));
+        auto sprite1 = Sprite2d::CreateSprite2d(assetName0, Vector2::Zero, Vector2::One,
+                                                SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, color1, 0,
+                                                DEPTH_2D_MAX - 1, AlignMode::Center, scaleMode, BlendMode::Alpha);
+        renderer.SubmitSprite2d(sprite1);
 
         g_SysWork.bgmStatusFlags |= BgmStatusFlag_Pause;
-        //GsOUT_PACKET_P = (PACKET*)poly;
-    }
-
-    void Screen_BackgroundImgDrawAlt(s_FsImageDesc* image) // 0x80031AAC
-    {
-        // @stub
-
-        // @todo Translate blending logic.
-        /*setSemiTrans(poly, false);
-        *((u16*)&poly->r0) = g_Screen_BackgroundImgGamma + (g_Screen_BackgroundImgGamma << 8);
-        poly->b0           = g_Screen_BackgroundImgGamma;*/
-
-        g_SysWork.bgmStatusFlags   |= BgmStatusFlag_Pause;
-        g_Screen_BackgroundImgGamma = Q8(0.5f);
     }
 
     bool Screen_BackgroundMotionBlur(s32 vBlanks) // 0x80031CCC

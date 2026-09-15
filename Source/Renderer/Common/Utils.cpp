@@ -85,6 +85,7 @@ namespace Silent::Renderer
     {
         const auto& renderer = g_App.GetRenderer();
 
+        // @todo Only thread-safe when used in renderer, but useful to call elsewhere too.
         float aspect = renderer.GetViewportAspectRatio();
 
         auto aspectCorrection = Vector2::One;
@@ -131,11 +132,5 @@ namespace Silent::Renderer
     {
         return Vector2(((ndc.x + 1.0f) * SCREEN_SPACE_RES.x) / 2.0f,
                        ((1.0f - ndc.y) * SCREEN_SPACE_RES.y) / 2.0f);
-    }
-
-    Vector2i NormalizeRetroScreenPosition(const Vector2i pos)
-    {
-        return Vector2i((pos.x < 0) ? (((int)RETRO_SCREEN_SPACE_RES.x / 2) + pos.x) : pos.x,
-                        (pos.y < 0) ? (((int)RETRO_SCREEN_SPACE_RES.y / 2) + pos.y) : pos.y);
     }
 }

@@ -3,12 +3,17 @@
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Screens/SaveLoad/SaveLoad.h"
 
+#include "Application.h"
 #include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/MemCard.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
+#include "Input/Input.h"
+
+using namespace Silent::Input;
 
 namespace Silent::Game
 {
@@ -271,7 +276,7 @@ namespace Silent::Game
         for (i = 0; i < MEMCARD_SLOT_COUNT_MAX; i++)
         {
             Gfx_StringPositionSet(SLOT_STR_POS_TABLE[i].vx, SLOT_STR_POS_TABLE[i].vy);
-            Gfx_StringDraw(SLOT_STRS[i], 50);
+            Gfx_StringDraw(SLOT_STRS[i]);
         }
 
         line.vertex0.x = -136;
@@ -301,7 +306,7 @@ namespace Silent::Game
 
             // Draw "FILE" string.
             Gfx_StringPositionSet((slotIdx * OFFSET_X) + FILE_STR_MARGIN_X, POS_Y);
-            Gfx_StringDraw(FILE_STR, 50);
+            Gfx_StringDraw(FILE_STR);
 
             // Draw file ID string.
             Gfx_StringPositionSet((slotIdx * OFFSET_X) + FILE_ID_STR_MARGIN_X, POS_Y);
@@ -738,7 +743,7 @@ namespace Silent::Game
         };
 
         g_SaveScreen_DisplaySaveInfo = false;
-        time                         = (u8)g_SysWork.counters_1C[0] & 0x3F;
+        time                         = (u8)g_SysWork.gameStateCounter & 0x3F;
         //ot                           = &g_OrderingTable2[g_ActiveBufferIdx];
 
         switch (g_SaveScreen_OverwriteActive)
@@ -952,7 +957,7 @@ namespace Silent::Game
         s8       color;
         POLY_F4* poly;
 
-        temp       = ((u8)g_SysWork.counters_1C[0]) & 0x3F;
+        temp       = ((u8)g_SysWork.gameStateCounter) & 0x3F;
         colorTimer = temp;
         //ot         = &g_OrderingTable2[g_ActiveBufferIdx];
 
@@ -1006,7 +1011,7 @@ namespace Silent::Game
         s32      i;
         s32      j;
 
-        u32 selectedSaveHighlightTimer = (u8)g_SysWork.counters_1C[0] & 0x3F;
+        u32 selectedSaveHighlightTimer = (u8)g_SysWork.gameStateCounter & 0x3F;
 
         const s_Quad2d SCROLL_BAR_TRACK_QUADS[] =
         {
@@ -1693,7 +1698,7 @@ namespace Silent::Game
 
         if (g_GameWork.gameState == GameState_SaveScreen)
         {
-            //func_800363D0();
+            //Bgm_MenuUpdate();
         }
     }
 
@@ -1729,9 +1734,11 @@ namespace Silent::Game
 
     void SaveScreen_LogicUpdate() // 0x801E649C
     {
-        s32               gameStateStep = g_GameWork.gameStateSteps[1];
+        const auto& input = g_App.GetInput();
+
+        s32                  gameStateStep = g_GameWork.gameStateSteps[1];
         s_SaveScreenElement* saveEntry;
-        static bool       isSaveWriteOptionSelected;
+        static bool          isSaveWriteOptionSelected;
 
         switch (gameStateStep)
         {
@@ -1743,7 +1750,8 @@ namespace Silent::Game
 
                 // Memory cards are inserted and user is moving between slots.
                 if (g_Savegame_ElementCount0[0] != 0 && g_Savegame_ElementCount0[1] != 0 &&
-                    (g_Controller0->buttonFlags.clicked & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft)))
+                    (input.GetAction(In::Left).IsClicked(0.5f) ||
+                     input.GetAction(In::Right).IsClicked(0.5f)))
                 {
                     g_SelectedSaveSlotIdx ^= 1;
                     SD_Call(Sfx_MenuMove);
@@ -1757,7 +1765,7 @@ namespace Silent::Game
                     g_MemCard_ActiveMemCardSlotSaves = MemCard_ActiveMemCardSlotGet(g_SelectedSaveSlotIdx);
 
                     // Move down savegame entry.
-                    if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighUp)
+                    if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, 0.5f))
                     {
                         if (g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx] != 0)
                         {
@@ -1767,7 +1775,7 @@ namespace Silent::Game
                     }
 
                     // Move up savegame entry.
-                    if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighDown)
+                    if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, 0.5f))
                     {
                         if (g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx] < g_Savegame_ElementCount0[g_SelectedSaveSlotIdx] - 1)
                         {
@@ -1800,7 +1808,7 @@ namespace Silent::Game
                     }
 
                     // Overwrite or format savegame entry.
-                    if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.enter)
+                    if (input.GetAction(In::Enter).IsClicked())
                     {
                         if (g_SaveScreen_IsFormatting | g_SaveScreen_IsNewSaveSelected)
                         {
@@ -1817,7 +1825,7 @@ namespace Silent::Game
                 }
 
                 // Exit save screen.
-                if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.cancel)
+                if (input.GetAction(In::Cancel).IsClicked())
                 {
                     ScreenFade_Start(false, false, false);
                     Game_StateStepSet(1, 2);
@@ -1827,7 +1835,6 @@ namespace Silent::Game
                     {
                         SD_Call(23);
                         //GameFs_TitleGfxLoad();
-                        //GameFs_StreamBinSeek();
                     }
                 }
                 break;
@@ -1840,19 +1847,19 @@ namespace Silent::Game
 
                 g_SaveScreen_MemCardStateTextTimer = 0;
 
-                if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighLeft)
+                if (input.GetAction(In::Left).IsClicked(0.5f))
                 {
                     isSaveWriteOptionSelected = gameStateStep;
                     SD_Call(Sfx_MenuMove);
                 }
 
-                if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighRight)
+                if (input.GetAction(In::Right).IsClicked(0.5f))
                 {
                     isSaveWriteOptionSelected = false;
                     SD_Call(Sfx_MenuMove);
                 }
 
-                if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.enter)
+                if (input.GetAction(In::Enter).IsClicked())
                 {
                     if (!isSaveWriteOptionSelected)
                     {
@@ -1867,7 +1874,7 @@ namespace Silent::Game
                 }
 
                 // Cancel overwrite.
-                if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.cancel)
+                if (input.GetAction(In::Cancel).IsClicked())
                 {
                     Game_StateStepSet(1, 0);
                     SD_Call(Sfx_MenuCancel);
@@ -2108,7 +2115,7 @@ namespace Silent::Game
         SaveScreen_SlotStrAndBottomRectDraw();
 
         // Draws background image.
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
     }
 
     void SaveScreen_ScreenDraw() // 0x801E70C8

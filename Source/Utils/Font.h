@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utils/DoubleBuffer.h"
+
 namespace Silent::Utils
 {
     /** @brief Font chain metadata. */
@@ -42,6 +44,13 @@ namespace Silent::Utils
         float                    Width  = 0.0f;
     };
 
+    /** @brief Rasterized font atlases. */
+    struct FontTextureAtlases
+    {
+        std::vector<std::vector<byte>> Textures    = {};
+        std::set<int>                  UpdatedIdxs = {};
+    };
+
     /** @brief Atlased font chain. */
     class Font
     {
@@ -59,18 +68,16 @@ namespace Silent::Utils
         // Fields
         // =======
 
-        std::string _name               = {};
-        int         _pointSize          = 0;
-        float       _tracking           = 0.0f;
-        bool        _enableAntialiasing = false;
+        std::string        _name               = {};
+        int                _pointSize          = 0;
+        std::vector<float> _trackings          = {};
+        bool               _enableAntialiasing = false;
         
         std::vector<FT_Face>                     _ftFonts        = {};
         std::unordered_map<char32, GlyphAttribs> _glyphs         = {}; /** Key = code point, value = rasterized glyph attributes. */
         std::vector<smol_atlas_t*>               _rectAtlases    = {};
-        std::vector<std::vector<byte>>           _textureAtlases = {};
+        DoubleBuffer<FontTextureAtlases>         _textureAtlases = {};
         int                                      _activeAtlasIdx = 0;
-
-        std::set<int> _dirtyGpuAtlasIdxs = {};
 
     public:
         // =============
@@ -110,17 +117,11 @@ namespace Silent::Utils
          */
         int GetPointSize() const;
 
-        /** @brief Gets the monochrome texture atlases containing cached font glyphs.
+        /** @brief Gets the monochrome texture atlases containing cached font glyphs from the back buffer.
          *
          * @return Glyph texture atlases.
          */
-        const std::vector<std::vector<byte>>& GetTextureAtlases() const;
-
-        /** @brief Gets the indices of glyph atlas textures which require updating on the GPU.
-         *
-         * @return Dirty glyph texture atlas indices.
-         */
-        const std::set<int>& GetDirtyGpuAtlasIdxs() const;
+        const FontTextureAtlases& GetTextureAtlases() const;
 
         /** @brief Gets the shaped text for a message.
          *
@@ -133,8 +134,8 @@ namespace Silent::Utils
         // Utilities
         // ==========
 
-        /** @brief Clears all indices of glyph texture atlases marked for updating on the GPU. */
-        void ClearDirtyGpuAtlasIdxs();
+        /** @brief Swaps the double buffer containing rasterized texture atlases. @todo Might be slow. */
+        void Swap();
 
     private:
         // ========
@@ -213,11 +214,4 @@ namespace Silent::Utils
         void LoadFont(const FontMetadata& metadata, const stdfs::path& path,
                       const std::string& precacheGlyphs = {});
     };
-
-    /** @brief Gets the code points in a message.
-     *
-     * @param msg Message to parse.
-     * @return Code points.
-     */
-    std::vector<char32> GetCodePoints(const std::string& msg);
 }

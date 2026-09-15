@@ -5,111 +5,120 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
+#include "Assets/AssetStreamer.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
-#include "Game/Bodyprog/Sys/Joy.h"
-#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FileInfo.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "Services/Clock.h"
 #include "Utils/Video.h"
-//#include "bodyprog/libsd.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Input;
+using namespace Silent::Renderer;
+using namespace Silent::Services;
+using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    void GameState_MovieIntroFadeIn_Update() // 0x801E2654
+    void GameState_MovieIntro_Update()
     {
-        const auto& input = g_App.GetInput();
+        enum class StateStep
+        {
+            FadeIn,
+            Play
+        };
 
         switch (g_GameWork.gameStateSteps[0])
         {
-            case 0:
-                ScreenFade_Start(true, true, false);
-                GameFs_TitleGfxLoad();
+            case (int)StateStep::FadeIn:
+            {
+                ScreenFade_Start(false, true, false, Q12(1.0f));
 
-                g_GameWork.gameStateSteps[0]++;
+                Game_StateStepIncrement(0);
                 break;
-
-            case 1:
-                if (input.HasUserActionInput() || g_SysWork.counters_1C[0] > 300)
+            }
+            case (int)StateStep::Play:
+            {
+                const char* videoName = (g_GameWorkConst->config.extraOptionsEnabled & (1 << 0)) ? "C1_20670.MPG" :
+                                                                                                   "C2_20670.MPG";
+                if (!PlayFmv(videoName))
                 {
-                    ScreenFade_Start(false, false, false);
-                    g_GameWork.gameStateSteps[0] = 2;
+                    Game_StateSetNext(GameState_MainMenu);
+                    g_ScreenFadeTimestep = Q12(1.0f);
                 }
                 break;
+            }
+        }
+    }
 
-            case 2:
-                if (ScreenFade_IsFinished())
+    void GameState_MovieOpening_Update()
+    {
+        enum class StateStep
+        {
+            ResetFade,
+            Play
+        };
+
+        switch (g_GameWork.gameStateSteps[0])
+        {
+            case (int)StateStep::ResetFade:
+            {
+                ScreenFade_Reset();
+
+                Game_StateStepIncrement(0);
+                break;
+            }
+            case (int)StateStep::Play:
+            {
+                if (!PlayFmv("M1_03500.MPG"))
                 {
-                    Fs_QueueWaitForEmpty();
-                    Game_StateSetNext(GameState_MovieIntro);
+                    Game_StateSetNext(GameState_MainLoadScreen);
                 }
                 break;
+            }
         }
     }
 
-    void GameState_MovieIntro_Update() // 0x801E279C
-    {
-        const char* videoName = (g_GameWorkConst->config.extraOptionsEnabled & (1 << 0)) ? "C1_20670.MPG" :
-                                                                                           "C2_20670.MPG";
-        if (!movie_main(std::string(videoName), 0, 0))
-        {
-            Game_StateSetNext(GameState_MainMenu);
-            g_ScreenFadeTimestep = Q12(1.0f);
-        }
-    }
-
-    void GameState_MovieOpening_Update() // 0x801E2838
-    {
-        if (!movie_main("C1_20670.MPG", 0, 0))
-        {
-            Game_StateSetNext(GameState_MainLoadScreen);
-        }
-    }
-
-    void GameState_ExitMovie_Update() // 0x801E28B0
+    void GameState_ExitMovie_Update()
     {
         Game_StateSetNext(GameState_InGame);
     }
 
-    void GameState_DebugMoviePlayer_Update() // 0x801E2908
+    void GameState_DebugMoviePlayer_Update()
     {
         // @stub
     }
 
-    void GameState_MovieIntroAlternate_Update() // 0x801E2A24
+    void GameState_MovieIntroAlternate_Update()
     {
-        if (!movie_main("C1_20670.MPG", 0, 0))
+        if (!PlayFmv("C1_20670.MPG"))
         {
             Game_StateSetNext(GameState_MainMenu);
             g_ScreenFadeTimestep = Q12(1.0f);
         }
     }
 
-    void open_main(s32 file_idx, s16 num_frames) // 0x801E2AA4
-    {
-        // @stub
-    }
-
-    bool movie_main(const std::string& file_name, s32 f_size, s32 sector) // 0x801E2B9C
+    bool PlayFmv(const std::string& name)
     {
         const auto& input    = g_App.GetInput();
         auto&       renderer = g_App.GetRenderer();
         auto&       video    = g_App.GetVideo();
 
         // Start playing new video.
-        if (!video.IsLoaded() || file_name != video.GetName())
+        if (!video.IsLoaded() || name != video.GetName())
         {
-            video.Play(file_name);
+            video.Play(name);
         }
         // Update active video playback.
         else
         {
-            if (!video.IsPlaying() || input.GetAction(In::Enter).IsClicked())
+            if (input.GetAction(In::Enter).IsClicked()  ||
+                input.GetAction(In::Cancel).IsClicked() ||
+                !video.IsPlaying())
             {
                 video.Stop();
                 return false;
@@ -122,9 +131,9 @@ namespace Silent::Game
 
         // Submit fullscreen video sprite.
         auto  sprite = Sprite2d::CreateSprite2d(video.GetName(), Vector2::Zero, Vector2::One,
-                                                SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, video.GetAspectRatio(),
+                                                SCREEN_SPACE_RES * 0.5f, DEG_TO_RAD(0.0f), 1.0f, video.GetAspectRatio(),
                                                 Color::White, NO_VALUE,
-                                                100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
+                                                DEPTH_2D_MAX, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
         renderer.SubmitSprite2d(sprite);
         return true;
     }

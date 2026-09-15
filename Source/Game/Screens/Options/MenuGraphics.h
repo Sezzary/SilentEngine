@@ -17,7 +17,7 @@ namespace Silent::Game
     void Options_MainOptionsMenu_VolumeBarDraw(bool isSfx, uchar vol);
 
     /** @brief Draws the heading and all listed entry strings in the main options menu. */
-    void Options_MainOptionsMenu_EntryStringsDraw();
+    std::pair<float, float> Options_MainOptionsMenu_EntryStringsDraw();
 
     /** @brief Draws the heading and all listed entry strings in the extra options menu. */
     void Options_ExtraOptionsMenu_EntryStringsDraw();
@@ -25,7 +25,7 @@ namespace Silent::Game
     /** @brief Draws gold bullet points next to the listed entries and a highlight indicating the
      * selected entry in the main options menu.
      */
-    void Options_MainOptionsMenu_SelectionHighlightDraw();
+    void Options_MainOptionsMenu_SelectionHighlightDraw(const std::pair<float, float>& widths);
 
     /** @brief Draws gold bullet points next to the listed entries and a highlight indicating the
      * selected entry in the extra options menu.

@@ -158,7 +158,7 @@ namespace Silent
         SDL_SetWindowAspectRatio(_window, ASPECT_RATIO_4_TO_3, ASPECT_RATIO_16_TO_9);
 
         // Assets.
-        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_PSX_DIR_NAME);
+        _work.Assets.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_STREAM_DIR_NAME);
         _work.Video.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_VIDEO_DIR_NAME);
 
         // Fonts.
@@ -227,6 +227,7 @@ namespace Silent
 
         // Finish.
         Debug::Log("Shutdown complete.");
+        Debug::Deinitialize();
     }
 
     void ApplicationManager::Run()

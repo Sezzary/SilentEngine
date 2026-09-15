@@ -1,78 +1,107 @@
 #pragma once
 
+#include "Renderer/Common/Constants.h"
 #include "Renderer/Common/Enums.h"
 
 using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
-    constexpr char MAP_MSG_CODE_COLOR         = 'C'; /** Set color. */
-    constexpr char MAP_MSG_CODE_DISPLAY_ALL   = 'D'; /** Display message instantly with no rollout. */
-    constexpr char MAP_MSG_CODE_END           = 'E'; /** End message. */
-    constexpr char MAP_MSG_CODE_HALF_HEIGHT   = 'H'; /** Half-height glyphs. */
-    constexpr char MAP_MSG_CODE_JUMP          = 'J'; /** Jump timer. */
-    constexpr char MAP_MSG_CODE_LINE_POSITION = 'L'; /** Set next line position override. */
-    constexpr char MAP_MSG_CODE_ALIGN_CENTER  = 'M'; /** Align center. */
-    constexpr char MAP_MSG_CODE_NEWLINE       = 'N'; /** Newline. */
-    constexpr char MAP_MSG_CODE_SELECT        = 'S'; /** Display dialog prompt with selectable entries. */
-    constexpr char MAP_MSG_CODE_TAB           = 'T'; /** Inset line. */
-    constexpr char MAP_MSG_CODE_END_PAGE      = 'P'; /** End page. */ // @todo New.
-    constexpr char MAP_MSG_CODE_ALIGN_RIGHT   = 'R'; /** Align right. */
+    constexpr char MSG_CODE_COLOR         = 'C'; /** Set color. */
+    constexpr char MSG_CODE_DISPLAY_ALL   = 'D'; /** Display message instantly with no rollout. */
+    constexpr char MSG_CODE_END           = 'E'; /** End message. */
+    constexpr char MSG_CODE_HALF_HEIGHT   = 'H'; /** Half-height glyphs. */
+    constexpr char MSG_CODE_JUMP          = 'J'; /** Jump timer. */
+    constexpr char MSG_CODE_LINE_POSITION = 'L'; /** Set next line position override. */
+    constexpr char MSG_CODE_ALIGN_CENTER  = 'M'; /** Align center. */
+    constexpr char MSG_CODE_NEWLINE       = 'N'; /** Newline. */
+    constexpr char MSG_CODE_SELECT        = 'S'; /** Display dialog prompt with selectable entries. */
+    constexpr char MSG_CODE_TAB           = 'T'; /** Inset line. */
+    constexpr char MSG_CODE_END_PAGE      = 'P'; /** End page. */
+    constexpr char MSG_CODE_ALIGN_RIGHT   = 'R'; /** Align right. */
+
+    constexpr float SERIF_FONT_SCALE       = RETRO_PIXEL_SCALE.y * 16.0f;
+    constexpr float SERIF_FONT_LINE_HEIGHT = SCREEN_SPACE_RES.y / 14.0f;
+
+    /** @brief String color IDs for strings displayed in screen space.
+     * Used as indices into `STRING_COLORS`.
+     * @todo Rename to `e_MsgColorArg`.
+     */
+    enum e_StringColorId
+    {
+        StringColorId_Gold      = 0,
+        StringColorId_DarkGrey  = 1,
+        StringColorId_Green     = 2,
+        StringColorId_Nuclear   = 3,
+        StringColorId_Red       = 4,
+        StringColorId_Black     = 5,
+        StringColorId_LightGrey = 6,
+        StringColorId_White     = 7,
+
+        StringColorId_Count
+    };
+
+    /** @brief Message selection prompt aruments. @todo Rework values. `YesOrNo` was 4 in legacy. */
+    enum class MsgSelectArg
+    {
+        None    = NO_VALUE,
+        YesOrNo = 0,
+        Select2 = 2,
+        Select3 = 3
+    };
+
+    /** @brief Message return codes. @todo Convert to flags. */
+    enum class MsgReturnCode
+    {
+        None,
+        EndPage,
+        End
+    };
 
     /** @brief Processed message node types. */
-    enum class NodeType
+    enum class MsgNodeType
     {
         Text,
         Command
     };
 
-    /** @brief Message return codes. */
-    enum e_MsgReturnCode
-    {
-        MsgReturnCode_None    = 0,
-        MsgReturnCode_EndPage = -2, // @todo Implement this.
-        MsgReturnCode_End     = 1,
-        MsgReturnCode_Select2 = 2,
-        MsgReturnCode_Select3 = 3,
-        MsgReturnCode_Select4 = 4
-    };
-
-    /** @brief String color IDs for strings displayed in screen space.
-     * Used as indices into `STRING_COLORS`.
-     */
-    enum e_StringColorId
-    {
-        StringColorId_Gold        = 0,
-        StringColorId_DarkGrey    = 1,
-        StringColorId_Green       = 2,
-        StringColorId_Nuclear     = 3,
-        StringColorId_Red         = 4,
-        StringColorId_GreenUnused = 5, // @unused Same as `StringColorId_Green`.
-        StringColorId_LightGrey   = 6,
-        StringColorId_White       = 7,
-        StringColorId_Black       = 8,
-
-        StringColorId_Count
-    };
-
     /** @brief Processed message node. */
     struct MsgNode
     {
-        NodeType    Type  = NodeType::Text;
+        MsgNodeType Type  = MsgNodeType::Text;
         std::string Value = {};
+
+        char  GetCode() const;
+        int   GetIntArg() const;
+        float GetTimeArg() const;
     };
 
-    /** @brief Parsed message data. */
-    struct ParsedMsg
+    /** @brief Message page. */
+    struct MsgPage
     {
-        std::string          FontName   = {};
         std::vector<MsgNode> Nodes      = {};
         std::vector<float>   LineWidths = {};
+    };
+
+    /** @brief Parsed message. */
+    struct ParsedMsg
+    {
+        std::vector<MsgPage> Pages      = {};
+        std::string          FontName   = {};
         float                LineHeight = 0.0f;
     };
 
+    /** @brief Return result for drawn parsed message. */
+    struct MsgReturnResult
+    {
+        bool               DisplayAll = false;
+        std::vector<float> LineWidths = {};
+        MsgReturnCode      Code       = MsgReturnCode::None;
+        MsgSelectArg       Select     = MsgSelectArg::None;
+    };
+
     extern Vector2i g_StringPosition;
-    extern u8       g_MapMsg_AudioLoadBlock;
+    extern int      g_MapMsg_AudioType;
 
     /** @brief Parses a tagged message.
      *
@@ -83,7 +112,7 @@ namespace Silent::Game
      */
     ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight);
 
-    /** @brief Draws a string in screen space.
+    /** @brief Submits a string to draw in screen space.
      *
      * @param str String to draw.
      * @param fontName Name of the font to use.
@@ -92,20 +121,22 @@ namespace Silent::Game
      * @param color Color.
      * @param styleFlags Style flags.
      * @param alignMode Alignment mode.
+     * @return String width.
      */
-    void DrawString(const std::string& str, const std::string& fontName, const Vector2& pos, float scale,
-                    const Color& color, int styleFlags, AlignMode alignMode);
+    float DrawString(const std::string& str, const std::string& fontName, const Vector2& pos, float scale,
+                     const Color& color, int styleFlags, AlignMode alignMode);
 
-    /** @brief Draws a parsed message in screen space.
+    /** @brief Submits a parsed message to draw in screen space.
      *
      * @param msg Parsed message to draw.
      * @param pos Start position in screen percent.
      * @param scale Scale relative to the screen height.
      * @param glyphCount Consecutive glyphs to draw from the message. Used for rollout.
-     * @return Map message return code.
+     * @param pageIdx Index of the page to draw in the message.
+     * @return Message return result.
      */
-    e_MsgReturnCode DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
-                                  int styleFlags, int displayLength = INT_MAX);
+    MsgReturnResult DrawParsedMsg(const ParsedMsg& msg, const Vector2& pos, float scale,
+                                  int styleFlags, int displayLength = INT_MAX, int pageIdx = 0);
 
     /** @brief Sets the global position of the next string to be drawn by `Gfx_StringDraw`.
      *
@@ -126,21 +157,24 @@ namespace Silent::Game
     /** @brief Resets global map message parameters to defaults. */
     void Gfx_MapMsg_Reset();
 
-    /** @brief Draws a string in screen space using 12x16 glyphs. The position and color must be set by
-     * `Gfx_StringPositionSet` and `Gfx_StringColorSet` before calling this function.
+    /** @brief Submits a simple tagged message to draw in screen space using the serif font.
+     * The position and color must be set by * `Gfx_StringPositionSet` and `Gfx_StringColorSet` before calling this
+     * function.
      *
-     * @note References glyphs in `FONT16.TIM`. The texture is loaded into VRAM across multiple texture pages,
-     * hence why the texture is a single row with 4-pixel padding every 21st glyph instead of a stacked arrangement.
+     * @note The message must contain a single page.
      *
-     * @param str String to draw.
-     * @param strLength Number of consecutive glyphs to draw from the string.
+     * @param msg Tagged message to draw.
+     * @param displayLength Number of consecutive glyphs to draw from the string.
+     * @param isHalfHeight Use half-height glyphs.
+     * @return String width.
      */
-    void Gfx_StringDraw(const std::string& str, int displayLength = INT_MAX, bool isHalfHeight = false, AlignMode alignMode = AlignMode::BottomLeft);
+    float Gfx_StringDraw(const std::string& msg, int displayLength = INT_MAX, bool isHalfHeight = false);
 
-    /** @brief Draws an integer string in screen space using 12x16 glyphs.
+    /** @brief Draws an integer string in screen space using the serif font.
      *
      * @param widthMin Minimum width of the integer string.
-     * @param strLength Number of consecutive glyphs to draw from the integer string.
+     * @param displayLength Number of consecutive glyphs to draw from the integer string.
+     * @return String width.
      */
-    void Gfx_StringDrawInt(s32 widthMin, s32 displayLength = INT_MAX);
+    float Gfx_StringDrawInt(s32 widthMin, s32 displayLength = INT_MAX);
 }

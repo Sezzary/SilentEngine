@@ -19,52 +19,49 @@ using namespace Silent::Utils;
 namespace Silent::Game
 {
     static s32   g_MapMsg_CurrentIdx       = 0;
+    static int   g_MapMsg_CurrentPageIdx   = 0;
     static q3_12 g_MapMsg_SelectFlashTimer = 0;
     static auto  g_MapMsg_Cached           = ParsedMsg{};
 
-    s_MapMsgSelect g_MapMsg_Select;
-    s8             g_MapMsg_SelectCancelIdx;
+    static s_MapMsgSelect g_MapMsg_Select;
+    static int            g_MapMsg_SelectCancelIdx;
 
-    /** @brief Draws a string in screen space using 12x16 glyphs and returns a map message code.
+    /** @brief Draws map message strings in screen space.
      *
      * @param mapMsg Map message to draw.
-     * @param strLength Number of consecutive glyphs to draw from the map message.
-     * @return Map message return code (`e_MsgReturnCode`).
+     * @param displayLength Number of consecutive glyphs to draw from the map message.
+     * @param pageIdx Message page index.
+     * @return Message return result.
      */
-    static e_MsgReturnCode Gfx_MapMsg_StringDraw(const std::string& mapMsg, int displayLength, bool isHalfHeight = false)
+    static MsgReturnResult Gfx_MapMsg_StringDraw(const std::string& mapMsg, int displayLength, int pageIdx)
     {
-        constexpr float SCALE = RETRO_PIXEL_SCALE.y * 16.0f;
-
-        DrawParsedMsg(g_MapMsg_Cached, ConvertRetroScreenPixelsToPercent(g_StringPosition), SCALE,
-                      (int)TextStyleFlags::Gradient | (int)TextStyleFlags::Shadow, displayLength);
+        int styleFlags = (int)TextStyleFlags::Gradient |
+                         (int)TextStyleFlags::Shadow   |
+                         g_SysWork.enableHalfHeightGlyphs ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None;
+        return DrawParsedMsg(g_MapMsg_Cached, ConvertRetroScreenPixelsToPercent(g_StringPosition), SERIF_FONT_SCALE,
+                             styleFlags, displayLength, pageIdx);
     }
 
-    s32 Gfx_MapMsg_Draw(s32 mapMsgIdx)
+    int Gfx_MapMsg_Draw(int mapMsgIdx)
     {
-        constexpr float SCALE           = RETRO_PIXEL_SCALE.y * 16.0f;
-        constexpr int   FINISH_CUTSCENE = 0xFF;
-        constexpr int   FINISH_MAP_MSG  = 0xFF;
+        constexpr int ROLLOUT_ADVANCE = 2;
+
+        static int          rolloutState;  // } @todo Confusing, rework completely.
+        static MsgSelectArg menuSelection; // }
+        static int          displayLength;
+        static int          activeMapMsgIdx;
+        static int          displayLengthInc;
+        static bool         loadAudio;
 
         const auto& input   = g_App.GetInput();
         const auto& options = g_App.GetOptions();
 
-        static int  stateMachineIdx0;
-        static int  stateMachineIdx1;
-        static int  displayLength;
-        static int  activeMapMsgIdx;
-        static int  displayLengthInc;
-        static bool loadAudio;
-
-        s32 temp_s1;
-        s32 temp;
-        s32 var_a1;
-
-        // Check for user input.
-        bool hasInput = false;
+        // Check for user input to skip.
+        bool skip = false;
         if (input.GetAction(In::Enter).IsClicked() ||
             input.GetAction(In::Cancel).IsClicked())
         {
-            hasInput = true;
+            skip = true;
         }
 
         g_SysWork.playerWork.player.properties.player.gasWeaponPowerTimer = Q12(0.0f);
@@ -74,7 +71,7 @@ namespace Silent::Game
         auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
         if (activeMapMsgIdx != mapMsgIdx || fontName != g_MapMsg_Cached.FontName)
         {
-            g_MapMsg_Cached = GetParsedMsg(g_MapOverlayHdr.mapMessages[mapMsgIdx], fontName, SCALE);
+            g_MapMsg_Cached = GetParsedMsg(g_MapOverlayHdr.mapMessages[mapMsgIdx], fontName, SERIF_FONT_SCALE);
 
             if (activeMapMsgIdx != mapMsgIdx)
             {
@@ -105,34 +102,35 @@ namespace Silent::Game
                 }
 
                 Gfx_StringColorSet(StringColorId_White);
-                Gfx_StringPositionSet(40, 160);
+                Gfx_StringPositionSet(SCREEN_WIDTH / 8, (SCREEN_HEIGHT / 3) * 2);
 
                 displayLength += displayLengthInc;
                 displayLength  = CLAMP(displayLength, 0, MAP_MESSAGE_DISPLAY_ALL_LENGTH);
 
-                if (g_MapMsg_AudioLoadBlock != 0 && g_SysWork.mapMsgTimer > Q12(0.0f))
+                if (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer > Q12(0.0f))
                 {
                     g_SysWork.mapMsgTimer -= g_DeltaTimeRaw;
                     g_SysWork.mapMsgTimer  = CLAMP(g_SysWork.mapMsgTimer, Q12(0.0f), INT_MAX);
                 }
 
-                temp_s1 = stateMachineIdx0;
-                if (temp_s1 == NO_VALUE)
+                if (rolloutState == NO_VALUE)
                 {
-                    if (g_MapMsg_AudioLoadBlock == 0)
+                    if (g_MapMsg_AudioType == MapMsgAudioType_None)
                     {
                         //Game_TimerUpdate();
                     }
 
-                    temp = stateMachineIdx1;
-                    if (temp == temp_s1)
+                    bool isAudioUnskippable = g_MapMsg_AudioType == MapMsgAudioType_VoiceClipUnskippable ||
+                                              g_MapMsg_AudioType == MapMsgAudioType_VoiceStream;
+
+                    if (menuSelection == MsgSelectArg::None && rolloutState == NO_VALUE)
                     {
-                        if (g_MapMsg_Select.maxIdx == temp)
+                        if (g_MapMsg_Select.maxIdx == (int)menuSelection)
                         {
-                            if (!((g_MapMsg_AudioLoadBlock & (1 << 0)) || !hasInput) ||
-                                (g_MapMsg_AudioLoadBlock != 0 && g_SysWork.mapMsgTimer == Q12(0.0f)))
+                            if (!(isAudioUnskippable || !skip) ||
+                                (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer == Q12(0.0f)))
                             {
-                                stateMachineIdx1 = FINISH_MAP_MSG;
+                                menuSelection = MsgSelectArg::None;
 
                                 if (g_SysWork.bgmStatusFlags & BgmStatusFlag_VoiceDialog)
                                 {
@@ -141,32 +139,34 @@ namespace Silent::Game
                                 break;
                             }
                         }
+                        // Cancel selection.
                         else if (input.GetAction(In::Cancel).IsClicked())
                         {
-                            g_MapMsg_Select.maxIdx           = temp;
+                            g_MapMsg_Select.maxIdx           = (int)menuSelection;
                             g_MapMsg_Select.selectedEntryIdx = g_MapMsg_SelectCancelIdx;
 
-                            //Sd_SfxPlay(Sfx_MenuCancel, 0, Q8_CLAMPED(0.25f));
+                            //Sd_SfxPlay(Sfx_MenuCancel, 0, Q8(0.25f));
 
                             if (g_SysWork.silentYesSelection)
                             {
                                 g_SysWork.silentYesSelection = false;
                             }
 
-                            stateMachineIdx1 = FINISH_MAP_MSG;
+                            menuSelection = MsgSelectArg::None;
                             break;
                         }
+                        // Enter selection.
                         else if (input.GetAction(In::Enter).IsClicked())
                         {
-                            g_MapMsg_Select.maxIdx = temp;
+                            g_MapMsg_Select.maxIdx = (int)menuSelection;
 
-                            if (g_MapMsg_Select.selectedEntryIdx == (s8)g_MapMsg_SelectCancelIdx)
+                            if (g_MapMsg_Select.selectedEntryIdx == g_MapMsg_SelectCancelIdx)
                             {
-                                //Sd_SfxPlay(Sfx_MenuCancel, 0, Q8_CLAMPED(0.25f));
+                                //Sd_SfxPlay(Sfx_MenuCancel, 0, Q8(0.25f));
                             }
                             else if (!g_SysWork.silentYesSelection)
                             {
-                                //Sd_SfxPlay(Sfx_MenuConfirm, 0, Q8_CLAMPED(0.25f));
+                                //Sd_SfxPlay(Sfx_MenuConfirm, 0, Q8(0.25f));
                             }
 
                             if (g_SysWork.silentYesSelection)
@@ -174,29 +174,27 @@ namespace Silent::Game
                                 g_SysWork.silentYesSelection = false;
                             }
 
-                            stateMachineIdx1 = FINISH_MAP_MSG;
+                            menuSelection = MsgSelectArg::None;
                             break;
                         }
                     }
-                    else if ((!(g_MapMsg_AudioLoadBlock & (1 << 0)) && hasInput && g_MapMsg_Select.maxIdx != 0) ||
-                            (g_MapMsg_AudioLoadBlock != 0 && g_SysWork.mapMsgTimer == Q12(0.0f)))
+                    else if ((!isAudioUnskippable && skip && g_MapMsg_Select.maxIdx != 0) ||
+                            (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer == Q12(0.0f)))
                     {
                         if (g_MapMsg_Select.maxIdx != NO_VALUE)
                         {
                             g_MapMsg_Select.maxIdx = NO_VALUE;
-                            stateMachineIdx1       = FINISH_MAP_MSG;
+                            menuSelection          = MsgSelectArg::None;
                             break;
                         }
 
                         g_MapMsg_CurrentIdx++;
                         g_SysWork.mapMsgTimer = g_MapMsg_Select.maxIdx;
 
-                        //var_a1 = Gfx_MapMsg_WidthsCompute(g_MapMsg_CurrentIdx);
-
                         displayLength = 0;
-                        stateMachineIdx0 = 0;
+                        rolloutState  = 0;
 
-                        if (g_MapMsg_AudioLoadBlock == MapMsgAudioLoadBlock_J2)
+                        if (g_MapMsg_AudioType == MapMsgAudioType_VoiceStream)
                         {
                             loadAudio = false;
                             return MapMsgState_Idle;
@@ -213,18 +211,18 @@ namespace Silent::Game
                 }
                 else
                 {
-                    if (hasInput)
+                    if (skip)
                     {
                         displayLength = MAP_MESSAGE_DISPLAY_ALL_LENGTH;
                     }
                 }
 
-                stateMachineIdx0 = 0;
-                stateMachineIdx1 = Gfx_MapMsg_SelectionUpdate(g_MapMsg_CurrentIdx, &displayLength);
+                rolloutState = 0;
+                menuSelection = Gfx_MapMsg_SelectionUpdate(g_MapMsg_CurrentIdx, &displayLength);
 
-                if (stateMachineIdx1 != 0 && stateMachineIdx1 < MsgReturnCode_Select4)
+                if (menuSelection == MsgSelectArg::Select2 || menuSelection == MsgSelectArg::Select3)
                 {
-                    stateMachineIdx0 = NO_VALUE;
+                    rolloutState = NO_VALUE;
                 }
             }
             case false:
@@ -232,16 +230,15 @@ namespace Silent::Game
                 g_SysWork.mapMsgTimer            = NO_VALUE;
                 g_MapMsg_Select.maxIdx           = NO_VALUE;
                 g_MapMsg_Select.selectedEntryIdx = 0;
-                g_MapMsg_AudioLoadBlock          = 0;
+                g_MapMsg_AudioType               = MapMsgAudioType_None;
                 g_MapMsg_CurrentIdx              = mapMsgIdx;
-                stateMachineIdx0                 = 0;
-                stateMachineIdx1                 = 0;
+                rolloutState                     = 0;
+                menuSelection                    = MsgSelectArg::None;
                 activeMapMsgIdx                  = mapMsgIdx;
                 displayLength                    = 0;
-                displayLengthInc                 = 2; // Advance 2 glyphs at a time.
+                displayLengthInc                 = ROLLOUT_ADVANCE;
 
                 Gfx_MapMsg_Reset();
-                //var_a1 = Gfx_MapMsg_WidthsCompute(g_MapMsg_CurrentIdx);
 
                 loadAudio                = true;
                 g_SysWork.isMgsStringSet = true;
@@ -249,13 +246,13 @@ namespace Silent::Game
             }
         }
 
-        if (stateMachineIdx1 != FINISH_MAP_MSG)
+        if (menuSelection != MsgSelectArg::None)
         {
             return MapMsgState_Idle;
         }
 
         g_SysWork.isMgsStringSet = false;
-        displayLength         = 0;
+        displayLength            = 0;
 
         if (g_SysWork.bgmStatusFlags & BgmStatusFlag_VoiceDialog)
         {
@@ -265,11 +262,14 @@ namespace Silent::Game
         return g_MapMsg_Select.selectedEntryIdx + 1;
     }
 
-    s32 Gfx_MapMsg_SelectionUpdate(u8 mapMsgIdx, s32* displayLength)
+    MsgSelectArg Gfx_MapMsg_SelectionUpdate(int mapMsgIdx, int* displayLength)
     {
         constexpr int STRING_LINE_OFFSET = 16;
 
-        int mapMsgCode = Gfx_MapMsg_StringDraw(g_MapOverlayHdr.mapMessages[mapMsgIdx], *displayLength);
+        const auto& input = g_App.GetInput();
+
+        auto result = Gfx_MapMsg_StringDraw(g_MapOverlayHdr.mapMessages[mapMsgIdx], *displayLength,
+                                            g_MapMsg_CurrentPageIdx);
 
         g_MapMsg_SelectFlashTimer += g_DeltaTimeRaw;
         if (g_MapMsg_SelectFlashTimer >= Q12(0.5f))
@@ -277,133 +277,111 @@ namespace Silent::Game
             g_MapMsg_SelectFlashTimer -= Q12(0.5f);
         }
 
-        switch (mapMsgCode)
+        // Handle return code.
+        switch (result.Code)
         {
-            case NO_VALUE:
-            case MsgReturnCode_None:
+            case MsgReturnCode::None:
                 g_MapMsg_SelectFlashTimer = Q12(0.0f);
                 break;
 
-            case MsgReturnCode_Select2:
-            case MsgReturnCode_Select3:
-            case MsgReturnCode_Select4:
-                g_MapMsg_Select.maxIdx  = 1;
-                g_MapMsg_SelectCancelIdx = (mapMsgCode == 3) ? 2 : 1;
-
-                if (mapMsgCode == MsgReturnCode_Select4)
-                {
-                    // Shows selection prompt with map messages at indices 0 and 1.
-                    // All maps have "Yes" and "No" as messages 0 and 1, respectively.
-                    for (int i = 0; i < 2; i++)
-                    {
-                        if (g_MapMsg_Select.selectedEntryIdx == i)
-                        {
-                            Gfx_StringColorSet((e_StringColorId)(((g_MapMsg_SelectFlashTimer >> 10) * 3) + 4));
-                        }
-                        else
-                        {
-                            Gfx_StringColorSet(StringColorId_White);
-                        }
-
-                        Gfx_StringPositionSet(32, (STRING_LINE_OFFSET * i) + 98);
-                        Gfx_StringDraw(g_MapOverlayHdr.mapMessages[i], MAP_MESSAGE_DISPLAY_ALL_LENGTH);
-                    }
-
-                    mapMsgCode = 2;
-                }
-                else
-                {
-                    // Shows selection prompt with 2 or 3 map messages from current index + 1/2/3.
-                    // Requires prompt options to be arranged sequentially in the map message array, e.g.
-                    // `[idx]`:     "Select one of 3 options. ~S3"
-                    // `[idx + 1]`: "Option 1"
-                    // `[idx + 2]`: "Option 2"
-                    // `[idx + 3]`: "Option 3"
-                    for (int i = 0; i < mapMsgCode; i++)
-                    {
-                        if (g_MapMsg_Select.selectedEntryIdx == i)
-                        {
-                            Gfx_StringColorSet((e_StringColorId)(((g_MapMsg_SelectFlashTimer >> 10) * 3) + 4));
-                        }
-                        else
-                        {
-                            Gfx_StringColorSet(StringColorId_White);
-                        }
-
-                        Gfx_StringPositionSet(32, (STRING_LINE_OFFSET * i) + 96);
-                        Gfx_StringDraw(g_MapOverlayHdr.mapMessages[(mapMsgIdx + i) + 1], MAP_MESSAGE_DISPLAY_ALL_LENGTH);
-                    }
-                }
-
-                if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighUp &&
-                    g_MapMsg_Select.selectedEntryIdx != 0)
-                {
-                    g_MapMsg_SelectFlashTimer = Q12(0.0f);
-                    g_MapMsg_Select.selectedEntryIdx--;
-
-                    //Sd_SfxPlay(Sfx_MenuMove, 0, Q8_CLAMPED(0.25f));
-                }
-
-                if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighDown &&
-                    g_MapMsg_Select.selectedEntryIdx != (mapMsgCode - 1))
-                {
-                    g_MapMsg_SelectFlashTimer = Q12(0.0f);
-                    g_MapMsg_Select.selectedEntryIdx++;
-
-                    //Sd_SfxPlay(Sfx_MenuMove, 0, Q8_CLAMPED(0.25f));
-                }
-
-                mapMsgCode = NO_VALUE;
+            case MsgReturnCode::EndPage:
+                g_MapMsg_CurrentPageIdx++;
                 break;
 
-            //case MsgReturnCode_DisplayAll:
-            //    *displayLength = MAP_MESSAGE_DISPLAY_ALL_LENGTH;
-            //    break;
+            case MsgReturnCode::End:
+                g_MapMsg_CurrentPageIdx = 0;
+                break;
         }
 
-        return mapMsgCode;
-    }
-
-    void func_8003708C(s16* ptr0, u16* ptr1) // 0x8003708C
-    {
-        s32 var0;
-        s16 var1;
-        s32 var3;
-        s32 shift;
-        s32 i;
-
-        var0 = 0;
-        var1 = 0;
-
-        for (i = 0; i < 12; i++)
+        // Handle selection prompt.
+        if (result.Select != MsgSelectArg::None)
         {
-            shift = (i & 0x3) * 4;
-            var3  = (*ptr1 >> shift) & 0xF;
-            if (i != 0 && var3 == 11 && var0 != 0)
+            g_MapMsg_Select.maxIdx   = 1;
+            g_MapMsg_SelectCancelIdx = (int)result.Select - 1;
+
+            int entryCount = 0;
+
+            // Yes/no selection prompt.
+            if (result.Select == MsgSelectArg::YesOrNo)
             {
-                var1 |= 11 << shift;
+                // Shows selection prompt with map messages at indices 0 and 1.
+                // @note All maps have "Yes" and "No" as messages 0 and 1, respectively.
+                for (int i = 0; i < 2; i++)
+                {
+                    if (g_MapMsg_Select.selectedEntryIdx == i)
+                    {
+                        Gfx_StringColorSet((e_StringColorId)(((g_MapMsg_SelectFlashTimer >> 10) * 3) + 4));
+                    }
+                    else
+                    {
+                        Gfx_StringColorSet(StringColorId_White);
+                    }
+
+                    Gfx_StringPositionSet(SCREEN_WIDTH / 10, (STRING_LINE_OFFSET * i) + 98);
+                    Gfx_StringDraw(g_MapOverlayHdr.mapMessages[i]);
+                }
+
+                entryCount = 2;
+            }
+            // 2-3 option selection prompt.
+            else
+            {
+                // Shows selection prompt with 2 or 3 map messages from current index + 1/2/3.
+                // Requires prompt options to be arranged sequentially in the map message array with the last option
+                // being to cancel, e.g.
+                // `[idx]`:     "Select one of 3 options.{S3}"
+                // `[idx + 1]`: "Option 1"
+                // `[idx + 2]`: "Option 2"
+                // `[idx + 3]`: "Cancel"
+                entryCount = (int)result.Select;
+                for (int i = 0; i < entryCount; i++)
+                {
+                    if (g_MapMsg_Select.selectedEntryIdx == i)
+                    {
+                        Gfx_StringColorSet((e_StringColorId)(((g_MapMsg_SelectFlashTimer >> 10) * 3) + 4));
+                    }
+                    else
+                    {
+                        Gfx_StringColorSet(StringColorId_White);
+                    }
+
+                    Gfx_StringPositionSet(SCREEN_WIDTH / 10, (STRING_LINE_OFFSET * i) + 98);
+                    Gfx_StringDraw(g_MapOverlayHdr.mapMessages[(mapMsgIdx + i) + 1]);
+                }
             }
 
-            var0 = 0;
-            if (var3 != 0 && var3 != 11)
+            // Move cursor.
+            if (input.GetAction(In::Up).IsClicked(0.5f) &&
+                g_MapMsg_Select.selectedEntryIdx != 0)
             {
-                var1 |= 11 << shift;
-                var0  = 1;
+                g_MapMsg_SelectFlashTimer = Q12(0.0f);
+                g_MapMsg_Select.selectedEntryIdx--;
+
+                //Sd_SfxPlay(Sfx_MenuMove, 0, Q8(0.25f));
+            }
+            if (input.GetAction(In::Down).IsClicked(0.5f) &&
+                g_MapMsg_Select.selectedEntryIdx != (entryCount - 1))
+            {
+                g_MapMsg_SelectFlashTimer = Q12(0.0f);
+                g_MapMsg_Select.selectedEntryIdx++;
+
+                //Sd_SfxPlay(Sfx_MenuMove, 0, Q8(0.25f));
             }
 
-            if ((i & 0x3) == 3 || i == 12)
-            {
-                ptr1++;
-                *ptr0++ = var1;
-                var1    = 0;
-            }
+            result.Select = MsgSelectArg::None;
         }
+
+        if (result.DisplayAll)
+        {
+            *displayLength = MAP_MESSAGE_DISPLAY_ALL_LENGTH;
+        }
+
+        return result.Select;
     }
 
     void func_80037124() // 0x80037124
     {
         g_MapMsg_Select.maxIdx = NO_VALUE;
         //func_8003652C();
-        //DrawSync(SyncMode_Wait);
     }
 }

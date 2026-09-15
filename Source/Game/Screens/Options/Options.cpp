@@ -5,7 +5,9 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Screens/Options/MenuGraphics.h"
 #include "Input/Input.h"
@@ -16,26 +18,21 @@ namespace Silent::Game
 {
     constexpr int LINE_CURSOR_TIMER_MAX = 8;
 
-    int  g_MainOptionsMenu_SelectedEntry      = 0;
-    int  g_ExtraOptionsMenu_SelectedEntry     = 0;
-    int  g_MainOptionsMenu_PrevSelectedEntry  = 0;
-    int  g_ExtraOptionsMenu_PrevSelectedEntry = 0;
-    bool g_ScreenPosMenu_InvertBackgroundFade = false;
+    int g_Options_SelectionHighlightTimer    = 0;
+    int g_MainOptionsMenu_SelectedEntry      = 0;
+    int g_MainOptionsMenu_PrevSelectedEntry  = 0;
+    int g_ExtraOptionsMenu_SelectedEntry     = 0;
+    int g_ExtraOptionsMenu_PrevSelectedEntry = 0;
 
-    /** @brief Tracks movement time of the cursor highlight. */
-    s32 g_Options_SelectionHighlightTimer = 0;
-
-    /** @brief Number of options to show in the extra options screen. Shows extra unlockable settings if they are unlocked. */
-    static s32 g_ExtraOptionsMenu_EntryCount = 0;
-
-    static s32 g_ExtraOptionsMenu_SelectedBloodColorEntry = 0;
-    static s32 g_ExtraOptionsMenu_BulletMultMax           = 0;
+    static int g_ExtraOptionsMenu_EntryCount              = 0;
+    static int g_ExtraOptionsMenu_SelectedBloodColorEntry = 0;
+    static int g_ExtraOptionsMenu_BulletMultMax           = 0;
 
     void GameState_Options_Update()
     {
         if (g_GameWork.gameStatePrev == GameState_InGame)
         {
-            //func_800363D0();
+            //Bgm_MenuUpdate();
         }
 
         if (g_GameWork.gameStatePrev != GameState_MainMenu)
@@ -48,8 +45,6 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[0])
         {
             case OptionsMenuState_EnterMainOptions:
-                //DrawSync(SyncMode_Wait);
-
                 if (g_GameWork.gameStatePrev != GameState_InGame)
                 {
                     //VSync(SyncMode_Wait8);
@@ -60,11 +55,11 @@ namespace Silent::Game
                 g_GameWork.background2dColor.b = 0;
 
                 ScreenFade_Start(false, true, false);
-                //g_IntervalVBlanks   = 1;
+                //g_IntervalVBlanks = 1;
 
                 if (g_GameWork.gameStatePrev == GameState_InGame)
                 {
-                    //func_80037188();
+                    //Game_RadioSoundStop();
                 }
 
                 g_MainOptionsMenu_SelectedEntry      = MainOptionsMenuEntry_Exit;
@@ -104,29 +99,18 @@ namespace Silent::Game
                         break;
                 }
 
-                //g_ExtraOptionsMenu_EntryCount   = (g_GameWork.config.extraOptionsEnabled) ? 8 : 6;
+                g_ExtraOptionsMenu_EntryCount = (g_GameWork.config.extraOptionsEnabled) ? ExtraOptionsMenuEntry_Count :
+                                                                                          (ExtraOptionsMenuEntry_Count - 2);
                 Game_StateStepSet(0, OptionsMenuState_MainOptions);
                 break;
 
-            case OptionsMenuState_LeaveScreenPos:
             case OptionsMenuState_LeaveBrightness:
             case OptionsMenuState_LeaveController:
                 Game_StateStepSet(0, OptionsMenuState_MainOptions);
                 break;
 
-            case OptionsMenuState_EnterScreenPos:
-                if (ScreenFade_IsFinished())
-                {
-                     Game_StateStepSet(0, OptionsMenuState_ScreenPos);
-                }
-                break;
-
-            case OptionsMenuState_ScreenPos:
-                //Options_ScreenPosMenu_Control();
-                break;
-
             case OptionsMenuState_EnterBrightness:
-                if (false)//(ScreenFade_IsFinished())
+                if (ScreenFade_IsFinished())
                 {
                     Fs_QueueWaitForEmpty();
                     Game_StateStepSet(0, OptionsMenuState_Brightness);
@@ -134,7 +118,7 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuState_Brightness:
-                //Options_BrightnessMenu_Control();
+                Options_BrightnessMenu_Control();
                 break;
 
             case OptionsMenuState_EnterController:
@@ -146,7 +130,7 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuState_Controller:
-                //Options_ControllerMenu_Control();
+                Options_ControllerMenu_Control();
                 break;
 
             case OptionsMenuState_Leave:
@@ -164,7 +148,7 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuState_EnterExtraOptions:
-                if (false)//(ScreenFade_IsFinished())
+                if (ScreenFade_IsFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_ExtraOptions);
                 }
@@ -185,7 +169,6 @@ namespace Silent::Game
             case OptionsMenuState_MainOptions:
             case OptionsMenuState_Leave:
             case OptionsMenuState_LeaveMainOptions:
-            case OptionsMenuState_EnterScreenPos:
             case OptionsMenuState_EnterBrightness:
             case OptionsMenuState_EnterController:
             case OptionsMenuState_EnterExtraOptions:
@@ -206,11 +189,11 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        Options_MainOptionsMenu_EntryStringsDraw();
+        auto widths = Options_MainOptionsMenu_EntryStringsDraw();
         Options_MainOptionsMenu_ConfigDraw();
-        Options_MainOptionsMenu_SelectionHighlightDraw();
+        Options_MainOptionsMenu_SelectionHighlightDraw(widths);
         Options_Menu_VignetteDraw();
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
         Options_MainOptionsMenu_BgmVolumeBarDraw();
         Options_MainOptionsMenu_SfxVolumeBarDraw();
 
@@ -226,7 +209,7 @@ namespace Silent::Game
         }
         else
         {
-            g_Options_SelectionHighlightTimer++;
+            g_Options_SelectionHighlightTimer += 2; // @todo Original menu ran at 60 FPS. Add 2 to compensate.
         }
 
         if (g_Options_SelectionHighlightTimer != LINE_CURSOR_TIMER_MAX)
@@ -247,14 +230,14 @@ namespace Silent::Game
 
         // @todo Accurate pulse delay.
         // Move selection cursor up/down.
-        if (input.GetAction(In::Up).IsPulsed(0.2f, 0.4f))
+        if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
             g_Options_SelectionHighlightTimer = 0;
             g_MainOptionsMenu_SelectedEntry   = (g_MainOptionsMenu_SelectedEntry + (MainOptionsMenuEntry_Count - 1)) % MainOptionsMenuEntry_Count;
         }
-        if (input.GetAction(In::Down).IsPulsed(0.2f, 0.4f))
+        if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
@@ -286,36 +269,17 @@ namespace Silent::Game
                 }
                 break;
 
-            case MainOptionsMenuEntry_ScreenPosition:
-                // Enter screen position screen.
-                if (input.GetAction(In::Enter).IsClicked())
-                {
-                    //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-                    ScreenFade_Start(true, false, false);
-                    Game_StateStepSet(0, OptionsMenuState_EnterScreenPos);
-                }
-                break;
-
             case MainOptionsMenuEntry_Brightness:
                 if (input.GetAction(In::Enter).IsClicked())
                 {
                     //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-                    if (g_GameWork.gameStatePrev == GameState_MainMenu)
-                    {
-                        Fs_QueueStartReadTim(FILE_TIM_OP_BRT_E_TIM, IMAGE_BUFFER_3, &g_BrightnessScreenImg0);
-                    }
-                    else
-                    {
-                        Fs_QueueStartReadTim(FILE_TIM_OP_BRT_E_TIM, IMAGE_BUFFER_3, &g_BrightnessScreenImg1);
-                    }
-
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterBrightness);
                 }
                 break;
 
             case MainOptionsMenuEntry_Vibration:
-                if (input.GetAction(In::Left).IsClicked() || input.GetAction(In::Right).IsClicked())
+                if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
                     //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
                     g_GameWork.config.vibrationEnabled = !g_GameWork.config.vibrationEnabled << 7;
@@ -323,7 +287,7 @@ namespace Silent::Game
                 break;
 
             case MainOptionsMenuEntry_AutoLoad:
-                if (input.GetAction(In::Left).IsClicked() || input.GetAction(In::Right).IsClicked())
+                if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
                     //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
                     g_GameWork.config.autoLoad = (s8)g_GameWork.config.autoLoad == 0;
@@ -331,7 +295,7 @@ namespace Silent::Game
                 break;
 
             case MainOptionsMenuEntry_Sound:
-                if (input.GetAction(In::Left).IsClicked() || input.GetAction(In::Right).IsClicked())
+                if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
                     //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
@@ -349,8 +313,8 @@ namespace Silent::Game
             case MainOptionsMenuEntry_BgmVolume:
                 vol = g_GameWork.config.volumeBgm;
 
-                /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(0.2f, 0.4f)) ||
-                    (vol > 0                    && input.GetAction(In::Left).IsPulsed(0.2f, 0.4f)))
+                /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)) ||
+                    (vol > 0                    && input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)))
                 {
                     Sd_EngineCmd(Sfx_MenuMove);
                 }
@@ -361,13 +325,13 @@ namespace Silent::Game
                 }*/
 
                 // Scroll left/right.
-                if (input.GetAction(In::Left).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    vol = vol - SOUND_VOL_STEP;
+                    vol += SOUND_VOL_STEP;
                 }
-                if (input.GetAction(In::Right).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    vol = vol + SOUND_VOL_STEP;
+                    vol -= SOUND_VOL_STEP;
                 }
 
                 // Set config.
@@ -379,8 +343,8 @@ namespace Silent::Game
             case MainOptionsMenuEntry_SfxVolume:
                 vol = g_GameWork.config.volumeSe;
 
-                /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(0.2f, 0.4f)) ||
-                    (vol > 0                    && input.GetAction(In::Left).IsPulsed(0.2f, 0.4f)))
+                /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)) ||
+                    (vol > 0                    && input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)))
                 {
                     Sd_EngineCmd(Sfx_MenuMove);
                 }
@@ -390,11 +354,11 @@ namespace Silent::Game
                     Sd_EngineCmd(Sfx_MenuError);
                 }*/
 
-                if (input.GetAction(In::Left).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     vol = vol - SOUND_VOL_STEP;
                 }
-                if (input.GetAction(In::Right).IsPulsed(0.2f, 0.4f))
+                if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     vol = vol + SOUND_VOL_STEP;
                 }
@@ -409,9 +373,7 @@ namespace Silent::Game
                 break;
         }
 
-        if (input.GetAction(In::StepLeft).IsClicked()            || input.GetAction(In::StepRight).IsClicked()            ||
-            input.GetAction(In::GamepadShoulderLeft).IsClicked() || input.GetAction(In::GamepadShoulderRight).IsClicked() ||
-            input.GetAction(In::GamepadTriggerLeft).IsClicked()  || input.GetAction(In::GamepadTriggerRight).IsClicked())
+        if (input.GetAction(In::StepLeft).IsClicked() || input.GetAction(In::StepRight).IsClicked())
         {
             if (g_GameWork.gameStateSteps[0] == OptionsMenuState_EnterExtraOptions)
             {
@@ -421,10 +383,10 @@ namespace Silent::Game
             //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
 
             ScreenFade_Start(true, false, false);
-            g_GameWork.gameStateSteps[0] = OptionsMenuState_EnterExtraOptions;
-            g_SysWork.counters_1C[1]              = 0;
-            g_GameWork.gameStateSteps[1] = 0;
-            g_GameWork.gameStateSteps[2] = 0;
+            g_GameWork.gameStateSteps[0]   = OptionsMenuState_EnterExtraOptions;
+            g_SysWork.gameStateStepCounter = 0;
+            g_GameWork.gameStateSteps[1]   = 0;
+            g_GameWork.gameStateSteps[2]   = 0;
         }
 
         // Reset selection cursor.
@@ -447,7 +409,7 @@ namespace Silent::Game
         //Options_ExtraOptionsMenu_ConfigDraw();
         //Options_ExtraOptionsMenu_SelectionHighlightDraw();
         //Options_Menu_VignetteDraw();
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_ExtraOptions)
         {

@@ -58,7 +58,7 @@ namespace Silent::Game
     s_DemoFrameData* g_Demo_CurFrameData;
     s32              g_Demo_DemoStep;
     s32              g_Demo_VideoPresentInterval;
-    bool             D_800C489C;
+    bool             g_Demo_IsLoadingChunks;
     s32              g_Demo_DemoId   = 0;
     u16              g_Demo_RandSeed = 0;
 
@@ -262,7 +262,7 @@ namespace Silent::Game
 
     void Demo_ExitDemo() // 0x8008F4E4
     {
-        g_Demo_FrameCount     = 999 * TICKS_PER_SECOND;
+        g_Demo_FrameCount     = SECONDS_60_FPS(999);
         g_Demo_CurFrameData   = nullptr;
         g_Demo_DemoStep       = 0;
         g_SysWork.sysFlags |= SysFlag_DoWarmReset;
@@ -291,7 +291,7 @@ namespace Silent::Game
 
     void Demo_DemoRandSeedAdvance() // 0x8008F598
     {
-        #define SEED_OFFSET 0x3C6EF35F
+        constexpr int SEED_OFFSET = 0x3C6EF35F;
 
         if (g_SysWork.sysFlags & SysFlag_DemoActive)
         {
@@ -308,10 +308,10 @@ namespace Silent::Game
 
         static s32 prevScreenFade = SCREEN_FADE_STATUS(ScreenFadeState_Reset, false);
 
-        prevScreenFadeCpy = prevScreenFade;
-        cond              = D_800C489C;
-        D_800C489C        = false;
-        prevScreenFade    = g_Screen_FadeStatus;
+        prevScreenFadeCpy      = prevScreenFade;
+        cond                   = g_Demo_IsLoadingChunks;
+        g_Demo_IsLoadingChunks = false;
+        prevScreenFade         = g_Screen_FadeStatus;
 
         if (!(g_SysWork.sysFlags & SysFlag_DemoActive))
         {
@@ -327,14 +327,15 @@ namespace Silent::Game
         }
 
         demoStep = g_Demo_DemoStep;
-
         if (g_DemoWork.frameCount <= demoStep)
         {
             Demo_ExitDemo();
             return false;
         }
 
-        if (!Gfx_ScreenFadeIn_IsInProgress(prevScreenFadeCpy) || !Gfx_ScreenFadeIn_IsInProgress(g_Screen_FadeStatus) || cond)
+        if (!Gfx_ScreenFadeIn_IsInProgress(prevScreenFadeCpy)   ||
+            !Gfx_ScreenFadeIn_IsInProgress(g_Screen_FadeStatus) ||
+            cond)
         {
             g_Demo_CurFrameData = nullptr;
             return true;
@@ -350,6 +351,7 @@ namespace Silent::Game
 
                 if (g_Demo_CurFrameData->gameStateExpected != gameWork->gameState)
                 {
+                    // @todo Can submit this as debug menu message instead.
                     //Text_Debug_PositionSet(8, 80);
                     //Text_Debug_Draw("STEP ERROR:[H:");
                     //Text_Debug_Draw(Text_Debug_IntToString(2, g_Demo_CurFrameData->gameStateExpected_8));
@@ -374,8 +376,6 @@ namespace Silent::Game
         g_Demo_CurFrameData = nullptr;
         return true;
     }
-
-    const s16 unkRodata_8002B2F2 = 0x8008;
 
     bool Demo_ControllerDataUpdate() // 0x8008F7CC
     {

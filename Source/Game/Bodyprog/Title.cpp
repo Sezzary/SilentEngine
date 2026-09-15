@@ -9,6 +9,7 @@
 #include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
 #include "Game/Bodyprog/MemCard.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
@@ -31,20 +32,120 @@ namespace Silent::Game
 {
     constexpr int MAIN_MENU_FOG_COUNT = 21;
 
-    static s32 g_MainMenuState              = 0;
-    static s32 g_MainMenu_SelectedEntry     = MainMenuEntry_Start;
-    static u32 g_MainMenu_VisibleEntryFlags = (1 << MainMenuEntry_Start)  |
+    static int g_MainMenuState              = 0;
+    static int g_MainMenu_SelectedEntry     = MainMenuEntry_Start;
+    static int g_MainMenu_VisibleEntryFlags = (1 << MainMenuEntry_Start)  |
                                               (1 << MainMenuEntry_Option) |
                                               (1 << MainMenuEntry_Quit);
 
     s8 g_Demo_ReproducedCount = 0;
     s8* D_800BCDE0;
 
+    static void MainMenu_MainTextDraw()
+    {
+        constexpr int  COLUMN_POS_X                = SCREEN_WIDTH / 2;
+        constexpr int  COLUMN_POS_Y                = 164; // @todo Revise function to avoid hiding background.
+        constexpr int  STR_OFFSET_Y                = 10;
+        constexpr auto MAIN_MENU_ENTRY_STRING_KEYS = std::array<const char*, MainMenuEntry_Count>
+        {
+            KEY_MAIN_MENU_LOAD,
+            KEY_MAIN_MENU_CONTINUE,
+            KEY_MAIN_MENU_START,
+            KEY_MAIN_MENU_OPTION,
+            KEY_MAIN_MENU_QUIT
+        };
+
+        const auto& translator = g_App.GetTranslator();
+
+        // Draw selection strings.
+        for (int i = 0; i < MainMenuEntry_Count; i++)
+        {
+            // Check if entry is visible.
+            if (!(g_MainMenu_VisibleEntryFlags & (1 << i)))
+            {
+                continue;
+            }
+
+            Gfx_StringPositionSet(COLUMN_POS_X, COLUMN_POS_Y + (i * STR_OFFSET_Y));
+            Gfx_StringColorSet(StringColorId_White);
+
+            if (i == g_MainMenu_SelectedEntry)
+            {
+                auto selectedEntryMsg = "{M}"                                      +
+                                        translator(KEY_MAIN_MENU_OPENING_QUOTE)    +
+                                        translator(MAIN_MENU_ENTRY_STRING_KEYS[i]) +
+                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE);
+                Gfx_StringDraw(selectedEntryMsg, INT_MAX, true);
+            }
+            else
+            {
+                auto unselectedEntryMsg = "{M}" + translator(MAIN_MENU_ENTRY_STRING_KEYS[i]);
+                Gfx_StringDraw(unselectedEntryMsg, INT_MAX, true);
+            }
+        }
+    }
+
+    static void MainMenu_DifficultyTextDraw(int selectedEntryIdx)
+    {
+        constexpr int  COLUMN_POS_X                      = SCREEN_WIDTH / 2;
+        constexpr int  COLUMN_POS_Y                      = 156;
+        constexpr int  STR_OFFSET_Y                      = 10;
+        constexpr int  DIFFICULTY_MENU_SELECTION_COUNT   = 3;
+        constexpr auto DIFFICULTY_MENU_ENTRY_STRING_KEYS = std::array<const char*, DIFFICULTY_MENU_SELECTION_COUNT>
+        {
+            KEY_MAIN_MENU_EASY,
+            KEY_MAIN_MENU_NORMAL,
+            KEY_MAIN_MENU_HARD
+        };
+
+        const auto& translator = g_App.GetTranslator();
+
+        // Draw selection strings.
+        for (int i = 0; i < DIFFICULTY_MENU_SELECTION_COUNT; i++)
+        {
+            Gfx_StringPositionSet(COLUMN_POS_X, COLUMN_POS_Y + (i * STR_OFFSET_Y));
+            Gfx_StringColorSet(StringColorId_White);
+
+            if (i == selectedEntryIdx)
+            {
+                auto selectedEntryStr = "{M}"                                            +
+                                        translator(KEY_MAIN_MENU_OPENING_QUOTE)          +
+                                        translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]) +
+                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE);
+                Gfx_StringDraw(selectedEntryStr, INT_MAX, true);
+            }
+            else
+            {
+                auto unselectedEntryStr = "{M}" + translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]);
+                Gfx_StringDraw(unselectedEntryStr, INT_MAX, true);
+            }
+        }
+    }
+
+    void MainMenu_BackgroundDraw()
+    {
+        auto& renderer = g_App.GetRenderer();
+
+        if (g_SysWork.sysState == SysState_Gameplay)
+        {
+            SysWork_StateSetNext(SysState_OptionsMenu);
+            func_8003BCF4();
+        }
+
+        Screen_BackgroundImgDraw("Psx/TIM/TITLE_E.TIM", true);
+        MainMenu_FogUpdate();
+    }
+
     void GameState_MainMenu_Update() // 0x8003AB28
     {
-        constexpr int MAIN_MENU_GAME_STATE_COUNT = 5;
+        constexpr int  MAIN_MENU_GAME_STATE_COUNT = 5;
 
-        s32 NEXT_GAME_STATES[MAIN_MENU_GAME_STATE_COUNT] =
+        static int newGameSelectedDifficultyIdx = 1;
+        static int prevSavegameCount            = 0;
+
+        const auto& input = g_App.GetInput();
+
+        auto NEXT_GAME_STATES = std::array<int, MAIN_MENU_GAME_STATE_COUNT>
         {
             GameState_LoadSavegameScreen,
             GameState_AutoLoadSavegame,
@@ -53,21 +154,12 @@ namespace Silent::Game
             GameState_MovieIntro
         };
 
-        bool        playInGameDemo;
-        s32         prevGameDifficultyIdx;
-        s32         nextGameDifficultyIdx;
-        e_GameState prevState;
-        static s32  newGameSelectedDifficultyIdx = 1;
-        static s32  prevSavegameCount            = 0;
-
-        const auto& input = g_App.GetInput();
-
         //func_80033548();
 
         // After staying idle in the title screen for some time, this checks if the intro FMV or a
         // demo gameplay segment should be played. If the next value from `g_Demo_ReproducedCount`
         // is a value divisible by 3, the intro FMV will play. Otherwise, it defaults to a gameplay demo.
-        playInGameDemo = ((g_Demo_ReproducedCount + 1) % 3) != 0;
+        bool playInGameDemo = ((g_Demo_ReproducedCount + 1) % 3) != 0;
 
         if (g_GameWork.gameStateSteps[0] == 0)
         {
@@ -90,9 +182,6 @@ namespace Silent::Game
                 g_GameWork.background2dColor.g = 0;
                 g_GameWork.background2dColor.b = 0;
 
-                Screen_RectInterlacedClear(0, 32, SCREEN_WIDTH, FRAMEBUFFER_HEIGHT_INTERLACED, 0, 0, 0);
-                Screen_Init(SCREEN_WIDTH, true);
-
                 g_IntervalVBlanks = 1;
                 ScreenFade_Start(true, true, false);
                 g_ScreenFadeTimestep = Q12(2.0f);
@@ -103,7 +192,7 @@ namespace Silent::Game
                 {
                     //GameFs_MapStartup();
 
-                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.counters_1C[1] == 0)
+                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
                         g_Demo_ReproducedCount++;
                     }
@@ -148,8 +237,8 @@ namespace Silent::Game
 
                 g_MainMenu_VisibleEntryFlags |= g_MainMenu_VisibleEntryFlags << MainMenuEntry_Count;
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f),
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN),
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     SD_Call(Sfx_MenuMove);
                     g_GameWork.gameState = GameState_MainMenu;
@@ -161,13 +250,13 @@ namespace Silent::Game
                     }
                 }
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     g_MainMenu_SelectedEntry += MainMenuEntry_Count;
                     while (!(g_MainMenu_VisibleEntryFlags & (1 << --g_MainMenu_SelectedEntry)));
                 }
 
-                if (input.GetAction(In::Down).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     while (!(g_MainMenu_VisibleEntryFlags & (1 << ++g_MainMenu_SelectedEntry)));
                 }
@@ -188,7 +277,7 @@ namespace Silent::Game
                     ScreenFade_Start(true, false, false);
                     g_MainMenuState++;
 
-                    if (g_MainMenu_SelectedEntry < (u32)MainMenuEntry_Start) // TODO: Odd cast.
+                    if (g_MainMenu_SelectedEntry < MainMenuEntry_Start)
                     {
                         SD_Call(Sfx_MenuStartGame);
                     }
@@ -228,7 +317,6 @@ namespace Silent::Game
                             break;
 
                         case MainMenuEntry_Quit:
-                            // @todo Add "Are you sure?" submenu.
                             g_App.Quit();
                             break;
                     }
@@ -244,7 +332,7 @@ namespace Silent::Game
                 {
                     //GameFs_MapStartup();
 
-                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.counters_1C[1] == 0)
+                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
                         g_Demo_ReproducedCount++;
                     }
@@ -255,8 +343,8 @@ namespace Silent::Game
                     }
                 }
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f) ||
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.6f) ||
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
                     input.GetAction(In::Enter).IsClicked() ||
                     input.GetAction(In::Cancel).IsClicked())
                 {
@@ -270,18 +358,18 @@ namespace Silent::Game
                 }
 
                 // Scroll game difficulty options.
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    prevGameDifficultyIdx = 2;
+                    int prevGameDifficultyIdx = 2;
                     if (newGameSelectedDifficultyIdx > 0)
                     {
                         prevGameDifficultyIdx = newGameSelectedDifficultyIdx - 1;
                     }
                     newGameSelectedDifficultyIdx = prevGameDifficultyIdx;
                 }
-                if (input.GetAction(In::Down).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    nextGameDifficultyIdx = 0;
+                    int nextGameDifficultyIdx = 0;
                     if (newGameSelectedDifficultyIdx < 2)
                     {
                         nextGameDifficultyIdx = newGameSelectedDifficultyIdx + 1;
@@ -290,8 +378,8 @@ namespace Silent::Game
                 }
 
                 // Play scroll sound.
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f) ||
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     SD_Call(Sfx_MenuMove);
                 }
@@ -305,7 +393,6 @@ namespace Silent::Game
                     g_SysWork.processFlags = ProcessFlag_NewGame;
 
                     //GameFs_MapLoad(MapIdx_MAP0_S00);
-                    //GameFs_StreamBinLoad();
                     SD_Call(Sfx_MenuStartGame);
 
                     ScreenFade_Start(true, false, false);
@@ -338,15 +425,15 @@ namespace Silent::Game
 
                     //MemCard_SysDisable();
 
-                    prevState                       = g_GameWork.gameState;
-                    g_GameWork.gameStateSteps[0] = prevState;
-                    g_GameWork.gameState        = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
-                    g_SysWork.counters_1C[0]              = 0;
-                    g_GameWork.gameStatePrev    = prevState;
-                    g_GameWork.gameStateSteps[0] = 0;
-                    g_SysWork.counters_1C[1]              = 0;
-                    g_GameWork.gameStateSteps[1] = 0;
-                    g_GameWork.gameStateSteps[2] = 0;
+                    auto prevState                 = g_GameWork.gameState;
+                    g_GameWork.gameStateSteps[0]   = prevState;
+                    g_GameWork.gameState           = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
+                    g_SysWork.gameStateCounter     = 0;
+                    g_GameWork.gameStatePrev       = prevState;
+                    g_GameWork.gameStateSteps[0]   = 0;
+                    g_SysWork.gameStateStepCounter = 0;
+                    g_GameWork.gameStateSteps[1]   = 0;
+                    g_GameWork.gameStateSteps[2]   = 0;
 
                     SysWork_StateSetNext(SysState_Gameplay);
                 }
@@ -355,7 +442,7 @@ namespace Silent::Game
 
         if (input.HasUserActionInput())
         {
-            g_SysWork.counters_1C[1] = 0;
+            g_SysWork.gameStateStepCounter = 0;
         }
 
         if (!playInGameDemo)
@@ -363,9 +450,8 @@ namespace Silent::Game
             switch (g_GameWork.gameStateSteps[0])
             {
                 case 1:
-                    if (g_SysWork.counters_1C[1] > 1740)
+                    if (g_SysWork.gameStateStepCounter > SECONDS_60_FPS(29))
                     {
-                        GameFs_StreamBinLoad();
                         g_GameWork.gameStateSteps[0]++;
                     }
                     break;
@@ -404,7 +490,6 @@ namespace Silent::Game
             //*(s32*)0x1F800000 = 0x200000;
             //*(s32*)0x1F800004 = 0x01C00140;
             //ClearImage2((RECT*)0x1F800000, 0u, 0u, 0u);
-            //Screen_Init(SCREEN_WIDTH, false);
             return;
         }
     }
@@ -412,115 +497,6 @@ namespace Silent::Game
     void MainMenu_SelectedOptionIdxReset() // 0x8003B550
     {
         g_MainMenu_SelectedEntry = MainMenuEntry_Continue;
-    }
-
-    void MainMenu_MainTextDraw() // 0x8003B568
-    {
-        constexpr int COLUMN_POS_X = SCREEN_WIDTH / 2;
-        constexpr int COLUMN_POS_Y = (SCREEN_HEIGHT / 5) * 3;
-        constexpr int STR_OFFSET_Y = 10;
-
-        static const char* MAIN_MENU_ENTRY_STRING_KEYS[] =
-        {
-            KEY_MAIN_MENU_LOAD,
-            KEY_MAIN_MENU_CONTINUE,
-            KEY_MAIN_MENU_START,
-            KEY_MAIN_MENU_OPTION,
-            KEY_MAIN_MENU_QUIT
-        };
-
-        const auto& translator = g_App.GetTranslator();
-
-        // Draw selection strings.
-        for (int i = 0; i < MainMenuEntry_Count; i++)
-        {
-            // Check if entry is visible.
-            if (!(g_MainMenu_VisibleEntryFlags & (1 << i)))
-            {
-                continue;
-            }
-
-            Gfx_StringPositionSet(COLUMN_POS_X, COLUMN_POS_Y + (i * STR_OFFSET_Y));
-            Gfx_StringColorSet(StringColorId_White);
-
-            if (i == g_MainMenu_SelectedEntry)
-            {
-                auto selectedEntryStr = //"{M}" +
-                                        translator(KEY_MAIN_MENU_OPENING_QUOTE)    +
-                                        translator(MAIN_MENU_ENTRY_STRING_KEYS[i]) +
-                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE)
-                                        ;
-                Gfx_StringDraw(selectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterBottom);
-
-                //g_StringPosition.x -= ConvertScreenPercentToRetroPixels(Vector2(width * 0.5f, 0.0f)).x;
-                //Gfx_StringDraw(translator(KEY_MAIN_MENU_OPENING_QUOTE), DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterRight);
-                //g_StringPosition.x += ConvertScreenPercentToRetroPixels(Vector2(width, 0.0f)).x;
-                //Gfx_StringDraw(translator(KEY_MAIN_MENU_CLOSING_QUOTE), DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterLeft);
-            }
-            else
-            {
-                auto unselectedEntryStr = /*"{M}" + */translator(MAIN_MENU_ENTRY_STRING_KEYS[i]);
-                Gfx_StringDraw(unselectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterBottom);
-            }
-        }
-    }
-
-    void MainMenu_DifficultyTextDraw(s32 idx) // 0x8003B678
-    {
-        constexpr int DIFFICULTY_MENU_SELECTION_COUNT = 3;
-        constexpr int COLUMN_POS_X                    = SCREEN_WIDTH / 2;
-        constexpr int COLUMN_POS_Y                    = SCREEN_HEIGHT / 2;
-        constexpr int STR_OFFSET_Y                    = 10;
-
-        static const char* DIFFICULTY_MENU_ENTRY_STRING_KEYS[] =
-        {
-            KEY_MAIN_MENU_EASY,
-            KEY_MAIN_MENU_NORMAL,
-            KEY_MAIN_MENU_HARD
-        };
-
-        const auto& translator = g_App.GetTranslator();
-
-        // Draw selection strings.
-        for (int i = 0; i < DIFFICULTY_MENU_SELECTION_COUNT; i++)
-        {
-            Gfx_StringPositionSet(COLUMN_POS_X, COLUMN_POS_Y + (i * STR_OFFSET_Y));
-            Gfx_StringColorSet(StringColorId_White);
-
-            if (i == g_MainMenu_SelectedEntry)
-            {
-                auto selectedEntryStr = /*"{M}" +*/
-                                        translator(KEY_MAIN_MENU_OPENING_QUOTE) +
-                                        translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]) +
-                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE);
-                Gfx_StringDraw(selectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true);
-            }
-            else
-            {
-                auto unselectedEntryStr = /*"{M}" + */translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]);
-                Gfx_StringDraw(unselectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true);
-            }
-        }
-    }
-
-    void MainMenu_BackgroundDraw() // 0x8003B758
-    {
-        auto& renderer = g_App.GetRenderer();
-
-        if (g_SysWork.sysState == SysState_Gameplay)
-        {
-            SysWork_StateSetNext(SysState_OptionsMenu);
-            func_8003BCF4();
-        }
-
-        // Submit fullscreen sprite `TIM/TITLE_E.TIM`.
-        auto sprite = Sprite2d::CreateSprite2d("TIM/TITLE_E.TIM", Vector2::Zero, Vector2::One,
-                                               SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
-                                               100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
-        renderer.SubmitSprite2d(sprite);
-        //Screen_BackgroundImgDraw(&g_TitleImg);
-
-        MainMenu_FogUpdate();
     }
 
     void func_8003B7BC() // 0x8003B7BC

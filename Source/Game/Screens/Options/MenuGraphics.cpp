@@ -12,6 +12,8 @@
 #include "Game/Screens/Options/SelectionGraphics.h"
 #include "Utils/Translator.h"
 
+using namespace Silent::Assets;
+
 namespace Silent::Game
 {
     // @temp
@@ -72,19 +74,18 @@ namespace Silent::Game
         }
     }
 
-    void Options_MainOptionsMenu_EntryStringsDraw()
+    std::pair<float, float> Options_MainOptionsMenu_EntryStringsDraw()
     {
         constexpr int  LINE_BASE_X     = 64;
-        constexpr int  LINE_BASE_Y     = 56;
+        constexpr int  LINE_BASE_Y     = 80;
         constexpr int  LINE_OFFSET_X   = 16;
         constexpr int  LINE_OFFSET_Y   = 16;
-        constexpr auto HEADING_STR_POS = Vector2i(121, 20);
+        constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 6);
         constexpr auto ENTRY_STR_KEYS  = std::array<const char*, MainOptionsMenuEntry_Count>
         {
             KEY_OPTIONS_MENU_EXIT,
             KEY_OPTIONS_MENU_BRIGHT_LEVEL,
             KEY_OPTIONS_MENU_CONT_CONFIG,
-            "Screen Position",//KEY_OPTIONS_MENU_SCREEN_POS,
             KEY_OPTIONS_MENU_VIBRATION,
             KEY_OPTIONS_MENU_AUTO_LOAD,
             KEY_OPTIONS_MENU_SOUND,
@@ -94,17 +95,31 @@ namespace Silent::Game
 
         const auto& translator = g_App.GetTranslator();
 
-        // Submit heading string.
         Gfx_StringColorSet(StringColorId_White);
+
+        // Submit heading string.
         Gfx_StringPositionSet(HEADING_STR_POS.x, HEADING_STR_POS.y);
-        Gfx_StringDraw(translator(KEY_OPTIONS_MENU_HEADING), DEFAULT_MAP_MESSAGE_LENGTH);
+        Gfx_StringDraw(translator(KEY_OPTIONS_MENU_HEADING));
 
         // Submit entry strings.
+        auto widths = std::pair<float, float>{};
         for (int i = 0; i < MainOptionsMenuEntry_Count; i++)
         {
             Gfx_StringPositionSet(LINE_BASE_X, LINE_BASE_Y + (i * LINE_OFFSET_Y));
-            Gfx_StringDraw(translator(ENTRY_STR_KEYS[i]), DEFAULT_MAP_MESSAGE_LENGTH);
+            float width = Gfx_StringDraw(translator(ENTRY_STR_KEYS[i]));
+
+            // Store line widths.
+            if (i == g_MainOptionsMenu_SelectedEntry)
+            {
+                widths.first = width;
+            }
+            else if (i == g_MainOptionsMenu_PrevSelectedEntry)
+            {
+                widths.second = width;
+            }
         }
+
+        return widths;
     }
 
     void Options_ExtraOptionsMenu_EntryStringsDraw()
@@ -130,24 +145,24 @@ namespace Silent::Game
         const auto& translator = g_App.GetTranslator();
 
         // Submit heading string.
-        //Gfx_StringColorSet(StringColorId_White);
-        //Gfx_StringPositionSet(HEADING_STR_POS.vx, HEADING_STR_POS.vy);
-        //Gfx_StringDraw(translator(KEY_OPTIONS_MENU_EXTRA), DEFAULT_MAP_MESSAGE_LENGTH);
+        Gfx_StringColorSet(StringColorId_White);
+        Gfx_StringPositionSet(HEADING_STR_POS.x, HEADING_STR_POS.y);
+        Gfx_StringDraw("EXTRA");
 
         // Submit entry strings.
         for (int i = 0; i < g_ExtraOptionsMenu_EntryCount; i++)
         {
-            //Gfx_StringPositionSet(LINE_BASE_X, LINE_BASE_Y + (i * LINE_OFFSET_Y));
-            //Gfx_StringDraw(translator(ENTRY_STR_KEYS[i]), DEFAULT_MAP_MESSAGE_LENGTH);
+            Gfx_StringPositionSet(LINE_BASE_X, LINE_BASE_Y + (i * LINE_OFFSET_Y));
+            Gfx_StringDraw(translator(ENTRY_STR_KEYS[i]));
         }
     }
 
-    void Options_MainOptionsMenu_SelectionHighlightDraw()
+    void Options_MainOptionsMenu_SelectionHighlightDraw(const std::pair<float, float>& widths)
     {
-        constexpr int BULLET_QUAD_COUNT  = 2;
-        constexpr int LINE_OFFSET_Y      = 16;
-        constexpr int HIGHLIGHT_OFFSET_X = 39;
-        constexpr int HIGHLIGHT_OFFSET_Y = 58;
+        constexpr int BULLET_QUAD_COUNT = 2;
+        constexpr int LINE_BASE_X       = 64;//39;
+        constexpr int LINE_BASE_Y       = 66;//58;
+        constexpr int LINE_OFFSET_Y     = 16;
 
         // 12x12 quad.
         constexpr auto BULLET_QUAD_FRONT = s_Quad2d
@@ -167,22 +182,17 @@ namespace Silent::Game
             .vertex3 = Vector2i(51, 76)
         };
 
-        // @todo Dynamically retrieve string pixel width instead, allowing for automatic translation support.
-        constexpr auto SELECTION_HIGHLIGHT_WIDTHS = std::array<int, MainOptionsMenuEntry_Count>
-        {
-            59, 169, 174, 156, 104, 112, 75, 129, 112
-        };
-
         static auto selectionHighlightFrom = Vector2i::Zero;
         static auto selectionHighlightTo   = Vector2i::Zero;
 
+        // @todo Widths are wrong.
         // Set active selection highlight position references.
         if (g_Options_SelectionHighlightTimer == 0)
         {
-            selectionHighlightFrom.x = SELECTION_HIGHLIGHT_WIDTHS[g_MainOptionsMenu_PrevSelectedEntry] + HIGHLIGHT_OFFSET_X;
-            selectionHighlightFrom.y = (g_MainOptionsMenu_PrevSelectedEntry * LINE_OFFSET_Y)           - HIGHLIGHT_OFFSET_Y;
-            selectionHighlightTo.x   = SELECTION_HIGHLIGHT_WIDTHS[g_MainOptionsMenu_SelectedEntry]     + HIGHLIGHT_OFFSET_X;
-            selectionHighlightTo.y   = (g_MainOptionsMenu_SelectedEntry * LINE_OFFSET_Y)               - HIGHLIGHT_OFFSET_Y;
+            selectionHighlightFrom = Vector2i(LINE_BASE_X + (int)ceilf(widths.first),
+                                              LINE_BASE_Y + g_MainOptionsMenu_PrevSelectedEntry * LINE_OFFSET_Y);
+            selectionHighlightTo   = Vector2i(LINE_BASE_X + (int)ceilf(widths.second),
+                                              LINE_BASE_Y + g_MainOptionsMenu_SelectedEntry * LINE_OFFSET_Y);
         }
 
         // Compute sine-based interpolation alpha.
@@ -190,7 +200,7 @@ namespace Silent::Game
 
         // Draw active selection highlight.
         auto highlightLine      = s_Line2d{};
-        highlightLine.vertex0.x = HIGHLIGHT_OFFSET_X;
+        highlightLine.vertex0.x = LINE_BASE_X;
         highlightLine.vertex1.x = selectionHighlightFrom.x +
                                   FP_FROM((selectionHighlightTo.x - selectionHighlightFrom.x) * interpAlpha, Q12_SHIFT);
         highlightLine.vertex1.y = selectionHighlightFrom.y +
@@ -398,7 +408,7 @@ namespace Silent::Game
                     //Gfx_StringPositionSet(strPosX, 120);
 
                     int strIdx = g_GameWork.config.vibrationEnabled == 0;
-                    //Gfx_StringDraw(OPTIONS_MENU_SOUND_ENTRY_CONFIG_STRINGS[strIdx], 10);
+                    //Gfx_StringDraw(OPTIONS_MENU_SOUND_ENTRY_CONFIG_STRINGS[strIdx]);
                     break;
                 }
                 case 1:
@@ -407,7 +417,7 @@ namespace Silent::Game
                     //Gfx_StringPositionSet(strPosX, 136);
 
                     int strIdx = g_GameWork.config.autoLoad == 0;
-                    //Gfx_StringDraw(OPTIONS_MENU_SOUND_ENTRY_CONFIG_STRINGS[strIdx], 10);
+                    //Gfx_StringDraw(OPTIONS_MENU_SOUND_ENTRY_CONFIG_STRINGS[strIdx]);
                     break;
                 }
                 case 2:
@@ -416,7 +426,7 @@ namespace Silent::Game
                     //Gfx_StringPositionSet(strPosX, 152);
 
                     int strIdx = g_GameWork.config.soundType + 2;
-                    //Gfx_StringDraw(OPTIONS_MENU_SOUND_ENTRY_CONFIG_STRINGS[strIdx], 10);
+                    //Gfx_StringDraw(OPTIONS_MENU_SOUND_ENTRY_CONFIG_STRINGS[strIdx]);
                     break;
                 }
             }
@@ -531,7 +541,7 @@ namespace Silent::Game
                 {
                     int strPosX = (g_GameWork.config.extraWeaponCtrl != 0) ? 217 : 212;
                     //Gfx_StringPositionSet(strPosX, STR_BASE_Y + (STR_OFFSET_Y * ExtraOptionsMenuEntry_WeaponCtrl));
-                    //Gfx_StringDraw(CONFIG_STRS[!g_GameWork.config.extraWeaponCtrl], 10);
+                    //Gfx_StringDraw(CONFIG_STRS[!g_GameWork.config.extraWeaponCtrl]);
                     break;
                 }
                 case ExtraOptionsMenuEntry_Blood:
@@ -560,48 +570,48 @@ namespace Silent::Game
                         }
                     }
 
-                    //Gfx_StringDraw(CONFIG_STRS[g_ExtraOptionsMenu_SelectedBloodColorEntry + 2], 10);
+                    //Gfx_StringDraw(CONFIG_STRS[g_ExtraOptionsMenu_SelectedBloodColorEntry + 2]);
                     break;
                 }
                 case ExtraOptionsMenuEntry_ViewCtrl:
                 {
                     int strPosX = !g_GameWork.config.extraViewCtrl ? 210 : 206;
                     //Gfx_StringPositionSet(strPosX, STR_BASE_Y + (STR_OFFSET_Y * ExtraOptionsMenuEntry_ViewCtrl));
-                    //Gfx_StringDraw(CONFIG_STRS[((g_GameWork.config.extraViewCtrl != 0) ? 32 : 28) >> 2], 10);
+                    //Gfx_StringDraw(CONFIG_STRS[((g_GameWork.config.extraViewCtrl != 0) ? 32 : 28) >> 2]);
                     break;
                 }
                 case ExtraOptionsMenuEntry_RetreatTurn:
                 {
                     int strPosX = !g_GameWork.config.extraRetreatTurn ? 210 : 206;
                     //Gfx_StringPositionSet(strPosX, STR_BASE_Y + (STR_OFFSET_Y * ExtraOptionsMenuEntry_RetreatTurn));
-                    //Gfx_StringDraw(CONFIG_STRS[((g_GameWork.config.extraRetreatTurn != 0) ? 32 : 28) >> 2], 10);
+                    //Gfx_StringDraw(CONFIG_STRS[((g_GameWork.config.extraRetreatTurn != 0) ? 32 : 28) >> 2]);
                     break;
                 }
                 case ExtraOptionsMenuEntry_MovementCtrl:
                 {
                     int strPosX = !g_GameWork.config.extraWalkRunCtrl ? 210 : 206;
                     //Gfx_StringPositionSet(strPosX, STR_BASE_Y + (STR_OFFSET_Y * ExtraOptionsMenuEntry_MovementCtrl));
-                    //Gfx_StringDraw(CONFIG_STRS[((g_GameWork.config.extraWalkRunCtrl != 0) ? 32 : 28) >> 2], 10);
+                    //Gfx_StringDraw(CONFIG_STRS[((g_GameWork.config.extraWalkRunCtrl != 0) ? 32 : 28) >> 2]);
                     break;
                 }
                 case ExtraOptionsMenuEntry_AutoAiming:
                 {
                     int strPosX = !g_GameWork.config.extraAutoAiming ? 228 : 226;
                     //Gfx_StringPositionSet(strPosX, STR_BASE_Y + (STR_OFFSET_Y * ExtraOptionsMenuEntry_AutoAiming));
-                    //Gfx_StringDraw(CONFIG_STRS[((g_GameWork.config.extraAutoAiming != 0) ? 40 : 36) >> 2], 10);
+                    //Gfx_StringDraw(CONFIG_STRS[((g_GameWork.config.extraAutoAiming != 0) ? 40 : 36) >> 2]);
                     break;
                 }
                 case ExtraOptionsMenuEntry_ViewMode:
                 {
                     int strPosX = !g_GameWork.config.extraViewMode ? 210 : 200;
                     //Gfx_StringPositionSet(strPosX, STR_BASE_Y + (STR_OFFSET_Y * ExtraOptionsMenuEntry_ViewMode));
-                    //Gfx_StringDraw(CONFIG_STRS[(g_GameWork.config.extraViewMode ? 48 : 44) >> 2], 10);
+                    //Gfx_StringDraw(CONFIG_STRS[(g_GameWork.config.extraViewMode ? 48 : 44) >> 2]);
                     break;
                 }
                 case ExtraOptionsMenuEntry_BulletMult:
                 {
                     //Gfx_StringPositionSet(230, STR_BASE_Y + (STR_OFFSET_Y * ExtraOptionsMenuEntry_BulletMult));
-                    //Gfx_StringDraw(CONFIG_STRS[g_GameWork.config.extraBulletAdjust + 13], 10);
+                    //Gfx_StringDraw(CONFIG_STRS[g_GameWork.config.extraBulletAdjust + 13]);
                     break;
                 }
             }

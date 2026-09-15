@@ -4,6 +4,7 @@ Audio and video media converter.
 Converts an `XA` (audio) or `STR` (video) file to a usable format.
 """
 
+
 import logging
 import shutil
 import subprocess
@@ -13,10 +14,12 @@ from argparse      import ArgumentParser, FileType
 from pathlib       import Path
 from static_ffmpeg import run
 
+
 MPG_EXT = ".MPG"
 STR_EXT = ".STR"
 WAV_EXT = ".WAV"
 XA_EXT  = ".XA"
+
 
 def _create_parser():
     """
@@ -28,6 +31,7 @@ def _create_parser():
     parser.add_argument("--mediaFile", "-mf", type=FileType("rb"), help="Path to an `XA` or `STR` media file.")
     parser.add_argument("outputFolder", type=Path, help="Path to the folder where processed media will be saved.")
     return parser
+
 
 def _get_ffmpeg_cmd():
     """
@@ -42,6 +46,7 @@ def _get_ffmpeg_cmd():
 
     ffmpeg_exe = run.get_or_fetch_platform_executables_else_raise()
     return ffmpeg_exe
+
 
 def _convert_xa_to_wav(ffmpeg_cmd: str, output_folder: Path, xa_file: Path):
     """
@@ -66,6 +71,7 @@ def _convert_xa_to_wav(ffmpeg_cmd: str, output_folder: Path, xa_file: Path):
     # Report status.
     if result.returncode != 0:
         logging.error(f"`XA` asset conversion failed: {result.stderr.decode()}")
+
 
 def _convert_str_to_mpg(ffmpeg_cmd: str, output_folder: Path, str_file: Path):
     """
@@ -102,6 +108,7 @@ def _convert_str_to_mpg(ffmpeg_cmd: str, output_folder: Path, str_file: Path):
     if result.returncode != 0:
         logging.error(f"`STR` asset conversion failed: {result.stderr.decode()}")
 
+
 def main():
     try:
         logging.basicConfig(level=logging.INFO)
@@ -123,6 +130,7 @@ def main():
     except Exception as ex:
         logging.error(f"Error: {ex}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

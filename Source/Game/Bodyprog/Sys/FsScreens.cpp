@@ -19,16 +19,6 @@ namespace Silent::Game
         Fs_QueueStartReadTim(FILE_TIM_TITLE_E_TIM);
     }
 
-    void GameFs_StreamBinSeek()
-    {
-        // @stub
-    }
-
-    void GameFs_StreamBinLoad()
-    {
-        // @stub
-    }
-
     void GameFs_OptionBinLoad()
     {
         Fs_QueueStartReadTim(FILE_TIM_OPTION_TIM, FS_BUFFER_1, &g_ItemInspectionImg);

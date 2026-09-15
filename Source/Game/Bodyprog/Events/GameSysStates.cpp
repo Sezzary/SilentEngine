@@ -552,10 +552,10 @@ namespace Silent::Game
         const auto& assets = g_App.GetAssets();
         const auto& fs     = g_App.GetFilesystem();
 
-        static int  fmvStateStep = 0;
-        static auto videoName    = std::string();
-
+        static auto videoName = std::string();
+        
         // Handle FMV state step.
+        static int  fmvStateStep = 0;
         switch (fmvStateStep)
         {
             case 0:
@@ -570,7 +570,6 @@ namespace Silent::Game
                     case 1:
                         /*if (Ipd_ChunkInitCheck() != 0)
                         {
-                            //GameFs_StreamBinLoad();
                             g_SysWork.sysStateSteps[0]++;
                         }*/
                         break;

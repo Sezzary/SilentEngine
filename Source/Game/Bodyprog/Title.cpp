@@ -393,7 +393,6 @@ namespace Silent::Game
                     g_SysWork.processFlags = ProcessFlag_NewGame;
 
                     //GameFs_MapLoad(MapIdx_MAP0_S00);
-                    //GameFs_StreamBinLoad();
                     SD_Call(Sfx_MenuStartGame);
 
                     ScreenFade_Start(true, false, false);
@@ -453,7 +452,6 @@ namespace Silent::Game
                 case 1:
                     if (g_SysWork.gameStateStepCounter > SECONDS_60_FPS(29))
                     {
-                        GameFs_StreamBinLoad();
                         g_GameWork.gameStateSteps[0]++;
                     }
                     break;

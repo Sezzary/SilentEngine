@@ -24,22 +24,21 @@ namespace Silent::Game
     /** @brief Input actions. Also used as controller config menu entries for the right pane. */
     enum e_InputAction
     {
-        InputAction_Enter  = 0,
-        InputAction_Cancel = 1,
-        InputAction_Skip   = 2,
-        InputAction_Action = 3,
-        InputAction_Aim    = 4,
-        InputAction_Light  = 5,
-        InputAction_Run    = 6,
-        InputAction_View   = 7,
-        InputAction_StepL  = 8,
-        InputAction_StepR  = 9,
-        InputAction_Pause  = 10,
-        InputAction_Item   = 11,
-        InputAction_Map    = 12,
-        InputAction_Option = 13,
+        InputAction_Enter,
+        InputAction_Cancel,
+        InputAction_Action,
+        InputAction_Aim,
+        InputAction_Light,
+        InputAction_Run,
+        InputAction_View,
+        InputAction_StepL,
+        InputAction_StepR,
+        InputAction_Pause,
+        InputAction_Item,
+        InputAction_Map,
+        InputAction_Option,
 
-        InputAction_Count  = 14
+        InputAction_Count
     };
 
     /** @brief Selected controller options menu column entries. */

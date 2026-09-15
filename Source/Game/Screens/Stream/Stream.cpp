@@ -53,20 +53,56 @@ namespace Silent::Game
 
     void GameState_MovieIntro_Update()
     {
-        const char* videoName = (g_GameWorkConst->config.extraOptionsEnabled & (1 << 0)) ? "C1_20670.MPG" :
-                                                                                           "C2_20670.MPG";
-        if (!PlayFmv(std::string(videoName)))
+        // @todo Use engine's proper state step system.
+        static int fmvStateStep = 0;
+        switch (fmvStateStep)
         {
-            Game_StateSetNext(GameState_MainMenu);
-            g_ScreenFadeTimestep = Q12(1.0f);
+            case 0:
+            {
+                ScreenFade_Start(false, true, false);
+
+                fmvStateStep++;
+                break;
+            }
+            case 1:
+            {
+                const char* videoName = (g_GameWorkConst->config.extraOptionsEnabled & (1 << 0)) ? "C1_20670.MPG" :
+                                                                                                   "C2_20670.MPG";
+                if (!PlayFmv(videoName))
+                {
+                    Game_StateSetNext(GameState_MainMenu);
+                    g_ScreenFadeTimestep = Q12(1.0f);
+
+                    fmvStateStep = 0;
+                }
+                break;
+            }
         }
     }
 
     void GameState_MovieOpening_Update()
     {
-        if (!PlayFmv("M1_03500.MPG"))
+        // @todo Use engine's proper state step system.
+        static int fmvStateStep = 0;
+        switch (fmvStateStep)
         {
-            Game_StateSetNext(GameState_MainLoadScreen);
+            case 0:
+            {
+                ScreenFade_Reset();
+
+                fmvStateStep++;
+                break;
+            }
+            case 1:
+            {
+                if (!PlayFmv("M1_03500.MPG"))
+                {
+                    Game_StateSetNext(GameState_MainLoadScreen);
+
+                    fmvStateStep = 0;
+                }
+                break;
+            }
         }
     }
 

@@ -5,60 +5,19 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
+#include "Assets/TranslationKeys.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sys/SettingsReset.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Screens/Options/Options.h"
 #include "Input/Input.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Input;
 
 namespace Silent::Game
 {
     static bool g_ControllerMenu_IsOnActionsPane = false;
-
-    /** @brief Draw modes for textured entry selection highlights in the controller config menu.
-     * 0 corresponds to the presets pane on the left,
-     * 1 corresponds to the actions pane on the right.
-     */
-    /*DR_MODE g_ControllerMenu_SelectionHighlightDrawModes[2] =
-    {
-        {
-            .tag  = 0x03000000,
-            .code = { 0xE1000200, 0 }
-        },
-        {
-            .tag  = 0x03000000,
-            .code = { 0xE1000200, 0 }
-        }
-    };*/
-
-    /** @brief Quads for textured entry selection highlights in the controller config menu.
-     * 0 corresponds to the presets pane on the left,
-     * 1 corresponds to the actions pane on the right.
-     */
-    /*POLY_G4 g_ControllerMenu_SelectionHighlightQuads[2] =
-    {
-        {
-            .tag  = 0x08000000,
-            .r0   = 255,
-            .g0   = 255,
-            .b0   = 255,
-            .code = 0x3A,
-            .r3   = 255,
-            .g3   = 255,
-            .b3   = 255
-        },
-        {
-            .tag  = 0x08000000,
-            .code = 0x3A,
-            .r1   = 255,
-            .g1   = 255,
-            .b1   = 255,
-            .r2   = 255,
-            .g2   = 255,
-            .b2   = 255
-        },
-    };*/
 
     void Options_ControllerMenu_Control()
     {
@@ -224,5 +183,144 @@ namespace Silent::Game
 
         // Draw menu graphics.
         //Options_ControllerMenu_EntriesDraw(g_ControllerMenu_IsOnActionsPane, selectedEntries.preset, selectedEntries.action, boundActionIdx);
+    }
+
+    void Options_ControllerMenu_EntriesDraw(bool isOnRightPane, int presetsEntryIdx, int actionsEntryIdx, int boundActionIdx) // 0x801E6F60
+    {
+        constexpr int STR_BASE_Y    = 22;
+        constexpr int STR_OFFSET_Y  = 20;
+        constexpr int ICON_SIZE_Y   = 12;
+        constexpr int ICON_OFFSET_X = -12;
+
+        static const char* PRESETS_PANE_ENTRY_STR_KEYS[] =
+        {
+            KEY_CONT_MENU_EXIT,
+            KEY_CONT_MENU_TYPE_1,
+            KEY_CONT_MENU_TYPE_2,
+            KEY_CONT_MENU_TYPE_3
+        };
+        static const char* ACTIONS_PANE_ENTRY_STR_KEYS[] =
+        {
+            KEY_CONT_MENU_UP,
+            KEY_CONT_MENU_DOWN,
+            KEY_CONT_MENU_LEFT,
+            KEY_CONT_MENU_RIGHT,
+            KEY_CONT_MENU_ENTER,
+            KEY_CONT_MENU_CANCEL,
+            KEY_CONT_MENU_ACTION,
+            KEY_CONT_MENU_AIM,
+            KEY_CONT_MENU_LIGHT,
+            KEY_CONT_MENU_RUN,
+            KEY_CONT_MENU_VIEW,
+            KEY_CONT_MENU_STEP_L,
+            KEY_CONT_MENU_STEP_R,
+            KEY_CONT_MENU_PAUSE,
+            KEY_CONT_MENU_ITEM,
+            KEY_CONT_MENU_MAP,
+            KEY_CONT_MENU_OPTION
+        };
+
+        /** @brief Quads for textured entry selection highlights in the controller config menu.
+         * 0: Left presets pane.
+         * 1: Right actions pane.
+         */
+        static POLY_G4 SELECTION_HIGHLIGHT_QUADS[2] =
+        {
+            {
+                .tag  = 0x08000000,
+                .r0   = 255,
+                .g0   = 255,
+                .b0   = 255,
+                .code = 0x3A,
+                .r3   = 255,
+                .g3   = 255,
+                .b3   = 255
+            },
+            {
+                .tag  = 0x08000000,
+                .code = 0x3A,
+                .r1   = 255,
+                .g1   = 255,
+                .b1   = 255,
+                .r2   = 255,
+                .g2   = 255,
+                .b2   = 255
+            },
+        };
+
+        auto& input    = g_App.GetInput();
+        auto& bindings = input.GetBindings();
+
+        s16      highlightY0;
+        s16      highlightY1;
+        int      strYPos;
+        int      i;
+        u16*     contConfig;
+        POLY_G4* poly;
+
+        // Draw entry strings.
+        for (i = 0; i < ControllerMenuState_Count; i++)
+        {
+            Gfx_StringPositionSet(24, STR_BASE_Y + (i * STR_OFFSET_Y));
+            Gfx_StringDraw(PRESETS_PANE_ENTRY_STR_KEYS[i], 20);
+        }
+
+        if (!isOnRightPane)
+        {
+            highlightY1 = presetsEntryIdx * STR_OFFSET_Y;
+            highlightY0 = highlightY1 - 91;
+            setXY4(poly,
+                -137, highlightY0,
+                -76,  highlightY0,
+                -137, highlightY1 - 76,
+                -76,  highlightY1 - 76);
+        }
+
+        strYPos     = STR_BASE_Y;
+        highlightY0 = -300;
+
+        // Draw controller config.
+        for (auto actionGroupId : USER_ACTION_GROUP_IDS)
+        {
+            const auto& actionIds = ACTION_ID_GROUPS[(int)actionGroupId];
+            for (auto actionId : actionIds)
+            {
+                const auto& profile = bindings.GetProfile(BindingProfileId::CustomKeyboardMouse);
+
+                // Draw action string.
+                //Text_Debug_PositionSet(96, strYPos);
+                //Text_Debug_Draw(ACTIONS_PANE_ENTRY_STR_KEYS[(int)actionId]);
+            }
+        }
+
+        // Draw controller config.
+        for (i = 0, contConfig = (u16*)&g_GameWorkPtr->config.controllerConfig; i < InputAction_Count; i++, contConfig++)
+        {
+            // Draw action string.
+            //Text_Debug_PositionSet(96, strYPos);
+            //Text_Debug_Draw(ACTIONS_PANE_ENTRY_STR_KEYS[i]);
+
+            // Draw button icon.
+            if (i != boundActionIdx)
+            {
+                //Options_ControllerMenu_ButtonIconsDraw(ICON_OFFSET_X, strYPos - 114, *contConfig);
+            }
+
+            if (i == actionsEntryIdx)
+            {
+                highlightY0 = strYPos - 113;
+            }
+
+            strYPos = (strYPos + ICON_SIZE_Y) + ((i == 2) ? ICON_SIZE_Y : 0);
+        }
+
+        if (isOnRightPane)
+        {
+            setXY4(poly,
+                -65, highlightY0,
+                -15, highlightY0,
+                -65, highlightY0 + 10,
+                -15, highlightY0 + 10);
+        }
     }
 }

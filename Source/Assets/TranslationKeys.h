@@ -87,6 +87,10 @@ namespace Silent::Assets
     constexpr char KEY_CONT_MENU_TYPE_1[]           = "ContMenu_Type1";
     constexpr char KEY_CONT_MENU_TYPE_2[]           = "ContMenu_Type2";
     constexpr char KEY_CONT_MENU_TYPE_3[]           = "ContMenu_Type3";
+    constexpr char KEY_CONT_MENU_UP[]               = "ContMenu_Up";
+    constexpr char KEY_CONT_MENU_DOWN[]             = "ContMenu_Down";
+    constexpr char KEY_CONT_MENU_LEFT[]             = "ContMenu_Left";
+    constexpr char KEY_CONT_MENU_RIGHT[]            = "ContMenu_Right";
     constexpr char KEY_CONT_MENU_ENTER[]            = "ContMenu_Enter";
     constexpr char KEY_CONT_MENU_CANCEL[]           = "ContMenu_Cancel";
     constexpr char KEY_CONT_MENU_ACTION[]           = "ContMenu_Action";

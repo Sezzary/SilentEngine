@@ -71,7 +71,7 @@ namespace Silent::Game
         (((~0u << (fromInclusive)) & ~(~0u << ((toInclusive) + 1))))
 
     // @todo Use this instead.
-    bool Player_InMapChunkCheck(int x0, int x1, int x2, int x3,
+    /*bool Player_InMapChunkCheck(int x0, int x1, int x2, int x3,
                                 int z0, int z1, int z2, int z3)
     {
         const auto& pos = g_SysWork.playerWork.player.position;
@@ -91,7 +91,7 @@ namespace Silent::Game
         }
         
         return true;
-    }
+    }*/
 
     #define MAP_CHUNK_CHECK_VARIABLE_DECL() \
         s32 __chunkIdx
@@ -221,29 +221,29 @@ namespace Silent::Game
     /** @brief State IDs used by the main game loop. The values are used as indices into the `g_GameStateUpdateFuncs` function array. */
     enum e_GameState
     {
-        GameState_Init                = 0,
-        GameState_KonamiLogo          = 1,
-        GameState_KcetLogo            = 2,
-        GameState_MovieIntroFadeIn    = 3,
-        GameState_AutoLoadSavegame    = 4,
-        GameState_MovieIntroAlternate = 5,
-        GameState_MovieIntro          = 6,
-        GameState_MainMenu            = 7,
-        GameState_LoadSavegameScreen  = 8,
-        GameState_MovieOpening        = 9,
-        GameState_MainLoadScreen      = 10,
-        GameState_InGame              = 11,
-        GameState_MapEvent            = 12,
-        GameState_ExitMovie           = 13,
-        GameState_InventoryScreen     = 14,
-        GameState_PaperMapScreen      = 15,
-        GameState_SaveScreen          = 16,
-        GameState_DebugMoviePlayer    = 17,
-        GameState_OptionScreen        = 18,
-        GameState_LoadStatusScreen    = 19,
-        GameState_LoadMapScreen       = 20,
-        GameState_Credits             = 21,
-        GameState_Unk16               = 22 /** Removed debug menu? Doesn't exist in function array, but `DebugMoviePlayer` state tries to switch to it. */
+        GameState_Init,
+        GameState_KonamiLogo,
+        GameState_KcetLogo,
+        GameState_MovieIntroFadeIn,
+        GameState_AutoLoadSavegame,
+        GameState_MovieIntroAlternate,
+        GameState_MovieIntro,
+        GameState_MainMenu,
+        GameState_LoadSavegameScreen,
+        GameState_MovieOpening,
+        GameState_MainLoadScreen,
+        GameState_InGame,
+        GameState_MapEvent,
+        GameState_ExitMovie,
+        GameState_InventoryScreen,
+        GameState_PaperMapScreen,
+        GameState_SaveScreen,
+        GameState_DebugMoviePlayer,
+        GameState_OptionScreen,
+        GameState_LoadStatusScreen,
+        GameState_LoadMapScreen,
+        GameState_Credits,
+        GameState_Unk16 /** Removed debug menu? Doesn't exist in function array, but `DebugMoviePlayer` state tries to switch to it. */
     };
 
     /** @brief State IDs used by `GameState_InGame`.

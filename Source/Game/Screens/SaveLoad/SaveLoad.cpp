@@ -1835,7 +1835,6 @@ namespace Silent::Game
                     {
                         SD_Call(23);
                         //GameFs_TitleGfxLoad();
-                        //GameFs_StreamBinSeek();
                     }
                 }
                 break;

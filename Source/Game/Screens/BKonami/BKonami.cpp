@@ -18,10 +18,12 @@
 #include "Game/Screens/Stream/Stream.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "Services/Clock.h"
 
 using namespace Silent::Assets;
 using namespace Silent::Input;
 using namespace Silent::Renderer;
+using namespace Silent::Services;
 
 namespace Silent::Game
 {
@@ -48,14 +50,14 @@ namespace Silent::Game
             KonamiLogoStateStep_FinishAfterFade
         };
 
-        const auto& input = g_App.GetInput();
+        const auto& assets = g_App.GetAssets();
+        const auto& input  = g_App.GetInput();
 
         //while (g_GameWork.gameState == GameState_KonamiLogo)
         switch (g_GameWork.gameStateSteps[0])
         {
             case KonamiLogoStateStep_Init:
-                ScreenFade_Start(true, true, false);
-                g_ScreenFadeTimestep = Q12(0.2f);
+                ScreenFade_Start(true, true, false, Q12(1.0f));
 
                 // Load `Psx/1ST/KONAMI2.TIM` (Konami logo).
                 Fs_QueueStartReadTim(FILE_1ST_KONAMI2_TIM);
@@ -67,30 +69,30 @@ namespace Silent::Game
                 // Start loading `Psx/ANIM/HB_BASE.ANM` (base Harry animations).
                 Fs_QueueStartRead(FILE_ANIM_HB_BASE_ANM, FS_BUFFER_0);
 
-                g_GameWork.gameStateSteps[0]++;
+                Game_StateStepIncrement(0);
                 break;
 
             case KonamiLogoStateStep_WaitForFade:
                 if (ScreenFade_IsNone())
                 {
-                    g_GameWork.gameStateSteps[0] = KonamiLogoStateStep_LogoDelay;
+                    Game_StateStepIncrement(0);
                 }
                 break;
 
             case KonamiLogoStateStep_LogoDelay:
-                if (g_Controller0->buttonFlags.held != 0 ||
-                    g_SysWork.gameStateCounter > SECONDS_60_FPS(3))
+                if (input.GetAction(In::Enter).IsClicked()  ||
+                    input.GetAction(In::Cancel).IsClicked() ||
+                    g_SysWork.gameStateCounter >= SEC_TO_TICK(3.0f))
                 {
-                    ScreenFade_Start(false, false, false);
-                    g_ScreenFadeTimestep         = Q12(0.2f);
-                    g_GameWork.gameStateSteps[0] = KonamiLogoStateStep_FinishAfterFade;
+                    ScreenFade_Start(false, false, false, Q12(1.0f));
+
+                    Game_StateStepIncrement(0);
                 }
                 break;
 
             case KonamiLogoStateStep_FinishAfterFade:
-                if (ScreenFade_IsFinished())
+                if (ScreenFade_IsFinished() && !assets.IsBusy())
                 {
-                    Fs_QueueWaitForEmpty();
                     Game_StateSetNext(GameState_KcetLogo);
                 }
                 break;
@@ -101,14 +103,8 @@ namespace Silent::Game
         //if (g_GameWork.gameState != GameState_KonamiLogo)
         {
             BootScreen_KonamiScreenDraw();
-            //Screen_FadeUpdate();
             //MemCard_Update();
             //func_80033548();
-        }
-
-        if (input.GetAction(In::Enter).IsClicked())
-        {
-            Game_StateSetNext(GameState_KcetLogo);
         }
     }
 
@@ -164,29 +160,24 @@ namespace Silent::Game
     {
         static e_GameState nextGameState = GameState_Init;
 
-        const auto& input = g_App.GetInput();
+        const auto& assets = g_App.GetAssets();
+        const auto& input  = g_App.GetInput();
 
         //while (g_GameWork.gameState == GameState_KcetLogo)
         switch (g_GameWork.gameStateSteps[0])
         {
             case KcetLogoStateStep_Init:
+                ScreenFade_Start(true, true, false, Q12(1.0f));
                 //Settings_RestoreDefaults();
-
-                ScreenFade_Start(true, true, false);
-                g_ScreenFadeTimestep = Q12(0.2f);
-
                 //GameFs_BgEtcGfxLoad();
-                //Fs_QueueStartRead(FILE_BG_HP_SAFE1_BIN, FS_BUFFER_5);
-                //Fs_QueueStartRead(FILE_BG_S__SAFE2_BIN, FS_BUFFER_6);
-                g_GameWork.gameStateSteps[0]++;
+
+                Game_StateStepIncrement(0);
                 break;
 
             case KcetLogoStateStep_CheckMemCards:
-                if (ScreenFade_IsNone())
+                if (ScreenFade_IsNone() && !assets.IsBusy())
                 {
                     s32 curTime;
-
-                    Fs_QueueWaitForEmpty();
 
                     //while (g_GameWork.gameStateSteps[0] < KcetLogoStateStep_NoMemCard)
                     {
@@ -256,16 +247,18 @@ namespace Silent::Game
                 break;
 
             case KcetLogoStateStep_LogoDelay:
-                if (g_Controller0->buttonFlags.held != 0 || g_SysWork.gameStateCounter > 180)
+                if (input.GetAction(In::Enter).IsClicked()  ||
+                    input.GetAction(In::Cancel).IsClicked() ||
+                    g_SysWork.gameStateCounter >= SEC_TO_TICK(3.0f))
                 {
-                    ScreenFade_Start(false, false, false);
-                    g_ScreenFadeTimestep = Q12(0.2f);
-                    g_GameWork.gameStateSteps[0]++;
+                    ScreenFade_Start(false, false, false, Q12(1.0f));
+
+                    Game_StateStepIncrement(0);
                 }
                 break;
 
             case KcetLogoStateStep_FinishAfterFade:
-                if (ScreenFade_IsFinished())
+                if (ScreenFade_IsFinished() && !assets.IsBusy())
                 {
                     //Settings_ScreenAndVolUpdate();
 
@@ -286,7 +279,6 @@ namespace Silent::Game
 
                     Demo_SequenceAdvance(0);
                     Demo_DemoDataRead();
-                    Fs_QueueWaitForEmpty();
                     Game_StateSetNext(nextGameState);
                 }
                 break;
@@ -296,11 +288,6 @@ namespace Silent::Game
         //Screen_FadeUpdate();
         //MemCard_Update();
         //func_80033548();
-
-        if (input.GetAction(In::Enter).IsClicked())
-        {
-            Game_StateSetNext(GameState_MovieIntroFadeIn);
-        }
     }
 
     void BootScreen_KonamiScreenDraw()

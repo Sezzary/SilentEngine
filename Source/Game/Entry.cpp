@@ -27,10 +27,16 @@ namespace Silent::Game
         constexpr q19_12 FIXED_DELTA_TIME      = Q12(1.0f / (float)Services::TICKS_PER_SECOND);
         constexpr q19_12 GRAVITY_SPEED_PER_SEC = Q12(9.8f);
 
-        const auto& clock    = g_App.GetClock();
-        auto&       renderer = g_App.GetRenderer();
+        auto& renderer = g_App.GetRenderer();
 
         g_TickCount++;
+
+        // @todo Previously in `Screen_VSyncCallback`.
+        g_Demo_FrameCount++;
+        g_WarmBootTimer++;
+        g_SysWork.gameStateCounter++;
+        g_SysWork.gameStateStepCounter++;
+        g_SysWork.sysStateCounter++;
 
         // Update input.
         //Demo_ControllerDataUpdate();

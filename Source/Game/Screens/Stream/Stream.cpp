@@ -13,11 +13,13 @@
 #include "Game/Main/FileInfo.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
+#include "Services/Clock.h"
 #include "Utils/Video.h"
 
 using namespace Silent::Assets;
 using namespace Silent::Input;
 using namespace Silent::Renderer;
+using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Game
@@ -27,20 +29,23 @@ namespace Silent::Game
         const auto& assets = g_App.GetAssets();
         const auto& input  = g_App.GetInput();
 
+        // @todo This state seems redundant. Fade-in can be done in
+
         switch (g_GameWork.gameStateSteps[0])
         {
             case 0:
-                ScreenFade_Start(true, true, false);
+                ScreenFade_Start(true, true, false, Q12(1.0f));
                 GameFs_TitleGfxLoad();
 
                 Game_StateStepIncrement(0);
                 break;
 
             case 1:
-                g_SysWork.gameStateCounter++;
-                if (input.HasUserActionInput() || g_SysWork.gameStateCounter > SECONDS_60_FPS(5))
+                if (input.GetAction(In::Enter).IsClicked()  ||
+                    input.GetAction(In::Cancel).IsClicked() ||
+                    g_SysWork.gameStateCounter >= SEC_TO_TICK(5.0f))
                 {
-                    ScreenFade_Start(false, false, false);
+                    ScreenFade_Start(false, false, false, Q12(1.0f));
 
                     Game_StateStepIncrement(0);
                 }
@@ -67,7 +72,7 @@ namespace Silent::Game
         {
             case (int)StateStep::FadeIn:
             {
-                ScreenFade_Start(false, true, false);
+                ScreenFade_Start(false, true, false, Q12(1.0f));
 
                 Game_StateStepIncrement(0);
                 break;

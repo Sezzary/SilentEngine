@@ -70,6 +70,29 @@ namespace Silent::Game
     #define BITMASK_RANGE(fromInclusive, toInclusive) \
         (((~0u << (fromInclusive)) & ~(~0u << ((toInclusive) + 1))))
 
+    // @todo Use this instead.
+    bool Player_InMapChunkCheck(int x0, int x1, int x2, int x3,
+                                int z0, int z1, int z2, int z3)
+    {
+        const auto& pos = g_SysWork.playerWork.player.position;
+
+        int chunkIdxX = pos.vx / Q12(40.0f); // @todo Use `CHUNK_SIZE`.
+        if (!((pos.vx >  Q12(0.0f) && (chunkIdxX + x0) == x1) || 
+              (pos.vx <= Q12(0.0f) && (chunkIdxX + x2) == x3)))
+        {
+            return false;
+        }
+
+        int chunkIdxZ = pos.vz / Q12(40.0f); // @todo Use `CHUNK_SIZE`.
+        if (!((pos.vz >  Q12(0.0f) && (chunkIdxZ + z0) == z1) || 
+              (pos.vz <= Q12(0.0f) && (chunkIdxZ + z2) == z3)))
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
     #define MAP_CHUNK_CHECK_VARIABLE_DECL() \
         s32 __chunkIdx
 
@@ -82,12 +105,12 @@ namespace Silent::Game
     #define PLAYER_IN_MAP_CHUNK(comp, x0, x1, x2, x3)                                               \
         (__chunkIdx = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                       \
         ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx + (x0)) == (x1)) || \
-        (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) == (x3))))
+         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) == (x3))))
 
     #define PLAYER_NOT_IN_MAP_CHUNK(comp, x0, x1, x2, x3)                                           \
         (__chunkIdx = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                       \
         ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx + (x0)) != (x1)) || \
-        (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) != (x3))))
+         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) != (x3))))
 
     #define MAP_CHUNK_CHECK_VARIABLE_DECL_2() \
         s32 __chunkIdx2
@@ -95,7 +118,7 @@ namespace Silent::Game
     #define PLAYER_IN_MAP_CHUNK_2(comp, x0, x1, x2, x3)                                             \
         (__chunkIdx2 = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                      \
         ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx2 + (x0)) < (x1)) || \
-        (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx2 + (x2)) < (x3))))
+         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx2 + (x2)) < (x3))))
 
     #define PLAYER_NEAR_POS(comp, base, tol)                                                                                                             \
         (((g_SysWork.playerWork.player.position.comp - Q12(base)) >= Q12(0.0f)) ? ((g_SysWork.playerWork.player.position.comp - Q12(base)) < Q12(tol)) : \

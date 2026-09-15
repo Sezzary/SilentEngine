@@ -291,7 +291,7 @@ namespace Silent::Game
 
     void Demo_DemoRandSeedAdvance() // 0x8008F598
     {
-        #define SEED_OFFSET 0x3C6EF35F
+        constexpr int SEED_OFFSET = 0x3C6EF35F;
 
         if (g_SysWork.sysFlags & SysFlag_DemoActive)
         {
@@ -327,7 +327,6 @@ namespace Silent::Game
         }
 
         demoStep = g_Demo_DemoStep;
-
         if (g_DemoWork.frameCount <= demoStep)
         {
             Demo_ExitDemo();

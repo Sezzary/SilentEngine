@@ -82,14 +82,6 @@ namespace Silent::Game
             //Screen_FadeUpdate();
             //MemCard_Update();
             //func_80033548();
-            //VSync(SyncMode_Wait);
-            //GsSwapDispBuff();
-            //GsDrawOt(&g_OrderingTable2[g_ActiveBufferIdx]);
-
-            //g_ActiveBufferIdx = GsGetActiveBuff();
-            //GsOUT_PACKET_P   = (PACKET*)(TEMP_MEMORY_ADDR + (g_ActiveBufferIdx << 15));
-            //GsClearOt(0, 0, &g_OrderingTable0[g_ActiveBufferIdx]);
-            //GsClearOt(0, 0, &g_OrderingTable2[g_ActiveBufferIdx]);
         }
 
         if (input.GetAction(In::Enter).IsClicked())

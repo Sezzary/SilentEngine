@@ -8,7 +8,7 @@ namespace Silent::Game
     // TODO: Need to decide on clearer terminology. Right now we have "chunk cells", "cells", and "subcells", which are
     // kind of confusing.
 
-    constexpr float CHUNK_CELL_SIZE                   = 40.0f;
+    constexpr float CHUNK_SIZE                        = 40.0f;
     constexpr int   ACTIVE_CHUNK_COUNT_MAX            = 4;
     constexpr int   ACTIVE_CHUNK_TEXTURE_COUNT_MAX    = 10;
     constexpr int   HALF_PAGE_CHUNK_TEXTURE_COUNT_MAX = 2;

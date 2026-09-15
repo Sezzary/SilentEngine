@@ -130,7 +130,7 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuState_Controller:
-                //Options_ControllerMenu_Control();
+                Options_ControllerMenu_Control();
                 break;
 
             case OptionsMenuState_Leave:

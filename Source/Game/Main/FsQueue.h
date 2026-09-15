@@ -155,13 +155,13 @@ namespace Silent::Game
      * @param queueIdx Index of the queue entry to check.
      * @return `true` if the entry has been fully processed, `false` otherwise.
      */
-    bool Fs_QueueIsEntryLoaded(s32 queueIdx);
+    bool Fs_QueueIsEntryLoaded(int queueIdx);
 
     /** @brief Gets the number of operations currently in the queue.
      *
      * @return Number of operations in the queue. Includes both pending reads and pending post-loads.
      */
-    s32 Fs_QueueGetLength();
+    int Fs_QueueGetLength();
 
     /** @brief Loads map chunks currently in view.
      *
@@ -214,7 +214,7 @@ namespace Silent::Game
      * @param coords Character coords.
      * @return Index of the new queue entry.
      */
-    const std::future<void>& Fs_QueueStartReadAnm(s32 idx, s32 charaId, void* dest, GsCOORDINATE2* coords);
+    const std::future<void>& Fs_QueueStartReadAnm(int idx, int charaId, void* dest, GsCOORDINATE2* coords);
 
     /** Seems to clear the queue. */
     void Fs_QueueReset();

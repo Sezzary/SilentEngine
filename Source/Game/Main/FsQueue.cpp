@@ -15,14 +15,14 @@ namespace Silent::Game
 {
     s_FsQueue g_FsQueue;
 
-    bool Fs_QueueIsEntryLoaded(s32 queueIdx)
+    bool Fs_QueueIsEntryLoaded(int queueIdx)
     {
         // @todo Need to check equivalent.
         return true;
         //return queueIdx < g_FsQueue.postLoad.idx;
     }
 
-    s32 Fs_QueueGetLength()
+    int Fs_QueueGetLength()
     {
         const auto& assets = g_App.GetAssets();
 
@@ -82,11 +82,11 @@ namespace Silent::Game
         return Fs_QueueStartRead(fileIdx);
     }
 
-    const std::future<void>& Fs_QueueStartReadAnm(s32 idx, s32 charaId, void* dest, GsCOORDINATE2* coords)
+    const std::future<void>& Fs_QueueStartReadAnm(int idx, int charaId, void* dest, GsCOORDINATE2* coords)
     {
         auto& assets = g_App.GetAssets();
 
-        s32            fileIdx;
+        int            fileIdx;
         s_FsQueueExtra extra;
 
         fileIdx             = CHARA_FILE_INFOS[charaId].animFileIdx; // @todo Port over `CHARA_FILE_INFOS`.

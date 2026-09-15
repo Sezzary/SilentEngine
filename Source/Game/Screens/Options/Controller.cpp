@@ -4,11 +4,17 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
+#include "Application.h"
+#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Sys/SettingsReset.h"
 #include "Game/Screens/Options/Options.h"
+#include "Input/Input.h"
+
+using namespace Silent::Input;
 
 namespace Silent::Game
 {
-    bool g_ControllerMenu_IsOnActionsPane = false;
+    static bool g_ControllerMenu_IsOnActionsPane = false;
 
     /** @brief Draw modes for textured entry selection highlights in the controller config menu.
      * 0 corresponds to the presets pane on the left,
@@ -54,45 +60,47 @@ namespace Silent::Game
         },
     };*/
 
-    /*void Options_ControllerMenu_Control() // 0x801E69BC
+    void Options_ControllerMenu_Control()
     {
-        int           boundActionIdx = NO_VALUE;
-        e_InputAction actionIdx;
-
         static auto selectedEntries = s_ControllerMenu_SelectedEntries{};
+
+        const auto& input = g_App.GetInput();
+
+        int boundActionIdx = NO_VALUE;
 
         // Handle controller config menu state.
         switch (g_GameWork.gameStateSteps[1])
         {
             case ControllerMenuState_Exit:
-                //ScreenFade_Start(false, true, false);
+                ScreenFade_Start(false, true, false);
                 selectedEntries.preset = ControllerMenuState_Exit;
 
                 // Leave menu.
-                if (g_Controller0.buttonFlags.clicked & (g_GameWork.config.controllerConfig.enter |
-                                                    g_GameWork.config.controllerConfig.cancel))
+                if (input.GetAction(In::Enter).IsClicked() ||
+                    input.GetAction(In::Cancel).IsClicked())
                 {
                     //Sd_EngineCmd(Sfx_Cancel);
 
-                    //ScreenFade_Start(false, false, false);
+                    ScreenFade_Start(false, false, false);
                     g_GameWork.gameStateSteps[1] = ControllerMenuState_Leave;
                     g_GameWork.gameStateSteps[2] = 0;
                     break;
                 }
 
                 // Move selection cursor up/down.
-                if (g_Controller0.buttonFlags.pulsedGui & ControllerFlag_LStickHighUp)
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     g_GameWork.gameStateSteps[1] = ControllerMenuState_Type3;
                     g_GameWork.gameStateSteps[2] = 0;
                 }
-                else if (g_Controller0.buttonFlags.pulsedGui & ControllerFlag_LStickHighDown)
+                else if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     g_GameWork.gameStateSteps[1] = ControllerMenuState_Type1;
                     g_GameWork.gameStateSteps[2] = 0;
                 }
                 // Move selection cursor left/right.
-                else if (g_Controller0.buttonFlags.pulsedGui & (ControllerFlag_LStickHighLeft | ControllerFlag_LStickHighRight))
+                else if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                         input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     g_GameWork.gameStateSteps[1] = ControllerMenuState_Actions;
                     g_GameWork.gameStateSteps[2] = 0;
@@ -102,16 +110,16 @@ namespace Silent::Game
             case ControllerMenuState_Type1:
             case ControllerMenuState_Type2:
             case ControllerMenuState_Type3:
-                selectedEntries.preset = g_GameWork.gameStateSteps[1];
+                selectedEntries.preset = (e_ControllerMenuState)g_GameWork.gameStateSteps[1];
 
                 // Set binding preset.
-                if (g_Controller0.buttonFlags.clicked & g_GameWork.config.controllerConfig.enter)
+                if (input.GetAction(In::Enter).IsClicked())
                 {
                     //Sd_EngineCmd(Sfx_Confirm);
-                    //Settings_RestoreControlDefaults(g_GameWork.gameStateSteps[1] - 1);
+                    Settings_RestoreControlDefaults(g_GameWork.gameStateSteps[1] - 1);
                 }
                 // Reset selection cursor.
-                else if (g_Controller0.buttonFlags.clicked & g_GameWork.config.controllerConfig.cancel)
+                else if (input.GetAction(In::Cancel).IsClicked())
                 {
                     //Sd_EngineCmd(Sfx_Cancel);
                     g_GameWork.gameStateSteps[1] = ControllerMenuState_Exit;
@@ -121,18 +129,19 @@ namespace Silent::Game
                 else
                 {
                     // Move selection cursor up/down.
-                    if (g_Controller0.buttonFlags.pulsedGui & ControllerFlag_LStickHighUp)
+                    if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                     {
                         g_GameWork.gameStateSteps[1] = (g_GameWork.gameStateSteps[1] - 1) & 3;
                         g_GameWork.gameStateSteps[2] = 0;
                     }
-                    else if (g_Controller0.buttonFlags.pulsedGui & ControllerFlag_LStickHighDown)
+                    else if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                     {
                         g_GameWork.gameStateSteps[1] = (g_GameWork.gameStateSteps[1] + 1) & 3;
                         g_GameWork.gameStateSteps[2] = 0;
                     }
                     // Move selection cursor left/right.
-                    else if (g_Controller0.buttonFlags.pulsedGui & (ControllerFlag_LStickHighLeft | ControllerFlag_LStickHighRight))
+                    else if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                             input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                     {
                         g_GameWork.gameStateSteps[1] = ControllerMenuState_Actions;
                         g_GameWork.gameStateSteps[2] = 0;
@@ -141,25 +150,26 @@ namespace Silent::Game
                 break;
 
             case ControllerMenuState_Actions:
-                actionIdx = selectedEntries.action;
+            {
+                auto actionIdx = selectedEntries.action;
 
                 // Move selection cursor up/down.
-                if (g_Controller0.buttonFlags.pulsedGui & ControllerFlag_LStickHighUp)
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     if (actionIdx != InputAction_Enter)
                     {
-                        selectedEntries.action = actionIdx - 1;
+                        selectedEntries.action = (e_InputAction)(actionIdx - 1);
                     }
                     else
                     {
                         selectedEntries.action = InputAction_Option;
                     }
                 }
-                else if (g_Controller0.buttonFlags.pulsedGui & ControllerFlag_LStickHighDown)
+                else if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     if (actionIdx != InputAction_Option)
                     {
-                        selectedEntries.action = actionIdx + 1;
+                        selectedEntries.action = (e_InputAction)(actionIdx + 1);
                     }
                     else
                     {
@@ -167,7 +177,8 @@ namespace Silent::Game
                     }
                 }
                 // Move selection cursor left/right.
-                else if (g_Controller0.buttonFlags.pulsedGui & (ControllerFlag_LStickHighLeft | ControllerFlag_LStickHighRight))
+                else if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                         input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     g_GameWork.gameStateSteps[2] = 0;
                     g_GameWork.gameStateSteps[1] = selectedEntries.preset;
@@ -175,15 +186,16 @@ namespace Silent::Game
                 // Bind button to input action.
                 else
                 {
-                    boundActionIdx = Options_ControllerMenu_ConfigUpdate(actionIdx);
+                    //boundActionIdx = Options_ControllerMenu_ConfigUpdate(actionIdx);
                 }
                 break;
+            }
 
             case ControllerMenuState_Leave:
                 // Switch to previous menu.
-                if (false)//(ScreenFade_IsFinished())
+                if (ScreenFade_IsFinished())
                 {
-                    //ScreenFade_Start(true, true, false);
+                    ScreenFade_Start(true, true, false);
                     g_GameWork.gameStateSteps[0]   = OptionsMenuState_LeaveController;
                     g_SysWork.gameStateStepCounter = 0;
                     g_GameWork.gameStateSteps[1]   = 0;
@@ -202,12 +214,15 @@ namespace Silent::Game
         }
 
         // Play cursor navigation SFX.
-        if (g_Controller0.buttonFlags.pulsedGui & (ControllerFlag_LStickHighUp | ControllerFlag_LStickHighRight | ControllerFlag_LStickHighDown | ControllerFlag_LStickHighLeft))
+        if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)   ||
+            input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+            input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+            input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
             //Sd_EngineCmd(Sfx_Back);
         }
 
         // Draw menu graphics.
-        Options_ControllerMenu_EntriesDraw(g_ControllerMenu_IsOnActionsPane, selectedEntries.preset, selectedEntries.action, boundActionIdx);
-    }*/
+        //Options_ControllerMenu_EntriesDraw(g_ControllerMenu_IsOnActionsPane, selectedEntries.preset, selectedEntries.action, boundActionIdx);
+    }
 }

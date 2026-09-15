@@ -74,7 +74,7 @@ namespace Silent::Game
     #define ScreenFade_Start(reset, fadeIn, isWhite)                                                                \
         g_Screen_FadeStatus = (((((reset) == true) ? ScreenFadeState_FadeOutStart : ScreenFadeState_FadeOutSteps) + \
                                 (((fadeIn) == true) ? (1 << 2) : 0)) |                                              \
-                            (((isWhite) == true) ? (1 << 3) : 0))
+                               (((isWhite) == true) ? (1 << 3) : 0))
 
     /** @brief Resets the screen fade. */
     #define ScreenFade_Reset() \
@@ -84,7 +84,9 @@ namespace Silent::Game
     #define ScreenFade_ResetTimestep() \
         g_Screen_FadeStatus = ScreenFadeState_ResetTimestep
 
+    extern int    g_Screen_FadeStatus;
     extern q19_12 g_ScreenFadeTimestep;
+    extern q19_12 g_ScreenFadeProgress;
 
     void Screen_FadeDrawModeSet(DR_MODE* drMode);
 

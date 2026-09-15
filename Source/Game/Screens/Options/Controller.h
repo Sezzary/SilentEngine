@@ -49,8 +49,6 @@ namespace Silent::Game
         e_InputAction         action;
     };
 
-    extern bool g_ControllerMenu_IsOnActionsPane;
-
     /** @brief Controller for the controller configuration options menu.
      *
      * Handles the menu state, user input, SFX, and graphics drawing.

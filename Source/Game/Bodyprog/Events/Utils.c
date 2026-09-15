@@ -623,10 +623,8 @@ void Event_CameraLookAtSet(VECTOR3* lookAt,
                            q19_12 angularAccelX, q19_12 angularAccelY, q19_12 angularSpeedXMax, q19_12 angularSpeedYMax,
                            bool warp)
 {
-    VECTOR3           lookAtTarget;
-    VC_WATCH_MV_PARAM camLookAtMoveParams;
-
     // Set look-at target.
+    auto lookAtTarget = VECTOR3{};
     if (lookAt != NULL)
     {
         lookAtTarget.vx = lookAt->vx + lookAtOffsetOrPosX;
@@ -639,6 +637,8 @@ void Event_CameraLookAtSet(VECTOR3* lookAt,
         lookAtTarget.vy = lookAtOffsetOrPosY;
         lookAtTarget.vz = lookAtOffsetOrPosZ;
     }
+
+    autot camLookAtMoveParams = VC_WATCH_MV_PARAM{};
 
     // Set angular acceleration on X axis.
     if (angularAccelX == Q12_ANGLE(0.0f))

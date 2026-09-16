@@ -189,6 +189,11 @@ namespace Silent::Renderer
 
     bool RendererBase::SubmitShape2d(const Shape2d& shape)
     {
+        if (!g_App.IsDrawTick())
+        {
+            return false;
+        }
+
         if (_scene.Objects.Shapes2d.size() >= SHAPE_2D_COUNT_MAX)
         {
             Debug::Log("Attempted to submit 2D shape to full container.",
@@ -202,6 +207,11 @@ namespace Silent::Renderer
 
     bool RendererBase::SubmitSprite2d(const Sprite2d& sprite)
     {
+        if (!g_App.IsDrawTick())
+        {
+            return false;
+        }
+
         auto& assets = g_App.GetAssets();
 
         if (_scene.Objects.Sprites2d.size() >= SPRITE_2D_COUNT_MAX)
@@ -229,6 +239,11 @@ namespace Silent::Renderer
     {
         constexpr auto    SHADOW_COLOR  = Color::From8Bit(16, 16, 16);
         static const auto SHADOW_OFFSET = SCREEN_SPACE_RES / Vector2(RETRO_SCREEN_SPACE_RES.y);
+
+        if (!g_App.IsDrawTick())
+        {
+            return false;
+        }
 
         // Compute transformation parameters.
         auto  rotMat           = Matrix::CreateRotationZ(text.Rotation);
@@ -365,6 +380,24 @@ namespace Silent::Renderer
             pixelOffset.x += shapedGlyph.Spacing;
         }
 
+        return true;
+    }
+
+    bool RendererBase::SubmitTriangle3d(const Triangle3d& tri)
+    {
+        if (!g_App.IsDrawTick())
+        {
+            return false;
+        }
+
+        if (_scene.Objects.Triangles3d.size() >= TRI_3D_COUNT_MAX)
+        {
+            Debug::Log("Attempted to submit 3D triangle to full container.",
+                       Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            return false;
+        }
+
+        _scene.Objects.Triangles3d.push_back(tri);
         return true;
     }
 

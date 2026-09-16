@@ -114,12 +114,18 @@ namespace Silent
         return dpiScale;
     }
 
+    bool ApplicationManager::IsDrawTick() const
+    {
+        return _isDrawTick;
+    }
+
     void ApplicationManager::Initialize()
     {
         constexpr float IMGUI_FONT_POINT_SIZE = 13.0f;
 
-        _isPaused = false;
-        _quit     = false;
+        _isDrawTick = false;
+        _isPaused   = false;
+        _quit       = false;
 
         // Filesystem and translator.
         _work.Filesystem.Initialize();
@@ -325,24 +331,17 @@ namespace Silent
 
     void ApplicationManager::Update()
     {
-        // Update input.
-        _work.Input.Update(*_window, _mouseWheelAxis);
-
-        // Tick game state.
-        //if (_work.Clock.GetTicks() > 0)
-        //for (int i = 0; i < _work.Clock.GetTicks(); i++)
+        // Tick game state. @todo Compensation results in persistent lag? Need to reproduce.
+        for (int i = 0; i < _work.Clock.GetTicks(); i++)
         {
+            _work.Input.Update(*_window, _mouseWheelAxis);
+
+            _isDrawTick = i == (_work.Clock.GetTicks() - 1);
             UpdateGame();
         }
 
         // Update audio.
         _work.Audio.Update();
-
-        // @debug
-        /*if (_work.Input.GetAction(In::Up).IsClicked())
-        {
-            _work.Toaster.Add("Hello I am a toast.");
-        }*/
 
         // Update debug and toasts.
         Debug::Update();

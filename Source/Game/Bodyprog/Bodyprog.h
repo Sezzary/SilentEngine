@@ -66,26 +66,6 @@ namespace Silent::Game
         EffectTextureFlag_WarmTest     = 1 << 7  /** @unused Test lens flare? */
     };
 
-    enum e_MainMenuEntry
-    {
-        MainMenuEntry_Load     = 0,
-        MainMenuEntry_Continue = 1,
-        MainMenuEntry_Start    = 2,
-        MainMenuEntry_Option   = 3,
-        MainMenuEntry_Quit     = 4, /** @unused The extra options menu may have been accessible via the main menu. */
-
-        MainMenuEntry_Count    = 5
-    };
-
-    enum e_MainMenuState
-    {
-        MenuState_Start              = 0,
-        MenuState_Main               = 1,
-        MenuState_LoadGame           = 2,
-        MenuState_DifficultySelector = 3,
-        MenuState_NewGameStart       = 4
-    };
-
     /** Used by `func_8003F654` to cast a specific field to the desired type. */
     enum e_PrimitiveType
     {

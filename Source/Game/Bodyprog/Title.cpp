@@ -32,7 +32,7 @@ namespace Silent::Game
 {
     constexpr int MAIN_MENU_FOG_COUNT = 21;
 
-    static int g_MainMenuState              = 0;
+    static int g_MainMenuState              = MainMenuState_Start;
     static int g_MainMenu_SelectedEntry     = MainMenuEntry_Start;
     static int g_MainMenu_VisibleEntryFlags = (1 << MainMenuEntry_Start)  |
                                               (1 << MainMenuEntry_Option) |
@@ -163,7 +163,7 @@ namespace Silent::Game
 
         if (g_GameWork.gameStateSteps[0] == 0)
         {
-            g_MainMenuState = 0;
+            g_MainMenuState = MainMenuState_Start;
 
             if (playInGameDemo)
             {
@@ -177,7 +177,7 @@ namespace Silent::Game
 
         switch (g_MainMenuState)
         {
-            case MenuState_Start:
+            case MainMenuState_Start:
                 g_GameWork.background2dColor.r = 0;
                 g_GameWork.background2dColor.g = 0;
                 g_GameWork.background2dColor.b = 0;
@@ -187,7 +187,7 @@ namespace Silent::Game
                 g_ScreenFadeTimestep = Q12(2.0f);
                 g_MainMenuState++;
 
-            case MenuState_Main:
+            case MainMenuState_Main:
                 if (playInGameDemo)
                 {
                     //GameFs_MapStartup();
@@ -309,7 +309,7 @@ namespace Silent::Game
 
                         case MainMenuEntry_Start:
                             ScreenFade_Reset();
-                            g_MainMenuState = MenuState_DifficultySelector;
+                            g_MainMenuState = MainMenuState_DifficultySelector;
                             break;
 
                         case MainMenuEntry_Option:
@@ -317,7 +317,7 @@ namespace Silent::Game
                             break;
 
                         case MainMenuEntry_Quit:
-                            g_App.Quit();
+                            g_MainMenuState = MainMenuState_Quit;
                             break;
                     }
                 }
@@ -327,7 +327,7 @@ namespace Silent::Game
             default:
                 break;
 
-            case MenuState_DifficultySelector:
+            case MainMenuState_DifficultySelector:
                 if (playInGameDemo)
                 {
                     //GameFs_MapStartup();
@@ -396,18 +396,18 @@ namespace Silent::Game
                     SD_Call(Sfx_MenuStartGame);
 
                     ScreenFade_Start(true, false, false);
-                    g_MainMenuState     = 4;
+                    g_MainMenuState = MainMenuState_NewGameStart;
                 }
                 // Cancel.
                 else if (input.GetAction(In::Cancel).IsClicked())
                 {
                     SD_Call(Sfx_MenuCancel);
-                    g_MainMenuState = 1;
+                    g_MainMenuState = MainMenuState_Main;
                 }
                 break;
 
-            case MenuState_LoadGame:
-            case MenuState_NewGameStart:
+            case MainMenuState_LoadGame:
+            case MainMenuState_NewGameStart:
                 if (ScreenFade_IsFinished())
                 {
                     Screen_Refresh(SCREEN_WIDTH, 0);
@@ -438,6 +438,14 @@ namespace Silent::Game
                     SysWork_StateSetNext(SysState_Gameplay);
                 }
                 break;
+
+            case MainMenuState_Quit:
+            {
+                if (ScreenFade_IsFinished())
+                {
+                    g_App.Quit();
+                }
+            }
         }
 
         if (input.HasUserActionInput())
@@ -476,7 +484,8 @@ namespace Silent::Game
             MainMenu_BackgroundDraw();
             //func_8003B560();
 
-            if (g_MainMenuState < 3)
+            if (g_MainMenuState < MainMenuState_DifficultySelector ||
+                g_MainMenuState == MainMenuState_Quit)
             {
                 MainMenu_MainTextDraw();
                 return;

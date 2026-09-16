@@ -126,19 +126,19 @@ namespace Silent::Game
         }
 
         g_MemCard_ActiveMemCardSlotSaves = (s_SaveScreenElement*)SAVEGAME_ENTRY_BUFFER_0;
-        saveEntryTypeSlot1                = g_MemCard_ActiveMemCardSlotSaves->type_4;
+        saveEntryTypeSlot1                = g_MemCard_ActiveMemCardSlotSaves->type;
 
         g_MemCard_ActiveMemCardSlotSaves = (s_SaveScreenElement*)SAVEGAME_ENTRY_BUFFER_1;
-        saveEntryTypeSlot_2                = g_MemCard_ActiveMemCardSlotSaves->type_4;
+        saveEntryTypeSlot_2                = g_MemCard_ActiveMemCardSlotSaves->type;
 
         if (saveEntryTypeSlot1 == SavegameEntryType_Save || saveEntryTypeSlot_2 == SavegameEntryType_Save)
         {
             g_MemCard_ActiveMemCardSlotSaves = MemCard_ActiveMemCardSlotGet(g_SelectedSaveSlotIdx);
             g_MemCard_ActiveMemCardSlotSaves = &g_MemCard_ActiveMemCardSlotSaves[g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx]];
 
-            g_SelectedDeviceId            = g_MemCard_ActiveMemCardSlotSaves->deviceId_5;
-            g_SelectedFileIdx             = g_MemCard_ActiveMemCardSlotSaves->fileIdx_6;
-            g_Savegame_SelectedElementIdx = g_MemCard_ActiveMemCardSlotSaves->elementIdx_7;
+            g_SelectedDeviceId            = g_MemCard_ActiveMemCardSlotSaves->deviceId;
+            g_SelectedFileIdx             = g_MemCard_ActiveMemCardSlotSaves->fileIdx;
+            g_Savegame_SelectedElementIdx = g_MemCard_ActiveMemCardSlotSaves->elementIdx;
 
             return KcetLogoStateStep_HasSavegame;
         }

@@ -24,21 +24,21 @@ namespace Silent::Utils
      */
     char* CopyString(const char src[], int size);
 
-    /** @brief Gets the UTF-8 code points in a message.
+    /** @brief Gets the UTF-8 code points in a string.
      *
-     * @param msg Message to parse.
+     * @param str String to parse.
      * @return UTF-8 code points.
      */
-    std::vector<char32> GetUtf8CodePoints(const std::string& msg);
+    std::vector<char32> GetUtf8CodePoints(const std::string& str);
 
-    /** @brief Slices a UTF-8 message.
+    /** @brief Slices a UTF-8 string.
      *
-     * @param msg Message to slice.
+     * @param str String to slice.
      * @param pos Index of the first code point.
      * @param count Number of code points to slice.
      * @return Sliced UTF-8 string.
      */
-    std::string GetUtf8Substring(const std::string& msg, int pos, int count);
+    std::string GetUtf8Substring(const std::string& str, int pos, int count);
 
     /** @brief Gets the sign of a value.
      *

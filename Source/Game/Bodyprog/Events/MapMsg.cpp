@@ -38,7 +38,7 @@ namespace Silent::Game
         int styleFlags = (int)TextStyleFlags::Gradient |
                          (int)TextStyleFlags::Shadow   |
                          g_SysWork.enableHalfHeightGlyphs ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None;
-        return DrawParsedMsg(g_MapMsg_Cached, ConvertRetroScreenPixelsToPercent(g_StringPosition), SERIF_FONT_SCALE,
+        return DrawParsedMsg(g_MapMsg_Cached, ConvertRetroScreenPixelsToPercent(g_SerifStringPosition), SERIF_FONT_SCALE,
                              styleFlags, displayLength, pageIdx);
     }
 

@@ -517,6 +517,74 @@ namespace Silent::Game
         D_800BCDE0 = s0;*/
     }
 
+    static Color g_MainMenu_FogGradientMap2[256] =
+    {
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::From8Bit(1, 1, 1),
+        Color::From8Bit(2, 2, 2), Color::From8Bit(3, 4, 4), Color::From8Bit(5, 5, 5), Color::From8Bit(6, 7, 7),
+        Color::From8Bit(7, 8, 8), Color::From8Bit(9, 10, 10), Color::From8Bit(10, 11, 12), Color::From8Bit(11, 13, 13),
+        Color::From8Bit(13, 14, 15), Color::From8Bit(14, 16, 16), Color::From8Bit(15, 18, 18), Color::From8Bit(17, 19, 19),
+        Color::From8Bit(18, 21, 21), Color::From8Bit(19, 22, 23), Color::From8Bit(21, 24, 24), Color::From8Bit(22, 25, 26),
+        Color::From8Bit(23, 27, 27), Color::From8Bit(25, 28, 29), Color::From8Bit(26, 30, 30), Color::From8Bit(28, 32, 32),
+        Color::From8Bit(29, 33, 34), Color::From8Bit(30, 35, 35), Color::From8Bit(32, 36, 37), Color::From8Bit(33, 38, 38),
+        Color::From8Bit(34, 39, 40), Color::From8Bit(36, 41, 41), Color::From8Bit(37, 42, 43), Color::From8Bit(38, 44, 45),
+        Color::From8Bit(40, 45, 46), Color::From8Bit(41, 47, 48), Color::From8Bit(42, 49, 49), Color::From8Bit(44, 50, 51),
+        Color::From8Bit(45, 52, 52), Color::From8Bit(46, 53, 54), Color::From8Bit(48, 55, 56), Color::From8Bit(49, 56, 57),
+        Color::From8Bit(50, 58, 59), Color::From8Bit(52, 59, 60), Color::From8Bit(53, 61, 62), Color::From8Bit(55, 63, 64),
+        Color::From8Bit(55, 63, 65), Color::From8Bit(56, 64, 66), Color::From8Bit(57, 65, 67), Color::From8Bit(57, 65, 68),
+        Color::From8Bit(58, 66, 69), Color::From8Bit(59, 67, 70), Color::From8Bit(59, 68, 71), Color::From8Bit(60, 68, 72),
+        Color::From8Bit(61, 69, 73), Color::From8Bit(61, 70, 74), Color::From8Bit(62, 70, 75), Color::From8Bit(63, 71, 76),
+        Color::From8Bit(63, 72, 77), Color::From8Bit(64, 73, 78), Color::From8Bit(65, 73, 80), Color::From8Bit(66, 74, 81),
+        Color::From8Bit(66, 75, 82), Color::From8Bit(67, 76, 83), Color::From8Bit(68, 76, 84), Color::From8Bit(68, 77, 85),
+        Color::From8Bit(69, 78, 86), Color::From8Bit(70, 78, 87), Color::From8Bit(70, 79, 88), Color::From8Bit(71, 80, 89),
+        Color::From8Bit(72, 81, 90), Color::From8Bit(72, 81, 91), Color::From8Bit(73, 82, 92), Color::From8Bit(74, 83, 93),
+        Color::From8Bit(75, 84, 95), Color::From8Bit(76, 84, 96), Color::From8Bit(77, 85, 97), Color::From8Bit(77, 86, 98),
+        Color::From8Bit(78, 87, 99), Color::From8Bit(79, 87, 100), Color::From8Bit(80, 88, 101), Color::From8Bit(80, 89, 102),
+        Color::From8Bit(81, 89, 104), Color::From8Bit(82, 90, 105), Color::From8Bit(83, 91, 106), Color::From8Bit(83, 92, 107),
+        Color::From8Bit(84, 92, 108), Color::From8Bit(85, 93, 109), Color::From8Bit(86, 94, 110), Color::From8Bit(86, 94, 111),
+        Color::From8Bit(87, 95, 112), Color::From8Bit(88, 96, 113), Color::From8Bit(89, 96, 114), Color::From8Bit(89, 97, 115),
+        Color::From8Bit(90, 98, 116), Color::From8Bit(91, 99, 117), Color::From8Bit(92, 99, 119), Color::From8Bit(92, 100, 120),
+        Color::From8Bit(93, 101, 121), Color::From8Bit(94, 101, 122), Color::From8Bit(95, 102, 123), Color::From8Bit(95, 103, 124),
+        Color::From8Bit(96, 104, 125), Color::From8Bit(97, 104, 126), Color::From8Bit(98, 105, 127), Color::From8Bit(98, 106, 128),
+        Color::From8Bit(99, 106, 129), Color::From8Bit(100, 107, 130), Color::From8Bit(101, 108, 131), Color::From8Bit(102, 109, 133),
+        Color::From8Bit(103, 109, 128), Color::From8Bit(104, 110, 128), Color::From8Bit(104, 111, 129), Color::From8Bit(105, 112, 130),
+        Color::From8Bit(106, 112, 131), Color::From8Bit(107, 113, 132), Color::From8Bit(108, 114, 133), Color::From8Bit(109, 115, 134),
+        Color::From8Bit(110, 116, 135), Color::From8Bit(110, 117, 136), Color::From8Bit(111, 118, 137), Color::From8Bit(112, 119, 137),
+        Color::From8Bit(113, 120, 138), Color::From8Bit(114, 120, 139), Color::From8Bit(115, 121, 140), Color::From8Bit(116, 122, 141),
+        Color::From8Bit(116, 123, 142), Color::From8Bit(117, 124, 143), Color::From8Bit(118, 125, 144), Color::From8Bit(119, 126, 145),
+        Color::From8Bit(120, 127, 146), Color::From8Bit(121, 128, 146), Color::From8Bit(122, 128, 147), Color::From8Bit(122, 129, 148),
+        Color::From8Bit(123, 130, 149), Color::From8Bit(124, 131, 150), Color::From8Bit(125, 132, 151), Color::From8Bit(126, 133, 152),
+        Color::From8Bit(127, 134, 153), Color::From8Bit(128, 135, 154), Color::From8Bit(129, 136, 155), Color::From8Bit(130, 137, 156),
+        Color::From8Bit(131, 138, 156), Color::From8Bit(132, 139, 157), Color::From8Bit(133, 140, 158), Color::From8Bit(134, 141, 159),
+        Color::From8Bit(135, 142, 160), Color::From8Bit(136, 143, 160), Color::From8Bit(137, 143, 161), Color::From8Bit(138, 144, 162),
+        Color::From8Bit(139, 145, 163), Color::From8Bit(140, 146, 164), Color::From8Bit(141, 147, 164), Color::From8Bit(142, 148, 165),
+        Color::From8Bit(143, 149, 166), Color::From8Bit(143, 150, 167), Color::From8Bit(144, 151, 167), Color::From8Bit(145, 152, 168),
+        Color::From8Bit(146, 152, 169), Color::From8Bit(147, 153, 170), Color::From8Bit(148, 154, 171), Color::From8Bit(149, 155, 171),
+        Color::From8Bit(150, 156, 172), Color::From8Bit(151, 157, 173), Color::From8Bit(152, 158, 174), Color::From8Bit(153, 159, 175),
+        Color::From8Bit(154, 160, 175), Color::From8Bit(155, 161, 176), Color::From8Bit(156, 162, 177), Color::From8Bit(157, 162, 178),
+        Color::From8Bit(158, 163, 179), Color::From8Bit(159, 164, 179), Color::From8Bit(159, 165, 180), Color::From8Bit(160, 166, 181),
+        Color::From8Bit(161, 167, 182), Color::From8Bit(162, 168, 182), Color::From8Bit(163, 169, 183), Color::From8Bit(164, 170, 184),
+        Color::From8Bit(165, 171, 185), Color::From8Bit(166, 171, 186), Color::From8Bit(167, 172, 186), Color::From8Bit(168, 173, 187),
+        Color::From8Bit(169, 174, 188), Color::From8Bit(170, 175, 189), Color::From8Bit(171, 176, 190), Color::From8Bit(172, 177, 190),
+        Color::From8Bit(173, 178, 191), Color::From8Bit(174, 179, 192), Color::From8Bit(175, 180, 193), Color::From8Bit(176, 181, 194)
+    };
+
     static u32 g_MainMenu_FogGradientMap[256] =
     {
         0x3A000000, 0x3A000000, 0x3A000000, 0x3A000000, 0x3A000000, 0x3A000000, 0x3A000000, 0x3A000000,
@@ -552,6 +620,19 @@ namespace Silent::Game
         0x3AB6A7A1, 0x3AB6A8A2, 0x3AB7A9A3, 0x3AB8AAA4, 0x3AB9ABA5, 0x3ABAABA6, 0x3ABAACA7, 0x3ABBADA8,
         0x3ABCAEA9, 0x3ABDAFAA, 0x3ABEB0AB, 0x3ABEB1AC, 0x3ABFB2AD, 0x3AC0B3AE, 0x3AC1B4AF, 0x3AC2B5B0
     };
+
+    const Color& GetFogColor(int idx)
+    {
+        int         idx0 = D_800BCDE0[idx];
+        const auto& val  = g_MainMenu_FogGradientMap2[idx0];
+
+        if (idx < 210)
+        {
+            return Color::Black;
+        }
+
+        return val;
+    }
 
     u32 func_8003B7FC(s32 idx) // 0x8003B7FC
     {
@@ -601,13 +682,15 @@ namespace Silent::Game
                     -176 + (16 * j), yOffset - 184,
                     -160 + (16 * j), yOffset - 184);
 
-                *((u32*)&poly->r0) = color0;
-                *((u32*)&poly->r1) = color1;
-                *((u32*)&poly->r2) = color2;
-                *((u32*)&poly->r3) = color3;
+                // Set colours.
+                //*((u32*)&poly->r0) = color0;
+                //*((u32*)&poly->r1) = color1;
+                //*((u32*)&poly->r2) = color2;
+                //*((u32*)&poly->r3) = color3;
 
-                addPrim(ot, poly);
-                packet += sizeof(POLY_G4);
+                // Submit.
+                //addPrim(ot, poly);
+                //packet += sizeof(POLY_G4);
             }
         }
 
@@ -637,7 +720,7 @@ namespace Silent::Game
 
         static q19_12 randAngle = Q12_ANGLE(0.0f);
 
-        return; // @todo6565
+        return; // @todo
 
         ptr   = D_800BCDE0;
         ptr1  = (u8*)ptr + 441;

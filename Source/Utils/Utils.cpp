@@ -41,39 +41,37 @@ namespace Silent::Utils
         return (char*)dest;
     }
 
-    std::vector<char32> GetUtf8CodePoints(const std::string& msg)
+    std::vector<char32> GetUtf8CodePoints(const std::string& str)
     {
-        if (msg.empty())
+        if (str.empty())
         {
             return {};
         }
 
         // Reserve minimum size.
         auto codePoints = std::vector<char32>{};
-        codePoints.reserve((msg.size() / 4) + 1);
+        codePoints.reserve((str.size() / 4) + 1);
 
         // Collect code points.
-        utf8::utf8to32(msg.begin(), msg.end(), std::back_inserter(codePoints));
+        utf8::utf8to32(str.begin(), str.end(), std::back_inserter(codePoints));
         return codePoints;
     }
 
-    std::string GetUtf8Substring(const std::string& msg, int pos, int count)
+    std::string GetUtf8Substring(const std::string& str, int pos, int count)
     {
-        if (msg.empty() || pos < 0 || count <= 0)
+        if (str.empty() || pos < 0 || count <= 0)
         {
             return {};
         }
 
-        auto itStart = msg.begin();
-        auto itEnd   = msg.end();
-
         // Advance to substring start.
-        utf8::advance(itStart, pos, itEnd);
-
+        auto itSubStart = str.begin();
+        utf8::advance(itSubStart, pos, str.end());
+        
         // Advance to substring end.
-        auto itSubEnd = itStart;
-        utf8::advance(itSubEnd, count, itEnd);
+        auto itSubEnd = itSubStart;
+        utf8::advance(itSubEnd, count, str.end());
 
-        return std::string(itStart, itSubEnd);
+        return std::string(itSubStart, itSubEnd);
     }
 }

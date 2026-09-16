@@ -248,8 +248,9 @@ namespace Silent::Game
             },
         };
 
-        auto& input    = g_App.GetInput();
-        auto& bindings = input.GetBindings();
+        const auto& translator = g_App.GetTranslator();
+        auto&       input      = g_App.GetInput();
+        auto&       bindings   = input.GetBindings();
 
         s16      highlightY0;
         s16      highlightY1;
@@ -288,30 +289,22 @@ namespace Silent::Game
                 const auto& profile = bindings.GetProfile(BindingProfileId::CustomKeyboardMouse);
 
                 // Draw action string.
-                //Text_Debug_PositionSet(96, strYPos);
-                //Text_Debug_Draw(ACTIONS_PANE_ENTRY_STR_KEYS[(int)actionId]);
-            }
-        }
+                Text_Debug_PositionSet(96, strYPos);
+                Text_Debug_Draw(translator(ACTIONS_PANE_ENTRY_STR_KEYS[(int)actionId]));
 
-        // Draw controller config.
-        for (i = 0, contConfig = (u16*)&g_GameWorkPtr->config.controllerConfig; i < InputAction_Count; i++, contConfig++)
-        {
-            // Draw action string.
-            //Text_Debug_PositionSet(96, strYPos);
-            //Text_Debug_Draw(ACTIONS_PANE_ENTRY_STR_KEYS[i]);
+                // Draw button icon.
+                if (i != boundActionIdx)
+                {
+                    //Options_ControllerMenu_ButtonIconsDraw(ICON_OFFSET_X, strYPos - 114, *contConfig);
+                }
 
-            // Draw button icon.
-            if (i != boundActionIdx)
-            {
-                //Options_ControllerMenu_ButtonIconsDraw(ICON_OFFSET_X, strYPos - 114, *contConfig);
-            }
+                if (i == actionsEntryIdx)
+                {
+                    highlightY0 = strYPos - 113;
+                }
 
-            if (i == actionsEntryIdx)
-            {
-                highlightY0 = strYPos - 113;
-            }
-
-            strYPos = (strYPos + ICON_SIZE_Y) + ((i == 2) ? ICON_SIZE_Y : 0);
+                strYPos = (strYPos + ICON_SIZE_Y) + ((i == 2) ? ICON_SIZE_Y : 0);
+                }
         }
 
         if (isOnRightPane)

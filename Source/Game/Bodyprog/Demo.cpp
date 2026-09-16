@@ -351,13 +351,8 @@ namespace Silent::Game
 
                 if (g_Demo_CurFrameData->gameStateExpected != gameWork->gameState)
                 {
-                    // @todo Can submit this as debug menu message instead.
-                    //Text_Debug_PositionSet(8, 80);
-                    //Text_Debug_Draw("STEP ERROR:[H:");
-                    //Text_Debug_Draw(Text_Debug_IntToString(2, g_Demo_CurFrameData->gameStateExpected_8));
-                    //Text_Debug_Draw("]/[M:");
-                    //Text_Debug_Draw(Text_Debug_IntToString(2, gameWork->gameState));
-                    //Text_Debug_Draw("]");
+                    Debug::Msg("STEP ERROR: [H: %d]/[M: %d]",
+                               g_Demo_CurFrameData->gameStateExpected, gameWork->gameState);
 
                     g_Demo_CurFrameData = nullptr;
                 }

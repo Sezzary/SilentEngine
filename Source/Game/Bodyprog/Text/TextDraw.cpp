@@ -43,7 +43,8 @@ namespace Silent::Game
     Vector2i g_StringPosition;
     int      g_MapMsg_AudioType;
 
-    static auto g_StringColorId = StringColorId_White;
+    static auto g_StringColorId      = StringColorId_White;
+    static auto g_SansStringPosition = Vector2i::Zero;
     
     char MsgNode::GetCode() const
     {
@@ -53,7 +54,7 @@ namespace Silent::Game
 
     int MsgNode::GetIntArg() const
     {
-        // Parse integer value, e.g. `1` in `C1`.
+        // Parse `int` value, e.g. `1` in `C1`.
         auto intStr = std::string();
         for (char c : Value.substr(1, Value.size() - 1))
         {
@@ -64,23 +65,35 @@ namespace Silent::Game
         return std::stoi(intStr);
     }
 
-    float MsgNode::GetTimeArg() const
+    float MsgNode::GetFloatArg() const
     {
-        // Parse time value, e.g. `(1.5)` in `J0(1.5)`.
-        auto timeStr = std::string();
-        for (char c : Value.substr(2, Value.size() - 1))
+        // Parse `float` value, e.g. `1.5` in `J0(1.5)`.
+        auto floatStr = std::string();
+        bool collect = false;
+        for (char c : Value)
         {
+            // Reached start.
+            if (!collect)
+            {
+                if (c == '(')
+                {
+                    collect = true;
+                }
+
+                continue;
+            }
+
             // Reached end.
             if (c == ')')
             {
                 break;
             }
 
-            timeStr += c;
+            floatStr += c;
         }
 
         // Convert string to `float`.
-        return std::stof(timeStr);
+        return std::stof(floatStr);
     }
 
     /** @brief Parses a tagged message into nodes.
@@ -132,7 +145,7 @@ namespace Silent::Game
             }
         }
 
-        // Flush anything left in buffer.
+        // Flush remaining buffer content.
         if (!buffer.empty())
         {
             nodes.push_back(MsgNode
@@ -203,7 +216,7 @@ namespace Silent::Game
             }
         }
 
-        // Flush last page.
+        // Flush remaining page.
         if (!curPage.Nodes.empty())
         {
             pages.push_back(std::move(curPage));
@@ -347,7 +360,7 @@ namespace Silent::Game
                         }
 
                         // Set map message timer.
-                        g_SysWork.mapMsgTimer = Q12(node.GetTimeArg());
+                        g_SysWork.mapMsgTimer = Q12(node.GetFloatArg());
                         break;
                     }
                     case MSG_CODE_LINE_POSITION:
@@ -467,8 +480,54 @@ namespace Silent::Game
         return result.LineWidths.back();
     }
 
-    float Gfx_StringDrawInt(s32 widthMin, s32 displayLength)
+    float Gfx_StringDrawInt(int lengthMin, int val)
     {
-        return Gfx_StringDraw(std::to_string(displayLength));
+        auto strVal = std::to_string(val);
+        while (strVal.size() < lengthMin)
+        {
+            strVal.insert(strVal.begin(), ' ');
+        }
+
+        return Gfx_StringDraw(strVal);
+    }
+
+    void Text_Debug_PositionSet(int posX, int posY)
+    {
+        if (posX != NO_VALUE)
+        {
+            g_SansStringPosition.x = posX;
+        }
+
+        if (posY != NO_VALUE)
+        {
+            g_SansStringPosition.y = posY;
+        }
+    }
+
+    float Text_Debug_Draw(const std::string& msg)
+    {
+        const auto& options  = g_App.GetOptions();
+        auto&       renderer = g_App.GetRenderer();
+
+        // Draw string.
+        auto colorTag   = "{" + std::to_string(StringColorId_White) + "}";
+        auto fontName   = (options->TextQuality == TextQualityType::Retro) ? "RetroSans" : "ModernSans";
+        auto parsedMsg  = GetParsedMsg(colorTag + msg, fontName, SANS_FONT_LINE_HEIGHT);
+        auto pos        = ConvertRetroScreenPixelsToPercent(g_StringPosition);
+        int  styleFlags = (int)TextStyleFlags::Shadow;
+        auto result     = DrawParsedMsg(parsedMsg, pos, SANS_FONT_SCALE, styleFlags, INT_MAX, 0);
+
+        return result.LineWidths.back();
+    }
+
+    std::string Text_Debug_IntToString(int lengthMin, int val)
+    {
+        auto strVal = std::to_string(val);
+        while (strVal.size() < lengthMin)
+        {
+            strVal.insert(strVal.begin(), ' ');
+        }
+
+        return strVal;
     }
 }

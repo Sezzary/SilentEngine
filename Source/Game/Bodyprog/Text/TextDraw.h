@@ -21,7 +21,9 @@ namespace Silent::Game
     constexpr char MSG_CODE_ALIGN_RIGHT   = 'R'; /** Align right. */
 
     constexpr float SERIF_FONT_SCALE       = RETRO_PIXEL_SCALE.y * 16.0f;
+    constexpr float SANS_FONT_SCALE        = RETRO_PIXEL_SCALE.y * 10.0f;
     constexpr float SERIF_FONT_LINE_HEIGHT = SCREEN_SPACE_RES.y / 14.0f;
+    constexpr float SANS_FONT_LINE_HEIGHT  = SCREEN_SPACE_RES.y / 8.0f;
 
     /** @brief String color IDs for strings displayed in screen space.
      * Used as indices into `STRING_COLORS`.
@@ -73,7 +75,7 @@ namespace Silent::Game
 
         char  GetCode() const;
         int   GetIntArg() const;
-        float GetTimeArg() const;
+        float GetFloatArg() const;
     };
 
     /** @brief Message page. */
@@ -151,9 +153,6 @@ namespace Silent::Game
      */
     void Gfx_StringColorSet(e_StringColorId colorId);
 
-    /** @brief Resets the global `g_StringLayerIdx` to `DEFAULT_TEXT_LAYER_IDX`. */
-    void Gfx_StringLayerIdxSet(s32 layerIdx);
-
     /** @brief Resets global map message parameters to defaults. */
     void Gfx_MapMsg_Reset();
 
@@ -172,9 +171,34 @@ namespace Silent::Game
 
     /** @brief Draws an integer string in screen space using the serif font.
      *
-     * @param widthMin Minimum width of the integer string.
-     * @param displayLength Number of consecutive glyphs to draw from the integer string.
+     * @param lengthMin Minimum length.
+     * @param val Integer to draw.
      * @return String width.
      */
-    float Gfx_StringDrawInt(s32 widthMin, s32 displayLength = INT_MAX);
+    float Gfx_StringDrawInt(int lengthMin, int val);
+
+    /** @brief Sets the position at which text will be drawn.
+     *
+     * @param posX X text screen position.
+     * @param posY Y text screen position.
+     */
+    void Text_Debug_PositionSet(int posX, int posY);
+
+    /** @brief Submits a simple tagged message to draw in screen space using the serif font.
+     * The position and color must be set by `Gfx_StringPositionSet` and `Gfx_StringColorSet` before calling this
+     * function.
+     *
+     * @note The message must contain a single page.
+     *
+     * @param msg Tagged message to draw.
+     */
+    float Text_Debug_Draw(const std::string& msg);
+
+    /** @brief Converts an integer to a string.
+     *
+     * @param lengthMin Minimum length of the integer string.
+     * @param val Integer to convert.
+     * @return Integer string.
+     */
+    std::string Text_Debug_IntToString(int lengthMin, int val);
 }

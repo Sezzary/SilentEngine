@@ -49,8 +49,8 @@ namespace Silent::Game
     void (*g_GameStateUpdateFuncs[])() =
     {
         GameState_Init_Update,
-        GameState_KonamiLogo_Update,               // @todo
-        GameState_KcetLogo_Update,                 // @todo
+        GameState_KonamiLogo_Update,
+        GameState_KcetLogo_Update,
         GameState_AutoLoadSavegame_Update,         // @todo
         GameState_MovieIntroAlternate_Update,
         GameState_MovieIntro_Update,

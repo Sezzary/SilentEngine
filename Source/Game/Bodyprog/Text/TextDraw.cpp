@@ -40,7 +40,7 @@ namespace Silent::Game
         Color::From8Bit(128, 128, 128)
     };
 
-    Vector2i g_StringPosition;
+    Vector2i g_SerifStringPosition;
     int      g_MapMsg_AudioType;
 
     static auto g_StringColorId      = StringColorId_White;
@@ -442,12 +442,12 @@ namespace Silent::Game
     {
         if (posX != NO_VALUE)
         {
-            g_StringPosition.x = posX;
+            g_SerifStringPosition.x = posX;
         }
 
         if (posY != NO_VALUE)
         {
-            g_StringPosition.y = posY;
+            g_SerifStringPosition.y = posY;
         }
     }
 
@@ -471,7 +471,7 @@ namespace Silent::Game
         auto colorTag   = "{" + std::to_string((int)g_StringColorId) + "}";
         auto fontName   = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
         auto parsedMsg  = GetParsedMsg(colorTag + msg, fontName, SERIF_FONT_LINE_HEIGHT);
-        auto pos        = ConvertRetroScreenPixelsToPercent(g_StringPosition);
+        auto pos        = ConvertRetroScreenPixelsToPercent(g_SerifStringPosition);
         int  styleFlags = (int)TextStyleFlags::Gradient |
                           (int)TextStyleFlags::Shadow   |
                           (isHalfHeight ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None);
@@ -513,7 +513,7 @@ namespace Silent::Game
         auto colorTag   = "{" + std::to_string(StringColorId_White) + "}";
         auto fontName   = (options->TextQuality == TextQualityType::Retro) ? "RetroSans" : "ModernSans";
         auto parsedMsg  = GetParsedMsg(colorTag + msg, fontName, SANS_FONT_LINE_HEIGHT);
-        auto pos        = ConvertRetroScreenPixelsToPercent(g_StringPosition);
+        auto pos        = ConvertRetroScreenPixelsToPercent(g_SerifStringPosition);
         int  styleFlags = (int)TextStyleFlags::Shadow;
         auto result     = DrawParsedMsg(parsedMsg, pos, SANS_FONT_SCALE, styleFlags, INT_MAX, 0);
 

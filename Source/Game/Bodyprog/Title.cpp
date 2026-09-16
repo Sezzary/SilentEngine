@@ -138,7 +138,7 @@ namespace Silent::Game
 
     void GameState_MainMenu_Update() // 0x8003AB28
     {
-        constexpr int  MAIN_MENU_GAME_STATE_COUNT = 5;
+        constexpr int MAIN_MENU_GAME_STATE_COUNT = 5;
 
         static int newGameSelectedDifficultyIdx = 1;
         static int prevSavegameCount            = 0;
@@ -165,11 +165,12 @@ namespace Silent::Game
         {
             g_MainMenuState = MainMenuState_Start;
 
-            if (playInGameDemo)
-            {
-                g_SysWork.processFlags = ProcessFlag_BootDemo;
-            }
-            else
+            // @todo Broken.
+            //if (playInGameDemo)
+            //{
+            //    g_SysWork.processFlags = ProcessFlag_BootDemo;
+            //}
+            //else
             {
                 g_GameWork.gameStateSteps[0] = 1;
             }
@@ -185,7 +186,9 @@ namespace Silent::Game
                 g_IntervalVBlanks = 1;
                 ScreenFade_Start(true, true, false);
                 g_ScreenFadeTimestep = Q12(2.0f);
+
                 g_MainMenuState++;
+                break;
 
             case MainMenuState_Main:
                 if (playInGameDemo)
@@ -323,8 +326,6 @@ namespace Silent::Game
                 }
 
                 prevSavegameCount = g_MemCard_SavegameCount;
-
-            default:
                 break;
 
             case MainMenuState_DifficultySelector:
@@ -445,6 +446,7 @@ namespace Silent::Game
                 {
                     g_App.Quit();
                 }
+                break;
             }
         }
 

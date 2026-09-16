@@ -102,7 +102,7 @@ namespace Silent::Game
         MsgSelectArg       Select     = MsgSelectArg::None;
     };
 
-    extern Vector2i g_StringPosition;
+    extern Vector2i g_SerifStringPosition;
     extern int      g_MapMsg_AudioType;
 
     /** @brief Parses a tagged message.

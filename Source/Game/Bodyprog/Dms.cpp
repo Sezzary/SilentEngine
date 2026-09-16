@@ -6,7 +6,6 @@
 //#include "Game/Bodyprog/ItemScreens.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
-#include "Game/Bodyprog/Text/TextDebugDraw.h"
 #include "Game/Main/FsQueue.h"
 
 #include "Application.h"
@@ -25,12 +24,7 @@ namespace Silent::Game
             Math_Vector3Zero(pos);
             Math_SVectorZero(rot);
 
-            /*Text_Debug_PositionSet(50, 90);
-            #if VERSION_EQUAL_OR_OLDER(PROTO_981216)
-                // Code seen in 98-12-16 build.
-                Text_Debug_Draw(charaName);
-                Text_Debug_Draw(" doesn't exist in dms.");
-            #endif*/
+            Debug::Msg((charaName + " doesn't exist in DMS.").c_str());
         }
         else
         {

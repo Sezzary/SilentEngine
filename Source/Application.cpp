@@ -330,7 +330,7 @@ namespace Silent
 
         // Tick game state.
         //if (_work.Clock.GetTicks() > 0)
-        for (int i = 0; i < _work.Clock.GetTicks(); i++)
+        //for (int i = 0; i < _work.Clock.GetTicks(); i++)
         {
             UpdateGame();
         }

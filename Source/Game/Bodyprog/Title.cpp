@@ -44,7 +44,7 @@ namespace Silent::Game
     static void MainMenu_MainTextDraw()
     {
         constexpr int  COLUMN_POS_X                = SCREEN_WIDTH / 2;
-        constexpr int  COLUMN_POS_Y                = 164; // @todo Revise function to avoid hiding background.
+        constexpr int  COLUMN_POS_Y                = (SCREEN_HEIGHT / 6) * 5;
         constexpr int  STR_OFFSET_Y                = 10;
         constexpr auto MAIN_MENU_ENTRY_STRING_KEYS = std::array<const char*, MainMenuEntry_Count>
         {
@@ -58,6 +58,7 @@ namespace Silent::Game
         const auto& translator = g_App.GetTranslator();
 
         // Draw selection strings.
+        int columnPosTop = COLUMN_POS_Y - ((MainMenuEntry_Count - 1) * STR_OFFSET_Y);
         for (int i = 0; i < MainMenuEntry_Count; i++)
         {
             // Check if entry is visible.
@@ -66,7 +67,7 @@ namespace Silent::Game
                 continue;
             }
 
-            Gfx_StringPositionSet(COLUMN_POS_X, COLUMN_POS_Y + (i * STR_OFFSET_Y));
+            Gfx_StringPositionSet(COLUMN_POS_X, columnPosTop + (i * STR_OFFSET_Y));
             Gfx_StringColorSet(StringColorId_White);
 
             if (i == g_MainMenu_SelectedEntry)
@@ -88,7 +89,7 @@ namespace Silent::Game
     static void MainMenu_DifficultyTextDraw(int selectedEntryIdx)
     {
         constexpr int  COLUMN_POS_X                      = SCREEN_WIDTH / 2;
-        constexpr int  COLUMN_POS_Y                      = 156;
+        constexpr int  COLUMN_POS_Y                      = (SCREEN_HEIGHT / 6) * 5;
         constexpr int  STR_OFFSET_Y                      = 10;
         constexpr int  DIFFICULTY_MENU_SELECTION_COUNT   = 3;
         constexpr auto DIFFICULTY_MENU_ENTRY_STRING_KEYS = std::array<const char*, DIFFICULTY_MENU_SELECTION_COUNT>
@@ -101,9 +102,10 @@ namespace Silent::Game
         const auto& translator = g_App.GetTranslator();
 
         // Draw selection strings.
+        int columnPosTop = COLUMN_POS_Y - ((DIFFICULTY_MENU_SELECTION_COUNT - 1) * STR_OFFSET_Y);
         for (int i = 0; i < DIFFICULTY_MENU_SELECTION_COUNT; i++)
         {
-            Gfx_StringPositionSet(COLUMN_POS_X, COLUMN_POS_Y + (i * STR_OFFSET_Y));
+            Gfx_StringPositionSet(COLUMN_POS_X, columnPosTop + (i * STR_OFFSET_Y));
             Gfx_StringColorSet(StringColorId_White);
 
             if (i == selectedEntryIdx)

@@ -335,9 +335,7 @@ namespace Silent::Game
 
     extern u8 D_800A97D7;
 
-    extern s8 D_800A97D8;
-
-    extern s8 D_800A97D9;
+    extern bool g_SaveScreen_IsInSaveScreen;
 
     extern s32 D_800A97DC; // `e_SavegameEntryType`
 

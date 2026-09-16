@@ -1716,17 +1716,18 @@ namespace Silent::Game
         g_GameWork.background2dColor.g = 0;
         g_GameWork.background2dColor.b = 0;
 
-        D_800BCD39 = false;
-        if (g_GameWork.gameState == GameState_AutoLoadSavegame || g_GameWork.gameState == GameState_LoadSavegameScreen)
+        //D_800BCD39 = false;
+        if (g_GameWork.gameState == GameState_AutoLoadSavegame ||
+            g_GameWork.gameState == GameState_LoadSavegameScreen)
         {
-            if (D_800A97D8 != 0)
+            if (g_SaveScreen_IsInSaveScreen)
             {
                 g_MemCard_AllMemCardsStatus = 0;
             }
         }
 
         g_SaveScreen_MemCardStateTextTimer = 0;
-        D_800A97D8              = g_GameWork.gameState == GameState_SaveScreen;
+        g_SaveScreen_IsInSaveScreen        = g_GameWork.gameState == GameState_SaveScreen;
 
         SaveScreen_ScreenInfoClear();
         Game_StateStepIncrement(0);
@@ -2042,7 +2043,7 @@ namespace Silent::Game
                 {
                     if (memCardStateResult != MemCardResult_FileIoComplete)
                     {
-                        D_800BCD39 = true;
+                        //D_800BCD39 = true;
                         Game_StateStepSet(0, 1);
                         break;
                     }
@@ -2065,7 +2066,7 @@ namespace Silent::Game
 
                 if (memCardStateResult != MemCardResult_FileIoComplete)
                 {
-                    D_800BCD39                      = true;
+                    //D_800BCD39                      = true;
                     Game_StateStepSet(0, 1);
                     break;
                 }
@@ -2218,7 +2219,7 @@ namespace Silent::Game
             return;
         }*/
 
-        if (g_MemCard_SavegameCount == 0 || D_800BCD39)// || !func_80033548())
+        if (g_MemCard_SavegameCount == 0)// || D_800BCD39)// || !func_80033548())
         {
             g_GameWork.gameState = GameState_LoadSavegameScreen;
 

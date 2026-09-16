@@ -136,8 +136,16 @@ namespace Silent::Game
             }
             case 5:
             {
-                if (input.GetAction(In::Enter).IsClicked()  ||
-                    input.GetAction(In::Cancel).IsClicked() ||
+                if (ScreenFade_IsNone())
+                {
+                    Game_StateStepIncrement(0);
+                }
+                break;
+            }
+            case 6:
+            {
+                if (input.GetAction(In::Enter).IsHeld()  ||
+                    input.GetAction(In::Cancel).IsHeld() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(5.0f))
                 {
                     ScreenFade_Start(true, false, false, Q12(1.0f));
@@ -146,7 +154,7 @@ namespace Silent::Game
                 }
                 break;
             }
-            case 6:
+            case 7:
             {
                 if (ScreenFade_IsFinished() && !assets.IsBusy())
                 {

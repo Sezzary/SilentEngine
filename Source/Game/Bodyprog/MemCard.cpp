@@ -15,22 +15,22 @@ namespace Silent::Game
     s_MemCard_Work     g_MemCard_Work;
     s_MemCard_SaveWork g_MemCard_SaveWork;
 
-    // @todo Placement guessed. Data not migrated yet in decomp repo.
-    u8 g_Savegame_SelectedElementIdx;
+    s16                  g_MemCard_SavegameCount;
     s_SaveScreenElement* g_MemCard_ActiveMemCardSlotSaves;
-    s8 g_SelectedFileIdx;
-    s8 g_SelectedDeviceId;
-    s8 g_SelectedSaveSlotIdx;
-    s8 D_800BCD39;
-    s8 D_800A97D8;
-    u8 D_800A97D7;
-    u32 g_MemCard_AllMemCardsStatus;
-    u8 g_Savegame_ElementCount0[MEMCARD_SLOT_COUNT_MAX];
-    u8 g_Savegame_ElementCount1[MEMCARD_SLOT_COUNT_MAX];
-    u8 g_SlotElementSelectedIdx[2];
-    s8 g_SaveScreen_SaveScreenState;
-    s16 g_MemCard_TotalElementsCount;
-    s16 g_MemCard_SavegameCount;
+    u8                   g_Savegame_ElementCount0[MEMCARD_SLOT_COUNT_MAX];
+    u32                  g_MemCard_AllMemCardsStatus;
+    s8                   g_SaveScreen_SaveScreenState;
+    s16                  g_MemCard_TotalElementsCount;
+    u8                   g_Savegame_ElementCount1[MEMCARD_SLOT_COUNT_MAX];
+    u8                   g_Savegame_SelectedElementIdx;
+    s8                   g_SelectedFileIdx;
+    s8                   g_SelectedDeviceId;
+
+    u8   g_SlotElementSelectedIdx[MEMCARD_SLOT_COUNT_MAX] = { 0, 0 };
+    s8   g_SelectedSaveSlotIdx                            = 0;
+    u8   D_800A97D7                                       = 0;
+    bool g_SaveScreen_IsInSaveScreen                      = true;
+    s8   D_800A97D9                                       = 0; // @unused Dead code. Only used for a check which ask if this is 0.
 
     static inline void MemCard_DirectoryFileClear(s32 idx)
     {

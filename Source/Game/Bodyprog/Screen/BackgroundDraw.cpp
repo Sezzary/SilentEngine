@@ -22,14 +22,14 @@ namespace Silent::Game
         auto& renderer = g_App.GetRenderer();
 
         // Submit fullscreen background shape.
-        if (bgColor != Color::Clear)
+        if (bgColor.A() != 0.0f)
         {
             auto shape = Shape2d::CreateQuad(Vector2::Zero,
                                              Vector2(SCREEN_SPACE_RES.x, 0.0f),
                                              Vector2(SCREEN_SPACE_RES.x, SCREEN_SPACE_RES.y),
                                              Vector2(0.0f, SCREEN_SPACE_RES.y),
                                              bgColor, bgColor, bgColor, bgColor,
-                                             DEPTH_2D_MAX, ScaleMode::Fill, BlendMode::Opaque);
+                                             DEPTH_2D_MAX, ScaleMode::Fill, BlendMode::Alpha);
             renderer.SubmitShape2d(shape);
         }
 

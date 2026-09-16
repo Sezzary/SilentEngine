@@ -431,21 +431,23 @@ namespace Silent::Game
     /** @brief Main system workspace. Stores key engine data. */
     struct s_SysWork
     {
-        s32              sysState;             /** `e_SysState` */
-        s32              sysStateSteps[3];     /** Temp data used by current `sysState`. Can be another state ID or other data. */
-        bool             isMgsStringSet;       /** Indicates if string have been loaded and is going (or it is) being display. */
-        s32              gameStateCounter;     /** Frame counter for the current `g_GameWork.gameState`. Reset when `gameState` is changed. */
-        s32              gameStateStepCounter; /** Frame counter for the current `g_GameWork.gameStateSteps[0]`. Reset when `gameStateSteps[0]` is changed. */
-        s32              sysStateCounter;      /** Frame counter for the current `sysState`. Reset when `sysState` is changed. */
-        s32              sysStateStepData[2];  /** Temporary data for `sysStateSteps[0]` and `sysStateSteps[1]`. */
-        s32              cutsceneBorderState;  /** `e_CutsceneBorderState` */
-        s_PlayerCombat   playerCombat;
-        s_PlayerWork     playerWork;
-        s_SubCharacter   npcs[NPC_COUNT_MAX];
-        GsCOORDINATE2    playerBoneCoords[HarryBone_Count];
-        GsCOORDINATE2    unkCoords_E30[5];                       // Might be part of previous array for 5 extra coords which go unused.
-        GsCOORDINATE2    npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
-        s8               npcFlagsId;                             // 1-based NPC ID for `npcFlags`.
+        int  sysState;             /** `e_SysState` */
+        int  sysStateSteps[3];     /** Temp data used by current `sysState`. Can be another state ID or other data. */
+        int  sysStateStepData[2];  /** Temporary data for `sysStateSteps[0]` and `sysStateSteps[1]`. */
+        int  sysStateCounter;      /** Frame counter for the current `sysState`. Reset when `sysState` is changed. */
+        int  gameStateCounter;     /** Frame counter for the current `g_GameWork.gameState`. Reset when `gameState` is changed. */
+        int  gameStateStepCounter; /** Frame counter for the current `g_GameWork.gameStateSteps[0]`. Reset when `gameStateSteps[0]` is changed. */
+        int  cutsceneBorderState;  /** `e_CutsceneBorderState` */
+        bool isMgsStringSet;       /** Indicates if string have been loaded and is going (or it is) being display. */
+
+        s_PlayerCombat playerCombat;
+        s_PlayerWork   playerWork;
+        s_SubCharacter npcs[NPC_COUNT_MAX];
+        GsCOORDINATE2  playerBoneCoords[HarryBone_Count];
+        GsCOORDINATE2  unkCoords_E30[5];                       // Might be part of previous array for 5 extra coords which go unused.
+        GsCOORDINATE2  npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
+        s8             npcFlagsId;                             // 1-based NPC ID for `npcFlags`.
+
         s8               loadingScreenIdx;
         s8               areaTransitionFlags;                /** `e_AreaTransitionFlags` */
         s8               sfxPairIdx;                         /** `e_SfxPairIdx` | Index into `SFX_PAIRS`. */
@@ -506,18 +508,16 @@ namespace Silent::Game
      * @param sysState System state to set.
      * @return New system state.
      */
-    static inline s32 SysWork_StateSetNext(e_SysState sysState)
+    static inline e_SysState SysWork_StateSetNext(e_SysState sysState)
     {
-        s32 state;
-
-        state                       =
-        g_SysWork.sysState        = sysState;
-        g_SysWork.sysStateCounter          = 0;
-        g_SysWork.sysStateSteps[0] = 0;
-        g_SysWork.sysStateStepData[0]          = 0;//Q12(0.0f);
-        g_SysWork.sysStateSteps[1] = 0;
-        g_SysWork.sysStateStepData[1]          = 0;//Q12(0.0f);
-        g_SysWork.sysStateSteps[2] = 0;
+        auto state                    = sysState;
+        g_SysWork.sysState            = sysState;
+        g_SysWork.sysStateCounter     = 0;
+        g_SysWork.sysStateSteps[0]    = 0;
+        g_SysWork.sysStateStepData[0] = 0;
+        g_SysWork.sysStateSteps[1]    = 0;
+        g_SysWork.sysStateStepData[1] = 0;
+        g_SysWork.sysStateSteps[2]    = 0;
         return state;
     }
 
@@ -525,20 +525,20 @@ namespace Silent::Game
      *
      * @param stepIdx Index of the `sysStateStep` to increment.
      */
-    static inline void SysWork_StateStepIncrement(s32 stepIdx)
+    static inline void SysWork_StateStepIncrement(int stepIdx)
     {
         if (stepIdx == 0)
         {
-            g_SysWork.sysStateStepData[0]         = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[1] = 0;
-            g_SysWork.sysStateStepData[1]         = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[2] = 0;
+            g_SysWork.sysStateStepData[0] = 0;
+            g_SysWork.sysStateSteps[1]    = 0;
+            g_SysWork.sysStateStepData[1] = 0;
+            g_SysWork.sysStateSteps[2]    = 0;
             g_SysWork.sysStateSteps[0]++;
         }
         else if (stepIdx == 1)
         {
-            g_SysWork.sysStateStepData[1]         = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[2] = 0;
+            g_SysWork.sysStateStepData[1] = 0;
+            g_SysWork.sysStateSteps[2]    = 0;
             g_SysWork.sysStateSteps[1]++;
         }
         else
@@ -553,29 +553,28 @@ namespace Silent::Game
      * @param sysStateStep System state step to set.
      * @return New system state step.
      */
-    static inline s32 SysWork_StateStepSet(s32 stepIdx, s32 sysStateStep)
+    static inline int SysWork_StateStepSet(int stepIdx, int sysStateStep)
     {
-        s32 step;
-
+        int step = 0;
         if (stepIdx == 0)
         {
-            step                        =
-            g_SysWork.sysStateSteps[0] = sysStateStep;
-            g_SysWork.sysStateStepData[0]          = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[1] = 0;
-            g_SysWork.sysStateStepData[1]          = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[2] = 0;
+            step                          = 
+            g_SysWork.sysStateSteps[0]    = sysStateStep;
+            g_SysWork.sysStateStepData[0] = 0;
+            g_SysWork.sysStateSteps[1]    = 0;
+            g_SysWork.sysStateStepData[1] = 0;
+            g_SysWork.sysStateSteps[2]    = 0;
         }
         else if (stepIdx == 1)
         {
-            step                        =
-            g_SysWork.sysStateSteps[1] = sysStateStep;
-            g_SysWork.sysStateStepData[1]          = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[2] = 0;
+            step                          = 
+            g_SysWork.sysStateSteps[1]    = sysStateStep;
+            g_SysWork.sysStateStepData[1] = 0;
+            g_SysWork.sysStateSteps[2]    = 0;
         }
         else
         {
-            step                        =
+            step                       =
             g_SysWork.sysStateSteps[2] = sysStateStep;
         }
 
@@ -585,18 +584,18 @@ namespace Silent::Game
     /** @brief Resets `sysStateStep` in `g_SysWork` for the next tick. */
     static inline void SysWork_StateStepReset()
     {
-        g_SysWork.sysStateSteps[0] = NO_VALUE;
-        g_SysWork.sysStateStepData[0]          = 0;//Q12(0.0f);
-        g_SysWork.sysStateSteps[1] = 0;
-        g_SysWork.sysStateStepData[1]          = 0;//Q12(0.0f);
-        g_SysWork.sysStateSteps[2] = 0;
+        g_SysWork.sysStateSteps[0]    = NO_VALUE;
+        g_SysWork.sysStateStepData[0] = 0;
+        g_SysWork.sysStateSteps[1]    = 0;
+        g_SysWork.sysStateStepData[1] = 0;
+        g_SysWork.sysStateSteps[2]    = 0;
     }
 
     /** @brief Sets an NPC flag in the `g_SysWork.npcFlags` bitfield.
      *
      * @param flagIdx Index of the NPC flag to set.
      */
-    static inline void SysWork_NpcFlagSet(s32 flagIdx)
+    static inline void SysWork_NpcFlagSet(int flagIdx)
     {
         g_SysWork.npcFlags |= 1 << flagIdx;
     }
@@ -605,7 +604,7 @@ namespace Silent::Game
      *
      * @param flagIdx Index of the NPC flag to clear.
      */
-    static inline void SysWork_NpcFlagClear(s32 flagIdx)
+    static inline void SysWork_NpcFlagClear(int flagIdx)
     {
         CLEAR_FLAG(&g_SysWork.npcFlags, flagIdx);
     }
@@ -623,9 +622,7 @@ namespace Silent::Game
      */
     static inline void Game_StateSetNext_ClearStateSteps(e_GameState gameState)
     {
-        e_GameState prevState;
-
-        prevState = g_GameWork.gameState;
+        auto prevState = g_GameWork.gameState;
 
         g_GameWork.gameState           = gameState;
         g_SysWork.gameStateCounter     = 0;
@@ -647,9 +644,7 @@ namespace Silent::Game
      */
     static inline void Game_StateSetNext(e_GameState gameState)
     {
-        e_GameState prevState;
-
-        prevState = g_GameWork.gameState;
+        auto prevState = g_GameWork.gameState;
 
         g_GameWork.gameState           = gameState;
         g_SysWork.gameStateCounter     = 0;
@@ -673,9 +668,7 @@ namespace Silent::Game
      */
     static inline void Game_StateSetPrevious()
     {
-        e_GameState prevState;
-
-        prevState = g_GameWork.gameState;
+        auto prevState = g_GameWork.gameState;
 
         g_SysWork.gameStateCounter     = 0;
         g_SysWork.gameStateStepCounter = 0;
@@ -706,10 +699,9 @@ namespace Silent::Game
      * @param stateStep New value for the index.
      * @return Value written (`== stateStep`).
      */
-    static inline s32 Game_StateStepSet(s32 stepIdx, s32 stateStep)
+    static inline int Game_StateStepSet(int stepIdx, int stateStep)
     {
-        s32 step;
-
+        int step = 0;
         if (stepIdx == 0)
         {
             step                           = 
@@ -733,7 +725,7 @@ namespace Silent::Game
         return step;
     }
 
-    static inline void Game_StateStepIncrement(s32 stepIdx)
+    static inline void Game_StateStepIncrement(int stepIdx)
     {    
         if(stepIdx == 0)
         {

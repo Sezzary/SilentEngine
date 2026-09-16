@@ -32,9 +32,7 @@ namespace Silent::Game
     {
         KcetLogoStateStep_Init,
         KcetLogoStateStep_CheckMemCards,
-        KcetLogoStateStep_NoMemCard,
-        KcetLogoStateStep_NoMemCardFreeSpace,
-        KcetLogoStateStep_NoSaveGame,
+        KcetLogoStateStep_NoSavegame,
         KcetLogoStateStep_HasSavegame,
         KcetLogoStateStep_LogoDelay,
         KcetLogoStateStep_FinishAfterFade
@@ -53,7 +51,6 @@ namespace Silent::Game
         const auto& assets = g_App.GetAssets();
         const auto& input  = g_App.GetInput();
 
-        //while (g_GameWork.gameState == GameState_KonamiLogo)
         switch (g_GameWork.gameStateSteps[0])
         {
             case KonamiLogoStateStep_Init:
@@ -62,6 +59,7 @@ namespace Silent::Game
                 // Load `Psx/1ST/KONAMI2.TIM` (Konami logo).
                 Fs_QueueStartReadTim(FILE_1ST_KONAMI2_TIM);
 
+                // @todo
                 //WorldGfx_HarryCharaLoad();
                 //GameFs_BgItemLoad();
                 //Map_EffectTexturesLoad(NO_VALUE);
@@ -80,8 +78,8 @@ namespace Silent::Game
                 break;
 
             case KonamiLogoStateStep_LogoDelay:
-                if (input.GetAction(In::Enter).IsClicked()  ||
-                    input.GetAction(In::Cancel).IsClicked() ||
+                if (input.GetAction(In::Enter).IsHeld()  ||
+                    input.GetAction(In::Cancel).IsHeld() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(3.0f))
                 {
                     ScreenFade_Start(false, false, false, Q12(1.0f));
@@ -108,10 +106,15 @@ namespace Silent::Game
         }
     }
 
-    s32 GameState_KcetLogo_MemCardCheck() // 0x800C9874
+    /** @brief Checks memory cards for free space and existing savegames.
+     *
+     * @return `e_KcetLogoStateStep`.
+     */
+    static s32 GameState_KcetLogo_MemCardCheck()
     {
-        // @stub
-        return KcetLogoStateStep_HasSavegame;
+        // @todo
+        //return KcetLogoStateStep_HasSavegame;
+        return KcetLogoStateStep_NoSavegame;
 
         /*s32 saveEntryTypeSlot1;
         s32 saveEntryTypeSlot_2;
@@ -128,19 +131,6 @@ namespace Silent::Game
         g_MemCard_ActiveMemCardSlotSaves = (s_SaveScreenElement*)SAVEGAME_ENTRY_BUFFER_1;
         saveEntryTypeSlot_2                = g_MemCard_ActiveMemCardSlotSaves->type_4;
 
-        // No memory cards.
-        if (saveEntryTypeSlot1 == SavegameEntryType_NoMemCard && saveEntryTypeSlot_2 == SavegameEntryType_NoMemCard)
-        {
-            return KcetLogoStateStep_NoMemCard;
-        }
-
-        // No free space on any card.
-        if ((saveEntryTypeSlot1 == SavegameEntryType_OutOfBlocks && (saveEntryTypeSlot_2 == SavegameEntryType_OutOfBlocks || saveEntryTypeSlot_2 == SavegameEntryType_NoMemCard)) ||
-            (saveEntryTypeSlot1 == SavegameEntryType_NoMemCard && saveEntryTypeSlot_2 == SavegameEntryType_OutOfBlocks))
-        {
-            return KcetLogoStateStep_NoMemCardFreeSpace;
-        }
-
         if (saveEntryTypeSlot1 == SavegameEntryType_Save || saveEntryTypeSlot_2 == SavegameEntryType_Save)
         {
             g_MemCard_ActiveMemCardSlotSaves = MemCard_ActiveMemCardSlotGet(g_SelectedSaveSlotIdx);
@@ -153,17 +143,16 @@ namespace Silent::Game
             return KcetLogoStateStep_HasSavegame;
         }
 
-        return KcetLogoStateStep_NoSaveGame;*/
+        return KcetLogoStateStep_NoSavegame;*/
     }
 
-    void GameState_KcetLogo_Update() // 0x800C99A4
+    void GameState_KcetLogo_Update()
     {
-        static e_GameState nextGameState = GameState_Init;
+        static auto nextGameState = GameState_Init;
 
         const auto& input  = g_App.GetInput();
         auto&       assets = g_App.GetAssets();
 
-        //while (g_GameWork.gameState == GameState_KcetLogo)
         switch (g_GameWork.gameStateSteps[0])
         {
             case KcetLogoStateStep_Init:
@@ -177,30 +166,12 @@ namespace Silent::Game
             case KcetLogoStateStep_CheckMemCards:
                 if (ScreenFade_IsNone() && !assets.IsBusy())
                 {
-                    s32 curTime;
-
-                    //while (g_GameWork.gameStateSteps[0] < KcetLogoStateStep_NoMemCard)
-                    {
-                        g_GameWork.gameStateSteps[0] = GameState_KcetLogo_MemCardCheck();
-                        //MemCard_Update();
-                        //VSync(SyncMode_Wait);
-                    }
+                    g_GameWork.gameStateSteps[0] = GameState_KcetLogo_MemCardCheck();
+                    //MemCard_Update();
                 }
                 break;
 
-            // @deprecated
-            case KcetLogoStateStep_NoMemCard:
-                nextGameState = GameState_MovieIntro;
-                Game_StateStepSet(0, KcetLogoStateStep_LogoDelay);
-                break;
-
-            // @deprecated
-            case KcetLogoStateStep_NoMemCardFreeSpace:
-                nextGameState = GameState_MovieIntro;
-                Game_StateStepSet(0, KcetLogoStateStep_LogoDelay);
-                break;
-
-            case KcetLogoStateStep_NoSaveGame:
+            case KcetLogoStateStep_NoSavegame:
                 GameFs_TitleGfxLoad();
                 nextGameState = GameState_MovieIntro;
 
@@ -247,8 +218,8 @@ namespace Silent::Game
                 break;
 
             case KcetLogoStateStep_LogoDelay:
-                if (input.GetAction(In::Enter).IsClicked()  ||
-                    input.GetAction(In::Cancel).IsClicked() ||
+                if (input.GetAction(In::Enter).IsHeld()  ||
+                    input.GetAction(In::Cancel).IsHeld() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(3.0f))
                 {
                     ScreenFade_Start(false, false, false, Q12(1.0f));

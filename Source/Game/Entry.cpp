@@ -18,6 +18,7 @@
 #include "Utils/Translator.h"
 
 using namespace Silent::Renderer;
+using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Game
@@ -29,9 +30,8 @@ namespace Silent::Game
 
         auto& renderer = g_App.GetRenderer();
 
+        // Update counters.
         g_TickCount++;
-
-        // @todo Previously in `Screen_VSyncCallback`.
         g_Demo_FrameCount++;
         g_WarmBootTimer++;
         g_SysWork.gameStateCounter++;
@@ -50,7 +50,7 @@ namespace Silent::Game
 
         g_SysWork.bgmStatusFlags = BgmStatusFlag_None;
 
-        // Call update function for current GameState.
+        // Call update function for current game state.
         if (g_GameStateUpdateFuncs[g_GameWork.gameState])
         {
             g_GameStateUpdateFuncs[g_GameWork.gameState]();
@@ -65,14 +65,14 @@ namespace Silent::Game
             continue;
         }*/
 
-        // Set clear color.
+        // Update screen effects.
         renderer.SetClearColor(Color::From8Bit(g_GameWork.background2dColor.r,
                                                g_GameWork.background2dColor.g,
                                                g_GameWork.background2dColor.b));
         Screen_FadeUpdate();
 
+        // Update sound.
         //Sd_TaskPoolExecute();
-
         /*if (Sd_AudioStreamingCheck() == AudioStreamingState_None)
         {
             Fs_QueueUpdate();

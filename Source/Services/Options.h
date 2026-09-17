@@ -214,7 +214,8 @@ namespace Silent::Services
         // Fields
         // =======
 
-        Options _options = {};
+        Options _options           = {};
+        bool    _hasCreatedNewFile = false;
 
     public:
         // =============
@@ -250,6 +251,16 @@ namespace Silent::Services
         void SetDefaultSystemOptions();
 
         // ==========
+        // Inquirers
+        // ==========
+
+        /** @brief Checks if a new options JSON had to be created on the system when attempting a load.
+         *
+         * @return `true` if a new file was created, `false` otherwise.
+         */
+        bool HasCreatedNewFile() const;
+
+        // ==========
         // Utilities
         // ==========
 
@@ -273,6 +284,12 @@ namespace Silent::Services
         // ========
         // Helpers
         // ========
+
+        /** @brief Gets the path of the options JSON.
+         *
+         * @return Options JSON path.
+         */
+        stdfs::path GetFilePath() const;
 
         /** @brief Resets all configuration options to defaults.
          *

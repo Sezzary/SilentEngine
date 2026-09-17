@@ -176,6 +176,11 @@ namespace Silent::Services
         _options.EnableParallelism = GetCoreCount() > 1;
     }
 
+    bool OptionsManager::HasCreatedNewFile() const
+    {
+        return _hasCreatedNewFile;
+    }
+
     void OptionsManager::Initialize()
     {
         _options.EnableDebugMode = Debug::IS_DEBUG_BUILD;
@@ -184,13 +189,11 @@ namespace Silent::Services
 
     void OptionsManager::Save()
     {
-        const auto& fs = g_App.GetFilesystem();
-
         // Create options JSON.
         auto optionsJson = ToOptionsJson(_options);
 
         // Write options JSON file.
-        auto stream = Stream(fs.GetWorkDirectory() / Fmt("{}{}", OPTIONS_FILENAME, JSON_FILE_EXT), false, true);
+        auto stream = Stream(GetFilePath(), false, true);
         if (stream.WriteJson(optionsJson))
         {
             Debug::Log("Saved user options.");
@@ -202,13 +205,12 @@ namespace Silent::Services
 
     void OptionsManager::Load()
     {
-        const auto& fs = g_App.GetFilesystem();
-
         // Open options JSON file.
-        auto stream = Stream(fs.GetWorkDirectory() / Fmt("{}{}", OPTIONS_FILENAME, JSON_FILE_EXT), true, false);
+        auto stream = Stream(GetFilePath(), true, false);
         if (!stream.IsOpen())
         {
             Debug::Log(Fmt("Creating new `{}{}` file.", OPTIONS_FILENAME, JSON_FILE_EXT));
+            _hasCreatedNewFile = true;
 
             SetDefaultOptions();
             Save();
@@ -220,6 +222,13 @@ namespace Silent::Services
 
         // Read options JSON.
         _options = FromOptionsJson(optionsJson);
+    }
+
+    stdfs::path OptionsManager::GetFilePath() const
+    {
+        const auto& fs = g_App.GetFilesystem();
+
+        return fs.GetWorkDirectory() / Fmt("{}{}", OPTIONS_FILENAME, JSON_FILE_EXT);
     }
 
     void OptionsManager::SetDefaultOptions()

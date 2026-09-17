@@ -222,6 +222,9 @@ namespace Silent::Game
     enum e_GameState
     {
         GameState_Init,
+        GameState_LanguageScreen,
+        //GameState_SplashScreen,
+        //GameState_Logos,
         GameState_KonamiLogo,
         GameState_KcetLogo,
         GameState_AutoLoadSavegame,

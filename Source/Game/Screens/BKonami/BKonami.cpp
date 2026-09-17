@@ -14,6 +14,7 @@
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
 #include "Game/Bodyprog/Sys/Joy.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Screens/Stream/Stream.h"
 #include "Input/Input.h"
@@ -38,18 +39,27 @@ namespace Silent::Game
         KcetLogoStateStep_FinishAfterFade
     };
 
+    void GameState_SplashScreen()
+    {
+
+    }
+
+    void GameState_Logos()
+    {
+
+    }
+
     void GameState_KonamiLogo_Update() // 0x800C95AC
     {
         enum e_KonamiLogoStateStep
         {
             KonamiLogoStateStep_Init,
-            KonamiLogoStateStep_WaitForFade,
             KonamiLogoStateStep_LogoDelay,
             KonamiLogoStateStep_FinishAfterFade
         };
 
-        const auto& assets = g_App.GetAssets();
         const auto& input  = g_App.GetInput();
+        auto&       assets = g_App.GetAssets();
 
         switch (g_GameWork.gameStateSteps[0])
         {
@@ -57,29 +67,22 @@ namespace Silent::Game
                 ScreenFade_Start(true, true, false, Q12(1.0f));
 
                 // Load `Psx/1ST/KONAMI2.TIM` (Konami logo).
-                Fs_QueueStartReadTim(FILE_1ST_KONAMI2_TIM);
+                assets.Load("Psx/1ST/KONAMI2.TIM");
 
                 // @todo
                 //WorldGfx_HarryCharaLoad();
                 //GameFs_BgItemLoad();
                 //Map_EffectTexturesLoad(NO_VALUE);
 
-                // Start loading `Psx/ANIM/HB_BASE.ANM` (base Harry animations).
-                Fs_QueueStartRead(FILE_ANIM_HB_BASE_ANM, FS_BUFFER_0);
+                // Start loading base Harry animations.
+                assets.Load("Psx/ANIM/HB_BASE.ANM");
 
                 Game_StateStepIncrement(0);
                 break;
 
-            case KonamiLogoStateStep_WaitForFade:
-                if (ScreenFade_IsNone())
-                {
-                    Game_StateStepIncrement(0);
-                }
-                break;
-
             case KonamiLogoStateStep_LogoDelay:
-                if (input.GetAction(In::Enter).IsHeld()  ||
-                    input.GetAction(In::Cancel).IsHeld() ||
+                if (input.GetAction(In::Enter).IsClicked()  ||
+                    input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(3.0f))
                 {
                     ScreenFade_Start(false, false, false, Q12(1.0f));
@@ -91,26 +94,23 @@ namespace Silent::Game
             case KonamiLogoStateStep_FinishAfterFade:
                 if (ScreenFade_IsFinished() && !assets.IsBusy())
                 {
+                    assets.Unload("Psx/1ST/KONAMI2.TIM");
+
                     Game_StateSetNext(GameState_KcetLogo);
                 }
                 break;
         }
 
-        // @todo Original code depended on blocking logic, but the new way continues the game loop.
-        // Need to do some light refactoring here for logos to show properly.
-        //if (g_GameWork.gameState != GameState_KonamiLogo)
-        {
-            BootScreen_KonamiScreenDraw();
-            //MemCard_Update();
-            //func_80033548();
-        }
+        Screen_BackgroundImgDraw("Psx/1ST/KONAMI.TIM", true, 0, Color::From8Bit(248, 248, 248));
+        //MemCard_Update();
+        //func_80033548();
     }
 
     /** @brief Checks memory cards for free space and existing savegames.
      *
      * @return `e_KcetLogoStateStep`.
      */
-    static s32 GameState_KcetLogo_MemCardCheck()
+    static int GameState_KcetLogo_MemCardCheck()
     {
         // @todo
         //return KcetLogoStateStep_HasSavegame;
@@ -218,8 +218,8 @@ namespace Silent::Game
                 break;
 
             case KcetLogoStateStep_LogoDelay:
-                if (input.GetAction(In::Enter).IsHeld()  ||
-                    input.GetAction(In::Cancel).IsHeld() ||
+                if (input.GetAction(In::Enter).IsClicked()  ||
+                    input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(3.0f))
                 {
                     ScreenFade_Start(false, false, false, Q12(1.0f));
@@ -233,26 +233,133 @@ namespace Silent::Game
                 {
                     //Settings_ScreenAndVolUpdate();
 
+                    assets.Unload("Psx/1ST/KONAMI2.TIM");
                     Demo_SequenceAdvance(0);
                     Demo_DemoDataRead();
+
                     Game_StateSetNext(nextGameState);
                 }
-                break;
+                return;
         }
 
-        BootScreen_KcetScreenDraw();
-        //Screen_FadeUpdate();
+        Screen_BackgroundImgDraw("Psx/1ST/KONAMI2.TIM", true, 0, Color::From8Bit(248, 248, 248));
         //MemCard_Update();
         //func_80033548();
     }
 
-    void BootScreen_KonamiScreenDraw()
+    void GameState_LanguageScreen_Update()
     {
-        Screen_BackgroundImgDraw("Psx/1ST/KONAMI.TIM", true, 0, Color::From8Bit(248, 248, 248));
-    }
+        const auto& input      = g_App.GetInput();
+        auto&       assets     = g_App.GetAssets();
+        auto&       options    = g_App.GetOptions();
+        auto&       renderer   = g_App.GetRenderer();
+        auto&       translator = g_App.GetTranslator();
 
-    void BootScreen_KcetScreenDraw()
-    {
-        Screen_BackgroundImgDraw("Psx/1ST/KONAMI2.TIM", true, 0, Color::From8Bit(248, 248, 248));
+        static int  langIdx   = NO_VALUE;
+        static auto langLabel = std::string();
+
+        switch (g_GameWork.gameStateSteps[0])
+        {
+            case 0:
+            {
+                assets.Load("Textures/LanguageIcon.png");
+
+                Game_StateStepIncrement(0);
+                return;
+            }
+            case 1:
+            {
+                if (!assets.IsBusy())
+                {
+                    ScreenFade_Start(true, true, false, Q12(1.0f));
+
+                    Game_StateStepIncrement(0);
+                    break;
+                }
+                return;
+            }
+            case 2:
+            {
+                const auto& locales = translator.GetLocales();
+
+                // Collect languages.
+                auto langItems = std::vector<const char*>{};
+                langItems.reserve(locales.size());
+                for (int i = 0; i < locales.size(); i++)
+                {
+                    const auto& locale = locales[i];
+
+                    langItems.push_back(locale.Name.c_str());
+                    if (langIdx == NO_VALUE && locale.Name == translator.GetActiveLocaleName())
+                    {
+                        langIdx = i;
+                    }
+                }
+
+                // Select language.
+                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
+                {
+                    langIdx--;
+                    if (langIdx < 0)
+                    {
+                        langIdx = locales.size() - 1;
+                    }
+                }
+                else if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
+                {
+                    langIdx++;
+                    if (langIdx >= locales.size())
+                    {
+                        langIdx = 0;
+                    }
+                }
+                else if (ScreenFade_IsFinished() && input.GetAction(In::Enter).IsClicked())
+                {
+                    translator.SetActiveLocale(options->Language);
+                    options->Language = locales[langIdx].Name;
+                    options.Save();
+
+                    Game_StateStepIncrement(0);
+                }
+
+                // Set label.
+                langLabel = locales[langIdx].Label;
+                break;
+            }
+            case 3:
+            {
+                ScreenFade_Start(true, false, false);
+
+                Game_StateStepIncrement(0);
+                break;
+            }
+            case 4:
+            {
+                if (ScreenFade_IsFinished() && !assets.IsBusy())
+                {
+                    langIdx   = 0;
+                    langLabel = {};
+                    assets.Unload("Textures/LanguageIcon.png");
+
+                    Game_StateSetNext(GameState_MovieIntro);
+                    return;
+                }
+                break;
+            }
+        }
+
+        // Submit language label text.
+        Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 4) * 3);
+        Gfx_StringColorSet(StringColorId_White);
+        Gfx_StringDraw("{M}" + langLabel);
+
+        // @todo Draw arrows.
+
+        // Submit language icon sprite. @todo Use native scale.
+        auto sprite = Sprite2d::CreateSprite2d("Textures/LanguageIcon.png", Vector2::Zero, Vector2::One,
+                                               Vector2(SCREEN_SPACE_RES.x * 0.5f, SCREEN_SPACE_RES.y * 0.4f),
+                                               DEG_TO_RAD(0.0f), 0.4f, Color::White, NO_VALUE,
+                                               DEPTH_2D_MAX, AlignMode::Center, ScaleMode::Fit, BlendMode::Alpha);
+        renderer.SubmitSprite2d(sprite);
     }
 }

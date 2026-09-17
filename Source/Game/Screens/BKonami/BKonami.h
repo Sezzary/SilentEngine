@@ -8,7 +8,5 @@ namespace Silent::Game
     /** Displays the KCET logo and starts loading various things. */
     void GameState_KcetLogo_Update();
 
-    void BootScreen_KonamiScreenDraw();
-
-    void BootScreen_KcetScreenDraw();
+    void GameState_LanguageScreen_Update();
 }

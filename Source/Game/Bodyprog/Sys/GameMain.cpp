@@ -49,6 +49,7 @@ namespace Silent::Game
     void (*g_GameStateUpdateFuncs[])() =
     {
         GameState_Init_Update,
+        GameState_LanguageScreen_Update,
         GameState_KonamiLogo_Update,
         GameState_KcetLogo_Update,
         GameState_AutoLoadSavegame_Update,         // @todo
@@ -74,6 +75,7 @@ namespace Silent::Game
     void GameState_Init_Update()
     {
         const auto& input      = g_App.GetInput();
+        const auto& options    = g_App.GetOptions();
         const auto& translator = g_App.GetTranslator();
         auto&       assets     = g_App.GetAssets();
         auto&       renderer   = g_App.GetRenderer();
@@ -136,42 +138,32 @@ namespace Silent::Game
             }
             case 5:
             {
-                if (ScreenFade_IsNone())
+                if (input.GetAction(In::Enter).IsClicked()  ||
+                    input.GetAction(In::Cancel).IsClicked() ||
+                    g_SysWork.gameStateCounter >= SEC_TO_TICK(5.0f))
                 {
+                    ScreenFade_Start(false, false, false, Q12(1.0f));
+
                     Game_StateStepIncrement(0);
                 }
                 break;
             }
             case 6:
             {
-                if (input.GetAction(In::Enter).IsHeld()  ||
-                    input.GetAction(In::Cancel).IsHeld() ||
-                    g_SysWork.gameStateCounter >= SEC_TO_TICK(5.0f))
-                {
-                    ScreenFade_Start(true, false, false, Q12(1.0f));
-
-                    Game_StateStepIncrement(0);
-                }
-                break;
-            }
-            case 7:
-            {
                 if (ScreenFade_IsFinished() && !assets.IsBusy())
                 {
-                    auto gameState = g_GameWork.gameState;
+                    Game_StateSetNext(GameState_LanguageScreen);
+                    //Game_StateSetNext(GameState_KonamiLogo);
 
-                    g_SysWork.gameStateCounter     = 0;
-                    g_SysWork.gameStateStepCounter = 0;
-
-                    g_GameWork.gameStateSteps[1] = 0;
-                    g_GameWork.gameStateSteps[2] = 0;
-
-                    SysWork_StateSetNext(SysState_Gameplay);
-
-                    g_GameWork.gameStateSteps[0] = gameState;
-                    g_GameWork.gameState         = (e_GameState)((int)gameState + 1);
-                    g_GameWork.gameStatePrev     = gameState;
-                    g_GameWork.gameStateSteps[0] = 0;
+                    // @todo
+                    //if (options.HasCreatedNewFile())
+                    //{
+                    //    Game_StateSetNext(GameState_LanguageScreen);
+                    //}
+                    //else
+                    //{
+                    //    Game_StateSetNext(GameState_SplashScreen);
+                    //}
                 }
                 break;
             }

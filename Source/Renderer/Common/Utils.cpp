@@ -74,8 +74,8 @@ namespace Silent::Renderer
 
         // Compute snapped pixel position.
         auto uv           = pos / 100.0f;
-        auto snappedPixel = Vector2(floorf(uv.x * gridSize.x), 
-                                    floorf(uv.y * gridSize.y));
+        auto snappedPixel = Vector2(roundf(uv.x * gridSize.x), 
+                                    roundf(uv.y * gridSize.y));
 
         // Compute snapped screen position in percent.
         return (snappedPixel / gridSize) * SCREEN_SPACE_RES;

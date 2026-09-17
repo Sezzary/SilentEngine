@@ -111,11 +111,11 @@ namespace Silent::Game
             // Store line widths.
             if (i == g_MainOptionsMenu_SelectedEntry)
             {
-                widths.first = width;
+                widths.second = width;
             }
             else if (i == g_MainOptionsMenu_PrevSelectedEntry)
             {
-                widths.second = width;
+                widths.first = width;
             }
         }
 
@@ -190,21 +190,21 @@ namespace Silent::Game
         if (g_Options_SelectionHighlightTimer == 0)
         {
             selectionHighlightFrom = Vector2i(LINE_BASE_X + (int)ceilf(widths.first),
-                                              LINE_BASE_Y + g_MainOptionsMenu_PrevSelectedEntry * LINE_OFFSET_Y);
+                                              LINE_BASE_Y + (g_MainOptionsMenu_PrevSelectedEntry * LINE_OFFSET_Y));
             selectionHighlightTo   = Vector2i(LINE_BASE_X + (int)ceilf(widths.second),
-                                              LINE_BASE_Y + g_MainOptionsMenu_SelectedEntry * LINE_OFFSET_Y);
+                                              LINE_BASE_Y + (g_MainOptionsMenu_SelectedEntry * LINE_OFFSET_Y));
         }
 
         // Compute sine-based interpolation alpha.
-        q3_12 interpAlpha = Math_Sin(g_Options_SelectionHighlightTimer << 7);
+        q19_12 interpAlpha = Math_Sin(g_Options_SelectionHighlightTimer << 7);
 
         // Draw active selection highlight.
         auto highlightLine      = s_Line2d{};
         highlightLine.vertex0.x = LINE_BASE_X;
         highlightLine.vertex1.x = selectionHighlightFrom.x +
-                                  FP_FROM((selectionHighlightTo.x - selectionHighlightFrom.x) * interpAlpha, Q12_SHIFT);
+                                  Q12_MULT(selectionHighlightTo.x - selectionHighlightFrom.x, interpAlpha);
         highlightLine.vertex1.y = selectionHighlightFrom.y +
-                                  FP_FROM((selectionHighlightTo.y - selectionHighlightFrom.y) * interpAlpha, Q12_SHIFT) +
+                                  Q12_MULT(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha) +
                                   LINE_OFFSET_Y;
         highlightLine.vertex0.y = highlightLine.vertex1.y;
         Options_Selection_HighlightDraw(highlightLine);
@@ -287,17 +287,17 @@ namespace Silent::Game
         }
 
         // Compute sine-based interpolation alpha.
-        q3_12 interpAlpha = Math_Sin(g_Options_SelectionHighlightTimer << 7);
+        q19_12 interpAlpha = Math_Sin(g_Options_SelectionHighlightTimer << 7);
 
         // Draw active selection highlight.
         auto highlightLine = s_Line2d
         {
             Vector2i(0, selectionHighlightFrom.y) +
             Vector2i(HIGHLIGHT_OFFSET_X,
-                     FP_MULTIPLY(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha, Q12_SHIFT) + LINE_OFFSET_Y),
+                     Q12_MULT(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha) + LINE_OFFSET_Y),
             selectionHighlightFrom.x +
-            Vector2i(FP_MULTIPLY(selectionHighlightTo.x - selectionHighlightFrom.x, interpAlpha, Q12_SHIFT),
-                     FP_MULTIPLY(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha, Q12_SHIFT) + LINE_OFFSET_Y)
+            Vector2i(Q12_MULT(selectionHighlightTo.x - selectionHighlightFrom.x, interpAlpha),
+                     Q12_MULT(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha) + LINE_OFFSET_Y)
         };
         Options_Selection_HighlightDraw(highlightLine);
 

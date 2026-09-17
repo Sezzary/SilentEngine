@@ -331,12 +331,12 @@ namespace Silent
 
     void ApplicationManager::Update()
     {
-        // Tick game state. @todo Compensation results in persistent lag? Need to reproduce.
-        for (int i = 0; i < _work.Clock.GetTicks(); i++)
-        {
-            _work.Input.Update(*_window, _mouseWheelAxis);
+        _work.Input.Update(*_window, _mouseWheelAxis);
 
-            _isDrawTick = i == (_work.Clock.GetTicks() - 1);
+        // Tick game state. @todo Compensation results in persistent lag? Need to reproduce.
+        //for (int i = 0; i < _work.Clock.GetTicks(); i++)
+        {
+            _isDrawTick = true;//i == (_work.Clock.GetTicks() - 1);
             UpdateGame();
         }
 

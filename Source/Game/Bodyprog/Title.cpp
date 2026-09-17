@@ -59,6 +59,7 @@ namespace Silent::Game
 
         // Draw selection strings.
         int columnPosTop = COLUMN_POS_Y - ((MainMenuEntry_Count - 1) * STR_OFFSET_Y);
+        int offsetY      = 0;
         for (int i = 0; i < MainMenuEntry_Count; i++)
         {
             // Check if entry is visible.
@@ -67,7 +68,7 @@ namespace Silent::Game
                 continue;
             }
 
-            Gfx_StringPositionSet(COLUMN_POS_X, columnPosTop + (i * STR_OFFSET_Y));
+            Gfx_StringPositionSet(COLUMN_POS_X, columnPosTop + offsetY);
             Gfx_StringColorSet(StringColorId_White);
 
             if (i == g_MainMenu_SelectedEntry)
@@ -83,6 +84,8 @@ namespace Silent::Game
                 auto unselectedEntryMsg = "{M}" + translator(MAIN_MENU_ENTRY_STRING_KEYS[i]);
                 Gfx_StringDraw(unselectedEntryMsg, INT_MAX, true);
             }
+
+            offsetY += STR_OFFSET_Y;
         }
     }
 

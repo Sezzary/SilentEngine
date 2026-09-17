@@ -20,6 +20,44 @@ STR_EXT = ".STR"
 WAV_EXT = ".WAV"
 XA_EXT  = ".XA"
 
+# @todo Fill out and use for converted files.
+XA_NAMES = {
+    "05_02152": "CafeDialogue",
+    "10_04432": "PhoneRingLoop",
+    "15_07496": "",
+    "20_06552": "",
+    "25_03904": "",
+    "30_04056": "",
+    "35_26008": "",
+    "40_10384": "",
+    "45_28784": ""
+}
+
+# @todo Fill out and use for converted files.
+STR_NAMES = {
+    "C1_20670": "",
+    "C2_20670": "",
+    "M1_03500": "",
+    "M2_01190": "",
+    "M3_02570": "",
+    "M4_02490": "",
+    "M5_03140": "",
+    "M6_02112": "",
+    "M7_01536": "",
+    "M8_03039": "",
+    "M9_01730": "",
+    "MA_03590": "",
+    "MB_04850": "",
+    "MC_01930": "",
+    "MD_03780": "",
+    "ME_03300": "",
+    "Z1_16180": "",
+    "Z3_02340": "",
+    "Z4_01590": "",
+    "ZC_14392": "",
+    "ZZ_14239": ""
+}
+
 
 def _create_parser():
     """
@@ -71,7 +109,6 @@ def _convert_xa_to_wav(ffmpeg_cmd: str, output_folder: Path, xa_file: Path):
     # Report status.
     if result.returncode != 0:
         logging.error(f"`XA` asset conversion failed: {result.stderr.decode()}")
-
 
 def _convert_str_to_mpg(ffmpeg_cmd: str, output_folder: Path, str_file: Path):
     """

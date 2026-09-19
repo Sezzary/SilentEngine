@@ -16,6 +16,5 @@ int main()
         return EXIT_FAILURE;
     }
 
-    Debug::Deinitialize();
     return EXIT_SUCCESS;
 }

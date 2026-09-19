@@ -2,6 +2,10 @@
 
 namespace Silent::Input
 {
+    constexpr float GUI_PULSE_DELAY_SEC         = 0.1f;
+    constexpr float GUI_PULSE_INITIAL_DELAY_SEC = 0.4f;
+    constexpr float GUI_PULSE_STATE_MIN         = 0.5f;
+
     /** @brief Input action IDs. */
     typedef enum class ActionId
     {

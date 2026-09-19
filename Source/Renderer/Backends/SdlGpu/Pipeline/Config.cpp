@@ -151,7 +151,7 @@ namespace Silent::Renderer::SdlGpu
         },
         // Add.
         {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
             .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
             .color_blend_op        = SDL_GPU_BLENDOP_ADD,
             .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
@@ -161,12 +161,12 @@ namespace Silent::Renderer::SdlGpu
         },
         // Subtract.
         {
-            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
+            .src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA,
             .dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .color_blend_op        = SDL_GPU_BLENDOP_SUBTRACT,
+            .color_blend_op        = SDL_GPU_BLENDOP_REVERSE_SUBTRACT,
             .src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
             .dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE,
-            .alpha_blend_op        = SDL_GPU_BLENDOP_SUBTRACT,
+            .alpha_blend_op        = SDL_GPU_BLENDOP_REVERSE_SUBTRACT,
             .enable_blend          = true
         },
         // Wireframe.

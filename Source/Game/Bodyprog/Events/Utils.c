@@ -50,7 +50,7 @@ VECTOR3 g_Event_PathWaypoints[2][8];
 q3_12   g_Event_PathWaypointHeadingAngles[8]; // TODO: should only have 2 entries, 1 for each character slot?
 q19_12  g_Event_TweenTimers[6];
 
-void Event_SysStateStepIncrement(bool incSubStep) // 0x80085D78
+void Event_SysStateStepIncrement(bool incSubStep)
 {
     if (incSubStep)
     {
@@ -62,7 +62,7 @@ void Event_SysStateStepIncrement(bool incSubStep) // 0x80085D78
     }
 }
 
-void Event_SysStateStepSet(bool setSubStep, s32 sysStateStep) // 0x80085DC0
+void Event_SysStateStepSet(bool setSubStep, int sysStateStep)
 {
     if (setSubStep)
     {
@@ -74,29 +74,27 @@ void Event_SysStateStepSet(bool setSubStep, s32 sysStateStep) // 0x80085DC0
     }
 }
 
-void Event_WaitPlayerStop(void) // 0x80085DF0
+void Event_WaitPlayerStop(void)
 {
-    g_SysWork.timer_2C += g_DeltaTimeRaw;
-    if (g_MapOverlayHdr.playerMoveSpeedIsZero() || g_SysWork.timer_2C > Q12(1.0f))
+    g_SysWork.sysStateStepData[1] += g_DeltaTimeRaw;
+    if (g_MapOverlayHdr.playerMoveSpeedIsZero() || g_SysWork.sysStateStepData[1] > Q12(1.0f))
     {
         SysWork_StateStepIncrement(0);
     }
 }
 
-void Event_WaitTimer(q19_12 delay, bool incSubStep) // 0x80085E6C
+void Event_WaitTimer(q19_12 delay, bool incSubStep)
 {
-    g_SysWork.timer_2C += g_DeltaTimeRaw;
-    if (delay < g_SysWork.timer_2C)
+    g_SysWork.sysStateStepData[1] += g_DeltaTimeRaw;
+    if (delay < g_SysWork.sysStateStepData[1])
     {
         Event_SysStateStepIncrement(incSubStep);
     }
 }
 
-void Event_CharaAnimCmdExecute(e_CharaAnimCmd cmd, s_SubCharacter* chara, s32 animState, bool incSubStep) // 0x80085EB8
+void Event_CharaAnimCmdExecute(e_CharaAnimCmd cmd, s_SubCharacter* chara, int animState, bool incSubStep)
 {
-    s32  playbackState;
-
-    #define isPlayer (chara == &g_SysWork.playerWork.player)
+    bool isPlayer = chara == &g_SysWork.playerWork.player
 
     switch (cmd)
     {
@@ -114,7 +112,7 @@ void Event_CharaAnimCmdExecute(e_CharaAnimCmd cmd, s_SubCharacter* chara, s32 an
         case CharaAnimCmd_AwaitAnimEnd:
             if (isPlayer)
             {
-                playbackState = g_MapOverlayHdr.playerAnimPlaybackStateGet();
+                int playbackState = g_MapOverlayHdr.playerAnimPlaybackStateGet();
                 if (playbackState == AnimPlaybackState_End)
                 {
                     Event_SysStateStepIncrement(incSubStep);
@@ -122,7 +120,7 @@ void Event_CharaAnimCmdExecute(e_CharaAnimCmd cmd, s_SubCharacter* chara, s32 an
             }
             else
             {
-                playbackState = g_MapOverlayHdr.charaAnimPlaybackStateGet(chara);
+                int playbackState = g_MapOverlayHdr.charaAnimPlaybackStateGet(chara);
                 if (playbackState == AnimPlaybackState_End)
                 {
                     Event_SysStateStepIncrement(incSubStep);
@@ -164,11 +162,9 @@ void Event_CharaAnimCmdExecute(e_CharaAnimCmd cmd, s_SubCharacter* chara, s32 an
             }
             break;
     }
-
-    #undef isPlayer
 }
 
-void Event_SysStateBranchOnFlag(e_EventFlag eventFlagIdx, s32 stepTrue, s32 stepFalse, bool setSubStep) // 0x8008605C
+void Event_SysStateBranchOnFlag(e_EventFlag eventFlagIdx, int stepTrue, int stepFalse, bool setSubStep)
 {
     if (!Savegame_EventFlagGet(eventFlagIdx))
     {
@@ -180,11 +176,9 @@ void Event_SysStateBranchOnFlag(e_EventFlag eventFlagIdx, s32 stepTrue, s32 step
     }
 }
 
-void Event_DisplayMapMsg(bool hasSelection, s32 mapMsgIdx, s32 step0, s32 step1, s32 step2, bool incSubStep) // 0x800860B0
+void Event_DisplayMapMsg(bool hasSelection, int mapMsgIdx, int step0, int step1, int step2, bool incSubStep)
 {
-    s32 mapMsgState;
-
-    mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
+    int mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
     if (mapMsgState <= MapMsgState_Idle)
     {
         return;
@@ -196,25 +190,24 @@ void Event_DisplayMapMsg(bool hasSelection, s32 mapMsgIdx, s32 step0, s32 step1,
         return;
     }
 
-    if (mapMsgState == MapMsgState_SelectEntry0)
+    if (mapMsgState == MapMsgState_SelectEntry1)
     {
         Event_SysStateStepSet(incSubStep, step0);
     }
-    if (mapMsgState == MapMsgState_SelectEntry1)
+    if (mapMsgState == MapMsgState_SelectEntry2)
     {
         Event_SysStateStepSet(incSubStep, step1);
     }
-    if (mapMsgState == MapMsgState_SelectEntry2)
+    if (mapMsgState == MapMsgState_SelectEntry3)
     {
         Event_SysStateStepSet(incSubStep, step2);
     }
 }
 
-void Event_ScreenFadeCmd(e_ScreenFadeCmd cmd, bool fadeOut, e_ScreenFadeType fadeType, q19_12 fadeTimestep, bool incSubStep) // 0x8008616C
+void Event_ScreenFadeCmd(e_ScreenFadeCmd cmd, bool fadeOut, e_ScreenFadeType fadeType, q19_12 fadeTimestep, bool incSubStep)
 {
-    e_ScreenFadeCmd activeCmd;
-
     // If `cmd == ScreenFadeCmd_Auto`, `sysStateSteps[2]` dictates the command. This field is manipulated often in map event functions.
+    auto activeCmd = ScreenFadeCmd_Start;
     if (cmd != ScreenFadeCmd_Auto)
     {
         activeCmd = cmd;
@@ -268,14 +261,16 @@ void Event_ScreenFadeCmd(e_ScreenFadeCmd cmd, bool fadeOut, e_ScreenFadeType fad
                 }
             }
 
-            if (cmd != ScreenFadeCmd_Start) // `cmd` will only be different if `ScreenFadeCmd_Auto` was passed.
+            // `cmd` will only be different if `ScreenFadeCmd_Auto` was passed.
+            if (cmd != ScreenFadeCmd_Start)
             {
                 SysWork_StateStepIncrement(2);
             }
             break;
 
         case ScreenFadeCmd_Wait:
-            if (fadeType < ScreenFadeType_ScreenBorders) // `fadeType == ScreenFadeType_Black || fadeType == ScreenFadeType_White`
+            if (fadeType == ScreenFadeType_Black ||
+                fadeType == ScreenFadeType_White)
             {
                 if ((fadeOut == false && ScreenFade_IsNone()) ||
                     (fadeOut == true  && ScreenFade_IsFinished()))
@@ -293,16 +288,15 @@ void Event_ScreenFadeCmd(e_ScreenFadeCmd cmd, bool fadeOut, e_ScreenFadeType fad
     }
 }
 
-const RECT D_8002AB10 =  // 0x8002AB10 .rodata
+const RECT D_8002AB10 =
 {
     SCREEN_WIDTH, 256,
     (SCREEN_WIDTH / 5) * 3, SCREEN_HEIGHT
 };
 
-void Event_BgTextureCmd(e_BgTextureCmd cmd, e_FsFile texFileIdx, bool incSubStep) // 0x800862F8
+void Event_BgTextureCmd(e_BgTextureCmd cmd, e_FsFile texFileIdx, bool incSubStep)
 {
-    e_BgTextureCmd activeCmd;
-
+    auto activeCmd = BgTextureCmd_QueueRead;
     if (cmd == BgTextureCmd_Auto)
     {
         activeCmd = g_SysWork.sysStateSteps[2];
@@ -348,9 +342,7 @@ void Event_BgTextureCmd(e_BgTextureCmd cmd, e_FsFile texFileIdx, bool incSubStep
             break;
 
         case BgTextureCmd_StoreVram:
-            DrawSync(SyncMode_Wait);
             StoreImage(&D_8002AB10, IMAGE_BUFFER_2);
-            DrawSync(SyncMode_Wait);
             break;
 
         case BgTextureCmd_QueueReadSecondary:
@@ -368,23 +360,21 @@ void Event_BgTextureCmd(e_BgTextureCmd cmd, e_FsFile texFileIdx, bool incSubStep
 
         case BgTextureCmd_RestoreVram:
             LoadImage(&D_8002AB10, IMAGE_BUFFER_2);
-            DrawSync(SyncMode_Wait);
             break;
     }
 }
 
-void Event_InvItemCmd(e_InvItemCmd cmd, e_InvItemId itemId, s32 itemCount, bool incSubStep) // 0x80086470
+void Event_InvItemCmd(e_InvItemCmd cmd, e_InvItemId itemId, int itemCount, bool incSubStep)
 {
     // This func does weird remapping of the input `cmd` to `activeCmd`.
     // `cmd` is also `u32` while `activeCmd` is `s32`, added internal enum here to help func make more sense.
-    typedef enum _InvItemCmdInternal
+    enum e_InvItemCmdInternal
     {
         InvItemCmdInternal_QueueLoad = 0,
         InvItemCmdInternal_AwaitLoad = 1,
         InvItemCmdInternal_AddItem   = 2, // Remapped from `InvItemCmd_AddItem` (3)
-        InvItemCmdInternal_Nop       = 3, // Remapped from `InvItemCmd_Nop` (2)
-        InvItemCmdInternal_Hack      = -1
-    } e_InvItemCmdInternal;
+        InvItemCmdInternal_Nop       = 3  // Remapped from `InvItemCmd_Nop` (2)
+    };
 
     e_InvItemCmdInternal activeCmd;
 
@@ -450,7 +440,7 @@ void Event_InvItemCmd(e_InvItemCmd cmd, e_InvItemId itemId, s32 itemCount, bool 
     }
 }
 
-void Event_PathWaypointSet(bool isAbs, s32 charaSlotIdx, s32 waypointIdx, q3_12 headingAngle, q19_12 posX, q19_12 posZ) // 0x800865FC
+void Event_PathWaypointSet(bool isAbs, int charaSlotIdx, int waypointIdx, q3_12 headingAngle, q19_12 posX, q19_12 posZ)
 {
     if (isAbs == false)
     {
@@ -476,7 +466,7 @@ void Event_PathWaypointSet(bool isAbs, s32 charaSlotIdx, s32 waypointIdx, q3_12 
     }
 }
 
-void Event_PathWaypointExecutePlayer(s32 animId, s32 waypointCount, bool incSubStep) // 0x800866D4
+void Event_PathWaypointExecutePlayer(int animId, int waypointCount, bool incSubStep)
 {
     if (g_MapOverlayHdr.playerPathWaypointExecute(animId, &g_Event_PathWaypoints[0][0], g_Event_PathWaypointHeadingAngles[0], waypointCount) == true)
     {
@@ -484,7 +474,7 @@ void Event_PathWaypointExecutePlayer(s32 animId, s32 waypointCount, bool incSubS
     }
 }
 
-void Event_PathWaypointExecuteChara(s_SubCharacter* chara, s32 animId, s32 waypointCount, bool incSubStep) // 0x80086728
+void Event_PathWaypointExecuteChara(s_SubCharacter* chara, int animId, int waypointCount, bool incSubStep)
 {
     if (g_MapOverlayHdr.charaPathWaypointExecute(chara, animId, &g_Event_PathWaypoints[1][0], g_Event_PathWaypointHeadingAngles[1], waypointCount) == true)
     {
@@ -492,24 +482,21 @@ void Event_PathWaypointExecuteChara(s_SubCharacter* chara, s32 animId, s32 waypo
     }
 }
 
-void Event_PathWaypointExecuteCharaNoWait(s_SubCharacter* chara, s32 animId, s32 waypointCount) // 0x8008677C
+void Event_PathWaypointExecuteCharaNoWait(s_SubCharacter* chara, int animId, int waypointCount)
 {
     g_MapOverlayHdr.charaPathWaypointExecute(chara, animId, &g_Event_PathWaypoints[1][0], g_Event_PathWaypointHeadingAngles[1], waypointCount);
 }
 
-void Event_PaperMapCmd(e_PaperMapCmd cmd, s32 paperMapIdx) // 0x800867B4
+void Event_PaperMapCmd(e_PaperMapCmd cmd, int paperMapIdx)
 {
     switch (cmd)
     {
         case PaperMapCmd_Load:
-            DrawSync(SyncMode_Wait);
             StoreImage(&D_8002AB10, IMAGE_BUFFER_2);
-            DrawSync(SyncMode_Wait);
 
             Fs_QueueStartReadTim(FILE_TIM_MP_0TOWN_TIM + g_PaperMapFileIdxs[paperMapIdx], FS_BUFFER_2, &g_PaperMapImg);
             Fs_QueueStartReadTim(FILE_TIM_MR_0TOWN_TIM + g_PaperMapMarkingFileIdxs[paperMapIdx], FS_BUFFER_1, &g_PaperMapMarkingAtlasImg);
 
-            Screen_Init(SCREEN_WIDTH, true);
             GsSwapDispBuff();
             Fs_QueueWaitForEmpty();
             break;
@@ -520,51 +507,41 @@ void Event_PaperMapCmd(e_PaperMapCmd cmd, s32 paperMapIdx) // 0x800867B4
 
         case PaperMapCmd_Unload:
             LoadImage(&D_8002AB10, IMAGE_BUFFER_2);
-            DrawSync(SyncMode_Wait);
-            Screen_Init(SCREEN_WIDTH, false);
             break;
     }
 }
 
-void Event_TweenReset(s32 timerIdx) // 0x800868DC
+void Event_TweenReset(int timerIdx)
 {
-    #define tweenTimer g_Event_TweenTimers[timerIdx]
+    q19_12& tweenTimer = g_Event_TweenTimers[timerIdx]
 
     tweenTimer = Q12(0.0f);
-
-    #undef tweenTimer
 }
 
-q19_12 Event_TweenLinear(q19_12 target, q19_12 duration, s32 timerIdx) // 0x800868F4
+q19_12 Event_TweenLinear(q19_12 target, q19_12 duration, int timerIdx)
 {
-    #define tweenTimer g_Event_TweenTimers[timerIdx]
+    q19_12& tweenTimer = g_Event_TweenTimers[timerIdx]
 
     tweenTimer += g_DeltaTime;
     tweenTimer  = (duration < tweenTimer) ? duration : tweenTimer;
     return (target * tweenTimer) / duration;
-
-    #undef tweenTimer
 }
 
-q19_12 Event_TweenSine(q19_12 amp, q3_12 startAngle, q3_12 sweepAngle, q19_12 duration, s32 timerIdx) // 0x8008694C
+q19_12 Event_TweenSine(q19_12 amp, q3_12 startAngle, q3_12 sweepAngle, q19_12 duration, int timerIdx)
 {
-    #define tweenTimer g_Event_TweenTimers[timerIdx]
+    q19_12& tweenTimer = g_Event_TweenTimers[timerIdx]
 
     tweenTimer += g_DeltaTime;
     tweenTimer  = (duration < tweenTimer) ? duration : tweenTimer;
     return Q12_MULT(amp, Math_Sin(startAngle + ((sweepAngle * tweenTimer) / duration)));
-
-    #undef tweenTimer
 }
 
-void Event_DisplayMapMsgWithAudio(s32 mapMsgIdx, u8* audioIdx, const u16* audioCmds) // 0x800869E4
+void Event_DisplayMapMsgWithAudio(int mapMsgIdx, u8* audioIdx, const u16* audioCmds)
 {
-    s32 mapMsgState;
-
     g_SysWork.bgmStatusFlags |= BgmStatusFlag_VoiceDialog;
 
-    mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
-    if (mapMsgState == MapMsgState_SelectEntry0)
+    int mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
+    if (mapMsgState == MapMsgState_SelectEntry1)
     {
         SysWork_StateStepIncrement(0);
     }
@@ -575,9 +552,10 @@ void Event_DisplayMapMsgWithAudio(s32 mapMsgIdx, u8* audioIdx, const u16* audioC
     }
 }
 
-void Event_CameraPositionSet(VECTOR3* pos, q19_12 offsetOrPosX, q19_12 offsetOrPosY, q19_12 offsetOrPosZ,
+void Event_CameraPositionSet(VECTOR3* pos,
+                             q19_12 offsetOrPosX, q19_12 offsetOrPosY, q19_12 offsetOrPosZ,
                              q19_12 accelXz, q19_12 accelY, q19_12 speedXzMax, q19_12 speedYMax,
-                             bool warp) // 0x80086A94
+                             bool warp)
 {
     VECTOR3         posTarget;
     VC_CAM_MV_PARAM camMoveParams;
@@ -640,14 +618,13 @@ void Event_CameraPositionSet(VECTOR3* pos, q19_12 offsetOrPosX, q19_12 offsetOrP
     vcUserCamTarget(&posTarget, &camMoveParams, warp);
 }
 
-void Event_CameraLookAtSet(VECTOR3* lookAt, q19_12 lookAtOffsetOrPosX, q19_12 lookAtOffsetOrPosY, q19_12 lookAtOffsetOrPosZ,
+void Event_CameraLookAtSet(VECTOR3* lookAt,
+                           q19_12 lookAtOffsetOrPosX, q19_12 lookAtOffsetOrPosY, q19_12 lookAtOffsetOrPosZ,
                            q19_12 angularAccelX, q19_12 angularAccelY, q19_12 angularSpeedXMax, q19_12 angularSpeedYMax,
-                           bool warp) // 0x80086B70
+                           bool warp)
 {
-    VECTOR3           lookAtTarget;
-    VC_WATCH_MV_PARAM camLookAtMoveParams;
-
     // Set look-at target.
+    auto lookAtTarget = VECTOR3{};
     if (lookAt != NULL)
     {
         lookAtTarget.vx = lookAt->vx + lookAtOffsetOrPosX;
@@ -660,6 +637,8 @@ void Event_CameraLookAtSet(VECTOR3* lookAt, q19_12 lookAtOffsetOrPosX, q19_12 lo
         lookAtTarget.vy = lookAtOffsetOrPosY;
         lookAtTarget.vz = lookAtOffsetOrPosZ;
     }
+
+    autot camLookAtMoveParams = VC_WATCH_MV_PARAM{};
 
     // Set angular acceleration on X axis.
     if (angularAccelX == Q12_ANGLE(0.0f))
@@ -706,7 +685,7 @@ void Event_CameraLookAtSet(VECTOR3* lookAt, q19_12 lookAtOffsetOrPosX, q19_12 lo
     vcUserWatchTarget(&lookAtTarget, &camLookAtMoveParams, warp);
 }
 
-void Event_CharaAnimPlayToEnd(s_SubCharacter* chara, s32 animState) // 0x80086C58
+void Event_CharaAnimPlayToEnd(s_SubCharacter* chara, int animState)
 {
     switch (g_SysWork.sysStateSteps[1])
     {
@@ -725,7 +704,7 @@ void Event_CharaAnimPlayToEnd(s_SubCharacter* chara, s32 animState) // 0x80086C5
     }
 }
 
-void Event_CharaAnimUnlockPlayToEnd(s_SubCharacter* chara) // 0x80086D04
+void Event_CharaAnimUnlockPlayToEnd(s_SubCharacter* chara)
 {
     switch (g_SysWork.sysStateSteps[1])
     {
@@ -744,7 +723,7 @@ void Event_CharaAnimUnlockPlayToEnd(s_SubCharacter* chara) // 0x80086D04
     }
 }
 
-void Event_BgTextureLoadFadeIn(e_FsFile texFileIdx, q19_12 fadeTimestep) // 0x80086DA8
+void Event_BgTextureLoadFadeIn(e_FsFile texFileIdx, q19_12 fadeTimestep)
 {
     switch (g_SysWork.sysStateSteps[1])
     {
@@ -762,7 +741,7 @@ void Event_BgTextureLoadFadeIn(e_FsFile texFileIdx, q19_12 fadeTimestep) // 0x80
     }
 }
 
-void Event_BgTextureFadeIn(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fadeTimestep1) // 0x80086E50
+void Event_BgTextureFadeIn(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fadeTimestep1)
 {
     switch (g_SysWork.sysStateSteps[1])
     {
@@ -784,7 +763,7 @@ void Event_BgTextureFadeIn(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fad
     }
 }
 
-void Event_BgTextureFadeOut(q19_12 fadeTimestepFromBlack, q19_12 fadeTimestepToBlack) // 0x80086F44
+void Event_BgTextureFadeOut(q19_12 fadeTimestepFromBlack, q19_12 fadeTimestepToBlack)
 {
     if (g_SysWork.sysStateSteps[1] == 0)
     {
@@ -797,27 +776,25 @@ void Event_BgTextureFadeOut(q19_12 fadeTimestepFromBlack, q19_12 fadeTimestepToB
     SysWork_StateStepIncrement(0);
 }
 
-void Event_DisplayMapMsgWithSfx(s32 mapMsgIdx, e_SfxId sfxId, VECTOR3* sfxPos) // 0x80086FE8
+void Event_DisplayMapMsgWithSfx(int mapMsgIdx, e_SfxId sfxId, VECTOR3* sfxPos)
 {
-    s32 i;
-
     if (!(g_SysWork.sysFlags & SysFlag_5))
     {
         // Run through NPCs.
-        for (i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
+        for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
         {
             if (g_SysWork.npcs[i].model.charaId >= Chara_Harry &&
                 g_SysWork.npcs[i].model.charaId <= Chara_MonsterCybil &&
                 g_SysWork.npcs[i].health > Q12(0.0f))
             {
+                if (i != ARRAY_SIZE(g_SysWork.npcs))
+                {
+                    g_DeltaTime = Q12(0.0f);
+                }
                 break;
             }
         }
 
-        if (i != ARRAY_SIZE(g_SysWork.npcs))
-        {
-            g_DeltaTime = Q12(0.0f);
-        }
     }
 
     switch (g_SysWork.sysStateSteps[1])
@@ -842,7 +819,7 @@ void Event_DisplayMapMsgWithSfx(s32 mapMsgIdx, e_SfxId sfxId, VECTOR3* sfxPos) /
     }
 }
 
-void Event_DisplayBgTexture(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fadeTimestep1) // 0x8008716C
+void Event_DisplayBgTexture(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fadeTimestep1)
 {
     switch (g_SysWork.sysStateSteps[1])
     {
@@ -887,7 +864,7 @@ void Event_DisplayBgTexture(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fa
     }
 }
 
-void Event_DisplayMapMsgWithBg(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fadeTimestep1, s32 mapMsgIdx) // 0x80087360
+void Event_DisplayMapMsgWithBg(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fadeTimestep1, int mapMsgIdx)
 {
     // TODO: Name these.
     typedef enum _EventStates
@@ -943,7 +920,7 @@ void Event_DisplayMapMsgWithBg(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12
     }
 }
 
-void Event_DisplayMapMsgWithDimmedBg(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fadeTimestep1, s32 mapMsgIdx0, s32 mapMsgIdx1) // 0x80087540
+void Event_DisplayMapMsgWithDimmedBg(e_FsFile texFileIdx, q19_12 fadeTimestep0, q19_12 fadeTimestep1, int mapMsgIdx0, int mapMsgIdx1)
 {
     // TODO: Name these.
     typedef enum _EventStates
@@ -1019,7 +996,7 @@ void Event_DisplayMapMsgWithDimmedBg(e_FsFile texFileIdx, q19_12 fadeTimestep0, 
     }
 }
 
-void Event_ItemTake(e_InvItemId itemId, s32 itemCount, e_EventFlag eventFlagIdx, s32 mapMsgIdx) // 0x800877B8
+void Event_ItemTake(e_InvItemId itemId, int itemCount, e_EventFlag eventFlagIdx, int mapMsgIdx)
 {
     typedef enum _EventState
     {
@@ -1030,26 +1007,23 @@ void Event_ItemTake(e_InvItemId itemId, s32 itemCount, e_EventFlag eventFlagIdx,
         EventState_DontTakeItem    = 4
     } e_EventState;
 
-    s32 i            = itemId;
-    s32 mapMsgIdxCpy = mapMsgIdx;
-
     if (!(g_SysWork.sysFlags & SysFlag_5))
     {
         // Run through NPCs.
-        for (i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
+        for (int i = itemId; i < ARRAY_SIZE(g_SysWork.npcs); i++)
         {
             if (g_SysWork.npcs[i].model.charaId >= Chara_Harry        &&
                 g_SysWork.npcs[i].model.charaId <= Chara_MonsterCybil &&
                 g_SysWork.npcs[i].health > Q12(0.0f))
             {
+                if (i != ARRAY_SIZE(g_SysWork.npcs))
+                {
+                    g_DeltaTime = Q12(0.0f);
+                }
                 break;
             }
         }
 
-        if (i != ARRAY_SIZE(g_SysWork.npcs))
-        {
-            g_DeltaTime = Q12(0.0f);
-        }
     }
 
     switch (g_SysWork.sysStateSteps[1])
@@ -1069,7 +1043,7 @@ void Event_ItemTake(e_InvItemId itemId, s32 itemCount, e_EventFlag eventFlagIdx,
             // `Gfx_PickupItemAnimate` increases model scale and returns `false`, then starts rotating it and returns `true`.
             if (Gfx_PickupItemAnimate(itemId))
             {
-                Event_DisplayMapMsg(true, mapMsgIdxCpy, 3, NO_VALUE, 0, true); // 3 is "Yes", `NO_VALUE` is "No".
+                Event_DisplayMapMsg(true, mapMsgIdx, 3, NO_VALUE, 0, true); // 3 is "Yes", `NO_VALUE` is "No".
             }
 
             // Flag pickup item as collected.
@@ -1095,11 +1069,11 @@ void Event_ItemTake(e_InvItemId itemId, s32 itemCount, e_EventFlag eventFlagIdx,
     }
 }
 
-void Event_CommonItemTake(u32 pickupType, e_EventFlag eventFlagIdx) // 0x800879FC
+void Event_CommonItemTake(u32 pickupType, e_EventFlag eventFlagIdx)
 {
-    #define EASY_DIFFICULTY_AMMO_COUNT_MULT_MIN 2
+    constexpr int EASY_DIFFICULTY_AMMO_COUNT_MULT_MIN = 2;
 
-    s32 ammoCountMult;
+    int ammoCountMult;
 
     // Compute ammo count multiplier.
     ammoCountMult = g_GameWork.config.extraBulletAdjust + 1;
@@ -1135,21 +1109,17 @@ void Event_CommonItemTake(u32 pickupType, e_EventFlag eventFlagIdx) // 0x800879F
             Event_ItemTake(InvItemId_RifleShells, ammoCountMult * RIFLE_AMMO_PICKUP_ITEM_COUNT, eventFlagIdx, MapMsgIdx_RifleAmmoSelect);
             break;
     }
-
-    #undef EASY_DIFFICULTY_AMMO_COUNT_MULT_MIN
 }
 
-void Event_PaperMapTake(s32 paperMapFlagIdx, e_EventFlag eventFlagIdx, s32 mapMsgIdx) // 0x80087AF4
+void Event_PaperMapTake(int paperMapFlagIdx, e_EventFlag eventFlagIdx, int mapMsgIdx)
 {
-    static const RECT RECT = {
+    static const RECT RECT =
+    {
         SCREEN_WIDTH, 256,
         SCREEN_WIDTH / 2, SCREEN_HEIGHT
     };
 
-    s32 paperMapFlagIdxCpy;
-
-    g_DeltaTime        = Q12(0.0f);
-    paperMapFlagIdxCpy = paperMapFlagIdx;
+    g_DeltaTime = Q12(0.0f);
 
     switch (g_SysWork.sysStateSteps[1])
     {
@@ -1165,11 +1135,8 @@ void Event_PaperMapTake(s32 paperMapFlagIdx, e_EventFlag eventFlagIdx, s32 mapMs
             break;
 
         case 2:
-            DrawSync(SyncMode_Wait);
             StoreImage(&RECT, IMAGE_BUFFER);
-            DrawSync(SyncMode_Wait);
             Fs_QueueStartReadTim(FILE_TIM_MP_0TOWN_TIM + g_PaperMapFileIdxs[paperMapFlagIdx], FS_BUFFER_2, &g_PaperMapImg);
-            Screen_Init(SCREEN_WIDTH, true);
 
             g_IntervalVBlanks = 1;
 
@@ -1187,35 +1154,33 @@ void Event_PaperMapTake(s32 paperMapFlagIdx, e_EventFlag eventFlagIdx, s32 mapMs
             break;
 
         case 4:
-            paperMapFlagIdxCpy                                         = paperMapFlagIdx >> 5;
-            ((s32*)&g_SavegamePtr->paperMapFlags)[paperMapFlagIdxCpy] |= 1 << (paperMapFlagIdx & 0x1F); // TODO: Maybe union?
+            g_SavegamePtr->paperMapFlags.Set(paperMapFlagIdx)
 
             // TODO: Demagic paper map flags with an enum.
             switch (paperMapFlagIdx)
             {
                 case 6:
-                    g_SavegamePtr->paperMapFlags |= (1 << 5) | (1 << 7) | (1 << 8) | (1 << 9) |
-                                                    (1 << 10) | (1 << 11) | (1 << 12);
+                    g_SavegamePtr->paperMapFlags.Set({ 5, 7, 8, 9, 10, 11, 12 });
                     break;
 
                 case 17:
-                    g_SavegamePtr->paperMapFlags |= 1 << 18;
-                    g_SavegamePtr->paperMapFlags |= 1 << 19;
-                    g_SavegamePtr->paperMapFlags |= 1 << 21;
-                    g_SavegamePtr->paperMapFlags |= 1 << 22;
-                    g_SavegamePtr->paperMapFlags |= 1 << 23;
+                    g_SavegamePtr->paperMapFlags.Set(18);
+                    g_SavegamePtr->paperMapFlags.Set(19);
+                    g_SavegamePtr->paperMapFlags.Set(21);
+                    g_SavegamePtr->paperMapFlags.Set(22);
+                    g_SavegamePtr->paperMapFlags.Set(23);
                     break;
 
                 case 16:
-                    g_SavegamePtr->paperMapFlags |= 1 << 20;
+                    g_SavegamePtr->paperMapFlags.Set(20);
                     break;
 
                 case 13:
-                    g_SavegamePtr->paperMapFlags |= 1 << 14;
+                    g_SavegamePtr->paperMapFlags.Set(14);
                     break;
 
                 case 2:
-                    g_SavegamePtr->paperMapFlags |= 1 << 3;
+                    g_SavegamePtr->paperMapFlags.Set(3);
                     break;
             }
 
@@ -1231,8 +1196,6 @@ void Event_PaperMapTake(s32 paperMapFlagIdx, e_EventFlag eventFlagIdx, s32 mapMs
 
         default:
             LoadImage(&RECT, IMAGE_BUFFER);
-            DrawSync(SyncMode_Wait);
-            Screen_Init(SCREEN_WIDTH, false);
             Event_ScreenFadeCmd(ScreenFadeCmd_Start, false, 0, Q12(0.0f), false);
 
             // Restore player control.

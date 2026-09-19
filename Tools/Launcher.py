@@ -4,6 +4,7 @@ Silent Engine Launcher
 Runs a simple launcher which prompts ROM selection for asset extraction and starts the Silent Engine application.
 """
 
+
 import customtkinter
 import hashlib
 import logging
@@ -17,6 +18,7 @@ import sys
 from customtkinter import filedialog
 from pathlib       import Path
 from static_ffmpeg import run
+
 
 DUMPSXISO_NAME          = "dumpsxiso"
 VGMSTREAM_NAME          = "vgmstream-cli"
@@ -47,12 +49,14 @@ ROM_CHECKSUMS = [
     0xCA67A93E507B999A0040242362162E442F2BA07E  # PAL      | SLES-01514 | 99-06-07
 ]
 
+
 def _get_python_cmd():
     """
     Get the platform-specific system Python command.
     """
     system_os = platform.system().lower()
     return "python" if system_os == "windows" else "python3"
+
 
 def get_ffmpeg_cmd():
     """
@@ -65,6 +69,7 @@ def get_ffmpeg_cmd():
 
     ffmpeg_exe = run.get_or_fetch_platform_executables_else_raise()
     return ffmpeg_exe
+
 
 def _get_dumpsxiso_exe():
     """
@@ -88,6 +93,7 @@ def _get_dumpsxiso_exe():
 
     return dumpsxiso_exe
 
+
 def _get_vgmstream_exe():
     """
     Get the platform-specific `vgmstream-cli` executable to use.
@@ -110,6 +116,7 @@ def _get_vgmstream_exe():
 
     return vgmstream_exe
 
+
 def _get_convert_media_py():
     """
     Get the `ConvertMedia.py` script to use.
@@ -123,6 +130,7 @@ def _get_convert_media_py():
         os.chmod(convert_media_py, 0o755)
 
     return convert_media_py
+
 
 def _get_convert_music_seq_py():
     """
@@ -138,6 +146,7 @@ def _get_convert_music_seq_py():
 
     return convert_music_seq_py
 
+
 def _get_convert_sound_bank_py():
     """
     Get the `convertSoundBank.py` script to use.
@@ -151,6 +160,7 @@ def _get_convert_sound_bank_py():
         os.chmod(convert_sound_bank_py, 0o755)
 
     return convert_sound_bank_py
+
 
 def _get_extract_assets_py():
     """
@@ -166,6 +176,7 @@ def _get_extract_assets_py():
 
     return extract_assets_py
 
+
 def _get_kdt_tool_py():
     """
     Get the `kdt-tool.py` script to use.
@@ -180,6 +191,7 @@ def _get_kdt_tool_py():
 
     return kdt_tool_py
 
+
 def get_checksum(file: Path):
     """
     Generate a SHA-1 checksum from a file.
@@ -190,6 +202,7 @@ def get_checksum(file: Path):
             sha1_hash.update(byte_block)
 
     return int(sha1_hash.hexdigest(), 16)
+
 
 def _select_rom_file():
     """
@@ -209,6 +222,7 @@ def _select_rom_file():
         return file_path
 
     return None
+
 
 def _dump_rom(rom_path: str):
     """
@@ -235,6 +249,7 @@ def _dump_rom(rom_path: str):
 
     logging.info("ROM dump completed successfully.")
 
+
 def _extract_assets(rom_exe: str):
     """
     Extract assets from dumped Silent Hill ROM data.
@@ -257,6 +272,7 @@ def _extract_assets(rom_exe: str):
     # Report status.
     if result.returncode != 0:
         raise Exception(f"Asset extraction failed: {result.stderr.decode()}")
+
 
 def _convert_audio_and_video():
     """
@@ -299,6 +315,7 @@ def _convert_audio_and_video():
             raise Exception(f"Asset conversion failed for file `{_file.name}`: {result.stderr.decode()}")
 
     logging.info("Audio and video conversion complete.")
+
 
 def _convert_tracks():
     """
@@ -379,6 +396,7 @@ def _convert_tracks():
 
     logging.info("Tracks conversion complete.")
 
+
 def main():
     try:
         WIDTH  = 500
@@ -418,6 +436,7 @@ def main():
     except Exception as ex:
         logging.error(f"Error: {ex}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

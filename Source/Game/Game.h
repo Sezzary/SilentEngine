@@ -25,9 +25,13 @@ namespace Silent::Game
     constexpr int FRAMEBUFFER_HEIGHT_INTERLACED  = FRAMEBUFFER_HEIGHT_PROGRESSIVE * 2;
     constexpr int ORDERING_TABLE_SIZE            = 2048;
 
-    /** @brief Converts a floating-point X screen position in percent to a fixed-point X screen coodinate. */
-    #define SCREEN_POSITION_X(percent) \
-        (s32)(SCREEN_WIDTH * ((percent) / 100.0f))
+    /** @brief Converts seconds to frames at 60 FPS.
+     *
+     * @param sec Seconds to convert.
+     * @return Frames at 60 FPS.
+     */
+    #define SECONDS_60_FPS(sec) \
+        (s32)((sec) * 30)
 
     /** @brief Converts a floating-point Y screen position in percent to a fixed-point Y screen coodinate. */
     #define SCREEN_POSITION_Y(percent) \
@@ -66,6 +70,29 @@ namespace Silent::Game
     #define BITMASK_RANGE(fromInclusive, toInclusive) \
         (((~0u << (fromInclusive)) & ~(~0u << ((toInclusive) + 1))))
 
+    // @todo Use this instead.
+    /*bool Player_InMapChunkCheck(int x0, int x1, int x2, int x3,
+                                int z0, int z1, int z2, int z3)
+    {
+        const auto& pos = g_SysWork.playerWork.player.position;
+
+        int chunkIdxX = pos.vx / Q12(40.0f); // @todo Use `CHUNK_SIZE`.
+        if (!((pos.vx >  Q12(0.0f) && (chunkIdxX + x0) == x1) || 
+              (pos.vx <= Q12(0.0f) && (chunkIdxX + x2) == x3)))
+        {
+            return false;
+        }
+
+        int chunkIdxZ = pos.vz / Q12(40.0f); // @todo Use `CHUNK_SIZE`.
+        if (!((pos.vz >  Q12(0.0f) && (chunkIdxZ + z0) == z1) || 
+              (pos.vz <= Q12(0.0f) && (chunkIdxZ + z2) == z3)))
+        {
+            return false;
+        }
+        
+        return true;
+    }*/
+
     #define MAP_CHUNK_CHECK_VARIABLE_DECL() \
         s32 __chunkIdx
 
@@ -78,12 +105,12 @@ namespace Silent::Game
     #define PLAYER_IN_MAP_CHUNK(comp, x0, x1, x2, x3)                                               \
         (__chunkIdx = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                       \
         ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx + (x0)) == (x1)) || \
-        (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) == (x3))))
+         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) == (x3))))
 
     #define PLAYER_NOT_IN_MAP_CHUNK(comp, x0, x1, x2, x3)                                           \
         (__chunkIdx = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                       \
         ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx + (x0)) != (x1)) || \
-        (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) != (x3))))
+         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) != (x3))))
 
     #define MAP_CHUNK_CHECK_VARIABLE_DECL_2() \
         s32 __chunkIdx2
@@ -91,7 +118,7 @@ namespace Silent::Game
     #define PLAYER_IN_MAP_CHUNK_2(comp, x0, x1, x2, x3)                                             \
         (__chunkIdx2 = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                      \
         ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx2 + (x0)) < (x1)) || \
-        (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx2 + (x2)) < (x3))))
+         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx2 + (x2)) < (x3))))
 
     #define PLAYER_NEAR_POS(comp, base, tol)                                                                                                             \
         (((g_SysWork.playerWork.player.position.comp - Q12(base)) >= Q12(0.0f)) ? ((g_SysWork.playerWork.player.position.comp - Q12(base)) < Q12(tol)) : \
@@ -121,7 +148,7 @@ namespace Silent::Game
     #define CLEAR_FLAG(ptr, idx) \
         ((((u32*)ptr)[(idx) >> 5] &= ~((1 << 0) << ((idx) & 0x1F))))
 
-    /** @brief Sync modes used by `DrawSync` and `VSync`. */
+    /** @brief @deprecated Sync modes used by `DrawSync` and `VSync`. */
     enum e_SyncMode
     {
         SyncMode_Count     = -1,
@@ -194,31 +221,31 @@ namespace Silent::Game
     /** @brief State IDs used by the main game loop. The values are used as indices into the `g_GameStateUpdateFuncs` function array. */
     enum e_GameState
     {
-        GameState_Init                = 0,
-        GameState_KonamiLogo          = 1,
-        GameState_KcetLogo            = 2,
-        GameState_MovieIntroFadeIn    = 3,
-        GameState_AutoLoadSavegame    = 4,
-        GameState_MovieIntroAlternate = 5,
-        GameState_MovieIntro          = 6,
-        GameState_MainMenu            = 7,
-        GameState_LoadSavegameScreen  = 8,
-        GameState_MovieOpening        = 9,
-        GameState_MainLoadScreen      = 10,
-        GameState_InGame              = 11,
-        GameState_MapEvent            = 12,
-        GameState_ExitMovie           = 13,
-        GameState_InventoryScreen     = 14,
-        GameState_PaperMapScreen      = 15,
-        GameState_SaveScreen          = 16,
-        GameState_DebugMoviePlayer    = 17,
-        GameState_OptionScreen        = 18,
-        GameState_LoadStatusScreen    = 19,
-        GameState_LoadMapScreen       = 20,
-        GameState_Credits             = 21,
-        GameState_Unk16               = 22, /** Removed debug menu? Doesn't exist in function array, but `DebugMoviePlayer` state tries to switch to it. */
-
-        GameState_Hack                = NO_VALUE // @hack Force enum to be treated as s32.
+        GameState_Init,
+        GameState_LanguageScreen,
+        //GameState_SplashScreen,
+        //GameState_Logos,
+        GameState_KonamiLogo,
+        GameState_KcetLogo,
+        GameState_AutoLoadSavegame,
+        GameState_MovieIntroAlternate,
+        GameState_MovieIntro,
+        GameState_MainMenu,
+        GameState_LoadSavegameScreen,
+        GameState_MovieOpening,
+        GameState_MainLoadScreen,
+        GameState_InGame,
+        GameState_MapEvent,
+        GameState_ExitMovie,
+        GameState_InventoryScreen,
+        GameState_PaperMapScreen,
+        GameState_SaveScreen,
+        GameState_DebugMoviePlayer,
+        GameState_OptionScreen,
+        GameState_LoadStatusScreen,
+        GameState_LoadMapScreen,
+        GameState_Credits,
+        GameState_Unk16 /** Removed debug menu? Doesn't exist in function array, but `DebugMoviePlayer` state tries to switch to it. */
     };
 
     /** @brief State IDs used by `GameState_InGame`.
@@ -407,22 +434,23 @@ namespace Silent::Game
     /** @brief Main system workspace. Stores key engine data. */
     struct s_SysWork
     {
-        s8               unused_0[8];      /** @unused */
-        s32              sysState;         /** `e_SysState` */
-        s32              sysStateSteps[3]; /** Temp data used by current `sysState`. Can be another state ID or other data. */
-        bool             isMgsStringSet;   /** Indicates if string have been loaded and is going (or it is) being display. */
-        s32              counters_1C[3];
-        q19_12           field_28; // Multi-purpose? Used as alpha to fade between images in `Screen_BackgroundImgTransition`.
-        q19_12           timer_2C; // Cutscene message timer?
-        s32              cutsceneBorderState; /** `e_CutsceneBorderState` */
-        s8               unused_34[4]; /** @unused */
-        s_PlayerCombat   playerCombat;
-        s_PlayerWork     playerWork;
-        s_SubCharacter   npcs[NPC_COUNT_MAX];
-        GsCOORDINATE2    playerBoneCoords[HarryBone_Count];
-        GsCOORDINATE2    unkCoords_E30[5];                       // Might be part of previous array for 5 extra coords which go unused.
-        GsCOORDINATE2    npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
-        s8               npcFlagsId;                             // 1-based NPC ID for `npcFlags`.
+        int  sysState;             /** `e_SysState` */
+        int  sysStateSteps[3];     /** Temp data used by current `sysState`. Can be another state ID or other data. */
+        int  sysStateStepData[2];  /** Temporary data for `sysStateSteps[0]` and `sysStateSteps[1]`. */
+        int  sysStateCounter;      /** Frame counter for the current `sysState`. Reset when `sysState` is changed. */
+        int  gameStateCounter;     /** Frame counter for the current `g_GameWork.gameState`. Reset when `gameState` is changed. */
+        int  gameStateStepCounter; /** Frame counter for the current `g_GameWork.gameStateSteps[0]`. Reset when `gameStateSteps[0]` is changed. */
+        int  cutsceneBorderState;  /** `e_CutsceneBorderState` */
+        bool isMgsStringSet;       /** Indicates if string have been loaded and is going (or it is) being display. */
+
+        s_PlayerCombat playerCombat;
+        s_PlayerWork   playerWork;
+        s_SubCharacter npcs[NPC_COUNT_MAX];
+        GsCOORDINATE2  playerBoneCoords[HarryBone_Count];
+        GsCOORDINATE2  unkCoords_E30[5];                       // Might be part of previous array for 5 extra coords which go unused.
+        GsCOORDINATE2  npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
+        s8             npcFlagsId;                             // 1-based NPC ID for `npcFlags`.
+
         s8               loadingScreenIdx;
         s8               areaTransitionFlags;                /** `e_AreaTransitionFlags` */
         s8               sfxPairIdx;                         /** `e_SfxPairIdx` | Index into `SFX_PAIRS`. */
@@ -430,7 +458,6 @@ namespace Silent::Game
                                                              // Enabling a flag for Larval Stalkers causes them to die.
         s32              field_228C[1];
         s32              npcFlags;         // Flags related to NPCs. Each bit corresponds to an `npcs` array entry.
-        s8               unused_2294[4];   /** @unused */
         s32              processFlags;     /** `e_ProcessFlags` */
         s32              unused_229C;      /** @unused Set to `NO_VALUE` when the player has been initalized and 0 when the player changes areas. Beyond that it's dead code. */
         s32              bgmStatusFlags;   /** `e_BgmStatusFlags` */
@@ -443,13 +470,13 @@ namespace Silent::Game
         u8               field_234B_0 : 4; /** `bool` | Related to particles. Used to trigger SFX? */
         u8               field_234B_4 : 4; // Related to particles.
         q19_12           mapMsgTimer;
-        u8               silentYesSelection  : 4; /** `bool` */
-        u32              invItemSelectedIdx  : 8;
-        u32              invItemLoadFlags    : 8; /** `e_InvItemLoadFlags` */
-        s8               targetNpcIdx;            /** Index of the NPC in `npcs` being targeted by the player. */
+        bool             enableHalfHeightGlyphs;
+        u8               silentYesSelection : 4; /** `bool` */
+        u32              invItemSelectedIdx : 8;
+        u32              invItemLoadFlags   : 8; /** `e_InvItemLoadFlags` */
+        s8               targetNpcIdx;           /** Index of the NPC in `npcs` being targeted by the player. */
         s8               npcIdxs[CHARA_GROUP_COUNT];
         u8               enablePlayerMatchAnim; /** `bool` | Activates the animation performed by Harry when lighting a match at the beginning of the game. */
-        s8               unused_2359;           /** @unused */
         u8               playerStopFlags;       /** `e_PlayerStopFlags` */
         GsCOORDINATE2*   lightBoneCoord;
         VECTOR3          lightPosition;      // } Often set to DMS cutscene data.
@@ -462,10 +489,10 @@ namespace Silent::Game
         q19_12           cameraRadiusXz;
         q19_12           cameraY;
         s_SysWork_2388   field_2388;
-        s32              field_2510;
-        s_SysWork_2514   field_2514;
-        s8               field_254C[508]; /** Used through indirect pointer calls. Tied to `libkpad`.*/
-        q3_12            bgmLayerVolumes[BGM_LAYER_COUNT];
+        s32              field_2510;                       // } Related to libkpad.
+        s_SysWork_2514   field_2514;                       // }
+        s8               field_254C[508];                  /** Used through indirect pointer calls. Tied to `libkpad`.*/
+        q3_12            bgmLayerVolumes[BGM_LAYER_COUNT]; // Last index value is not a layer, but some sort of timer. See `Bgm_LayersUpdate`.
         q23_8            field_275C; // } SFX volumes?
         q23_8            field_2760; // }
         q23_8            field_2764; // }
@@ -484,18 +511,16 @@ namespace Silent::Game
      * @param sysState System state to set.
      * @return New system state.
      */
-    static inline s32 SysWork_StateSetNext(e_SysState sysState)
+    static inline e_SysState SysWork_StateSetNext(e_SysState sysState)
     {
-        s32 state;
-
-        state                       =
-        g_SysWork.sysState        = sysState;
-        g_SysWork.counters_1C[2]          = 0;
-        g_SysWork.sysStateSteps[0] = 0;
-        g_SysWork.field_28          = 0;//Q12(0.0f);
-        g_SysWork.sysStateSteps[1] = 0;
-        g_SysWork.timer_2C          = 0;//Q12(0.0f);
-        g_SysWork.sysStateSteps[2] = 0;
+        auto state                    = sysState;
+        g_SysWork.sysState            = sysState;
+        g_SysWork.sysStateCounter     = 0;
+        g_SysWork.sysStateSteps[0]    = 0;
+        g_SysWork.sysStateStepData[0] = 0;
+        g_SysWork.sysStateSteps[1]    = 0;
+        g_SysWork.sysStateStepData[1] = 0;
+        g_SysWork.sysStateSteps[2]    = 0;
         return state;
     }
 
@@ -503,20 +528,20 @@ namespace Silent::Game
      *
      * @param stepIdx Index of the `sysStateStep` to increment.
      */
-    static inline void SysWork_StateStepIncrement(s32 stepIdx)
+    static inline void SysWork_StateStepIncrement(int stepIdx)
     {
         if (stepIdx == 0)
         {
-            g_SysWork.field_28         = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[1] = 0;
-            g_SysWork.timer_2C         = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[2] = 0;
+            g_SysWork.sysStateStepData[0] = 0;
+            g_SysWork.sysStateSteps[1]    = 0;
+            g_SysWork.sysStateStepData[1] = 0;
+            g_SysWork.sysStateSteps[2]    = 0;
             g_SysWork.sysStateSteps[0]++;
         }
         else if (stepIdx == 1)
         {
-            g_SysWork.timer_2C         = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[2] = 0;
+            g_SysWork.sysStateStepData[1] = 0;
+            g_SysWork.sysStateSteps[2]    = 0;
             g_SysWork.sysStateSteps[1]++;
         }
         else
@@ -531,29 +556,28 @@ namespace Silent::Game
      * @param sysStateStep System state step to set.
      * @return New system state step.
      */
-    static inline s32 SysWork_StateStepSet(s32 stepIdx, s32 sysStateStep)
+    static inline int SysWork_StateStepSet(int stepIdx, int sysStateStep)
     {
-        s32 step;
-
+        int step = 0;
         if (stepIdx == 0)
         {
-            step                        =
-            g_SysWork.sysStateSteps[0] = sysStateStep;
-            g_SysWork.field_28          = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[1] = 0;
-            g_SysWork.timer_2C          = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[2] = 0;
+            step                          = 
+            g_SysWork.sysStateSteps[0]    = sysStateStep;
+            g_SysWork.sysStateStepData[0] = 0;
+            g_SysWork.sysStateSteps[1]    = 0;
+            g_SysWork.sysStateStepData[1] = 0;
+            g_SysWork.sysStateSteps[2]    = 0;
         }
         else if (stepIdx == 1)
         {
-            step                        =
-            g_SysWork.sysStateSteps[1] = sysStateStep;
-            g_SysWork.timer_2C          = 0;//Q12(0.0f);
-            g_SysWork.sysStateSteps[2] = 0;
+            step                          = 
+            g_SysWork.sysStateSteps[1]    = sysStateStep;
+            g_SysWork.sysStateStepData[1] = 0;
+            g_SysWork.sysStateSteps[2]    = 0;
         }
         else
         {
-            step                        =
+            step                       =
             g_SysWork.sysStateSteps[2] = sysStateStep;
         }
 
@@ -563,18 +587,18 @@ namespace Silent::Game
     /** @brief Resets `sysStateStep` in `g_SysWork` for the next tick. */
     static inline void SysWork_StateStepReset()
     {
-        g_SysWork.sysStateSteps[0] = NO_VALUE;
-        g_SysWork.field_28          = 0;//Q12(0.0f);
-        g_SysWork.sysStateSteps[1] = 0;
-        g_SysWork.timer_2C          = 0;//Q12(0.0f);
-        g_SysWork.sysStateSteps[2] = 0;
+        g_SysWork.sysStateSteps[0]    = NO_VALUE;
+        g_SysWork.sysStateStepData[0] = 0;
+        g_SysWork.sysStateSteps[1]    = 0;
+        g_SysWork.sysStateStepData[1] = 0;
+        g_SysWork.sysStateSteps[2]    = 0;
     }
 
     /** @brief Sets an NPC flag in the `g_SysWork.npcFlags` bitfield.
      *
      * @param flagIdx Index of the NPC flag to set.
      */
-    static inline void SysWork_NpcFlagSet(s32 flagIdx)
+    static inline void SysWork_NpcFlagSet(int flagIdx)
     {
         g_SysWork.npcFlags |= 1 << flagIdx;
     }
@@ -583,7 +607,7 @@ namespace Silent::Game
      *
      * @param flagIdx Index of the NPC flag to clear.
      */
-    static inline void SysWork_NpcFlagClear(s32 flagIdx)
+    static inline void SysWork_NpcFlagClear(int flagIdx)
     {
         CLEAR_FLAG(&g_SysWork.npcFlags, flagIdx);
     }
@@ -601,15 +625,13 @@ namespace Silent::Game
      */
     static inline void Game_StateSetNext_ClearStateSteps(e_GameState gameState)
     {
-        e_GameState prevState;
+        auto prevState = g_GameWork.gameState;
 
-        prevState = g_GameWork.gameState;
-
-        g_GameWork.gameState         = gameState;
-        g_SysWork.counters_1C[0]        = 0;
-        g_SysWork.counters_1C[1]        = 0;
-        g_GameWork.gameStateSteps[1] = 0;
-        g_GameWork.gameStateSteps[2] = 0;
+        g_GameWork.gameState           = gameState;
+        g_SysWork.gameStateCounter     = 0;
+        g_SysWork.gameStateStepCounter = 0;
+        g_GameWork.gameStateSteps[1]   = 0;
+        g_GameWork.gameStateSteps[2]   = 0;
 
         SysWork_StateSetNext(SysState_Gameplay);
 
@@ -625,15 +647,13 @@ namespace Silent::Game
      */
     static inline void Game_StateSetNext(e_GameState gameState)
     {
-        e_GameState prevState;
+        auto prevState = g_GameWork.gameState;
 
-        prevState = g_GameWork.gameState;
-
-        g_GameWork.gameState         = gameState;
-        g_SysWork.counters_1C[0]        = 0;
-        g_SysWork.counters_1C[1]        = 0;
-        g_GameWork.gameStateSteps[1] = 0;
-        g_GameWork.gameStateSteps[2] = 0;
+        g_GameWork.gameState           = gameState;
+        g_SysWork.gameStateCounter     = 0;
+        g_SysWork.gameStateStepCounter = 0;
+        g_GameWork.gameStateSteps[1]   = 0;
+        g_GameWork.gameStateSteps[2]   = 0;
 
         SysWork_StateSetNext(SysState_Gameplay);
 
@@ -651,14 +671,12 @@ namespace Silent::Game
      */
     static inline void Game_StateSetPrevious()
     {
-        e_GameState prevState;
+        auto prevState = g_GameWork.gameState;
 
-        prevState = g_GameWork.gameState;
-
-        g_SysWork.counters_1C[0]        = 0;
-        g_SysWork.counters_1C[1]        = 0;
-        g_GameWork.gameStateSteps[1] = 0;
-        g_GameWork.gameStateSteps[2] = 0;
+        g_SysWork.gameStateCounter     = 0;
+        g_SysWork.gameStateStepCounter = 0;
+        g_GameWork.gameStateSteps[1]   = 0;
+        g_GameWork.gameStateSteps[2]   = 0;
 
         SysWork_StateSetNext(SysState_Gameplay);
 
@@ -684,41 +702,40 @@ namespace Silent::Game
      * @param stateStep New value for the index.
      * @return Value written (`== stateStep`).
      */
-    static inline s32 Game_StateStepSet(s32 stepIdx, s32 stateStep)
+    static inline int Game_StateStepSet(int stepIdx, int stateStep)
     {
-        s32 step;
-
+        int step = 0;
         if (stepIdx == 0)
         {
-            step                         = 
-            g_GameWork.gameStateSteps[0] = stateStep;
-            g_SysWork.counters_1C[1]     = 0;
-            g_GameWork.gameStateSteps[1] = 0;
-            g_GameWork.gameStateSteps[2] = 0;
+            step                           = 
+            g_GameWork.gameStateSteps[0]   = stateStep;
+            g_SysWork.gameStateStepCounter = 0;
+            g_GameWork.gameStateSteps[1]   = 0;
+            g_GameWork.gameStateSteps[2]   = 0;
         }
         else if (stepIdx == 1)
         {
-            step = g_GameWork.gameStateSteps[1] = stateStep;
+            step                         =
+            g_GameWork.gameStateSteps[1] = stateStep;
             g_GameWork.gameStateSteps[2] = 0;
         }
         else
         {
-            step = g_GameWork.gameStateSteps[2] = stateStep;
+            step                         =
+            g_GameWork.gameStateSteps[2] = stateStep;
         }
 
         return step;
     }
 
-    static inline void Game_StateStepIncrement(s32 stepIdx)
+    static inline void Game_StateStepIncrement(int stepIdx)
     {    
         if(stepIdx == 0)
         {
-            s32 step = g_GameWork.gameStateSteps[0];
-
-            g_SysWork.counters_1C[1]     = 0;
-            g_GameWork.gameStateSteps[1] = 0;
-            g_GameWork.gameStateSteps[2] = 0;
-            g_GameWork.gameStateSteps[0] = step + 1;
+            g_SysWork.gameStateStepCounter = 0;
+            g_GameWork.gameStateSteps[1]   = 0;
+            g_GameWork.gameStateSteps[2]   = 0;
+            g_GameWork.gameStateSteps[0]++;
         }
         else if(stepIdx == 1)
         {

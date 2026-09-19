@@ -2,6 +2,7 @@
 #include "Renderer/Renderer.h"
 
 #include "Application.h"
+#include "Assets/Fonts.h"
 #include "Renderer/Backends/SdlGpu/SdlGpu.h"
 #include "Renderer/Common/Resources/Primitive/Primitive3d.h"
 #include "Renderer/Common/Resources/Primitive/Vertex2d.h"
@@ -112,10 +113,24 @@ namespace Silent::Renderer
 
     void RendererBase::PrepareFrameData()
     {
-        auto& video    = g_App.GetVideo();
         auto& executor = g_App.GetExecutor();
+        auto& fonts    = g_App.GetFonts();
+        auto& video    = g_App.GetVideo();
 
+        // Update swapchain resolution.
         _scene.Frame.Back.SwapchainResolution = g_App.GetWindowResolution();
+
+        // Swap double-buffered font atlas textures.
+        for (const auto& metadata : FONTS_METADATA)
+        {
+            auto* font = fonts.GetFont(metadata.Name);
+            if (font == nullptr)
+            {
+                continue;
+            }
+
+            font->Swap();
+        }
 
         // @todo Using parallelism here causes flickering, but even without it some 2D objects don't draw. There's
         // a severe bug somewhere.
@@ -174,6 +189,11 @@ namespace Silent::Renderer
 
     bool RendererBase::SubmitShape2d(const Shape2d& shape)
     {
+        if (!g_App.IsDrawTick())
+        {
+            return false;
+        }
+
         if (_scene.Objects.Shapes2d.size() >= SHAPE_2D_COUNT_MAX)
         {
             Debug::Log("Attempted to submit 2D shape to full container.",
@@ -187,6 +207,11 @@ namespace Silent::Renderer
 
     bool RendererBase::SubmitSprite2d(const Sprite2d& sprite)
     {
+        if (!g_App.IsDrawTick())
+        {
+            return false;
+        }
+
         auto& assets = g_App.GetAssets();
 
         if (_scene.Objects.Sprites2d.size() >= SPRITE_2D_COUNT_MAX)
@@ -214,6 +239,11 @@ namespace Silent::Renderer
     {
         constexpr auto    SHADOW_COLOR  = Color::From8Bit(16, 16, 16);
         static const auto SHADOW_OFFSET = SCREEN_SPACE_RES / Vector2(RETRO_SCREEN_SPACE_RES.y);
+
+        if (!g_App.IsDrawTick())
+        {
+            return false;
+        }
 
         // Compute transformation parameters.
         auto  rotMat           = Matrix::CreateRotationZ(text.Rotation);
@@ -347,9 +377,27 @@ namespace Silent::Renderer
             }
 
             // Update horizontal offset.
-            pixelOffset.x += shapedGlyph.Spacing + text.Tracking;
+            pixelOffset.x += shapedGlyph.Spacing;
         }
 
+        return true;
+    }
+
+    bool RendererBase::SubmitTriangle3d(const Triangle3d& tri)
+    {
+        if (!g_App.IsDrawTick())
+        {
+            return false;
+        }
+
+        if (_scene.Objects.Triangles3d.size() >= TRI_3D_COUNT_MAX)
+        {
+            Debug::Log("Attempted to submit 3D triangle to full container.",
+                       Debug::LogLevel::Warning, Debug::LogMode::Debug);
+            return false;
+        }
+
+        _scene.Objects.Triangles3d.push_back(tri);
         return true;
     }
 

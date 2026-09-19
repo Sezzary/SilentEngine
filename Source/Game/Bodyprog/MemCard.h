@@ -133,8 +133,8 @@ namespace Silent::Game
         MemCardResult_InitError       = 2,   /** `MemCard_State_Init` `EvSpNEW` "No writing after connection". */
         MemCardResult_InitComplete    = 3,   /** `MemCard_State_Init` `EvSpIOE` "Connected". */
         MemCardResult_LoadError       = 4,   /** `MemCard_State_Load` `EvSpNEW` "Uninitialized card". */
-        MemCardResult_NewDevice       = 5,   /** `MemCard_State_DirRead` when `g_MemCard_Work.hasNewDevice_70`. */
-        MemCardResult_NoNewDevice     = 6,   /** `MemCard_State_DirRead` when `!g_MemCard_Work.hasNewDevice_70`. */
+        MemCardResult_NewDevice       = 5,   /** `MemCard_State_DirRead` when `g_MemCard_Work.hasNewDevice`. */
+        MemCardResult_NoNewDevice     = 6,   /** `MemCard_State_DirRead` when `!g_MemCard_Work.hasNewDevice`. */
         MemCardResult_FileCreateError = 7,   /** `MemCard_State_FileCreate` after 15 retries. */
         MemCardResult_FileOpenError   = 8,   /** `MemCard_State_FileOpen` after 15 retries. */
         MemCardResult_FileSeekError   = 9,   /** `MemCard_State_FileReadWrite` after 15 retries. */
@@ -157,62 +157,51 @@ namespace Silent::Game
     typedef struct
     {
         char magic[2];
-        u8   iconDisplayFlag_2;
-        u8   blockCount_3;
-        u16  titleNameShiftJis_4[32];
+        u8   iconDisplayFlag;
+        u8   blockCount;
+        u16  titleNameShiftJis[32];
         s8   field_44[28];       // Reserved/unused?
-        s8   iconPalette_60[32]; // CLUT data copied from `TIM_IMAGE.caddr`.
-        s8   textureData_80[32]; // Copied from `TIM_IMAGE.paddr`.
+        s8   iconPalette[32]; // CLUT data copied from `TIM_IMAGE.caddr`.
+        s8   textureData[32]; // Copied from `TIM_IMAGE.paddr`.
         s8   unk_A0[352];
     } s_PsxSaveBlock;
 
     typedef struct
     {
-        char filenames_0[MEMCARD_FILE_COUNT_MAX][21];
-        u8   blockCounts_13B[MEMCARD_FILE_COUNT_MAX]; // Size of each file in 8192 byte blocks.
+        char filenames[MEMCARD_FILE_COUNT_MAX][21];
+        u8   blockCounts[MEMCARD_FILE_COUNT_MAX]; // Size of each file in 8192 byte blocks.
     } s_MemCard_Directory;
 
     typedef struct
     {
-        s32 devicesPending_0; /** Bitfield of device IDs, each set bit index is an ID that must be read/initialized first. */
-        s32 state_4;          /** `e_CardState` */
-        s32 stateStep_8;
-        s32 stateResult_C;    /** `e_MemCardResult` */
-        s32 eventSwSpIOE_10;
-        s32 eventSwSpERROR_14;
-        s32 eventSwSpTIMOUT_18;
-        s32 eventSwSpNEW_1C;
-        s32 eventHwSpIOE_20;
-        s32 eventHwSpERROR_24;
-        s32 eventHwSpTIMOUT_28;
-        s32 eventHwSpNEW_2C;
-        s32 eventHwSpUNKNOWN_30;
-        //s32 lastEventHw_34;
-        s32 MemCardIoMode_38; /** `e_MemCardIoMode` */
-        s32 deviceId_3C;
+        s32 devicesPending; /** Bitfield of device IDs, each set bit index is an ID that must be read/initialized first. */
+        s32 state;          /** `e_CardState` */
+        s32 stateStep;
+        s32 stateResult;    /** `e_MemCardResult` */
+        s32 MemCardIoMode;  /** `e_MemCardIoMode` */
+        s32 deviceId;
 
-        s_MemCard_Directory* directories_40; /** Array of files on the card, pointer supplied by caller to `MemCard_WorkSet`. */
+        s_MemCard_Directory* directories; /** Array of files on the card, pointer supplied by caller to `MemCard_WorkSet`. */
 
-        char  filePath_44[28];
-        s32   createBlockCount_60; /** Block count passed to `open` when creating new file. */
-        s32   seekOffset_64;
-        void* dataBuffer_68;
-        s32   dataSize_6C;
-        bool  hasNewDevice_70;
-        s32   fileHandle_74;
-        s32   retryCount_78;
-        s32   field_7C;
+        char  filePath[28];
+        s32   createBlockCount; /** Block count passed to `open` when creating new file. */
+        s32   seekOffset;
+        void* dataBuffer;
+        s32   dataSize;
+        bool  hasNewDevice;
+        s32   fileHandle;
+        s32   retryCount;
     } s_MemCard_Work;
 
     struct s_MemCard_SaveMetadata
     {
-        s32 totalSavegameCount_0;
-        u32 gameplayTimer_4;
-        u16 savegameCount_8;
-        u8  locationId_A;
-        u8  isNextFearMode_B             : 1;
-        u8  add290Hours_B_1              : 2;
-        u8  pickedUpSpecialItemCount_B_3 : 5; /** See `pickedUpSpecialItemCount` comment in `s_Savegame`. */
+        s32 totalSavegameCount;
+        u32 gameplayTimer;
+        u16 savegameCount;
+        u8  locationId;
+        u8  isNextFearMode           : 1;
+        u8  add290Hours              : 2;
+        u8  pickedUpSpecialItemCount : 5; /** See `pickedUpSpecialItemCount` comment in `s_Savegame`. */
     };
 
     /** @brief Information of elements in the save screen.
@@ -226,20 +215,20 @@ namespace Silent::Game
      */
     struct s_SaveScreenElement
     {
-        s16                     totalSavegameCount_0; /** Counter for all savegame instances created throughout the game.
+        s16                     totalSavegameCount; /** Counter for all savegame instances created throughout the game.
                                                     * The value is derived by running through all savegames on a memory card
                                                     * and picking the one with the largest value.
                                                     *
                                                     * @bug This counter is used to determine if the "New Save" element has
                                                     * been selected, which causes overwrites to not show the "Yes/No" message.
                                                     */
-        s16                     savegameCount_2;
-        s8                      type_4;               /** `e_SavegameEntryType` */
-        s8                      deviceId_5;
-        s8                      fileIdx_6;
-        s8                      elementIdx_7;
-        s8                      locationId_8;
-        s_MemCard_SaveMetadata* saveMetadata_C;
+        s16                     savegameCount;
+        s8                      type;               /** `e_SavegameEntryType` */
+        s8                      deviceId;
+        s8                      fileIdx;
+        s8                      elementIdx;
+        s8                      locationId;
+        s_MemCard_SaveMetadata* saveMetadata;
     };
 
     /** @brief Appended to `ShSavegame` and `ShSaveUserConfig` during agame save. Contains 8-bit XOR checksum + magic.
@@ -254,39 +243,36 @@ namespace Silent::Game
     /** @brief Contains `s_Savegame` data with the footer appended to the end containing the checksum + magic. */
     typedef struct _SavegameContainer
     {
-        s_Savegame        savegame_0;
-        s_Savegame_Footer footer_27C;
+        s_Savegame        savegame;
+        s_Savegame_Footer footer;
     } s_Savegame_Container;
 
     /** @brief Contains `s_OptionsConfig` data padded to 128 bytes with a footer at the end containing checksum + magic. */
     typedef struct _SaveUserConfigContainer
     {
-        s_OptionsConfig config;
-        u8                pad_38[68];
-        s_Savegame_Footer footer_7C;
+        s_OptionsConfig   config;
+        s_Savegame_Footer footer;
     } s_Savegame_UserConfigs;
 
     typedef struct
     {
-        s32 totalSavegameCount_0;
+        s32 totalSavegameCount;
         s32 fileIdx;
-        s32 saveIdx_8;
+        s32 saveIdx;
     } s_MemCard_TotalSavesInfo;
 
     typedef struct
     {
-        s32                    unk_0;
-        s_MemCard_SaveMetadata saveMetadata_4[MEMCARD_SAVES_COUNT_MAX];
-        s8                     unk_88[116];
-        s_Savegame_Footer      footer_FC;
+        s_MemCard_SaveMetadata saveMetadata[MEMCARD_SAVES_COUNT_MAX];
+        s_Savegame_Footer      footer;
     } s_MemCard_SaveHeader;
 
     typedef struct
     {
         s32                   status; /** `e_MemCardState` */
-        s8                    fileState_4[MEMCARD_FILE_COUNT_MAX];
-        s_MemCard_SaveHeader* saveHeader_14; /** Slots saves information. */
-        s32                   fileLimit_18;  /** Max count of files allowed in the memory card. */
+        s8                    fileState[MEMCARD_FILE_COUNT_MAX];
+        s_MemCard_SaveHeader* saveHeader; /** Slots saves information. */
+        s32                   fileLimit;  /** Max count of files allowed in the memory card. */
     } s_MemCard_DeviceInfo;
 
     /** @note Some memory card states information. Related to `s_SaveScreenElement`.
@@ -305,14 +291,13 @@ namespace Silent::Game
     // OPM16 has `MCM_FUNC_WORK` struct with size 0x6D8, close to this 0x718.
     typedef struct
     {
-        s_MemCard_DeviceInfo   devices_0[MEMCARD_DEVICE_COUNT_MAX];
-        s_MemCard_Process      saveWork_E0[2]; // This seems to be used mainly for processes. Element 0 is used for general processes while 1 is exclusively used for
-        s32                    memCardInitalized_110;
-        s32                    unk_114;
-        s_PsxSaveBlock         saveBlock_118;
-        s_MemCard_SaveHeader   saveInfo_318;
-        s_Savegame_UserConfigs userConfig_418;
-        s_Savegame_Container   saveGame_498;
+        s_MemCard_DeviceInfo   devices[MEMCARD_DEVICE_COUNT_MAX];
+        s_MemCard_Process      saveWork[2]; // This seems to be used mainly for processes. Element 0 is used for general processes while 1 is exclusively used for
+        s32                    memCardInitalized;
+        s_PsxSaveBlock         saveBlock;
+        s_MemCard_SaveHeader   saveInfo;
+        s_Savegame_UserConfigs userConfig;
+        s_Savegame_Container   saveGame;
     } s_MemCard_SaveWork;
 
     // ========
@@ -335,9 +320,7 @@ namespace Silent::Game
 
     extern u8 D_800A97D7;
 
-    extern s8 D_800A97D8;
-
-    extern s8 D_800A97D9;
+    extern bool g_SaveScreen_IsInSaveScreen;
 
     extern s32 D_800A97DC; // `e_SavegameEntryType`
 

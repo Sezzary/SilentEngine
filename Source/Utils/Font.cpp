@@ -2,6 +2,7 @@
 #include "Utils/Font.h"
 
 #include "Application.h"
+#include "Utils/DoubleBuffer.h"
 #include "Utils/Utils.h"
 
 namespace Silent::Utils
@@ -14,7 +15,7 @@ namespace Silent::Utils
         // @todo Check if counts are equal for fonts and trackings.
 
         _name               = metadata.Name;
-        _tracking           = metadata.Trackings[0]; // @todo Unique tracking for each font.
+        _trackings          = metadata.Trackings;
         _enableAntialiasing = metadata.EnableAntialiasing;
 
         // Clamp point size.
@@ -50,7 +51,7 @@ namespace Silent::Utils
         AddAtlas();
 
         // Precache glyphs.
-        auto codePoints = GetCodePoints(precacheGlyphs);
+        auto codePoints = GetUtf8CodePoints(precacheGlyphs);
         for (char32 codePoint : codePoints)
         {
             if (Find(_glyphs, codePoint) != nullptr)
@@ -96,15 +97,15 @@ namespace Silent::Utils
         return _pointSize;
     }
 
-    const std::vector<std::vector<byte>>& Font::GetTextureAtlases() const
+    const FontTextureAtlases& Font::GetTextureAtlases() const
     {
-        return _textureAtlases;
+        return _textureAtlases.Back;
     }
 
     ShapedText Font::GetShapedText(const std::string& msg)
     {
         // Cache new glyphs.
-        auto codePoints = GetCodePoints(msg);
+        auto codePoints = GetUtf8CodePoints(msg);
         for (char32 codePoint : codePoints)
         {
             if (Find(_glyphs, codePoint) != nullptr)
@@ -154,7 +155,7 @@ namespace Silent::Utils
 
                     auto kerningDelta = FT_Vector{};
                     FT_Get_Kerning(ftFont, charIdx0, charIdx1, FT_KERNING_DEFAULT, &kerningDelta);
-                    spacing += Q6_TO_FLT(kerningDelta.x) + (_pointSize * _tracking);
+                    spacing += Q6_TO_FLT(kerningDelta.x) + (_pointSize * _trackings[j]);
                 }
 
                 // Add shaped glyph.
@@ -171,39 +172,41 @@ namespace Silent::Utils
         return shapedText;
     }
 
-    const std::set<int>& Font::GetDirtyGpuAtlasIdxs() const
+    void Font::Swap()
     {
-        return _dirtyGpuAtlasIdxs;
-    }
+        _textureAtlases.Back.UpdatedIdxs.clear();
 
-    void Font::ClearDirtyGpuAtlasIdxs()
-    {
-        _dirtyGpuAtlasIdxs.clear();
+        if (!_textureAtlases.Front.UpdatedIdxs.empty())
+        {
+            _textureAtlases.Swap();
+            _textureAtlases.Front.Textures = _textureAtlases.Back.Textures;
+        }
     }
 
     void Font::CacheGlyph(char32 codePoint)
     {
         // Load valid glyph from font chain.
-        FT_Face ftFont = nullptr;
-        for (int i = 0; i < _ftFonts.size(); i++)
+        FT_Face ftFont  = nullptr;
+        int     fontIdx = 0;
+        for (fontIdx = 0; fontIdx < _ftFonts.size(); fontIdx++)
         {
             // Check if glyph is valid.
-            uint charIdx = FT_Get_Char_Index(_ftFonts[i], codePoint);
+            uint charIdx = FT_Get_Char_Index(_ftFonts[fontIdx], codePoint);
             if (charIdx == 0)
             {
                 // If no valid glyphs exist, use first font's invalid glyph.
-                if (i < (_ftFonts.size() - 1))
+                if (fontIdx < (_ftFonts.size() - 1))
                 {
                     continue;
                 }
                 else
                 {
-                    i = 0;
+                    fontIdx = 0;
                 }
             }
 
-            FT_Load_Glyph(_ftFonts[i], charIdx, _enableAntialiasing ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
-            ftFont = _ftFonts[i];
+            FT_Load_Glyph(_ftFonts[fontIdx], charIdx, _enableAntialiasing ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
+            ftFont = _ftFonts[fontIdx];
             break;
         }
         Debug::Assert(ftFont != nullptr, Fmt("Failed to cache glyph U+{:X} for font chain `{}`.",
@@ -233,7 +236,7 @@ namespace Silent::Utils
             .AtlasPosition = Vector2i(sma_item_x(&rect), sma_item_y(&rect)) + Vector2i(GLYPH_PADDING),
             .AtlasSize     = size - Vector2i(GLYPH_PADDING * 2),
             .Bearing       = Vector2(Q6_TO_FLT(metrics.horiBearingX), Q6_TO_FLT(metrics.horiBearingY)),
-            .Spacing       = Q6_TO_FLT(metrics.horiAdvance) + (_pointSize * _tracking),
+            .Spacing       = Q6_TO_FLT(metrics.horiAdvance) + (_pointSize * _trackings[fontIdx]),
             .Ascender      = Q6_TO_FLT(ftFont->size->metrics.ascender),
             .Descender     = Q6_TO_FLT(ftFont->size->metrics.descender),
             .MinY          = Q6_TO_FLT(ftBox.yMin),
@@ -273,8 +276,8 @@ namespace Silent::Utils
         FT_Render_Glyph(ftFont->glyph, FT_RENDER_MODE_NORMAL); // @todo Try SDF generator.
         const auto& bitmap     = ftFont->glyph->bitmap;
         byte*       pixelsFrom = (byte*)bitmap.buffer;
-        byte*       pixelsTo   = &_textureAtlases.back()[(((attribs.AtlasPosition.y) * ATLAS_SIZE) * RGBA_COMP_COUNT) +
-                                                         ((attribs.AtlasPosition.x) * RGBA_COMP_COUNT)];
+        byte*       pixelsTo   = &_textureAtlases.Front.Textures.back()[(((attribs.AtlasPosition.y) * ATLAS_SIZE) * RGBA_COMP_COUNT) +
+                                                                        ((attribs.AtlasPosition.x) * RGBA_COMP_COUNT)];
 
         // Copy pixels to atlas.
         for (int y = 0; y < bitmap.rows; y++)
@@ -293,14 +296,14 @@ namespace Silent::Utils
             }
         }
 
-        // Mark relevant GPU atlas texture as dirty.
-        _dirtyGpuAtlasIdxs.insert(_activeAtlasIdx);
+        // Mark relevant atlas texture as updated.
+        _textureAtlases.Front.UpdatedIdxs.insert(_activeAtlasIdx);
     }
 
     void Font::AddAtlas()
     {
         _rectAtlases.push_back(sma_atlas_create(ATLAS_SIZE, ATLAS_SIZE));
-        _textureAtlases.emplace_back(std::vector<byte>((ATLAS_SIZE * ATLAS_SIZE) * RGBA_COMP_COUNT));
+        _textureAtlases.Front.Textures.emplace_back(std::vector<byte>((ATLAS_SIZE * ATLAS_SIZE) * RGBA_COMP_COUNT));
         _activeAtlasIdx = _rectAtlases.size() - 1;
     }
 
@@ -351,16 +354,5 @@ namespace Silent::Utils
         {
             Debug::Log(Fmt("Failed to load font chain `{}`: {}", metadata.Name, ex.what()), Debug::LogLevel::Error);
         }
-    }
-
-    std::vector<char32> GetCodePoints(const std::string& msg)
-    {
-        // Reserve minimum size.
-        auto codePoints = std::vector<char32>{};
-        codePoints.reserve((msg.size() / 4) + 1);
-
-        // Collect code points.
-        utf8::utf8to32(msg.begin(), msg.end(), std::back_inserter(codePoints));
-        return codePoints;
     }
 }

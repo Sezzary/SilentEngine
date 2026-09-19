@@ -3,12 +3,21 @@
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Screens/SaveLoad/SaveLoad.h"
 
+#include "Application.h"
+#include "Assets/TranslationKeys.h"
 #include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/MemCard.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
+#include "Input/Input.h"
+#include "Utils/Translator.h"
+
+using namespace Silent::Assets;
+using namespace Silent::Input;
+using namespace Silent::Utils;
 
 namespace Silent::Game
 {
@@ -271,7 +280,7 @@ namespace Silent::Game
         for (i = 0; i < MEMCARD_SLOT_COUNT_MAX; i++)
         {
             Gfx_StringPositionSet(SLOT_STR_POS_TABLE[i].vx, SLOT_STR_POS_TABLE[i].vy);
-            Gfx_StringDraw(SLOT_STRS[i], 50);
+            Gfx_StringDraw(SLOT_STRS[i]);
         }
 
         line.vertex0.x = -136;
@@ -301,7 +310,7 @@ namespace Silent::Game
 
             // Draw "FILE" string.
             Gfx_StringPositionSet((slotIdx * OFFSET_X) + FILE_STR_MARGIN_X, POS_Y);
-            Gfx_StringDraw(FILE_STR, 50);
+            Gfx_StringDraw(FILE_STR);
 
             // Draw file ID string.
             Gfx_StringPositionSet((slotIdx * OFFSET_X) + FILE_ID_STR_MARGIN_X, POS_Y);
@@ -311,7 +320,7 @@ namespace Silent::Game
 
     bool SaveScreen_NextFearModeSave(s_MemCard_SaveMetadata* saveEntry) // 0x801E3078
     {
-        if (saveEntry != nullptr && saveEntry->isNextFearMode_B)
+        if (saveEntry != nullptr && saveEntry->isNextFearMode)
         {
             Gfx_StringColorSet(StringColorId_Gold);
             return true;
@@ -328,7 +337,7 @@ namespace Silent::Game
         constexpr int OFFSET_Y = SCREEN_HEIGHT / 12;
         constexpr int MARGIN_Y = 53;
 
-        s32 nameIdx = saveEntry->locationId_8;
+        s32 nameIdx = saveEntry->locationId;
 
         const u8 X_OFFSETS[] =
         {
@@ -351,7 +360,7 @@ namespace Silent::Game
         {
             selectedSaveIdx = saveIdx - hiddenSaveCount;
 
-            SaveScreen_NextFearModeSave(saveEntry->saveMetadata_C);
+            SaveScreen_NextFearModeSave(saveEntry->saveMetadata);
 
             if (g_SaveScreen_IsGameSaving != 0 && g_SelectedSaveSlotIdx == slotIdx && g_SlotElementSelectedIdx[slotIdx] == saveIdx)
             {
@@ -381,9 +390,9 @@ namespace Silent::Game
 
         if (saveIdx < g_SaveScreen_HiddenSaves[slotIdx] || (g_SaveScreen_HiddenSaves[slotIdx] + 4) < saveIdx)
         {
-            if (D_801E756C[slotIdx] != saveEntry->fileIdx_6)
+            if (D_801E756C[slotIdx] != saveEntry->fileIdx)
             {
-                D_801E756C[slotIdx] = saveEntry->fileIdx_6;
+                D_801E756C[slotIdx] = saveEntry->fileIdx;
             }
         }
         else
@@ -412,7 +421,7 @@ namespace Silent::Game
         s32 i;
         s32 entryType;
 
-        entryType = saveEntry->type_4;
+        entryType = saveEntry->type;
 
         if (g_SelectedSaveSlotIdx == slotIdx && saveIdx == 0 && entryType >= SavegameEntryType_CorruptedSave)
         {
@@ -738,7 +747,7 @@ namespace Silent::Game
         };
 
         g_SaveScreen_DisplaySaveInfo = false;
-        time                         = (u8)g_SysWork.counters_1C[0] & 0x3F;
+        time                         = (u8)g_SysWork.gameStateCounter & 0x3F;
         //ot                           = &g_OrderingTable2[g_ActiveBufferIdx];
 
         switch (g_SaveScreen_OverwriteActive)
@@ -905,7 +914,7 @@ namespace Silent::Game
                 //borderLine = (LINE_F2*)GsOUT_PACKET_P;
                 //setLineF2(borderLine);
 
-                //setRGB0(borderLine, Q8_COLOR(0.0f), Q8_COLOR(1.0f), Q8_COLOR(0.0f));
+                //setRGB0(borderLine, 0, 255, 0);
 
                 //setXY2(borderLine,
                 //    BORDER_LINES[j][i].vertex0.x + (g_SelectedSaveSlotIdx * SLOT_COLUMN_OFFSET), BORDER_LINES[j][i].vertex0.y,
@@ -925,10 +934,10 @@ namespace Silent::Game
                 //setPolyG4(glowPoly);
                 //setSemiTrans(glowPoly, true);
 
-                //setRGB0(glowPoly, Q8_COLOR(0.0f), Q8_COLOR(0.5f), Q8_COLOR(0.0f));
-                //setRGB1(glowPoly, Q8_COLOR(0.0f), Q8_COLOR(0.0f), Q8_COLOR(0.0f));
-                //setRGB2(glowPoly, Q8_COLOR(0.0f), Q8_COLOR(0.5f), Q8_COLOR(0.0f));
-                //setRGB3(glowPoly, Q8_COLOR(0.0f), Q8_COLOR(0.0f), Q8_COLOR(0.0f));
+                //setRGB0(glowPoly, 0, Q8_COLOR(0.5f), 0);
+                //setRGB1(glowPoly, 0, 0, 0);
+                //setRGB2(glowPoly, 0, Q8_COLOR(0.5f), 0);
+                //setRGB3(glowPoly, 0, 0, 0);
 
                 //setXY4(glowPoly,
                 //    BORDER_GLOW_QUADS[j][i].vertex0.x + (g_SelectedSaveSlotIdx * SLOT_COLUMN_OFFSET), BORDER_GLOW_QUADS[j][i].vertex0.y,
@@ -952,7 +961,7 @@ namespace Silent::Game
         s8       color;
         POLY_F4* poly;
 
-        temp       = ((u8)g_SysWork.counters_1C[0]) & 0x3F;
+        temp       = ((u8)g_SysWork.gameStateCounter) & 0x3F;
         colorTimer = temp;
         //ot         = &g_OrderingTable2[g_ActiveBufferIdx];
 
@@ -1006,7 +1015,7 @@ namespace Silent::Game
         s32      i;
         s32      j;
 
-        u32 selectedSaveHighlightTimer = (u8)g_SysWork.counters_1C[0] & 0x3F;
+        u32 selectedSaveHighlightTimer = (u8)g_SysWork.gameStateCounter & 0x3F;
 
         const s_Quad2d SCROLL_BAR_TRACK_QUADS[] =
         {
@@ -1196,9 +1205,9 @@ namespace Silent::Game
     void SaveScreen_SaveBorderDraw(s_SaveScreenElement* saveEntry, s_SaveScreenElement* nextSaveEntry, s32 saveIdx, s32 slotIdx) // 0x801E4D90
     {
         GsOT* ot;
-        u32   entryIdx         = saveEntry->elementIdx_7;
-        s32   fileColorIdx     = saveEntry->fileIdx_6 + 1;
-        s32   nextFileColorIdx = nextSaveEntry->fileIdx_6 + 1;
+        u32   entryIdx         = saveEntry->elementIdx;
+        s32   fileColorIdx     = saveEntry->fileIdx + 1;
+        s32   nextFileColorIdx = nextSaveEntry->fileIdx + 1;
         s16   tileOffsetX1;
         s16   tileOffsetX0;
         s32   borderLineOffsetX;
@@ -1531,79 +1540,69 @@ namespace Silent::Game
 
     void SaveScreen_ElementInfoDraw(s32 slotIdx, s32 selectedSaveIdx) // 0x801E5E18
     {
-        char* labelStrs[] =
-        {
-            "Data",
-            "Save",
-            "Time",
-            "hyper blaster",
-            "power up",
-            "You_need_1_free_block\n__to_create_a_new_file."
-        };
+        const auto& translator = g_App.GetTranslator();
 
-        GsOT*               ot;
-        s32                 saveId;
-        s32                 mins;
-        s32                 beamColorFlag;
-        s32                 sec;
-        s32                 hours;
-        s32                 saveDataIdx;
-        s32                 i;
-        s32                 digitCount;
-        s32                 offset;
-        u32                 hyperBlasterBeamColor;
-        u32                 timeInSec;
+        GsOT*                   ot;
+        s32                     saveId;
+        s32                     mins;
+        s32                     beamColorFlag;
+        s32                     sec;
+        s32                     hours;
+        s32                     saveDataIdx;
+        s32                     i;
+        s32                     digitCount;
+        s32                     offset;
+        u32                     hyperBlasterBeamColor;
+        u32                     timeInSec;
         s_MemCard_SaveMetadata* ptr;
-        POLY_G4*            poly;
+        POLY_G4*                poly;
 
         //ot = &g_OrderingTable2[g_ActiveBufferIdx];
 
         g_MemCard_ActiveMemCardSlotSaves = MemCard_ActiveMemCardSlotGet(slotIdx);
 
-        if (g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].type_4 == SavegameEntryType_NewFile)
+        if (g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].type == SavegameEntryType_NewFile)
         {
-            Gfx_StringColorSet(StringColorId_White);
             Gfx_StringPositionSet(66, 178);
-            Gfx_StringDraw("You_need_1_free_block\n__to_create_a_new_file.", 0x32);
+            Gfx_StringColorSet(StringColorId_White);
+            Gfx_StringDraw(translator(KEY_SAVE_LOAD_MENU_NEED_1_FREE_BLOCK));
         }
-        else if (g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].type_4 == SavegameEntryType_Save)
+        else if (g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].type == SavegameEntryType_Save)
         {
-            saveId      = g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].savegameCount_2;
-            saveDataIdx = g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].elementIdx_7 + 1;
+            saveId      = g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].savegameCount;
+            saveDataIdx = g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].elementIdx + 1;
 
             saveId = CLAMP(saveId, 0, 999);
 
-            ptr = g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].saveMetadata_C;
+            ptr = g_MemCard_ActiveMemCardSlotSaves[selectedSaveIdx].saveMetadata;
 
-            timeInSec = FP_FROM(ptr->gameplayTimer_4, Q12_SHIFT);
+            timeInSec = FP_FROM(ptr->gameplayTimer, Q12_SHIFT);
 
-            offset = ptr->add290Hours_B_1;
-            hours  = (timeInSec / 3600) + offset * 290;
+            offset = ptr->add290Hours;
+            hours  = (timeInSec / 3600) + (offset * 290);
 
-            hyperBlasterBeamColor = ptr->pickedUpSpecialItemCount_B_3;
+            hyperBlasterBeamColor = ptr->pickedUpSpecialItemCount;
 
             mins = (timeInSec / 60) % 60;
             sec  = timeInSec % 60;
 
             Gfx_StringColorSet(StringColorId_White);
             Gfx_StringPositionSet(40, 178);
-            Gfx_StringDraw("Data", 5);
+            Gfx_StringDraw(translator(KEY_SAVE_LOAD_MENU_DATA), 5);
 
             digitCount = saveDataIdx < 10;
-
-            Gfx_StringPositionSet(digitCount * 5 + 92, 178);
+            Gfx_StringPositionSet((digitCount * 5) + 92, 178);
             Gfx_StringDrawInt(2, saveDataIdx);
 
             Gfx_StringPositionSet(40, 196);
-            Gfx_StringDraw("Save", 5);
+            Gfx_StringDraw(translator(KEY_SAVE_LOAD_MENU_SAVE), 5);
 
             digitCount = saveId < 10;
-
-            Gfx_StringPositionSet(digitCount * 5 + 92, 196);
+            Gfx_StringPositionSet((digitCount * 5) + 92, 196);
             Gfx_StringDrawInt(2, saveId);
 
             Gfx_StringPositionSet(128, 178);
-            Gfx_StringDraw("Time", 5);
+            //Gfx_StringDraw(translator(KEY_SAVE_LOAD_MENU_TIME), 5); // @todo
 
             digitCount = 0;
             if (hours < 100)
@@ -1620,28 +1619,28 @@ namespace Silent::Game
 
             Gfx_StringPositionSet((digitCount * 10) + 176, 178);
             Gfx_StringDrawInt(3, hours);
-            Gfx_StringDraw("_:_", 3);
+            Gfx_StringDraw(" : ", 3);
 
-            digitCount = mins < 10;
-
+            digitCount = (sec < 10) ? 1 : 0;
             Gfx_StringPositionSet((digitCount * 10) + 220, 178);
             Gfx_StringDrawInt(2, mins);
-            Gfx_StringDraw("_:_", 3);
+            Gfx_StringDraw(" : ", 3);
 
-            digitCount = sec < 10;
-
+            digitCount = (sec < 10) ? 1 : 0;
             Gfx_StringPositionSet((digitCount * 10) + 254, 178);
             Gfx_StringDrawInt(2, sec);
 
-            if (!(hyperBlasterBeamColor & 0x18)) // Checks if the player have no special hyper blaster beam color unlocked.
+            // Check if no special hyper blaster beam color is unlocked.
+            if (!(hyperBlasterBeamColor & 0x18))
             {
                 return;
             }
 
-            //Text_Debug_PositionSet(152, 194);
-            //Text_Debug_Draw("hyper blaster");
-            //Text_Debug_PositionSet(172, 202);
-            //Text_Debug_Draw("power up");
+            Text_Debug_PositionSet(152, 194);
+            Text_Debug_Draw(translator(KEY_SAVE_LOAD_MENU_HYPER_BLASTER));
+
+            Text_Debug_PositionSet(172, 202);
+            Text_Debug_Draw(translator(KEY_SAVE_LOAD_MENU_POWER_UP));
 
             for (i = 0; i < 2; i++)
             {
@@ -1653,18 +1652,18 @@ namespace Silent::Game
 
                 if (i != 0)
                 {
-                    //setRGB0(poly, (beamColorFlag > 0) ? Q8_COLOR(0.0f) : Q8_COLOR(1.0f), Q8_COLOR(1.0f), Q8_COLOR(0.0f));
-                    //setRGB2(poly, (beamColorFlag > 0) ? Q8_COLOR(0.0f) : Q8_COLOR(1.0f), Q8_COLOR(1.0f), Q8_COLOR(0.0f));
-                    //setRGB1(poly, Q8_COLOR(0.0f), Q8_COLOR(0.0f), Q8_COLOR(0.0f));
-                    //setRGB3(poly, Q8_COLOR(0.0f), Q8_COLOR(0.0f), Q8_COLOR(0.0f));
+                    //setRGB0(poly, (beamColorFlag > 0) ? 0 : 255, 255, 0);
+                    //setRGB2(poly, (beamColorFlag > 0) ? 0 : 255, 255, 0);
+                    //setRGB1(poly, 0, 0, 0);
+                    //setRGB3(poly, 0, 0, 0);
                     //setXY4(poly, -30, 89, -30, 93, 120, 89, 120, 93);
                 }
                 else
                 {
-                    //setRGB0(poly, Q8_COLOR(0.0f), Q8_COLOR(0.0f), Q8_COLOR(0.0f));
-                    //setRGB2(poly, Q8_COLOR(0.0f), Q8_COLOR(0.0f), Q8_COLOR(0.0f));
-                    //setRGB1(poly, (beamColorFlag > 0) ? Q8_COLOR(0.0f) : Q8_COLOR(1.0f), Q8_COLOR(1.0f), Q8_COLOR(0.0f));
-                    //setRGB3(poly, (beamColorFlag > 0) ? Q8_COLOR(0.0f) : Q8_COLOR(1.0f), Q8_COLOR(1.0f), Q8_COLOR(0.0f));
+                    //setRGB0(poly, 0, 0, 0);
+                    //setRGB2(poly, 0, 0, 0);
+                    //setRGB1(poly, (beamColorFlag > 0) ? 0 : 255, 255, 0);
+                    //setRGB3(poly, (beamColorFlag > 0) ? 0 : 255, 255, 0);
                     //setXY4(poly, -30, 85, -30, 89, 120, 85, 120, 89);
                 }
 
@@ -1693,17 +1692,12 @@ namespace Silent::Game
 
         if (g_GameWork.gameState == GameState_SaveScreen)
         {
-            //func_800363D0();
+            //Bgm_MenuUpdate();
         }
     }
 
     void SaveScreen_Init() // 0x801E63C0
     {
-        if (g_GameWork.gameStatePrev == GameState_MainMenu)
-        {
-            //VSync(SyncMode_Wait8);
-        }
-
         g_IntervalVBlanks = 1;
         ScreenFade_Start(true, true, false);
 
@@ -1711,27 +1705,31 @@ namespace Silent::Game
         g_GameWork.background2dColor.g = 0;
         g_GameWork.background2dColor.b = 0;
 
-        D_800BCD39 = false;
-        if (g_GameWork.gameState == GameState_AutoLoadSavegame || g_GameWork.gameState == GameState_LoadSavegameScreen)
+        //D_800BCD39 = false;
+        if (g_GameWork.gameState == GameState_AutoLoadSavegame ||
+            g_GameWork.gameState == GameState_LoadSavegameScreen)
         {
-            if (D_800A97D8 != 0)
+            if (g_SaveScreen_IsInSaveScreen)
             {
                 g_MemCard_AllMemCardsStatus = 0;
             }
         }
 
         g_SaveScreen_MemCardStateTextTimer = 0;
-        D_800A97D8              = g_GameWork.gameState == GameState_SaveScreen;
-
+        g_SaveScreen_IsInSaveScreen        = g_GameWork.gameState == GameState_SaveScreen;
         SaveScreen_ScreenInfoClear();
+
         Game_StateStepIncrement(0);
     }
 
     void SaveScreen_LogicUpdate() // 0x801E649C
     {
-        s32               gameStateStep = g_GameWork.gameStateSteps[1];
+        static bool isSaveWriteOptionSelected;
+
+        const auto& input = g_App.GetInput();
+
+        s32                  gameStateStep = g_GameWork.gameStateSteps[1];
         s_SaveScreenElement* saveEntry;
-        static bool       isSaveWriteOptionSelected;
 
         switch (gameStateStep)
         {
@@ -1743,7 +1741,8 @@ namespace Silent::Game
 
                 // Memory cards are inserted and user is moving between slots.
                 if (g_Savegame_ElementCount0[0] != 0 && g_Savegame_ElementCount0[1] != 0 &&
-                    (g_Controller0->buttonFlags.clicked & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft)))
+                    (input.GetAction(In::Left).IsClicked(0.5f) ||
+                     input.GetAction(In::Right).IsClicked(0.5f)))
                 {
                     g_SelectedSaveSlotIdx ^= 1;
                     SD_Call(Sfx_MenuMove);
@@ -1757,7 +1756,7 @@ namespace Silent::Game
                     g_MemCard_ActiveMemCardSlotSaves = MemCard_ActiveMemCardSlotGet(g_SelectedSaveSlotIdx);
 
                     // Move down savegame entry.
-                    if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighUp)
+                    if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, 0.5f))
                     {
                         if (g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx] != 0)
                         {
@@ -1767,7 +1766,7 @@ namespace Silent::Game
                     }
 
                     // Move up savegame entry.
-                    if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighDown)
+                    if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, 0.5f))
                     {
                         if (g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx] < g_Savegame_ElementCount0[g_SelectedSaveSlotIdx] - 1)
                         {
@@ -1778,14 +1777,14 @@ namespace Silent::Game
 
                     saveEntry                     = &g_MemCard_ActiveMemCardSlotSaves[g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx]];
                     g_MemCard_ActiveMemCardSlotSaves = saveEntry;
-                    g_SelectedDeviceId            = saveEntry->deviceId_5;
-                    g_SelectedFileIdx             = saveEntry->fileIdx_6;
-                    g_Savegame_SelectedElementIdx = saveEntry->elementIdx_7;
+                    g_SelectedDeviceId            = saveEntry->deviceId;
+                    g_SelectedFileIdx             = saveEntry->fileIdx;
+                    g_Savegame_SelectedElementIdx = saveEntry->elementIdx;
 
                     // Show "Yes/No" option.
                     if (g_SaveScreen_SaveScreenState == SaveScreenState_Save)
                     {
-                        if (saveEntry->totalSavegameCount_0 == 31600)
+                        if (saveEntry->totalSavegameCount == 31600)
                         {
                             g_SaveScreen_IsFormatting = true;
                         }
@@ -1793,14 +1792,14 @@ namespace Silent::Game
                         // Defines if the selected element is the `New Save` option.
                         // @bug While an edge case, reaching the maximum makes it
                         // impossible to select or overwrite files.
-                        if ((u16)(saveEntry->totalSavegameCount_0 - 1) < 31099)
+                        if ((u16)(saveEntry->totalSavegameCount - 1) < 31099)
                         {
                             g_SaveScreen_IsNewSaveSelected = true;
                         }
                     }
 
                     // Overwrite or format savegame entry.
-                    if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.enter)
+                    if (input.GetAction(In::Enter).IsClicked())
                     {
                         if (g_SaveScreen_IsFormatting | g_SaveScreen_IsNewSaveSelected)
                         {
@@ -1817,7 +1816,7 @@ namespace Silent::Game
                 }
 
                 // Exit save screen.
-                if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.cancel)
+                if (input.GetAction(In::Cancel).IsClicked())
                 {
                     ScreenFade_Start(false, false, false);
                     Game_StateStepSet(1, 2);
@@ -1827,7 +1826,6 @@ namespace Silent::Game
                     {
                         SD_Call(23);
                         //GameFs_TitleGfxLoad();
-                        //GameFs_StreamBinSeek();
                     }
                 }
                 break;
@@ -1840,19 +1838,19 @@ namespace Silent::Game
 
                 g_SaveScreen_MemCardStateTextTimer = 0;
 
-                if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighLeft)
+                if (input.GetAction(In::Left).IsClicked(0.5f))
                 {
                     isSaveWriteOptionSelected = gameStateStep;
                     SD_Call(Sfx_MenuMove);
                 }
 
-                if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighRight)
+                if (input.GetAction(In::Right).IsClicked(0.5f))
                 {
                     isSaveWriteOptionSelected = false;
                     SD_Call(Sfx_MenuMove);
                 }
 
-                if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.enter)
+                if (input.GetAction(In::Enter).IsClicked())
                 {
                     if (!isSaveWriteOptionSelected)
                     {
@@ -1867,7 +1865,7 @@ namespace Silent::Game
                 }
 
                 // Cancel overwrite.
-                if (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.cancel)
+                if (input.GetAction(In::Cancel).IsClicked())
                 {
                     Game_StateStepSet(1, 0);
                     SD_Call(Sfx_MenuCancel);
@@ -1960,22 +1958,22 @@ namespace Silent::Game
 
                 if (g_SavegamePtr->locationId == SaveLocationId_NextFear)
                 {
-                    saveEntry->savegameCount_8 = 0;
+                    saveEntry->savegameCount = 0;
                 }
                 else
                 {
                     g_SavegamePtr->savegameCount++;
-                    saveEntry->savegameCount_8 = g_SavegamePtr->savegameCount;
+                    saveEntry->savegameCount = g_SavegamePtr->savegameCount;
                 }
 
-                saveEntry->locationId_A    = g_SavegamePtr->locationId;
-                saveEntry->gameplayTimer_4 = g_SavegamePtr->gameplayTimer;
+                saveEntry->locationId    = g_SavegamePtr->locationId;
+                saveEntry->gameplayTimer = g_SavegamePtr->gameplayTimer;
 
-                g_SaveScreen_IsNextFearMode = saveEntry->isNextFearMode_B;
+                g_SaveScreen_IsNextFearMode = saveEntry->isNextFearMode;
 
-                saveEntry->isNextFearMode_B             = g_SavegamePtr->isNextFearMode;
-                saveEntry->add290Hours_B_1              = g_SavegamePtr->add290Hours;
-                saveEntry->pickedUpSpecialItemCount_B_3 = g_SavegamePtr->pickedUpSpecialItemCount;
+                saveEntry->isNextFearMode             = g_SavegamePtr->isNextFearMode;
+                saveEntry->add290Hours              = g_SavegamePtr->add290Hours;
+                saveEntry->pickedUpSpecialItemCount = g_SavegamePtr->pickedUpSpecialItemCount;
 
                 MemCard_ProcessSet(MemCardProcess_Save_5, g_SelectedDeviceId, g_SelectedFileIdx, g_Savegame_SelectedElementIdx);
                 Game_StateStepIncrement(1);
@@ -2035,7 +2033,7 @@ namespace Silent::Game
                 {
                     if (memCardStateResult != MemCardResult_FileIoComplete)
                     {
-                        D_800BCD39 = true;
+                        //D_800BCD39 = true;
                         Game_StateStepSet(0, 1);
                         break;
                     }
@@ -2058,7 +2056,7 @@ namespace Silent::Game
 
                 if (memCardStateResult != MemCardResult_FileIoComplete)
                 {
-                    D_800BCD39                      = true;
+                    //D_800BCD39                      = true;
                     Game_StateStepSet(0, 1);
                     break;
                 }
@@ -2108,7 +2106,7 @@ namespace Silent::Game
         SaveScreen_SlotStrAndBottomRectDraw();
 
         // Draws background image.
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
     }
 
     void SaveScreen_ScreenDraw() // 0x801E70C8
@@ -2125,14 +2123,14 @@ namespace Silent::Game
             // Run through savegame entries.
             for (j = 0; j < (s32)g_Savegame_ElementCount1[i]; j++)
             {
-                if (g_MemCard_ActiveMemCardSlotSaves->totalSavegameCount_0 >= 0)
+                if (g_MemCard_ActiveMemCardSlotSaves->totalSavegameCount >= 0)
                 {
-                    SaveScreen_FileIdxDraw(j, i, g_MemCard_ActiveMemCardSlotSaves->fileIdx_6 + 1, g_MemCard_ActiveMemCardSlotSaves->type_4);
+                    SaveScreen_FileIdxDraw(j, i, g_MemCard_ActiveMemCardSlotSaves->fileIdx + 1, g_MemCard_ActiveMemCardSlotSaves->type);
                 }
 
                 SaveScreen_SavesSlotDraw(g_MemCard_ActiveMemCardSlotSaves, j, i);
 
-                if (g_MemCard_ActiveMemCardSlotSaves->type_4 >= SavegameEntryType_CorruptedSave)
+                if (g_MemCard_ActiveMemCardSlotSaves->type >= SavegameEntryType_CorruptedSave)
                 {
                     nextSaveEntry = g_MemCard_ActiveMemCardSlotSaves;
                     if (j != g_Savegame_ElementCount1[i])
@@ -2143,7 +2141,7 @@ namespace Silent::Game
                     SaveScreen_SaveBorder(g_MemCard_ActiveMemCardSlotSaves, nextSaveEntry, j, i);
                 }
 
-                if (g_MemCard_ActiveMemCardSlotSaves->type_4 == SavegameEntryType_Save)
+                if (g_MemCard_ActiveMemCardSlotSaves->type == SavegameEntryType_Save)
                 {
                     SaveScreen_SaveLocationDraw(g_MemCard_ActiveMemCardSlotSaves, j, i);
                 }
@@ -2211,7 +2209,7 @@ namespace Silent::Game
             return;
         }*/
 
-        if (g_MemCard_SavegameCount == 0 || D_800BCD39)// || !func_80033548())
+        if (g_MemCard_SavegameCount == 0)// || D_800BCD39)// || !func_80033548())
         {
             g_GameWork.gameState = GameState_LoadSavegameScreen;
 
@@ -2229,9 +2227,9 @@ namespace Silent::Game
 
         g_MemCard_ActiveMemCardSlotSaves = MemCard_ActiveMemCardSlotGet(g_SelectedSaveSlotIdx);
         g_MemCard_ActiveMemCardSlotSaves = &g_MemCard_ActiveMemCardSlotSaves[g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx]];
-        g_SelectedDeviceId            = g_MemCard_ActiveMemCardSlotSaves->deviceId_5;
-        g_SelectedFileIdx             = g_MemCard_ActiveMemCardSlotSaves->fileIdx_6;
-        g_Savegame_SelectedElementIdx = g_MemCard_ActiveMemCardSlotSaves->elementIdx_7;
+        g_SelectedDeviceId            = g_MemCard_ActiveMemCardSlotSaves->deviceId;
+        g_SelectedFileIdx             = g_MemCard_ActiveMemCardSlotSaves->fileIdx;
+        g_Savegame_SelectedElementIdx = g_MemCard_ActiveMemCardSlotSaves->elementIdx;
 
         Game_StateStepSet(0, g_GameWork.gameStateSteps[0] + 1);
     }

@@ -24,15 +24,15 @@ namespace Silent::Game
 
         // Submit line primitive for underline.
         auto underlinePrim = Shape2d::CreateLine(line.vertex0, line.vertex1,
-                                                     COLOR_LINE_START, COLOR_LINE_END,
-                                                     DEPTH_36, ScaleMode::VerticalEdge, BlendMode::Opaque);
+                                                 COLOR_LINE_START, COLOR_LINE_END,
+                                                 DEPTH_36, ScaleMode::VerticalEdge, BlendMode::Opaque);
         renderer.SubmitShape2d(underlinePrim);
 
         // Submit quad primitive for shadow.
         auto shadowPrim = Shape2d::CreateQuad(Vector2i(line.vertex0.x, line.vertex0.y - SHADOW_WIDTH), line.vertex0,
-                                                  Vector2i(line.vertex1.x, line.vertex1.y - SHADOW_WIDTH), line.vertex1,
-                                                  COLOR_SHADOW_END, COLOR_SHADOW_START, COLOR_SHADOW_END, COLOR_SHADOW_START,
-                                                  DEPTH_36, ScaleMode::VerticalEdge, BlendMode::Subtract);
+                                              Vector2i(line.vertex1.x, line.vertex1.y - SHADOW_WIDTH), line.vertex1,
+                                              COLOR_SHADOW_END, COLOR_SHADOW_START, COLOR_SHADOW_END, COLOR_SHADOW_START,
+                                              DEPTH_36, ScaleMode::VerticalEdge, BlendMode::Subtract);
         renderer.SubmitShape2d(shadowPrim);
     }
 
@@ -44,7 +44,7 @@ namespace Silent::Game
         auto& renderer = g_App.GetRenderer();
 
         // Compute color fade as component in range `[0.0f, 0.5f]`.
-        int colorFade = g_SysWork.counters_1C[0] & (Q8_COLOR(0.5f) - 1);
+        int colorFade = g_SysWork.gameStateCounter & (Q8_COLOR(0.5f) - 1);
 
         // Fade start color.
         int colorStart = 0;
@@ -119,11 +119,11 @@ namespace Silent::Game
 
     void Options_Selection_BulletPointDraw(const s_Quad2d& quad, bool isBorder, bool isInactive)
     {
-        constexpr auto COLOR_ACTIVE_CENTER_HIGHLIGHT   = Color::From8Bit(255, 255, 255);
-        constexpr auto COLOR_ACTIVE_CENTER_MIDTONE     = Color::From8Bit(160, 128, 64);
-        constexpr auto COLOR_ACTIVE_BORDER_HIGHLIGHT   = Color::From8Bit(255, 255, 255);
-        constexpr auto COLOR_ACTIVE_BORDER_MIDTONE     = Color::From8Bit(160, 128, 64);
-        constexpr auto COLOR_ACTIVE_BORDER_SHADOW      = Color::From8Bit(64,  64,  64);
+        constexpr auto COLOR_ACTIVE_CENTER_HIGHLIGHT = Color::From8Bit(255, 255, 255);
+        constexpr auto COLOR_ACTIVE_CENTER_MIDTONE   = Color::From8Bit(160, 128, 64);
+        constexpr auto COLOR_ACTIVE_BORDER_HIGHLIGHT = Color::From8Bit(255, 255, 255);
+        constexpr auto COLOR_ACTIVE_BORDER_MIDTONE   = Color::From8Bit(160, 128, 64);
+        constexpr auto COLOR_ACTIVE_BORDER_SHADOW    = Color::From8Bit(64,  64,  64);
 
         constexpr auto COLOR_INACTIVE_CENTER_HIGHLIGHT = Color::From8Bit(160, 160, 160);
         constexpr auto COLOR_INACTIVE_CENTER_MIDTONE   = Color::From8Bit(80,  64,  32);
@@ -133,30 +133,26 @@ namespace Silent::Game
 
         auto& renderer = g_App.GetRenderer();
 
-        auto color0 = Color::Clear;
-        auto color1 = Color::Clear;
-        auto color2 = Color::Clear;
-        auto color3 = Color::Clear;
-
         // Set colors.
+        auto colors = std::array<Color, QUAD_VERTEX_COUNT>{};
         if (isBorder)
         {
-            color0 = isInactive ? COLOR_INACTIVE_BORDER_HIGHLIGHT : COLOR_ACTIVE_BORDER_HIGHLIGHT;
-            color1 = isInactive ? COLOR_INACTIVE_BORDER_MIDTONE   : COLOR_ACTIVE_BORDER_MIDTONE;
-            color2 = isInactive ? COLOR_INACTIVE_BORDER_MIDTONE   : COLOR_ACTIVE_BORDER_MIDTONE;
-            color3 = isInactive ? COLOR_INACTIVE_BORDER_SHADOW    : COLOR_ACTIVE_BORDER_SHADOW;
+            colors[0] = isInactive ? COLOR_INACTIVE_BORDER_HIGHLIGHT : COLOR_ACTIVE_BORDER_HIGHLIGHT;
+            colors[1] = isInactive ? COLOR_INACTIVE_BORDER_MIDTONE   : COLOR_ACTIVE_BORDER_MIDTONE;
+            colors[2] = isInactive ? COLOR_INACTIVE_BORDER_MIDTONE   : COLOR_ACTIVE_BORDER_MIDTONE;
+            colors[3] = isInactive ? COLOR_INACTIVE_BORDER_SHADOW    : COLOR_ACTIVE_BORDER_SHADOW;
         }
         else
         {
-            color0 = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
-            color1 = isInactive ? COLOR_INACTIVE_CENTER_HIGHLIGHT : COLOR_ACTIVE_CENTER_HIGHLIGHT;
-            color2 = isInactive ? COLOR_INACTIVE_CENTER_HIGHLIGHT : COLOR_ACTIVE_CENTER_HIGHLIGHT;
-            color3 = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
+            colors[0] = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
+            colors[1] = isInactive ? COLOR_INACTIVE_CENTER_HIGHLIGHT : COLOR_ACTIVE_CENTER_HIGHLIGHT;
+            colors[2] = isInactive ? COLOR_INACTIVE_CENTER_HIGHLIGHT : COLOR_ACTIVE_CENTER_HIGHLIGHT;
+            colors[3] = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
         }
 
         // Submit quad primitive for bullet point element.
         auto elementPrim = Shape2d::CreateQuad(quad.vertex0, quad.vertex1, quad.vertex2, quad.vertex3,
-                                               color0, color1, color2, color3,
+                                               colors[0], colors[1], colors[2], colors[3],
                                                DEPTH_24, ScaleMode::VerticalEdge, BlendMode::Opaque);
         renderer.SubmitShape2d(elementPrim);
     }

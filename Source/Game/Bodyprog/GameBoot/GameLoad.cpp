@@ -64,12 +64,12 @@ namespace Silent::Game
 
     static inline void Game_StateStepIncrement(void) // TODO: Move to header?
     {
-        s32 gameStateStep0 = g_GameWork.gameStateSteps[0];
+        int gameStateStep0 = g_GameWork.gameStateSteps[0];
 
-        g_SysWork.counters_1C[1]        = 0;
-        g_GameWork.gameStateSteps[1] = 0;
-        g_GameWork.gameStateSteps[2] = 0;
-        g_GameWork.gameStateSteps[0] = gameStateStep0 + 1;
+        g_SysWork.gameStateStepCounter = 0;
+        g_GameWork.gameStateSteps[1]   = 0;
+        g_GameWork.gameStateSteps[2]   = 0;
+        g_GameWork.gameStateSteps[0]   = gameStateStep0 + 1;
     }
 
     void GameBoot_WorldStartup(void) // 0x80034964
@@ -77,7 +77,7 @@ namespace Silent::Game
         // It makes up to 5 attemps. If the load fails, it restarts
         // the entire process by restarting the timer used to check if a demo
         // should be triggered.
-        static s32 demoLoadAttempCount;
+        static int demoLoadAttempCount = 0;
 
         switch (g_GameWork.gameStateSteps[0])
         {
@@ -94,9 +94,9 @@ namespace Silent::Game
                 }
                 else if (g_SysWork.processFlags == ProcessFlag_BootDemo)
                 {
-                    demoLoadAttempCount          = 0;
-                    g_GameWork.gameStateSteps[0] = 1;
-                    g_SysWork.counters_1C[1]        = 1;
+                    demoLoadAttempCount            = 0;
+                    g_GameWork.gameStateSteps[0]   = 1;
+                    g_SysWork.gameStateStepCounter = 1;
                 }
                 else
                 {
@@ -107,7 +107,8 @@ namespace Silent::Game
                 break;
 
             case 1:
-                if (g_SysWork.counters_1C[1] > 1200 && Fs_QueueGetLength() == 0/* && !Sd_AudioStreamingCheck()*/)
+                if (g_SysWork.gameStateStepCounter > SECONDS_60_FPS(20) &&
+                    Fs_QueueGetLength() == 0/* && !Sd_AudioStreamingCheck()*/)
                 {
                     Demo_DemoFileSavegameUpdate();
                     GameBoot_PlayerInit();
@@ -125,8 +126,8 @@ namespace Silent::Game
                     demoLoadAttempCount++;
                     if (demoLoadAttempCount >= 5)
                     {
-                        demoLoadAttempCount = 0;
-                        g_SysWork.counters_1C[1]  = 0;
+                        demoLoadAttempCount            = 0;
+                        g_SysWork.gameStateStepCounter = 0;
                         break;
                     }
                 }
@@ -219,7 +220,7 @@ namespace Silent::Game
                 break;
 
             case 11:
-                if (g_SysWork.counters_1C[0] >= 60)
+                if (g_SysWork.gameStateCounter >= 60)
                 {
                     if (g_SysWork.processFlags == ProcessFlag_RoomTransition)
                     {

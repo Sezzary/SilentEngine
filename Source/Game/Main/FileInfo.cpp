@@ -20,11 +20,7 @@ namespace Silent::Game
 
     s_FileInfo g_FileTable[FS_FILE_COUNT] =
     {
-    //#if defined(VER_USA)
         #include "FileTable.c.USA.inc"
-    //#elif defined(VER_JAP0)
-    //    #include "FileTable.c.JAP0.inc"
-    //#endif
     };
 
     const char* g_FilePaths[] =
@@ -60,7 +56,6 @@ namespace Silent::Game
 
     u32 g_FileXaLoc[] =
     {
-    //#if defined(VER_USA)
         0x00000,
         0x099BF,
         0x0A227,
@@ -72,19 +67,6 @@ namespace Silent::Game
         0x16F07,
         0x19797,
         0x00000
-    //#elif defined(VER_JAP0)
-    //    0x00000,
-    //    0x099C3,
-    //    0x0A22B,
-    //    0x0B37B,
-    //    0x0D0C3,
-    //    0x0EA5B,
-    //    0x0F99B,
-    //    0x10973,
-    //    0x16F0B,
-    //    0x1979B,
-    //    0x00000
-    //#endif
     };
 
     void Fs_DecryptOverlay(s32* dst, const s32* src, s32 size)

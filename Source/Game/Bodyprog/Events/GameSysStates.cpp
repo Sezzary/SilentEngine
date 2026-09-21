@@ -805,7 +805,7 @@ namespace Silent::Game
 
     void SysState_SaveMenu_Update() // 0x8003A230
     {
-        //func_80033548();
+        //MemCard_ElementsUpdate();
 
         switch (g_SysWork.sysStateSteps[0])
         {

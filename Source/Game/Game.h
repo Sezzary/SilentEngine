@@ -223,13 +223,10 @@ namespace Silent::Game
     {
         GameState_Init,
         GameState_LanguageScreen,
-        //GameState_SplashScreen,
-        //GameState_Logos,
-        GameState_KonamiLogo,
-        GameState_KcetLogo,
-        GameState_AutoLoadSavegame,
-        GameState_MovieIntroAlternate,
+        GameState_SplashScreen,
+        GameState_LogosScreen,
         GameState_MovieIntro,
+        GameState_AutoLoadSavegame,
         GameState_MainMenu,
         GameState_LoadSavegameScreen,
         GameState_MovieOpening,
@@ -240,12 +237,10 @@ namespace Silent::Game
         GameState_InventoryScreen,
         GameState_PaperMapScreen,
         GameState_SaveScreen,
-        GameState_DebugMoviePlayer,
         GameState_OptionScreen,
         GameState_LoadStatusScreen,
         GameState_LoadMapScreen,
-        GameState_Credits,
-        GameState_Unk16 /** Removed debug menu? Doesn't exist in function array, but `DebugMoviePlayer` state tries to switch to it. */
+        GameState_Credits
     };
 
     /** @brief State IDs used by `GameState_InGame`.

@@ -59,6 +59,7 @@ namespace Silent::Services
     constexpr char KEY_WALK_RUN_CONTROL[]                         = "WalkRunControl";
     constexpr char KEY_DISABLE_AUTO_AIMING[]                      = "DisableAutoAiming";
     constexpr char KEY_VIEW_MODE[]                                = "ViewMode";
+    constexpr char KEY_SKIP_LOGOS[]                               = "SkipLogos";
     constexpr char KEY_PAPER_MAP_QUALITY[]                        = "PaperMapQuality";
     constexpr char KEY_DIALOG_PAUSE[]                             = "DialogPause";
     constexpr char KEY_ENABLE_LOGOS[]                             = "EnableLogos";
@@ -99,6 +100,7 @@ namespace Silent::Services
     constexpr auto DEFAULT_RETREAT_TURN_CONTROL                     = ControlInversionType::Normal;
     constexpr auto DEFAULT_WALK_RUN_CONTROL                         = ControlInversionType::Normal;
     constexpr bool DEFAULT_DISABLE_AUTO_AIMING                      = false;
+    constexpr bool DEFAULT_SKIP_LOGOS                               = false;
     constexpr auto DEFAULT_PAPER_MAP_QUALITY                        = PaperMapQualityType::Retro;
     constexpr auto DEFAULT_DIALOG_PAUSE                             = DialogPauseType::Retro;
     constexpr auto DEFAULT_VIEW_MODE                                = ViewMode::Normal;
@@ -165,6 +167,7 @@ namespace Silent::Services
 
     void OptionsManager::SetDefaultEnhancementsOptions()
     {
+        _options.SkipLogos       = DEFAULT_SKIP_LOGOS;
         _options.PaperMapQuality = DEFAULT_PAPER_MAP_QUALITY;
         _options.DialogPause     = DEFAULT_DIALOG_PAUSE;
     }
@@ -339,6 +342,7 @@ namespace Silent::Services
 
         // Load enhancements options.
         const auto& enhancementsJson = optionsJson[KEY_ENHANCEMENTS];
+        options.SkipLogos            = enhancementsJson.value(KEY_SKIP_LOGOS,        DEFAULT_SKIP_LOGOS);
         options.PaperMapQuality      = enhancementsJson.value(KEY_PAPER_MAP_QUALITY, DEFAULT_PAPER_MAP_QUALITY);
         options.DialogPause          = enhancementsJson.value(KEY_DIALOG_PAUSE,      DEFAULT_DIALOG_PAUSE);
 
@@ -436,6 +440,7 @@ namespace Silent::Services
             {
                 KEY_ENHANCEMENTS,
                 {
+                    { KEY_SKIP_LOGOS,        options.SkipLogos },
                     { KEY_PAPER_MAP_QUALITY, options.PaperMapQuality },
                     { KEY_DIALOG_PAUSE,      options.DialogPause     }
                 }

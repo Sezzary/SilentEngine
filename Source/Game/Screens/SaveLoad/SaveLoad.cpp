@@ -151,7 +151,7 @@ namespace Silent::Game
     // Only used in `GameState_AutoLoadSavegame_Update`.
     void (*g_GameState_AutoLoadSavegame_Funcs[])() = {
         SaveScreen_Init,
-        func_801E737C,
+        SaveScreen_AutoLoad_SelectSave,
         SaveScreen_LoadSave,
         SaveScreen_Continue
     };
@@ -1734,7 +1734,7 @@ namespace Silent::Game
         switch (gameStateStep)
         {
             case 0:
-                /*if (!func_80033548())
+                /*if (!MemCard_ElementsUpdate())
                 {
                     break;
                 }*/
@@ -1831,7 +1831,7 @@ namespace Silent::Game
                 break;
 
             case 1:
-                /*if (!func_80033548())
+                /*if (!MemCard_ElementsUpdate())
                 {
                     break;
                 }*/
@@ -2202,34 +2202,24 @@ namespace Silent::Game
         SaveScreen_ScreenDraw();
     }
 
-    void func_801E737C() // 0x801E737C
+    void SaveScreen_AutoLoad_SelectSave() // 0x801E737C
     {
-        /*if (!func_80033548())
+        /*if (!MemCard_ElementsUpdate())
         {
             return;
         }*/
 
-        if (g_MemCard_SavegameCount == 0)// || D_800BCD39)// || !func_80033548())
+        if (g_MemCard_SavegameCount == 0)// || D_800BCD39)// || !MemCard_ElementsUpdate())
         {
             g_GameWork.gameState = GameState_LoadSavegameScreen;
-
-            if (g_GameWork.gameStatePrev == GameState_KcetLogo)
-            {
-                g_GameWork.gameStateSteps[0] = 1;
-                g_GameWork.gameStateSteps[1] = g_GameWork.gameStatePrev;
-
-                ScreenFade_Start(false, false, false);
-                //GameFs_TitleGfxLoad();
-            }
-
             return;
         }
 
         g_MemCard_ActiveMemCardSlotSaves = MemCard_ActiveMemCardSlotGet(g_SelectedSaveSlotIdx);
         g_MemCard_ActiveMemCardSlotSaves = &g_MemCard_ActiveMemCardSlotSaves[g_SlotElementSelectedIdx[g_SelectedSaveSlotIdx]];
-        g_SelectedDeviceId            = g_MemCard_ActiveMemCardSlotSaves->deviceId;
-        g_SelectedFileIdx             = g_MemCard_ActiveMemCardSlotSaves->fileIdx;
-        g_Savegame_SelectedElementIdx = g_MemCard_ActiveMemCardSlotSaves->elementIdx;
+        g_SelectedDeviceId               = g_MemCard_ActiveMemCardSlotSaves->deviceId;
+        g_SelectedFileIdx                = g_MemCard_ActiveMemCardSlotSaves->fileIdx;
+        g_Savegame_SelectedElementIdx    = g_MemCard_ActiveMemCardSlotSaves->elementIdx;
 
         Game_StateStepSet(0, g_GameWork.gameStateSteps[0] + 1);
     }

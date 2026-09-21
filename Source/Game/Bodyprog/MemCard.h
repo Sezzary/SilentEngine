@@ -100,7 +100,7 @@ namespace Silent::Game
     {
         FileState_Unused  = 0,
         FileState_Used    = 1,
-        FileState_Unk2    = 2, /** @unused See `func_80033548`. */
+        FileState_Unk2    = 2, /** @unused See `MemCard_ElementsUpdate`. */
         FileState_Damaged = 3
     } e_FileState;
 

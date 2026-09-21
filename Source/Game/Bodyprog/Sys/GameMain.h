@@ -20,9 +20,7 @@ namespace Silent::Game
      */
     s32 MainLoop_ShouldWarmReset();
 
-    void GameState_Init_Update();
     void GameState_AutoLoadSavegame_Update();
-    void GameState_MovieIntroAlternate_Update();
     void GameState_MovieIntro_Update();
     void GameState_MainMenu_Update();
     void GameState_MovieOpening_Update();
@@ -33,7 +31,6 @@ namespace Silent::Game
     void GameState_ItemScreens_Update();
     void GameState_PaperMapScreen_Update();
     void GameState_LoadSavegameScreen_Update();
-    void GameState_DebugMoviePlayer_Update();
     void GameState_Options_Update();
     void GameState_LoadMapScreen_Update();
     void GameState_Credits_Update();

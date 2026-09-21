@@ -43,9 +43,7 @@ namespace Silent::Game
             }
             case (int)StateStep::Play:
             {
-                const char* videoName = (g_GameWorkConst->config.extraOptionsEnabled & (1 << 0)) ? "C1_20670.MPG" :
-                                                                                                   "C2_20670.MPG";
-                if (!PlayFmv(videoName))
+                if (!PlayFmv("C1_20670.MPG"))
                 {
                     Game_StateSetNext(GameState_MainMenu);
                     g_ScreenFadeTimestep = Q12(1.0f);
@@ -86,20 +84,6 @@ namespace Silent::Game
     void GameState_ExitMovie_Update()
     {
         Game_StateSetNext(GameState_InGame);
-    }
-
-    void GameState_DebugMoviePlayer_Update()
-    {
-        // @stub
-    }
-
-    void GameState_MovieIntroAlternate_Update()
-    {
-        if (!PlayFmv("C1_20670.MPG"))
-        {
-            Game_StateSetNext(GameState_MainMenu);
-            g_ScreenFadeTimestep = Q12(1.0f);
-        }
     }
 
     bool PlayFmv(const std::string& name)

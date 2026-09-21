@@ -159,7 +159,7 @@ namespace Silent::Game
             GameState_MovieIntro
         };
 
-        //func_80033548();
+        //MemCard_ElementsUpdate();
 
         // After staying idle in the title screen for some time, this checks if the intro FMV or a
         // demo gameplay segment should be played. If the next value from `g_Demo_ReproducedCount`

@@ -341,8 +341,7 @@ namespace Silent::Game
                     {
                         g_SysWork.enableHalfHeightGlyphs = true;
 
-                        state.StyleFlags &= (int)TextStyleFlags::HalfHeight;
-                        state.LineHeight *= 0.5f;
+                        state.StyleFlags |= (int)TextStyleFlags::HalfHeight;
                         break;
                     }
                     case MSG_CODE_JUMP:
@@ -382,7 +381,9 @@ namespace Silent::Game
                                 // @todo How would alignments interact?
                                 // Set start line position.
                                 float startOffset      = (widestLineWidth * scale) * 0.5f;
-                                float blockHeight      = ((page.LineWidths.size() - 1) * state.LineHeight);
+                                float lineHeightCoeff  = (state.StyleFlags & (int)TextStyleFlags::HalfHeight) ? 0.5f : 1.0f;
+                                float lineHeight       = state.LineHeight * lineHeightCoeff;
+                                float blockHeight      = ((page.LineWidths.size() - 1) * lineHeight);
                                 auto  aspectCorrection = GetScreenAspectCorrection(GLYPH_SCALE_MODE);
                                 state.Position         = Vector2((SCREEN_SPACE_RES.x * 0.5f) - (startOffset * aspectCorrection.x),
                                                                  ((SCREEN_SPACE_RES.y - blockHeight) - MARGIN) * aspectCorrection.y);
@@ -405,7 +406,10 @@ namespace Silent::Game
                     }
                     case MSG_CODE_NEWLINE:
                     {
-                        state.LineOffset.y += state.LineHeight * GetScreenAspectCorrection(GLYPH_SCALE_MODE).y;
+                        float lineHeightCoeff = (state.StyleFlags & (int)TextStyleFlags::HalfHeight) ? 0.5f : 1.0f;
+                        float lineHeight      = state.LineHeight * lineHeightCoeff;
+
+                        state.LineOffset.y += lineHeight * GetScreenAspectCorrection(GLYPH_SCALE_MODE).y;
                         state.StringOffset  = 0.0f;
                         result.LineWidths.push_back(0.0f);
                         break;

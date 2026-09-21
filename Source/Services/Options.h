@@ -188,6 +188,7 @@ namespace Silent::Services
         // Enhancements
         // =============
 
+        bool                SkipLogos       = false;
         PaperMapQualityType PaperMapQuality = PaperMapQualityType::Retro;
         DialogPauseType     DialogPause     = DialogPauseType::Retro;
 

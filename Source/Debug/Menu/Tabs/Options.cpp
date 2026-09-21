@@ -331,20 +331,26 @@ namespace Silent::Debug
                     isOptChanged = true;
                 }
 
+                // `Skip logos` checkbox.
+                if (ImGui::Checkbox("Skip logos", &options->SkipLogos))
+                {
+                    isOptChanged = true;
+                }
+
+                // `Paper map quality` combo.
+                int paperMapQuality = (int)options->PaperMapQuality;
+                if (ImGui::Combo("Paper map quality", &paperMapQuality, PAPER_MAP_QUALITY_ITEMS, IM_ARRAYSIZE(PAPER_MAP_QUALITY_ITEMS)))
+                {
+                    options->PaperMapQuality = (PaperMapQualityType)paperMapQuality;
+                    isOptChanged             = true;
+                }
+
                 // `Dialog pause` combo.
                 int dialogPause = (int)options->DialogPause;
                 if (ImGui::Combo("Dialog pause", &dialogPause, DIALOG_PAUSE_ITEMS, IM_ARRAYSIZE(DIALOG_PAUSE_ITEMS)))
                 {
                     options->DialogPause = (DialogPauseType)dialogPause;
                     isOptChanged         = true;
-                }
-
-                // `Paper map` combo.
-                int paperMap = (int)options->PaperMapQuality;
-                if (ImGui::Combo("Paper map quality", &paperMap, PAPER_MAP_QUALITY_ITEMS, IM_ARRAYSIZE(PAPER_MAP_QUALITY_ITEMS)))
-                {
-                    options->PaperMapQuality = (PaperMapQualityType)paperMap;
-                    isOptChanged             = true;
                 }
             }
 

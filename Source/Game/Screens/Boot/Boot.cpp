@@ -84,7 +84,7 @@ namespace Silent::Game
             }
             case 1:
             {
-                if (!options.HasCreatedNewFile())
+                if (options.HasCreatedNewFile())
                 {
                     Game_StateSetNext(GameState_LanguageScreen);
                 }
@@ -107,8 +107,8 @@ namespace Silent::Game
         auto&       renderer   = g_App.GetRenderer();
         auto&       translator = g_App.GetTranslator();
 
-        static int  langIdx    = NO_VALUE;
-        static auto langLabel  = std::string();
+        static int  langIdx     = NO_VALUE;
+        static auto langLabel   = std::string();
         static auto langComment = std::string();
 
         switch (g_GameWork.gameStateSteps[0])

@@ -204,7 +204,6 @@ namespace Silent::Services
 
         bool EnableToasts      = false;
         bool EnableParallelism = false;
-        bool EnableLogos       = false;
     };
 
     /** @brief User options configuration manager. */

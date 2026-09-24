@@ -152,6 +152,8 @@ namespace Silent::Game
                 // Select language.
                 if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
+                    SD_Call(Sfx_MenuMove);
+
                     langIdx--;
                     if (langIdx < 0)
                     {
@@ -160,6 +162,8 @@ namespace Silent::Game
                 }
                 else if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
+                    SD_Call(Sfx_MenuMove);
+
                     langIdx++;
                     if (langIdx >= locales.size())
                     {
@@ -168,16 +172,21 @@ namespace Silent::Game
                 }
                 else if (ScreenFade_IsNone() && input.GetAction(In::Enter).IsClicked())
                 {
+                    SD_Call(Sfx_MenuConfirm);
+
+                    const auto& locale = locales[langIdx];
+
                     translator.SetActiveLocale(options->Language);
-                    options->Language = locales[langIdx].Name;
+                    options->Language = locale.Name;
                     options.Save();
 
                     Game_StateStepIncrement(0);
                 }
 
                 // Set label and comment.
-                langLabel   = locales[langIdx].Label;
-                langComment = locales[langIdx].Comment;
+                const auto& locale = locales[langIdx];
+                langLabel          = locale.Label;
+                langComment        = locale.Comment;
                 break;
             }
             case 3:

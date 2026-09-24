@@ -251,6 +251,7 @@ namespace Silent
                 Render();
             }
 
+            _work.Clock.UpdatePerformance();
             _work.Clock.WaitForNextTick();
         }
     }

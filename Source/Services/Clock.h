@@ -4,6 +4,13 @@ namespace Silent::Services
 {
     constexpr int TICKS_PER_SECOND = 30;
 
+    /** @brief Game performance tracker. */
+    struct Performance
+    {
+        float Fps       = 0.0f;
+        int   FrameTime = 0;
+    };
+
     /** @brief Game clock manager. */
     class ClockManager
     {
@@ -24,6 +31,10 @@ namespace Silent::Services
 
         int    _ticks              = 0;
         uint64 _prevUptimeDuration = 0;
+
+        Performance         _performance = {};
+        std::vector<float>  _fpses       = {};
+        std::vector<uint64> _durations   = {};
 
     public:
         // =============
@@ -50,6 +61,12 @@ namespace Silent::Services
          */
         int GetTicks() const;
 
+        /** @brief Gets the game performance tracker for the current tick.
+         *
+         * @return Game performance tracker.
+         */
+        const Performance& GetPerformance() const;
+
         // ==========
         // Inquirers
         // ==========
@@ -72,8 +89,12 @@ namespace Silent::Services
         /** @brief Updates the clock manager, setting accumulated ticks. */
         void Update();
 
+        /** @brief Updates the game performance tracker. Called before `WaitForNextTick`. */
+        void UpdatePerformance();
+
         /** @brief Blocks the current thread until the next tick.
          * Used to avoid busy-waiting in the main loop if a logic iteration has finished early.
+         * Called after `UpdatePerformance`.
          */
         void WaitForNextTick() const;
 

@@ -9,6 +9,7 @@
 #include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
 #include "Game/Bodyprog/MemCard.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
@@ -31,20 +32,125 @@ namespace Silent::Game
 {
     constexpr int MAIN_MENU_FOG_COUNT = 21;
 
-    static s32 g_MainMenuState              = 0;
-    static s32 g_MainMenu_SelectedEntry     = MainMenuEntry_Start;
-    static u32 g_MainMenu_VisibleEntryFlags = (1 << MainMenuEntry_Start)  |
+    static int g_MainMenuState              = MainMenuState_Start;
+    static int g_MainMenu_SelectedEntry     = MainMenuEntry_Start;
+    static int g_MainMenu_VisibleEntryFlags = (1 << MainMenuEntry_Start)  |
                                               (1 << MainMenuEntry_Option) |
                                               (1 << MainMenuEntry_Quit);
 
     s8 g_Demo_ReproducedCount = 0;
     s8* D_800BCDE0;
 
+    static void MainMenu_MainTextDraw()
+    {
+        constexpr int  COLUMN_POS_X                = SCREEN_WIDTH / 2;
+        constexpr int  COLUMN_POS_Y                = (SCREEN_HEIGHT / 6) * 5;
+        constexpr int  STR_OFFSET_Y                = 10;
+        constexpr auto MAIN_MENU_ENTRY_STRING_KEYS = std::array<const char*, MainMenuEntry_Count>
+        {
+            KEY_MAIN_MENU_LOAD,
+            KEY_MAIN_MENU_CONTINUE,
+            KEY_MAIN_MENU_START,
+            KEY_MAIN_MENU_OPTION,
+            KEY_MAIN_MENU_QUIT
+        };
+
+        const auto& translator = g_App.GetTranslator();
+
+        // Draw selection strings.
+        int columnPosTop = COLUMN_POS_Y - ((MainMenuEntry_Count - 1) * STR_OFFSET_Y);
+        int offsetY      = 0;
+        for (int i = 0; i < MainMenuEntry_Count; i++)
+        {
+            // Check if entry is visible.
+            if (!(g_MainMenu_VisibleEntryFlags & (1 << i)))
+            {
+                continue;
+            }
+
+            Gfx_StringPositionSet(COLUMN_POS_X, columnPosTop + offsetY);
+            Gfx_StringColorSet(StringColorId_White);
+
+            if (i == g_MainMenu_SelectedEntry)
+            {
+                auto selectedEntryMsg = "{M}"                                      +
+                                        translator(KEY_MAIN_MENU_OPENING_QUOTE)    +
+                                        translator(MAIN_MENU_ENTRY_STRING_KEYS[i]) +
+                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE);
+                Gfx_StringDraw(selectedEntryMsg, INT_MAX, true);
+            }
+            else
+            {
+                auto unselectedEntryMsg = "{M}" + translator(MAIN_MENU_ENTRY_STRING_KEYS[i]);
+                Gfx_StringDraw(unselectedEntryMsg, INT_MAX, true);
+            }
+
+            offsetY += STR_OFFSET_Y;
+        }
+    }
+
+    static void MainMenu_DifficultyTextDraw(int selectedEntryIdx)
+    {
+        constexpr int  COLUMN_POS_X                      = SCREEN_WIDTH / 2;
+        constexpr int  COLUMN_POS_Y                      = (SCREEN_HEIGHT / 6) * 5;
+        constexpr int  STR_OFFSET_Y                      = 10;
+        constexpr int  DIFFICULTY_MENU_SELECTION_COUNT   = 3;
+        constexpr auto DIFFICULTY_MENU_ENTRY_STRING_KEYS = std::array<const char*, DIFFICULTY_MENU_SELECTION_COUNT>
+        {
+            KEY_MAIN_MENU_EASY,
+            KEY_MAIN_MENU_NORMAL,
+            KEY_MAIN_MENU_HARD
+        };
+
+        const auto& translator = g_App.GetTranslator();
+
+        // Draw selection strings.
+        int columnPosTop = COLUMN_POS_Y - ((DIFFICULTY_MENU_SELECTION_COUNT - 1) * STR_OFFSET_Y);
+        for (int i = 0; i < DIFFICULTY_MENU_SELECTION_COUNT; i++)
+        {
+            Gfx_StringPositionSet(COLUMN_POS_X, columnPosTop + (i * STR_OFFSET_Y));
+            Gfx_StringColorSet(StringColorId_White);
+
+            if (i == selectedEntryIdx)
+            {
+                auto selectedEntryStr = "{M}"                                            +
+                                        translator(KEY_MAIN_MENU_OPENING_QUOTE)          +
+                                        translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]) +
+                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE);
+                Gfx_StringDraw(selectedEntryStr, INT_MAX, true);
+            }
+            else
+            {
+                auto unselectedEntryStr = "{M}" + translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]);
+                Gfx_StringDraw(unselectedEntryStr, INT_MAX, true);
+            }
+        }
+    }
+
+    void MainMenu_BackgroundDraw()
+    {
+        auto& renderer = g_App.GetRenderer();
+
+        if (g_SysWork.sysState == SysState_Gameplay)
+        {
+            SysWork_StateSetNext(SysState_OptionsMenu);
+            func_8003BCF4();
+        }
+
+        Screen_BackgroundImgDraw("Psx/TIM/TITLE_E.TIM", true);
+        MainMenu_FogUpdate();
+    }
+
     void GameState_MainMenu_Update() // 0x8003AB28
     {
         constexpr int MAIN_MENU_GAME_STATE_COUNT = 5;
 
-        s32 NEXT_GAME_STATES[MAIN_MENU_GAME_STATE_COUNT] =
+        static int newGameSelectedDifficultyIdx = 1;
+        static int prevSavegameCount            = 0;
+
+        const auto& input = g_App.GetInput();
+
+        auto NEXT_GAME_STATES = std::array<int, MAIN_MENU_GAME_STATE_COUNT>
         {
             GameState_LoadSavegameScreen,
             GameState_AutoLoadSavegame,
@@ -53,31 +159,23 @@ namespace Silent::Game
             GameState_MovieIntro
         };
 
-        bool        playInGameDemo;
-        s32         prevGameDifficultyIdx;
-        s32         nextGameDifficultyIdx;
-        e_GameState prevState;
-        static s32  newGameSelectedDifficultyIdx = 1;
-        static s32  prevSavegameCount            = 0;
-
-        const auto& input = g_App.GetInput();
-
-        //func_80033548();
+        //MemCard_ElementsUpdate();
 
         // After staying idle in the title screen for some time, this checks if the intro FMV or a
         // demo gameplay segment should be played. If the next value from `g_Demo_ReproducedCount`
         // is a value divisible by 3, the intro FMV will play. Otherwise, it defaults to a gameplay demo.
-        playInGameDemo = ((g_Demo_ReproducedCount + 1) % 3) != 0;
+        bool playInGameDemo = ((g_Demo_ReproducedCount + 1) % 3) != 0;
 
         if (g_GameWork.gameStateSteps[0] == 0)
         {
-            g_MainMenuState = 0;
+            g_MainMenuState = MainMenuState_Start;
 
-            if (playInGameDemo)
-            {
-                g_SysWork.processFlags = ProcessFlag_BootDemo;
-            }
-            else
+            // @todo Broken.
+            //if (playInGameDemo)
+            //{
+            //    g_SysWork.processFlags = ProcessFlag_BootDemo;
+            //}
+            //else
             {
                 g_GameWork.gameStateSteps[0] = 1;
             }
@@ -85,25 +183,24 @@ namespace Silent::Game
 
         switch (g_MainMenuState)
         {
-            case MenuState_Start:
+            case MainMenuState_Start:
                 g_GameWork.background2dColor.r = 0;
                 g_GameWork.background2dColor.g = 0;
                 g_GameWork.background2dColor.b = 0;
 
-                Screen_RectInterlacedClear(0, 32, SCREEN_WIDTH, FRAMEBUFFER_HEIGHT_INTERLACED, 0, 0, 0);
-                Screen_Init(SCREEN_WIDTH, true);
-
                 g_IntervalVBlanks = 1;
                 ScreenFade_Start(true, true, false);
                 g_ScreenFadeTimestep = Q12(2.0f);
-                g_MainMenuState++;
 
-            case MenuState_Main:
+                g_MainMenuState++;
+                break;
+
+            case MainMenuState_Main:
                 if (playInGameDemo)
                 {
                     //GameFs_MapStartup();
 
-                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.counters_1C[1] == 0)
+                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
                         g_Demo_ReproducedCount++;
                     }
@@ -148,8 +245,8 @@ namespace Silent::Game
 
                 g_MainMenu_VisibleEntryFlags |= g_MainMenu_VisibleEntryFlags << MainMenuEntry_Count;
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f),
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN),
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     SD_Call(Sfx_MenuMove);
                     g_GameWork.gameState = GameState_MainMenu;
@@ -161,13 +258,13 @@ namespace Silent::Game
                     }
                 }
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     g_MainMenu_SelectedEntry += MainMenuEntry_Count;
                     while (!(g_MainMenu_VisibleEntryFlags & (1 << --g_MainMenu_SelectedEntry)));
                 }
 
-                if (input.GetAction(In::Down).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     while (!(g_MainMenu_VisibleEntryFlags & (1 << ++g_MainMenu_SelectedEntry)));
                 }
@@ -188,7 +285,7 @@ namespace Silent::Game
                     ScreenFade_Start(true, false, false);
                     g_MainMenuState++;
 
-                    if (g_MainMenu_SelectedEntry < (u32)MainMenuEntry_Start) // TODO: Odd cast.
+                    if (g_MainMenu_SelectedEntry < MainMenuEntry_Start)
                     {
                         SD_Call(Sfx_MenuStartGame);
                     }
@@ -220,7 +317,7 @@ namespace Silent::Game
 
                         case MainMenuEntry_Start:
                             ScreenFade_Reset();
-                            g_MainMenuState = MenuState_DifficultySelector;
+                            g_MainMenuState = MainMenuState_DifficultySelector;
                             break;
 
                         case MainMenuEntry_Option:
@@ -228,23 +325,20 @@ namespace Silent::Game
                             break;
 
                         case MainMenuEntry_Quit:
-                            // @todo Add "Are you sure?" submenu.
-                            g_App.Quit();
+                            g_MainMenuState = MainMenuState_Quit;
                             break;
                     }
                 }
 
                 prevSavegameCount = g_MemCard_SavegameCount;
-
-            default:
                 break;
 
-            case MenuState_DifficultySelector:
+            case MainMenuState_DifficultySelector:
                 if (playInGameDemo)
                 {
                     //GameFs_MapStartup();
 
-                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.counters_1C[1] == 0)
+                    if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
                         g_Demo_ReproducedCount++;
                     }
@@ -255,8 +349,8 @@ namespace Silent::Game
                     }
                 }
 
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f) ||
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.6f) ||
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
                     input.GetAction(In::Enter).IsClicked() ||
                     input.GetAction(In::Cancel).IsClicked())
                 {
@@ -270,18 +364,18 @@ namespace Silent::Game
                 }
 
                 // Scroll game difficulty options.
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    prevGameDifficultyIdx = 2;
+                    int prevGameDifficultyIdx = 2;
                     if (newGameSelectedDifficultyIdx > 0)
                     {
                         prevGameDifficultyIdx = newGameSelectedDifficultyIdx - 1;
                     }
                     newGameSelectedDifficultyIdx = prevGameDifficultyIdx;
                 }
-                if (input.GetAction(In::Down).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    nextGameDifficultyIdx = 0;
+                    int nextGameDifficultyIdx = 0;
                     if (newGameSelectedDifficultyIdx < 2)
                     {
                         nextGameDifficultyIdx = newGameSelectedDifficultyIdx + 1;
@@ -290,8 +384,8 @@ namespace Silent::Game
                 }
 
                 // Play scroll sound.
-                if (input.GetAction(In::Up).IsPulsed(0.2f, 0.6f) ||
-                    input.GetAction(In::Down).IsPulsed(0.2f, 0.6f))
+                if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
+                    input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
                     SD_Call(Sfx_MenuMove);
                 }
@@ -305,22 +399,21 @@ namespace Silent::Game
                     g_SysWork.processFlags = ProcessFlag_NewGame;
 
                     //GameFs_MapLoad(MapIdx_MAP0_S00);
-                    //GameFs_StreamBinLoad();
                     SD_Call(Sfx_MenuStartGame);
 
                     ScreenFade_Start(true, false, false);
-                    g_MainMenuState     = 4;
+                    g_MainMenuState = MainMenuState_NewGameStart;
                 }
                 // Cancel.
                 else if (input.GetAction(In::Cancel).IsClicked())
                 {
                     SD_Call(Sfx_MenuCancel);
-                    g_MainMenuState = 1;
+                    g_MainMenuState = MainMenuState_Main;
                 }
                 break;
 
-            case MenuState_LoadGame:
-            case MenuState_NewGameStart:
+            case MainMenuState_LoadGame:
+            case MainMenuState_NewGameStart:
                 if (ScreenFade_IsFinished())
                 {
                     Screen_Refresh(SCREEN_WIDTH, 0);
@@ -338,24 +431,33 @@ namespace Silent::Game
 
                     //MemCard_SysDisable();
 
-                    prevState                       = g_GameWork.gameState;
-                    g_GameWork.gameStateSteps[0] = prevState;
-                    g_GameWork.gameState        = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
-                    g_SysWork.counters_1C[0]              = 0;
-                    g_GameWork.gameStatePrev    = prevState;
-                    g_GameWork.gameStateSteps[0] = 0;
-                    g_SysWork.counters_1C[1]              = 0;
-                    g_GameWork.gameStateSteps[1] = 0;
-                    g_GameWork.gameStateSteps[2] = 0;
+                    auto prevState                 = g_GameWork.gameState;
+                    g_GameWork.gameStateSteps[0]   = prevState;
+                    g_GameWork.gameState           = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
+                    g_SysWork.gameStateCounter     = 0;
+                    g_GameWork.gameStatePrev       = prevState;
+                    g_GameWork.gameStateSteps[0]   = 0;
+                    g_SysWork.gameStateStepCounter = 0;
+                    g_GameWork.gameStateSteps[1]   = 0;
+                    g_GameWork.gameStateSteps[2]   = 0;
 
                     SysWork_StateSetNext(SysState_Gameplay);
                 }
                 break;
+
+            case MainMenuState_Quit:
+            {
+                if (ScreenFade_IsFinished())
+                {
+                    g_App.Quit();
+                }
+                break;
+            }
         }
 
         if (input.HasUserActionInput())
         {
-            g_SysWork.counters_1C[1] = 0;
+            g_SysWork.gameStateStepCounter = 0;
         }
 
         if (!playInGameDemo)
@@ -363,9 +465,8 @@ namespace Silent::Game
             switch (g_GameWork.gameStateSteps[0])
             {
                 case 1:
-                    if (g_SysWork.counters_1C[1] > 1740)
+                    if (g_SysWork.gameStateStepCounter > SECONDS_60_FPS(29))
                     {
-                        GameFs_StreamBinLoad();
                         g_GameWork.gameStateSteps[0]++;
                     }
                     break;
@@ -390,7 +491,8 @@ namespace Silent::Game
             MainMenu_BackgroundDraw();
             //func_8003B560();
 
-            if (g_MainMenuState < 3)
+            if (g_MainMenuState < MainMenuState_DifficultySelector ||
+                g_MainMenuState == MainMenuState_Quit)
             {
                 MainMenu_MainTextDraw();
                 return;
@@ -404,7 +506,6 @@ namespace Silent::Game
             //*(s32*)0x1F800000 = 0x200000;
             //*(s32*)0x1F800004 = 0x01C00140;
             //ClearImage2((RECT*)0x1F800000, 0u, 0u, 0u);
-            //Screen_Init(SCREEN_WIDTH, false);
             return;
         }
     }
@@ -412,115 +513,6 @@ namespace Silent::Game
     void MainMenu_SelectedOptionIdxReset() // 0x8003B550
     {
         g_MainMenu_SelectedEntry = MainMenuEntry_Continue;
-    }
-
-    void MainMenu_MainTextDraw() // 0x8003B568
-    {
-        constexpr int COLUMN_POS_X = SCREEN_WIDTH / 2;
-        constexpr int COLUMN_POS_Y = (SCREEN_HEIGHT / 5) * 3;
-        constexpr int STR_OFFSET_Y = 10;
-
-        static const char* MAIN_MENU_ENTRY_STRING_KEYS[] =
-        {
-            KEY_MAIN_MENU_LOAD,
-            KEY_MAIN_MENU_CONTINUE,
-            KEY_MAIN_MENU_START,
-            KEY_MAIN_MENU_OPTION,
-            KEY_MAIN_MENU_QUIT
-        };
-
-        const auto& translator = g_App.GetTranslator();
-
-        // Draw selection strings.
-        for (int i = 0; i < MainMenuEntry_Count; i++)
-        {
-            // Check if entry is visible.
-            if (!(g_MainMenu_VisibleEntryFlags & (1 << i)))
-            {
-                continue;
-            }
-
-            Gfx_StringPositionSet(COLUMN_POS_X, COLUMN_POS_Y + (i * STR_OFFSET_Y));
-            Gfx_StringColorSet(StringColorId_White);
-
-            if (i == g_MainMenu_SelectedEntry)
-            {
-                auto selectedEntryStr = //"{M}" +
-                                        translator(KEY_MAIN_MENU_OPENING_QUOTE)    +
-                                        translator(MAIN_MENU_ENTRY_STRING_KEYS[i]) +
-                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE)
-                                        ;
-                Gfx_StringDraw(selectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterBottom);
-
-                //g_StringPosition.x -= ConvertScreenPercentToRetroPixels(Vector2(width * 0.5f, 0.0f)).x;
-                //Gfx_StringDraw(translator(KEY_MAIN_MENU_OPENING_QUOTE), DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterRight);
-                //g_StringPosition.x += ConvertScreenPercentToRetroPixels(Vector2(width, 0.0f)).x;
-                //Gfx_StringDraw(translator(KEY_MAIN_MENU_CLOSING_QUOTE), DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterLeft);
-            }
-            else
-            {
-                auto unselectedEntryStr = /*"{M}" + */translator(MAIN_MENU_ENTRY_STRING_KEYS[i]);
-                Gfx_StringDraw(unselectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true, AlignMode::CenterBottom);
-            }
-        }
-    }
-
-    void MainMenu_DifficultyTextDraw(s32 idx) // 0x8003B678
-    {
-        constexpr int DIFFICULTY_MENU_SELECTION_COUNT = 3;
-        constexpr int COLUMN_POS_X                    = SCREEN_WIDTH / 2;
-        constexpr int COLUMN_POS_Y                    = SCREEN_HEIGHT / 2;
-        constexpr int STR_OFFSET_Y                    = 10;
-
-        static const char* DIFFICULTY_MENU_ENTRY_STRING_KEYS[] =
-        {
-            KEY_MAIN_MENU_EASY,
-            KEY_MAIN_MENU_NORMAL,
-            KEY_MAIN_MENU_HARD
-        };
-
-        const auto& translator = g_App.GetTranslator();
-
-        // Draw selection strings.
-        for (int i = 0; i < DIFFICULTY_MENU_SELECTION_COUNT; i++)
-        {
-            Gfx_StringPositionSet(COLUMN_POS_X, COLUMN_POS_Y + (i * STR_OFFSET_Y));
-            Gfx_StringColorSet(StringColorId_White);
-
-            if (i == g_MainMenu_SelectedEntry)
-            {
-                auto selectedEntryStr = /*"{M}" +*/
-                                        translator(KEY_MAIN_MENU_OPENING_QUOTE) +
-                                        translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]) +
-                                        translator(KEY_MAIN_MENU_CLOSING_QUOTE);
-                Gfx_StringDraw(selectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true);
-            }
-            else
-            {
-                auto unselectedEntryStr = /*"{M}" + */translator(DIFFICULTY_MENU_ENTRY_STRING_KEYS[i]);
-                Gfx_StringDraw(unselectedEntryStr, DEFAULT_MAP_MESSAGE_LENGTH, true);
-            }
-        }
-    }
-
-    void MainMenu_BackgroundDraw() // 0x8003B758
-    {
-        auto& renderer = g_App.GetRenderer();
-
-        if (g_SysWork.sysState == SysState_Gameplay)
-        {
-            SysWork_StateSetNext(SysState_OptionsMenu);
-            func_8003BCF4();
-        }
-
-        // Submit fullscreen sprite `TIM/TITLE_E.TIM`.
-        auto sprite = Sprite2d::CreateSprite2d("TIM/TITLE_E.TIM", Vector2::Zero, Vector2::One,
-                                               SCREEN_SPACE_RES / 2.0f, DEG_TO_RAD(0.0f), 1.0f, Color::White, 0,
-                                               100, AlignMode::Center, ScaleMode::Fit, BlendMode::Opaque);
-        renderer.SubmitSprite2d(sprite);
-        //Screen_BackgroundImgDraw(&g_TitleImg);
-
-        MainMenu_FogUpdate();
     }
 
     void func_8003B7BC() // 0x8003B7BC
@@ -531,6 +523,74 @@ namespace Silent::Game
         memset(s0, 0, 462);
         D_800BCDE0 = s0;*/
     }
+
+    static Color g_MainMenu_FogGradientMap2[256] =
+    {
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::Black,
+        Color::Black, Color::Black, Color::Black, Color::From8Bit(1, 1, 1),
+        Color::From8Bit(2, 2, 2), Color::From8Bit(3, 4, 4), Color::From8Bit(5, 5, 5), Color::From8Bit(6, 7, 7),
+        Color::From8Bit(7, 8, 8), Color::From8Bit(9, 10, 10), Color::From8Bit(10, 11, 12), Color::From8Bit(11, 13, 13),
+        Color::From8Bit(13, 14, 15), Color::From8Bit(14, 16, 16), Color::From8Bit(15, 18, 18), Color::From8Bit(17, 19, 19),
+        Color::From8Bit(18, 21, 21), Color::From8Bit(19, 22, 23), Color::From8Bit(21, 24, 24), Color::From8Bit(22, 25, 26),
+        Color::From8Bit(23, 27, 27), Color::From8Bit(25, 28, 29), Color::From8Bit(26, 30, 30), Color::From8Bit(28, 32, 32),
+        Color::From8Bit(29, 33, 34), Color::From8Bit(30, 35, 35), Color::From8Bit(32, 36, 37), Color::From8Bit(33, 38, 38),
+        Color::From8Bit(34, 39, 40), Color::From8Bit(36, 41, 41), Color::From8Bit(37, 42, 43), Color::From8Bit(38, 44, 45),
+        Color::From8Bit(40, 45, 46), Color::From8Bit(41, 47, 48), Color::From8Bit(42, 49, 49), Color::From8Bit(44, 50, 51),
+        Color::From8Bit(45, 52, 52), Color::From8Bit(46, 53, 54), Color::From8Bit(48, 55, 56), Color::From8Bit(49, 56, 57),
+        Color::From8Bit(50, 58, 59), Color::From8Bit(52, 59, 60), Color::From8Bit(53, 61, 62), Color::From8Bit(55, 63, 64),
+        Color::From8Bit(55, 63, 65), Color::From8Bit(56, 64, 66), Color::From8Bit(57, 65, 67), Color::From8Bit(57, 65, 68),
+        Color::From8Bit(58, 66, 69), Color::From8Bit(59, 67, 70), Color::From8Bit(59, 68, 71), Color::From8Bit(60, 68, 72),
+        Color::From8Bit(61, 69, 73), Color::From8Bit(61, 70, 74), Color::From8Bit(62, 70, 75), Color::From8Bit(63, 71, 76),
+        Color::From8Bit(63, 72, 77), Color::From8Bit(64, 73, 78), Color::From8Bit(65, 73, 80), Color::From8Bit(66, 74, 81),
+        Color::From8Bit(66, 75, 82), Color::From8Bit(67, 76, 83), Color::From8Bit(68, 76, 84), Color::From8Bit(68, 77, 85),
+        Color::From8Bit(69, 78, 86), Color::From8Bit(70, 78, 87), Color::From8Bit(70, 79, 88), Color::From8Bit(71, 80, 89),
+        Color::From8Bit(72, 81, 90), Color::From8Bit(72, 81, 91), Color::From8Bit(73, 82, 92), Color::From8Bit(74, 83, 93),
+        Color::From8Bit(75, 84, 95), Color::From8Bit(76, 84, 96), Color::From8Bit(77, 85, 97), Color::From8Bit(77, 86, 98),
+        Color::From8Bit(78, 87, 99), Color::From8Bit(79, 87, 100), Color::From8Bit(80, 88, 101), Color::From8Bit(80, 89, 102),
+        Color::From8Bit(81, 89, 104), Color::From8Bit(82, 90, 105), Color::From8Bit(83, 91, 106), Color::From8Bit(83, 92, 107),
+        Color::From8Bit(84, 92, 108), Color::From8Bit(85, 93, 109), Color::From8Bit(86, 94, 110), Color::From8Bit(86, 94, 111),
+        Color::From8Bit(87, 95, 112), Color::From8Bit(88, 96, 113), Color::From8Bit(89, 96, 114), Color::From8Bit(89, 97, 115),
+        Color::From8Bit(90, 98, 116), Color::From8Bit(91, 99, 117), Color::From8Bit(92, 99, 119), Color::From8Bit(92, 100, 120),
+        Color::From8Bit(93, 101, 121), Color::From8Bit(94, 101, 122), Color::From8Bit(95, 102, 123), Color::From8Bit(95, 103, 124),
+        Color::From8Bit(96, 104, 125), Color::From8Bit(97, 104, 126), Color::From8Bit(98, 105, 127), Color::From8Bit(98, 106, 128),
+        Color::From8Bit(99, 106, 129), Color::From8Bit(100, 107, 130), Color::From8Bit(101, 108, 131), Color::From8Bit(102, 109, 133),
+        Color::From8Bit(103, 109, 128), Color::From8Bit(104, 110, 128), Color::From8Bit(104, 111, 129), Color::From8Bit(105, 112, 130),
+        Color::From8Bit(106, 112, 131), Color::From8Bit(107, 113, 132), Color::From8Bit(108, 114, 133), Color::From8Bit(109, 115, 134),
+        Color::From8Bit(110, 116, 135), Color::From8Bit(110, 117, 136), Color::From8Bit(111, 118, 137), Color::From8Bit(112, 119, 137),
+        Color::From8Bit(113, 120, 138), Color::From8Bit(114, 120, 139), Color::From8Bit(115, 121, 140), Color::From8Bit(116, 122, 141),
+        Color::From8Bit(116, 123, 142), Color::From8Bit(117, 124, 143), Color::From8Bit(118, 125, 144), Color::From8Bit(119, 126, 145),
+        Color::From8Bit(120, 127, 146), Color::From8Bit(121, 128, 146), Color::From8Bit(122, 128, 147), Color::From8Bit(122, 129, 148),
+        Color::From8Bit(123, 130, 149), Color::From8Bit(124, 131, 150), Color::From8Bit(125, 132, 151), Color::From8Bit(126, 133, 152),
+        Color::From8Bit(127, 134, 153), Color::From8Bit(128, 135, 154), Color::From8Bit(129, 136, 155), Color::From8Bit(130, 137, 156),
+        Color::From8Bit(131, 138, 156), Color::From8Bit(132, 139, 157), Color::From8Bit(133, 140, 158), Color::From8Bit(134, 141, 159),
+        Color::From8Bit(135, 142, 160), Color::From8Bit(136, 143, 160), Color::From8Bit(137, 143, 161), Color::From8Bit(138, 144, 162),
+        Color::From8Bit(139, 145, 163), Color::From8Bit(140, 146, 164), Color::From8Bit(141, 147, 164), Color::From8Bit(142, 148, 165),
+        Color::From8Bit(143, 149, 166), Color::From8Bit(143, 150, 167), Color::From8Bit(144, 151, 167), Color::From8Bit(145, 152, 168),
+        Color::From8Bit(146, 152, 169), Color::From8Bit(147, 153, 170), Color::From8Bit(148, 154, 171), Color::From8Bit(149, 155, 171),
+        Color::From8Bit(150, 156, 172), Color::From8Bit(151, 157, 173), Color::From8Bit(152, 158, 174), Color::From8Bit(153, 159, 175),
+        Color::From8Bit(154, 160, 175), Color::From8Bit(155, 161, 176), Color::From8Bit(156, 162, 177), Color::From8Bit(157, 162, 178),
+        Color::From8Bit(158, 163, 179), Color::From8Bit(159, 164, 179), Color::From8Bit(159, 165, 180), Color::From8Bit(160, 166, 181),
+        Color::From8Bit(161, 167, 182), Color::From8Bit(162, 168, 182), Color::From8Bit(163, 169, 183), Color::From8Bit(164, 170, 184),
+        Color::From8Bit(165, 171, 185), Color::From8Bit(166, 171, 186), Color::From8Bit(167, 172, 186), Color::From8Bit(168, 173, 187),
+        Color::From8Bit(169, 174, 188), Color::From8Bit(170, 175, 189), Color::From8Bit(171, 176, 190), Color::From8Bit(172, 177, 190),
+        Color::From8Bit(173, 178, 191), Color::From8Bit(174, 179, 192), Color::From8Bit(175, 180, 193), Color::From8Bit(176, 181, 194)
+    };
 
     static u32 g_MainMenu_FogGradientMap[256] =
     {
@@ -567,6 +627,19 @@ namespace Silent::Game
         0x3AB6A7A1, 0x3AB6A8A2, 0x3AB7A9A3, 0x3AB8AAA4, 0x3AB9ABA5, 0x3ABAABA6, 0x3ABAACA7, 0x3ABBADA8,
         0x3ABCAEA9, 0x3ABDAFAA, 0x3ABEB0AB, 0x3ABEB1AC, 0x3ABFB2AD, 0x3AC0B3AE, 0x3AC1B4AF, 0x3AC2B5B0
     };
+
+    const Color& GetFogColor(int idx)
+    {
+        int         idx0 = D_800BCDE0[idx];
+        const auto& val  = g_MainMenu_FogGradientMap2[idx0];
+
+        if (idx < 210)
+        {
+            return Color::Black;
+        }
+
+        return val;
+    }
 
     u32 func_8003B7FC(s32 idx) // 0x8003B7FC
     {
@@ -616,13 +689,15 @@ namespace Silent::Game
                     -176 + (16 * j), yOffset - 184,
                     -160 + (16 * j), yOffset - 184);
 
-                *((u32*)&poly->r0) = color0;
-                *((u32*)&poly->r1) = color1;
-                *((u32*)&poly->r2) = color2;
-                *((u32*)&poly->r3) = color3;
+                // Set colours.
+                //*((u32*)&poly->r0) = color0;
+                //*((u32*)&poly->r1) = color1;
+                //*((u32*)&poly->r2) = color2;
+                //*((u32*)&poly->r3) = color3;
 
-                addPrim(ot, poly);
-                packet += sizeof(POLY_G4);
+                // Submit.
+                //addPrim(ot, poly);
+                //packet += sizeof(POLY_G4);
             }
         }
 
@@ -652,7 +727,7 @@ namespace Silent::Game
 
         static q19_12 randAngle = Q12_ANGLE(0.0f);
 
-        return; // @todo6565
+        return; // @todo
 
         ptr   = D_800BCDE0;
         ptr1  = (u8*)ptr + 441;

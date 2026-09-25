@@ -7,10 +7,10 @@ namespace Silent::Game
     /** @brief Brightness menu states. Facilitates menu switching via `s_GameWork::gameStateStep[1]` */
     enum e_BrightnessMenuState
     {
-        BrightnessMenuState_0     = 0,
-        BrightnessMenuState_1     = 1,
-        BrightnessMenuState_2     = 2,
-        BrightnessMenuState_Leave = 3
+        BrightnessMenuState_Enter     = 0,
+        BrightnessMenuState_StartFade = 1,
+        BrightnessMenuState_SetConfig = 2,
+        BrightnessMenuState_Leave     = 3
     };
 
     /** @brief Controller for the brightness options menu.

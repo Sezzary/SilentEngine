@@ -31,7 +31,7 @@ namespace Silent::Game
     extern s32 g_Demo_VideoPresentInterval;
 
     /** Something for demo handling. Set in `Fs_QueueChunksLoad`. */
-    extern bool D_800C489C;
+    extern bool g_Demo_IsLoadingChunks;
 
     bool Demo_SequenceAdvance(s32 incrementAmount);
 

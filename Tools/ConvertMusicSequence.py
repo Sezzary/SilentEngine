@@ -4,6 +4,7 @@ Music sequence converter.
 Converts a `KDT` sequence to `MIDI` and a `VAB` file to `SFZ`+`WAV`s.
 """
 
+
 import logging
 import math
 import platform
@@ -17,6 +18,7 @@ from argparse    import ArgumentParser
 from dataclasses import dataclass
 from pathlib     import Path
 
+
 MIDI_EXT = ".MID"
 SF2_EXT  = ".SF2"
 SFZ_EXT  = ".SFZ"
@@ -25,6 +27,7 @@ WAV_EXT  = ".WAV"
 SAMPLES_FOLDER  = "Samples"
 VAG_PREFIX      = "VAG_"
 PADDING_SAMPLES = 28
+
 
 # VAB header.
 @dataclass
@@ -42,6 +45,7 @@ class VabHeader:
     attr1:      int
     attr2:      int
     reserved1:  int
+
 
 # VAB tone attributes.
 @dataclass
@@ -67,6 +71,7 @@ class ToneAttr:
     prog:      int
     vag_id:    int
 
+
 # VAB program attributes.
 @dataclass
 class ProgramAttr:
@@ -80,6 +85,7 @@ class ProgramAttr:
     reserved1:  int
     reserved2:  int
     tones:      list
+
 
 def _create_parser():
     """
@@ -96,6 +102,7 @@ def _create_parser():
     parser.add_argument("outputFolder", type=Path, help="Path to the folder where converted `MIDI`, `SFZ`+`WAV`s, and `SF2` will be saved.")
     return parser
 
+
 def _get_python_cmd():
     """
     Get the platform-specific system Python command.
@@ -104,6 +111,7 @@ def _get_python_cmd():
     """
     system_os = platform.system().lower()
     return "python" if system_os == "windows" else "python3"
+
 
 def _convert_kdt_to_midi(kdt_tool_py: Path, output_folder: Path, kdt_file: Path):
     """
@@ -134,6 +142,7 @@ def _convert_kdt_to_midi(kdt_tool_py: Path, output_folder: Path, kdt_file: Path)
     midi_file_dst = output_folder / kdt_file.stem / f"{kdt_file.stem}{MIDI_EXT}"
     midi_file_dst.unlink(missing_ok=True)
     shutil.move(midi_file_src, midi_file_dst)
+
 
 def _extract_vab_samples_to_wav(vgmstream_exe: Path, output_folder: Path, vab_file: Path, parsed_vab: tuple[VabHeader, list]):
     """
@@ -190,6 +199,7 @@ def _extract_vab_samples_to_wav(vgmstream_exe: Path, output_folder: Path, vab_fi
         # Report status.
         if result.returncode != 0:
             logging.error(f"Failed to extract sample {i}.")
+
 
 def _build_sfz_from_vab(output_folder: Path, vab_file: Path, parsed_vab: tuple[VabHeader, list]):
     """
@@ -299,6 +309,7 @@ def _build_sfz_from_vab(output_folder: Path, vab_file: Path, parsed_vab: tuple[V
                 output.write(" ".join([f"{key}={value}" for key, value in region_data.items()]))
                 output.write("\n\n")
 
+
 def _convert_sfz_to_sf2(convert_sound_bank_py: Path, output_folder: Path, sfz_file: Path):
     """
     Convert an `SFZ` file to `SF2`.
@@ -322,6 +333,7 @@ def _convert_sfz_to_sf2(convert_sound_bank_py: Path, output_folder: Path, sfz_fi
     # Report status.
     if result.returncode != 0:
         logging.error(f"Conversion failed.")
+
 
 def _parse_vab(vab_file: Path):
     """
@@ -361,6 +373,7 @@ def _parse_vab(vab_file: Path):
 
         return header, programs
 
+
 def main():
     try:
         logging.basicConfig(level=logging.INFO)
@@ -396,6 +409,7 @@ def main():
     except Exception as ex:
         logging.error(f"{ex}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

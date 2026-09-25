@@ -59,9 +59,9 @@ namespace Silent::Services
     constexpr char KEY_WALK_RUN_CONTROL[]                         = "WalkRunControl";
     constexpr char KEY_DISABLE_AUTO_AIMING[]                      = "DisableAutoAiming";
     constexpr char KEY_VIEW_MODE[]                                = "ViewMode";
+    constexpr char KEY_SKIP_LOGOS[]                               = "SkipLogos";
     constexpr char KEY_PAPER_MAP_QUALITY[]                        = "PaperMapQuality";
     constexpr char KEY_DIALOG_PAUSE[]                             = "DialogPause";
-    constexpr char KEY_ENABLE_LOGOS[]                             = "EnableLogos";
     constexpr char KEY_ENABLE_TOASTS[]                            = "EnableToasts";
     constexpr char KEY_ENABLE_PARALLELISM[]                       = "EnableParallelism";
 
@@ -99,10 +99,10 @@ namespace Silent::Services
     constexpr auto DEFAULT_RETREAT_TURN_CONTROL                     = ControlInversionType::Normal;
     constexpr auto DEFAULT_WALK_RUN_CONTROL                         = ControlInversionType::Normal;
     constexpr bool DEFAULT_DISABLE_AUTO_AIMING                      = false;
+    constexpr bool DEFAULT_SKIP_LOGOS                               = false;
     constexpr auto DEFAULT_PAPER_MAP_QUALITY                        = PaperMapQualityType::Retro;
     constexpr auto DEFAULT_DIALOG_PAUSE                             = DialogPauseType::Retro;
     constexpr auto DEFAULT_VIEW_MODE                                = ViewMode::Normal;
-    constexpr bool DEFAULT_ENABLE_LOGOS                             = true;
     constexpr bool DEFAULT_ENABLE_TOASTS                            = true;
 
     void OptionsManager::SetDefaultGraphicsOptions()
@@ -165,15 +165,20 @@ namespace Silent::Services
 
     void OptionsManager::SetDefaultEnhancementsOptions()
     {
+        _options.SkipLogos       = DEFAULT_SKIP_LOGOS;
         _options.PaperMapQuality = DEFAULT_PAPER_MAP_QUALITY;
         _options.DialogPause     = DEFAULT_DIALOG_PAUSE;
     }
 
     void OptionsManager::SetDefaultSystemOptions()
     {
-        _options.EnableLogos       = DEFAULT_ENABLE_LOGOS;
         _options.EnableToasts      = DEFAULT_ENABLE_TOASTS;
         _options.EnableParallelism = GetCoreCount() > 1;
+    }
+
+    bool OptionsManager::HasCreatedNewFile() const
+    {
+        return _hasCreatedNewFile;
     }
 
     void OptionsManager::Initialize()
@@ -184,13 +189,11 @@ namespace Silent::Services
 
     void OptionsManager::Save()
     {
-        const auto& fs = g_App.GetFilesystem();
-
         // Create options JSON.
         auto optionsJson = ToOptionsJson(_options);
 
         // Write options JSON file.
-        auto stream = Stream(fs.GetWorkDirectory() / Fmt("{}{}", OPTIONS_FILENAME, JSON_FILE_EXT), false, true);
+        auto stream = Stream(GetFilePath(), false, true);
         if (stream.WriteJson(optionsJson))
         {
             Debug::Log("Saved user options.");
@@ -202,13 +205,12 @@ namespace Silent::Services
 
     void OptionsManager::Load()
     {
-        const auto& fs = g_App.GetFilesystem();
-
         // Open options JSON file.
-        auto stream = Stream(fs.GetWorkDirectory() / Fmt("{}{}", OPTIONS_FILENAME, JSON_FILE_EXT), true, false);
+        auto stream = Stream(GetFilePath(), true, false);
         if (!stream.IsOpen())
         {
             Debug::Log(Fmt("Creating new `{}{}` file.", OPTIONS_FILENAME, JSON_FILE_EXT));
+            _hasCreatedNewFile = true;
 
             SetDefaultOptions();
             Save();
@@ -220,6 +222,13 @@ namespace Silent::Services
 
         // Read options JSON.
         _options = FromOptionsJson(optionsJson);
+    }
+
+    stdfs::path OptionsManager::GetFilePath() const
+    {
+        const auto& fs = g_App.GetFilesystem();
+
+        return fs.GetWorkDirectory() / Fmt("{}{}", OPTIONS_FILENAME, JSON_FILE_EXT);
     }
 
     void OptionsManager::SetDefaultOptions()
@@ -330,12 +339,12 @@ namespace Silent::Services
 
         // Load enhancements options.
         const auto& enhancementsJson = optionsJson[KEY_ENHANCEMENTS];
+        options.SkipLogos            = enhancementsJson.value(KEY_SKIP_LOGOS,        DEFAULT_SKIP_LOGOS);
         options.PaperMapQuality      = enhancementsJson.value(KEY_PAPER_MAP_QUALITY, DEFAULT_PAPER_MAP_QUALITY);
         options.DialogPause          = enhancementsJson.value(KEY_DIALOG_PAUSE,      DEFAULT_DIALOG_PAUSE);
 
         // Load system options.
         const auto& systemJson    = optionsJson[KEY_SYSTEM];
-        options.EnableLogos       = systemJson.value(KEY_ENABLE_LOGOS,       DEFAULT_ENABLE_LOGOS);
         options.EnableToasts      = systemJson.value(KEY_ENABLE_TOASTS,      DEFAULT_ENABLE_TOASTS);
         options.EnableParallelism = systemJson.value(KEY_ENABLE_PARALLELISM, GetCoreCount() > 1);
 
@@ -427,6 +436,7 @@ namespace Silent::Services
             {
                 KEY_ENHANCEMENTS,
                 {
+                    { KEY_SKIP_LOGOS,        options.SkipLogos },
                     { KEY_PAPER_MAP_QUALITY, options.PaperMapQuality },
                     { KEY_DIALOG_PAUSE,      options.DialogPause     }
                 }
@@ -434,7 +444,6 @@ namespace Silent::Services
             {
                 KEY_SYSTEM,
                 {
-                    { KEY_ENABLE_LOGOS,  options.EnableLogos },
                     { KEY_ENABLE_TOASTS, options.EnableToasts }
                 }
             }

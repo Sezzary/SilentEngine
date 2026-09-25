@@ -58,13 +58,13 @@ namespace Silent::Renderer::SdlGpu
         // @temp
         //---------------------------
 
-        const auto* harryAnm = g_App.GetAssets()["ANIM/HB_BASE.ANM"];
-        const auto* harryAnm1 = g_App.GetAssets()["ANIM/HB_M1S00.ANM"];
+        const auto* harryAnm = g_App.GetAssets()["Psx/ANIM/HB_BASE.ANM"];
+        const auto* harryAnm1 = g_App.GetAssets()["Psx/ANIM/HB_M1S00.ANM"];
         const auto harryAnmData = harryAnm1->GetData<AnmAsset>();
 
         // @todo How can an optional palette be bound in a clean way?
-        auto* tex             = GetTextures()["CHARA/HERO.TIM"];
-        auto* paletteAtlasTex = GetTextures()[Fmt("{}{}", "CHARA/HERO.TIM", PALETTE_ATLAS_SUFFIX)];
+        auto* tex             = GetTextures()["Psx/CHARA/HERO.TIM"];
+        auto* paletteAtlasTex = GetTextures()[Fmt("{}{}", "Psx/CHARA/HERO.TIM", PALETTE_ATLAS_SUFFIX)];
         if (tex != nullptr)
         {
             tex->Bind(renderPass, GetActiveSampler(), 0);
@@ -100,7 +100,7 @@ namespace Silent::Renderer::SdlGpu
             PushFragmentUniform(uniFrag0, 0);
 
             // Draw.
-            const auto* mesh = GetMeshes()["CHARA/HERO.ILM_02HEAD1"];
+            const auto* mesh = GetMeshes()["Psx/CHARA/HERO.ILM_02HEAD1"];
             if (mesh != nullptr)
             {
                 SDL_DrawGPUIndexedPrimitives(&renderPass, mesh->IdxCount, 1, mesh->IdxOffset, mesh->VertexOffset, 0);
@@ -111,7 +111,7 @@ namespace Silent::Renderer::SdlGpu
         //---------------------------
 
         _gpuBuffers.ImmediateVertices3d.Bind(renderPass, 0, 0);
-        //auto* tex = GetTextures()["TIM/BG_ETC.TIM"];
+        //auto* tex = GetTextures()["Psx/TIM/BG_ETC.TIM"];
         
         // Draw 3D primitives.
         for (const auto& batch : _drawBatches.Primitives3d)

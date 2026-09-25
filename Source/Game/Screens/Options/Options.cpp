@@ -369,6 +369,12 @@ namespace Silent::Game
                 g_GameWork.config.volumeSe = vol;
                 break;
 
+            case MainOptionsMenuEntry_Language:
+            {
+                // @todo Implement lanugage selection.
+                break;
+            }
+
             default:
                 break;
         }

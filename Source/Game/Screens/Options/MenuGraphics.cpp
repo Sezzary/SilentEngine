@@ -90,7 +90,8 @@ namespace Silent::Game
             KEY_OPTIONS_MENU_AUTO_LOAD,
             KEY_OPTIONS_MENU_SOUND,
             KEY_OPTIONS_MENU_BGM_VOL,
-            KEY_OPTIONS_MENU_SE_VOL
+            KEY_OPTIONS_MENU_SE_VOL,
+            KEY_OPTIONS_MENU_LANGUAGE
         };
 
         const auto& translator = g_App.GetTranslator();

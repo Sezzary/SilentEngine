@@ -4,6 +4,17 @@
 
 namespace Silent::Game
 {
+    /** @brief Selection arrow types. */
+    enum class SelectionArrowType
+    {
+        Up,
+        Down,
+        Left,
+        Right,
+
+        Count
+    };
+
     /** @brief Draws a scaling entry selection highlight in the main and extra options menus.
      *
      * Called by `Options_MainOptionsMenu_SelectionHighlightDraw` and `Options_ExtraOptionsMenu_SelectionHighlightDraw`.
@@ -14,6 +25,7 @@ namespace Silent::Game
     void Options_Selection_HighlightDraw(const s_Line2d& line);
 
     /** @brief Draws a blue arrow element used for certain listed entries in the main and extra options menus.
+     * @deprecated
      *
      * @note Called twice if the arrow requires a border, with `isFlashing` passed as `true` and `false` on consecutive calls.
      *
@@ -21,6 +33,14 @@ namespace Silent::Game
      * @param isFlashing `true` for a flashing element with a gradient, `false` for a border.
      */
     void Options_Selection_ArrowDraw(const s_Triangle2d& tri, bool isFlashing);
+
+    /** @brief Draws a blue flashing arrow used for certain listed entries in the main and extra options menus.
+     *
+     * @param pos Screen position in retro pixels (320x240 resolution).
+     * @param type Arrow type.
+     * @param hasOutline `true` if the arrow has an outline, `false` otherwise.
+     */
+    void Options_Selection_ArrowDraw(const Vector2i& pos, SelectionArrowType type, bool hasOutline);
 
     /** @brief Draws a gold bullet point element used next to listed entries in the main and extra options menus.
      *

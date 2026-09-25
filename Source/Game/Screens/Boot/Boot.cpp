@@ -15,9 +15,9 @@
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
-#include "Game/Bodyprog/Sys/Joy.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
+#include "Game/Screens/Options/SelectionGraphics.h"
 #include "Game/Screens/Stream/Stream.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
@@ -99,7 +99,9 @@ namespace Silent::Game
 
     void GameState_LanguageScreen_Update()
     {
-        constexpr float FADE_SEC = 1.0f;
+        constexpr auto  LABEL_POS             = Vector2i(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 4) * 3);
+        constexpr int   ARROW_OFFSET_BUFFER_X = 2;
+        constexpr float FADE_SEC              = 1.0f;
 
         const auto& input      = g_App.GetInput();
         auto&       assets     = g_App.GetAssets();
@@ -216,14 +218,21 @@ namespace Silent::Game
         const auto  texData  = texAsset->GetData<PngAsset>();
 
         // Submit language label text.
-        Gfx_StringPositionSet(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 4) * 3);
+        Gfx_StringPositionSet(LABEL_POS.x, LABEL_POS.y);
         Gfx_StringColorSet(StringColorId_White);
-        Gfx_StringDraw("{M}" + langLabel);
+        float width = Gfx_StringDraw("{M}" + langLabel);
+
+        // Submit selection arrows. @todo Work out proper width.
+        auto arrowOffset = Vector2i((int)ceilf(width * 0.5f) + ARROW_OFFSET_BUFFER_X, 0);
+        Options_Selection_ArrowDraw(LABEL_POS - arrowOffset,
+                                    SelectionArrowType::Left,
+                                    input.GetAction(In::Left).IsHeld());
+        Options_Selection_ArrowDraw(LABEL_POS + arrowOffset,
+                                    SelectionArrowType::Right,
+                                    input.GetAction(In::Right).IsHeld());
 
         // Submit language comment text.
         Gfx_StringDraw("{L0}" + langComment, INT_MAX, true);
-
-        // @todo Draw arrows.
 
         // Submit language icon sprite. @todo Use native scale.
         auto sprite = Sprite2d::CreateSprite2d("Textures/LanguageIcon.png", Vector2::Zero, Vector2::One,

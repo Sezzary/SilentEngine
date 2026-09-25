@@ -42,6 +42,7 @@ namespace Silent::Game
         MainOptionsMenuEntry_Sound,
         MainOptionsMenuEntry_BgmVolume,
         MainOptionsMenuEntry_SfxVolume,
+        MainOptionsMenuEntry_Language,
 
         MainOptionsMenuEntry_Count
     };

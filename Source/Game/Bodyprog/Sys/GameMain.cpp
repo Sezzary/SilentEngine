@@ -52,7 +52,7 @@ namespace Silent::Game
         GameState_LogosScreen_Update,
         GameState_MovieIntro_Update,
         GameState_AutoLoadSavegame_Update,         // @todo
-        GameState_MainMenu_Update,                 // @todo
+        GameState_MainMenu_Update,
         GameState_LoadSavegameScreen_Update,       // @todo
         GameState_MovieOpening_Update,
         GameState_LoadScreen_Update,               // @todo

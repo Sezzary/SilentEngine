@@ -17,7 +17,7 @@ namespace Silent::Game
 
     /** @brief Draws a scaling entry selection highlight in the main and extra options menus.
      *
-     * Called by `Options_MainOptionsMenu_SelectionHighlightDraw` and `Options_ExtraOptionsMenu_SelectionHighlightDraw`.
+     * Called by `OptionsMenu_SelectionHighlightDraw`.
      *
      * @param line 2D line for the highlight underline and shadow.
      * @param hasShadow `true` for a highlight with a shadow and a line, `false` for a line only. Always passed as `true`.
@@ -27,7 +27,8 @@ namespace Silent::Game
     /** @brief Draws a blue arrow element used for certain listed entries in the main and extra options menus.
      * @deprecated
      *
-     * @note Called twice if the arrow requires a border, with `isFlashing` passed as `true` and `false` on consecutive calls.
+     * @note Called twice if the arrow requires a border, with `isFlashing` passed as `true` and `false` on consecutive
+     * calls.
      *
      * @param tri 2D triangle of the arrow element.
      * @param isFlashing `true` for a flashing element with a gradient, `false` for a border.

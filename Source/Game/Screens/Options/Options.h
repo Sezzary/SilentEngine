@@ -13,6 +13,8 @@ namespace Silent::Game
     constexpr int DEPTH_36   = 36;
     constexpr int DEPTH_8148 = 8148;
 
+    constexpr int VISIBLE_ENTRY_COUNT_MAX = 8;
+
     /** @brief Options menu states. Facilitates menu switching via `s_GameWork::gameStateStep[0]`. */
     enum e_OptionsMenuState
     {
@@ -25,41 +27,31 @@ namespace Silent::Game
         OptionsMenuState_EnterBrightness,   /** Entering brightness menu. */
         OptionsMenuState_EnterController,   /** Entering controller config menu. */
         OptionsMenuState_LeaveBrightness,   /** Leaving brightness menu. */
-        OptionsMenuState_LeaveController,   /** Leaving controller config menu. */
-        OptionsMenuState_EnterExtraOptions, /** Entering extra options menu. */
-        OptionsMenuState_ExtraOptions,      /** In extra options menu. */
-        OptionsMenuState_LeaveExtraOptions  /** Leaving extra options menu. */
+        OptionsMenuState_LeaveController    /** Leaving controller config menu. */
     };
 
-    /** @brief Main options menu entries. */
-    enum e_MainOptionsMenuEntry
+    /** @brief Options menu entries. */
+    enum e_OptionsMenuEntry
     {
-        MainOptionsMenuEntry_Exit,
-        MainOptionsMenuEntry_Brightness,
-        MainOptionsMenuEntry_Controller,
-        MainOptionsMenuEntry_Vibration,
-        MainOptionsMenuEntry_AutoLoad,
-        MainOptionsMenuEntry_Sound,
-        MainOptionsMenuEntry_BgmVolume,
-        MainOptionsMenuEntry_SfxVolume,
-        MainOptionsMenuEntry_Language,
+        OptionsMenuEntry_Exit,
+        OptionsMenuEntry_Brightness,
+        OptionsMenuEntry_Controller,
+        OptionsMenuEntry_Vibration,
+        OptionsMenuEntry_AutoLoad,
+        OptionsMenuEntry_Sound,
+        OptionsMenuEntry_BgmVolume,
+        OptionsMenuEntry_SfxVolume,
+        OptionsMenuEntry_Language,
+        OptionsMenuEntry_WeaponCtrl,
+        OptionsMenuEntry_Blood,
+        OptionsMenuEntry_ViewCtrl,
+        OptionsMenuEntry_RetreatTurn,
+        OptionsMenuEntry_WalkRunCtrl,
+        OptionsMenuEntry_AutoAiming,
+        OptionsMenuEntry_ViewMode,
+        OptionsMenuEntry_BulletAdjust,
 
-        MainOptionsMenuEntry_Count
-    };
-
-    /** @brief Extra options menu entries. */
-    enum e_ExtraOptionsMenuEntry
-    {
-        ExtraOptionsMenuEntry_WeaponCtrl,
-        ExtraOptionsMenuEntry_Blood,
-        ExtraOptionsMenuEntry_ViewCtrl,
-        ExtraOptionsMenuEntry_RetreatTurn,
-        ExtraOptionsMenuEntry_MovementCtrl,
-        ExtraOptionsMenuEntry_AutoAiming,
-        ExtraOptionsMenuEntry_ViewMode,
-        ExtraOptionsMenuEntry_BulletMult,
-
-        ExtraOptionsMenuEntry_Count
+        OptionsMenuEntry_Count
     };
 
     /** @brief Blood color menu entries. */
@@ -81,20 +73,16 @@ namespace Silent::Game
         BloodColor_Black  = 11
     };
 
-    extern int g_Options_SelectionHighlightTimer;
-    extern int g_MainOptionsMenu_SelectedEntry;
-    extern int g_MainOptionsMenu_PrevSelectedEntry;
-    extern int g_ExtraOptionsMenu_SelectedEntry;
-    extern int g_ExtraOptionsMenu_PrevSelectedEntry;
+    extern int g_OptionsMenu_SelectionHighlightTimer;
+    extern int g_OptionsMenu_SelectedEntry;
+    extern int g_OptionsMenu_PrevSelectedEntry;
+    extern int g_OptionsMenu_VisibleEntriesStartIdx;
 
     /** @brief Options menu game state handler. */
     void GameState_Options_Update();
 
-    /** @brief Controller for the main options menu.
-     *
-     * Handles menu states, user input, and graphics draw calls.
-     */
-    void Options_MainOptionsMenu_Control();
+    /** @brief Controller for the options menu. */
+    void OptionsMenu_Control();
 
     /** @brief Controller for the extra options menu. */
     void Options_ExtraOptionsMenu_Control();

@@ -35,7 +35,6 @@ namespace Silent::Assets
     constexpr char KEY_MAIN_MENU_HARD[]          = "MainMenu_Hard";
 
     constexpr char KEY_OPTIONS_MENU_HEADING[]       = "OptionsMenu_Heading";
-    constexpr char KEY_OPTIONS_MENU_EXTRA_OPTIONS[] = "OptionsMenu_ExtraOptions";
     constexpr char KEY_OPTIONS_MENU_GRAPHICS[]      = "OptionsMenu_Graphics";
     constexpr char KEY_OPTIONS_MENU_GAMEPLAY[]      = "OptionsMenu_Gameplay";
     constexpr char KEY_OPTIONS_MENU_INPUT[]         = "OptionsMenu_Input";
@@ -57,7 +56,6 @@ namespace Silent::Assets
     constexpr char KEY_OPTIONS_MENU_VIEW_CONTROL[]     = "OptionsMenu_ViewControl";
     constexpr char KEY_OPTIONS_MENU_RETREAT_TURN[]     = "OptionsMenu_RetreatTurn";
     constexpr char KEY_OPTIONS_MENU_WALK_RUN_CONTROL[] = "OptionsMenu_WalkRunControl";
-    constexpr char KEY_OPTIONS_MENU_CONTROL[]          = "OptionsMenu_Control";
     constexpr char KEY_OPTIONS_MENU_AUTO_AIMING[]      = "OptionsMenu_AutoAiming";
     constexpr char KEY_OPTIONS_MENU_VIEW_MODE[]        = "OptionsMenu_ViewMode";
     constexpr char KEY_OPTIONS_MENU_BULLET_ADJUST[]    = "OptionsMenu_BulletAdjust";

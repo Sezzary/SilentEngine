@@ -21,7 +21,6 @@
 
     "_OptionsMenu_Comment":       "@todo Take translations from subtitles found in the Japanese version's special UI.",
     "OptionsMenu_Heading":        "{M}オプション",
-    "OptionsMenu_ExtraOptions":   "{M}エクストラオプション",
     "OptionsMenu_Exit":           "終了",
     "OptionsMenu_BrightLevel":    "明るさの調節",
     "OptionsMenu_ContConfig":     "コントローラ設定",

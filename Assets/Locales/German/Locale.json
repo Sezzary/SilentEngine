@@ -20,7 +20,6 @@
     "MainMenu_Hard":         "HARD",
 
     "OptionsMenu_Heading":        "{M}OPTIONS",
-    "OptionsMenu_ExtraOptions":   "{M}EXTRA OPTIONS",
     "OptionsMenu_Exit":           "Exit",
     "OptionsMenu_BrightLevel":    "Brightness Level",
     "OptionsMenu_ContConfig":     "Controller Config",
@@ -36,7 +35,7 @@
     "OptionsMenu_RetreatTurn":    "Retreat Turn",
     "OptionsMenu_WalkRunControl": "Walk/Run Control",
     "OptionsMenu_AutoAiming":     "Auto Aiming",
-    "OptionsMenu_ViewMode":       "View Move",
+    "OptionsMenu_ViewMode":       "View Mode",
     "OptionsMenu_BulletAdjust":   "Bullet Adjust",
     "OptionsMenu_On":             "On",
     "OptionsMenu_Off":            "Off",

@@ -18,15 +18,13 @@ namespace Silent::Game
 {
     constexpr int LINE_CURSOR_TIMER_MAX = 8;
 
-    int g_Options_SelectionHighlightTimer    = 0;
-    int g_MainOptionsMenu_SelectedEntry      = 0;
-    int g_MainOptionsMenu_PrevSelectedEntry  = 0;
-    int g_ExtraOptionsMenu_SelectedEntry     = 0;
-    int g_ExtraOptionsMenu_PrevSelectedEntry = 0;
+    int g_OptionsMenu_SelectionHighlightTimer = 0;
+    int g_OptionsMenu_SelectedEntry           = 0;
+    int g_OptionsMenu_PrevSelectedEntry       = 0;
+    int g_OptionsMenu_VisibleEntriesStartIdx  = 0;
 
-    static int g_ExtraOptionsMenu_EntryCount              = 0;
-    static int g_ExtraOptionsMenu_SelectedBloodColorEntry = 0;
-    static int g_ExtraOptionsMenu_BulletMultMax           = 0;
+    static int g_OptionsMenu_SelectedBloodColorEntry = 0;
+    static int g_OptionsMenu_BulletMultMax           = 0;
 
     void GameState_Options_Update()
     {
@@ -62,12 +60,12 @@ namespace Silent::Game
                     //Game_RadioSoundStop();
                 }
 
-                g_MainOptionsMenu_SelectedEntry      = MainOptionsMenuEntry_Exit;
-                g_MainOptionsMenu_PrevSelectedEntry  = 0;
-                g_ExtraOptionsMenu_SelectedEntry     = 0;
-                g_ExtraOptionsMenu_PrevSelectedEntry = 0;
-                g_Options_SelectionHighlightTimer    = 0;
-                g_ExtraOptionsMenu_BulletMultMax     = 1;
+                g_OptionsMenu_SelectedEntry      = OptionsMenuEntry_Exit;
+                g_OptionsMenu_PrevSelectedEntry  = 0;
+                g_OptionsMenu_SelectedEntry     = 0;
+                g_OptionsMenu_PrevSelectedEntry = 0;
+                g_OptionsMenu_SelectionHighlightTimer    = 0;
+                g_OptionsMenu_BulletMultMax     = 1;
                 unlockedOptFlags                     = g_GameWork.config.extraOptionsEnabled;
                 
                 // Set available bullet multiplier.
@@ -75,7 +73,7 @@ namespace Silent::Game
                 {
                     if (unlockedOptFlags & (1 << i))
                     {
-                        g_ExtraOptionsMenu_BulletMultMax++;
+                        g_OptionsMenu_BulletMultMax++;
                     }
                 }
 
@@ -83,24 +81,26 @@ namespace Silent::Game
                 switch (g_GameWork.config.extraBloodColor)
                 {
                     case BloodColor_Normal:
-                        g_ExtraOptionsMenu_SelectedBloodColorEntry = BloodColorMenuEntry_Normal;
+                        g_OptionsMenu_SelectedBloodColorEntry = BloodColorMenuEntry_Normal;
                         break;
 
                     case BloodColor_Green:
-                        g_ExtraOptionsMenu_SelectedBloodColorEntry = BloodColorMenuEntry_Green;
+                        g_OptionsMenu_SelectedBloodColorEntry = BloodColorMenuEntry_Green;
                         break;
 
                     case BloodColor_Violet:
-                        g_ExtraOptionsMenu_SelectedBloodColorEntry = BloodColorMenuEntry_Violet;
+                        g_OptionsMenu_SelectedBloodColorEntry = BloodColorMenuEntry_Violet;
                         break;
 
                     case BloodColor_Black:
-                        g_ExtraOptionsMenu_SelectedBloodColorEntry = BloodColorMenuEntry_Black;
+                        g_OptionsMenu_SelectedBloodColorEntry = BloodColorMenuEntry_Black;
                         break;
                 }
 
-                g_ExtraOptionsMenu_EntryCount = (g_GameWork.config.extraOptionsEnabled) ? ExtraOptionsMenuEntry_Count :
-                                                                                          (ExtraOptionsMenuEntry_Count - 2);
+                // @todo Visible extra options entries.
+                //g_OptionsMenu_EntryCount = (g_GameWork.config.extraOptionsEnabled) ? OptionsMenuEntry_Count :
+                //                                                                    (OptionsMenuEntry_Count - 2);
+
                 Game_StateStepSet(0, OptionsMenuState_MainOptions);
                 break;
 
@@ -146,21 +146,6 @@ namespace Silent::Game
                     Game_StateSetNext(prevGameState);
                 }
                 break;
-
-            case OptionsMenuState_EnterExtraOptions:
-                if (ScreenFade_IsFinished())
-                {
-                    Game_StateStepSet(0, OptionsMenuState_ExtraOptions);
-                }
-                break;
-
-            case OptionsMenuState_LeaveExtraOptions:
-                if (ScreenFade_IsFinished())
-                {
-                    Game_StateStepSet(0, OptionsMenuState_EnterMainOptions);
-                    ScreenFade_Start(false, true, false);
-                }
-                break;
         }
 
         // Handle menu state.
@@ -171,31 +156,24 @@ namespace Silent::Game
             case OptionsMenuState_LeaveMainOptions:
             case OptionsMenuState_EnterBrightness:
             case OptionsMenuState_EnterController:
-            case OptionsMenuState_EnterExtraOptions:
-                Options_MainOptionsMenu_Control();
-                break;
-
-            case OptionsMenuState_ExtraOptions:
-            case OptionsMenuState_LeaveExtraOptions:
-                Options_ExtraOptionsMenu_Control();
+                OptionsMenu_Control();
                 break;
         }
     }
 
-    void Options_MainOptionsMenu_Control()
+    void OptionsMenu_Control()
     {
         constexpr int SOUND_VOL_STEP = 8;
 
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        auto widths = Options_MainOptionsMenu_EntryStringsDraw();
-        Options_MainOptionsMenu_ConfigDraw();
-        Options_MainOptionsMenu_SelectionHighlightDraw(widths);
-        Options_Menu_VignetteDraw();
+        auto widths = OptionsMenu_EntryStringsDraw();
+        OptionsMenu_ConfigDraw();
+        OptionsMenu_SelectionHighlightDraw(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
-        Options_MainOptionsMenu_BgmVolumeBarDraw();
-        Options_MainOptionsMenu_SfxVolumeBarDraw();
+        OptionsMenu_BgmVolumeBarDraw();
+        OptionsMenu_SfxVolumeBarDraw();
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_MainOptions)
         {
@@ -203,21 +181,21 @@ namespace Silent::Game
         }
 
         // Increment line move timer.
-        if ((LINE_CURSOR_TIMER_MAX - 1) < g_Options_SelectionHighlightTimer)
+        if ((LINE_CURSOR_TIMER_MAX - 1) < g_OptionsMenu_SelectionHighlightTimer)
         {
-            g_Options_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
+            g_OptionsMenu_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
         }
         else
         {
-            g_Options_SelectionHighlightTimer += 2; // @todo Original menu ran at 60 FPS. Add 2 to compensate.
+            g_OptionsMenu_SelectionHighlightTimer += 2;
         }
 
-        if (g_Options_SelectionHighlightTimer != LINE_CURSOR_TIMER_MAX)
+        if (g_OptionsMenu_SelectionHighlightTimer != LINE_CURSOR_TIMER_MAX)
         {
             return;
         }
 
-        g_MainOptionsMenu_PrevSelectedEntry = g_MainOptionsMenu_SelectedEntry;
+        g_OptionsMenu_PrevSelectedEntry = g_OptionsMenu_SelectedEntry;
 
         // Leave to gameplay (if options menu was accessed with `Option` input action).
         if (g_GameWork.gameStatePrev == GameState_InGame &&
@@ -234,22 +212,34 @@ namespace Silent::Game
         {
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
-            g_Options_SelectionHighlightTimer = 0;
-            g_MainOptionsMenu_SelectedEntry   = (g_MainOptionsMenu_SelectedEntry + (MainOptionsMenuEntry_Count - 1)) % MainOptionsMenuEntry_Count;
+            g_OptionsMenu_SelectionHighlightTimer = 0;
+            g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + (OptionsMenuEntry_Count - 1)) % OptionsMenuEntry_Count;
         }
         if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
-            g_Options_SelectionHighlightTimer = 0;
-            g_MainOptionsMenu_SelectedEntry   = (g_MainOptionsMenu_SelectedEntry + 1) % MainOptionsMenuEntry_Count;
+            g_OptionsMenu_SelectionHighlightTimer = 0;
+            g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + 1) % OptionsMenuEntry_Count;
+        }
+
+        // Update visible entry region.
+        if (g_OptionsMenu_SelectedEntry < (g_OptionsMenu_VisibleEntriesStartIdx + 1))
+        {
+            g_OptionsMenu_VisibleEntriesStartIdx = std::max(g_OptionsMenu_SelectedEntry - 1, 0);
+        }
+        else if (g_OptionsMenu_SelectedEntry > ((g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_COUNT_MAX) - 2))
+        {
+            int startIdxMax                      = std::max(0, OptionsMenuEntry_Count - VISIBLE_ENTRY_COUNT_MAX);
+            g_OptionsMenu_VisibleEntriesStartIdx = std::min((g_OptionsMenu_SelectedEntry - VISIBLE_ENTRY_COUNT_MAX) + 2, 
+                                                            startIdxMax);
         }
 
         // Handle config change.
         int vol = 0;
-        switch (g_MainOptionsMenu_SelectedEntry)
+        switch (g_OptionsMenu_SelectedEntry)
         {
-            case MainOptionsMenuEntry_Exit:
+            case OptionsMenuEntry_Exit:
                 // Exit menu to gameplay.
                 if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked())
                 {
@@ -258,7 +248,7 @@ namespace Silent::Game
                 }
                 break;
 
-            case MainOptionsMenuEntry_Controller:
+            case OptionsMenuEntry_Controller:
                 // Enter controller screen.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
@@ -269,7 +259,7 @@ namespace Silent::Game
                 }
                 break;
 
-            case MainOptionsMenuEntry_Brightness:
+            case OptionsMenuEntry_Brightness:
                 if (input.GetAction(In::Enter).IsClicked())
                 {
                     //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
@@ -278,7 +268,7 @@ namespace Silent::Game
                 }
                 break;
 
-            case MainOptionsMenuEntry_Vibration:
+            case OptionsMenuEntry_Vibration:
                 if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
                     //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
@@ -286,7 +276,7 @@ namespace Silent::Game
                 }
                 break;
 
-            case MainOptionsMenuEntry_AutoLoad:
+            case OptionsMenuEntry_AutoLoad:
                 if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
                     //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
@@ -294,7 +284,7 @@ namespace Silent::Game
                 }
                 break;
 
-            case MainOptionsMenuEntry_Sound:
+            case OptionsMenuEntry_Sound:
                 if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
                     //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
@@ -310,7 +300,7 @@ namespace Silent::Game
                 }
                 break;
 
-            case MainOptionsMenuEntry_BgmVolume:
+            case OptionsMenuEntry_BgmVolume:
                 vol = g_GameWork.config.volumeBgm;
 
                 /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)) ||
@@ -340,7 +330,7 @@ namespace Silent::Game
                 g_GameWork.config.volumeBgm = vol;
                 break;
 
-            case MainOptionsMenuEntry_SfxVolume:
+            case OptionsMenuEntry_SfxVolume:
                 vol = g_GameWork.config.volumeSe;
 
                 /*if ((vol < OPT_SOUND_VOLUME_MAX && input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN)) ||
@@ -369,7 +359,7 @@ namespace Silent::Game
                 g_GameWork.config.volumeSe = vol;
                 break;
 
-            case MainOptionsMenuEntry_Language:
+            case OptionsMenuEntry_Language:
             {
                 // @todo Implement lanugage selection.
                 break;
@@ -379,62 +369,44 @@ namespace Silent::Game
                 break;
         }
 
-        if (input.GetAction(In::StepLeft).IsClicked() || input.GetAction(In::StepRight).IsClicked())
-        {
-            if (g_GameWork.gameStateSteps[0] == OptionsMenuState_EnterExtraOptions)
-            {
-                return;
-            }
-
-            //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-
-            ScreenFade_Start(true, false, false);
-            g_GameWork.gameStateSteps[0]   = OptionsMenuState_EnterExtraOptions;
-            g_SysWork.gameStateStepCounter = 0;
-            g_GameWork.gameStateSteps[1]   = 0;
-            g_GameWork.gameStateSteps[2]   = 0;
-        }
-
         // Reset selection cursor.
-        if (((g_GameWork.gameStateSteps[0] != OptionsMenuState_EnterExtraOptions &&
-              g_MainOptionsMenu_SelectedEntry != MainOptionsMenuEntry_Exit) &&
+        if ((g_OptionsMenu_SelectedEntry != OptionsMenuEntry_Exit &&
             !input.GetAction(In::Enter).IsClicked()) &&
             input.GetAction(In::Cancel).IsClicked())
         {
             //Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
 
-            g_Options_SelectionHighlightTimer = 0;
-            g_MainOptionsMenu_SelectedEntry   = MainOptionsMenuEntry_Exit;
+            g_OptionsMenu_SelectionHighlightTimer = 0;
+            g_OptionsMenu_SelectedEntry   = OptionsMenuEntry_Exit;
         }
     }
 
     void Options_ExtraOptionsMenu_Control()
     {
 /*
-        //Options_ExtraOptionsMenu_EntryStringsDraw();
-        //Options_ExtraOptionsMenu_ConfigDraw();
-        //Options_ExtraOptionsMenu_SelectionHighlightDraw();
-        //Options_Menu_VignetteDraw();
+        //Options_OptionsMenu_EntryStringsDraw();
+        //Options_OptionsMenu_ConfigDraw();
+        //Options_OptionsMenu_SelectionHighlightDraw();
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
-        if (g_GameWork.gameStateSteps[0] != OptionsMenuState_ExtraOptions)
+        if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Options)
         {
             return;
         }
 
         // Increment line move timer.
-        if ((LINE_CURSOR_TIMER_MAX - 1) < g_Options_SelectionHighlightTimer)
+        if ((LINE_CURSOR_TIMER_MAX - 1) < g_OptionsMenu_SelectionHighlightTimer)
         {
-            g_Options_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
+            g_OptionsMenu_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
         }
         else
         {
-            g_Options_SelectionHighlightTimer++;
+            g_OptionsMenu_SelectionHighlightTimer++;
         }
 
-        if (g_Options_SelectionHighlightTimer == LINE_CURSOR_TIMER_MAX)
+        if (g_OptionsMenu_SelectionHighlightTimer == LINE_CURSOR_TIMER_MAX)
         {
-            g_ExtraOptionsMenu_PrevSelectedEntry = g_ExtraOptionsMenu_SelectedEntry;
+            g_OptionsMenu_PrevSelectedEntry = g_OptionsMenu_SelectedEntry;
 
             // Leave to gameplay (if options menu was accessed with `Option` input action).
             if (g_GameWork.gameStatePrev == GameState_InGame && 
@@ -451,21 +423,21 @@ namespace Silent::Game
             {
                 s32 var = 1;
                 //Sd_SfxPlay(Sfx_Back, 0, 64);
-                g_ExtraOptionsMenu_SelectedEntry  = ((g_ExtraOptionsMenu_SelectedEntry - var) + g_ExtraOptionsMenu_EntryCount) % g_ExtraOptionsMenu_EntryCount;
-                g_Options_SelectionHighlightTimer = 0;
+                g_OptionsMenu_SelectedEntry  = ((g_OptionsMenu_SelectedEntry - var) + g_OptionsMenu_EntryCount) % g_OptionsMenu_EntryCount;
+                g_OptionsMenu_SelectionHighlightTimer = 0;
             }
             if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighDown)
             {
                 Sd_SfxPlay(Sfx_Back, 0, 64);
-                g_ExtraOptionsMenu_SelectedEntry++;
-                g_ExtraOptionsMenu_SelectedEntry  = g_ExtraOptionsMenu_SelectedEntry % g_ExtraOptionsMenu_EntryCount;
-                g_Options_SelectionHighlightTimer = 0;
+                g_OptionsMenu_SelectedEntry++;
+                g_OptionsMenu_SelectedEntry  = g_OptionsMenu_SelectedEntry % g_OptionsMenu_EntryCount;
+                g_OptionsMenu_SelectionHighlightTimer = 0;
             }
 
             // Handle config change.
-            switch (g_ExtraOptionsMenu_SelectedEntry)
+            switch (g_OptionsMenu_SelectedEntry)
             {
-                case ExtraOptionsMenuEntry_WeaponCtrl:
+                case OptionsMenuEntry_WeaponCtrl:
                     // Scroll left/right.
                     if (g_Controller0->buttonFlags.clicked & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft))
                     {
@@ -474,22 +446,22 @@ namespace Silent::Game
                     }
                     break;
 
-                case ExtraOptionsMenuEntry_Blood:
+                case OptionsMenuEntry_Blood:
                     // Scroll left/right.
                     if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighRight)
                     {
                         Sd_SfxPlay(Sfx_Back, 0, 64);
-                        g_ExtraOptionsMenu_SelectedBloodColorEntry++;
+                        g_OptionsMenu_SelectedBloodColorEntry++;
                     }
                     if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighLeft)
                     {
                         Sd_SfxPlay(Sfx_Back, 0, 64);
-                        g_ExtraOptionsMenu_SelectedBloodColorEntry += 3;
+                        g_OptionsMenu_SelectedBloodColorEntry += 3;
                     }
 
                     // Set config.
-                    g_ExtraOptionsMenu_SelectedBloodColorEntry = g_ExtraOptionsMenu_SelectedBloodColorEntry % BloodColorMenuEntry_Count;
-                    switch (g_ExtraOptionsMenu_SelectedBloodColorEntry)
+                    g_OptionsMenu_SelectedBloodColorEntry = g_OptionsMenu_SelectedBloodColorEntry % BloodColorMenuEntry_Count;
+                    switch (g_OptionsMenu_SelectedBloodColorEntry)
                     {
                         case BloodColorMenuEntry_Normal:
                             g_GameWork.config.extraBloodColor = BloodColor_Normal;
@@ -509,7 +481,7 @@ namespace Silent::Game
                     }
                     break;
 
-                case ExtraOptionsMenuEntry_ViewCtrl:
+                case OptionsMenuEntry_ViewCtrl:
                     // Scroll left/right.
                     if (g_Controller0->buttonFlags.clicked & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft))
                     {
@@ -520,7 +492,7 @@ namespace Silent::Game
                     }
                     break;
 
-                case ExtraOptionsMenuEntry_RetreatTurn:
+                case OptionsMenuEntry_RetreatTurn:
                     // Scroll left/right.
                     if (g_Controller0->buttonFlags.clicked & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft))
                     {
@@ -531,7 +503,7 @@ namespace Silent::Game
                     }
                     break;
 
-                case ExtraOptionsMenuEntry_MovementCtrl:
+                case OptionsMenuEntry_Control:
                     // Scroll left/right.
                     if (g_Controller0->buttonFlags.clicked & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft))
                     {
@@ -542,7 +514,7 @@ namespace Silent::Game
                     }
                     break;
 
-                case ExtraOptionsMenuEntry_AutoAiming:
+                case OptionsMenuEntry_AutoAiming:
                     // Scroll left/right.
                     if (g_Controller0->buttonFlags.clicked & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft))
                     {
@@ -553,7 +525,7 @@ namespace Silent::Game
                     }
                     break;
 
-                case ExtraOptionsMenuEntry_ViewMode:
+                case OptionsMenuEntry_ViewMode:
                     // Scroll left/right.
                     if (g_Controller0->buttonFlags.clicked & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft))
                     {
@@ -564,7 +536,7 @@ namespace Silent::Game
                     }
                     break;
 
-                case ExtraOptionsMenuEntry_BulletMult:
+                case OptionsMenuEntry_BulletAdjust:
                     // Scroll left/right.
                     if (g_Controller0->buttonFlags.clicked & ControllerFlag_LStickHighRight)
                     {
@@ -578,9 +550,9 @@ namespace Silent::Game
                         Sd_SfxPlay(Sfx_Back, 0, 64);
 
                         // Set config.
-                        g_GameWork.config.extraBulletAdjust = g_GameWork.config.extraBulletAdjust + (g_ExtraOptionsMenu_BulletMultMax - 1);
+                        g_GameWork.config.extraBulletAdjust = g_GameWork.config.extraBulletAdjust + (g_OptionsMenu_BulletMultMax - 1);
                     }
-                    g_GameWork.config.extraBulletAdjust = g_GameWork.config.extraBulletAdjust % g_ExtraOptionsMenu_BulletMultMax;
+                    g_GameWork.config.extraBulletAdjust = g_GameWork.config.extraBulletAdjust % g_OptionsMenu_BulletMultMax;
                     break;
             }
         }

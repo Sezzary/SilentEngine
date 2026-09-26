@@ -74,33 +74,13 @@ namespace Silent::Game
         }
     }
 
-    std::pair<float, float> OptionsMenu_EntryStringsDraw()
+    std::pair<float, float> OptionsMenu_EntriesDraw(const std::vector<MenuEntry>& entries)
     {
         constexpr int  LINE_BASE_X     = 64;
         constexpr int  LINE_BASE_Y     = 80;
         constexpr int  LINE_OFFSET_X   = 16;
         constexpr int  LINE_OFFSET_Y   = 16;
         constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 6);
-        constexpr auto ENTRY_STR_KEYS  = std::array<const char*, OptionsMenuEntry_Count>
-        {
-            KEY_OPTIONS_MENU_EXIT,
-            KEY_OPTIONS_MENU_BRIGHT_LEVEL,
-            KEY_OPTIONS_MENU_CONT_CONFIG,
-            KEY_OPTIONS_MENU_VIBRATION,
-            KEY_OPTIONS_MENU_AUTO_LOAD,
-            KEY_OPTIONS_MENU_SOUND,
-            KEY_OPTIONS_MENU_BGM_VOL,
-            KEY_OPTIONS_MENU_SE_VOL,
-            KEY_OPTIONS_MENU_LANGUAGE,
-            KEY_OPTIONS_MENU_WEAPON_CONTROL,
-            KEY_OPTIONS_MENU_BLOOD_COLOR,
-            KEY_OPTIONS_MENU_VIEW_CONTROL,
-            KEY_OPTIONS_MENU_RETREAT_TURN,
-            KEY_OPTIONS_MENU_WALK_RUN_CONTROL,
-            KEY_OPTIONS_MENU_AUTO_AIMING,
-            KEY_OPTIONS_MENU_VIEW_MODE,
-            KEY_OPTIONS_MENU_BULLET_ADJUST
-        };
 
         const auto& translator = g_App.GetTranslator();
 
@@ -114,14 +94,14 @@ namespace Silent::Game
 
         // Submit entry strings.
         int visibleEntriesEndIdx = std::min(g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_COUNT_MAX,
-                                            (int)OptionsMenuEntry_Count);
+                                            (int)entries.size());
         for (int i = g_OptionsMenu_VisibleEntriesStartIdx;
              i < visibleEntriesEndIdx;
              i++)
         {
             int relIdx = i - g_OptionsMenu_VisibleEntriesStartIdx;
             Gfx_StringPositionSet(LINE_BASE_X, LINE_BASE_Y + (relIdx * LINE_OFFSET_Y));
-            float width = Gfx_StringDraw(translator(ENTRY_STR_KEYS[i]));
+            float width = Gfx_StringDraw(translator(entries[i].EntryStringKey));
 
             // Store line widths.
             if (i == g_OptionsMenu_SelectedEntry)

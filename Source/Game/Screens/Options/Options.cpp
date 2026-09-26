@@ -5,6 +5,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
+#include "Assets/TranslationKeys.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
@@ -12,11 +13,177 @@
 #include "Game/Screens/Options/MenuGraphics.h"
 #include "Input/Input.h"
 
+using namespace Silent::Assets;
 using namespace Silent::Input;
 
 namespace Silent::Game
 {
     constexpr int LINE_CURSOR_TIMER_MAX = 8;
+
+    static const auto ENTRIES = std::vector<MenuEntry>
+    {
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_EXIT
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_BRIGHT_LEVEL
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_CONT_CONFIG
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_VIBRATION,
+            .ConfigStringKeys = 
+            {
+                KEY_OPTIONS_MENU_ON,
+                KEY_OPTIONS_MENU_OFF
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_AUTO_LOAD,
+            .ConfigStringKeys =
+            {
+                KEY_OPTIONS_MENU_ON,
+                KEY_OPTIONS_MENU_OFF
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_SOUND,
+            .ConfigStringKeys =
+            {
+                KEY_OPTIONS_MENU_STEREO,
+                KEY_OPTIONS_MENU_MONAURAL
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::BarConfig,
+            .EntryStringKey = KEY_OPTIONS_MENU_BGM_VOL,
+            .ConfigOffset   = 0
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::BarConfig,
+            .EntryStringKey = KEY_OPTIONS_MENU_SE_VOL,
+            .ConfigOffset   = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_LANGUAGE,
+            .ConfigStringKeys = {}, // @todo Determined dynamically.
+            .ConfigOffset     = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_WEAPON_CONTROL,
+            .ConfigStringKeys =
+            {
+                KEY_OPTIONS_MENU_PRESS,
+                KEY_OPTIONS_MENU_SWITCH
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_BLOOD_COLOR,
+            .ConfigStringKeys = 
+            {
+                KEY_OPTIONS_MENU_NORMAL,
+                KEY_OPTIONS_MENU_GREEN,
+                KEY_OPTIONS_MENU_VIOLET,
+                KEY_OPTIONS_MENU_BLACK
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_VIEW_CONTROL,
+            .ConfigStringKeys = 
+            {
+                KEY_OPTIONS_MENU_NORMAL,
+                KEY_OPTIONS_MENU_REVERSE
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_RETREAT_TURN,
+            .ConfigStringKeys = 
+            {
+                KEY_OPTIONS_MENU_NORMAL,
+                KEY_OPTIONS_MENU_REVERSE
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_WALK_RUN_CONTROL,
+            .ConfigStringKeys = 
+            {
+                KEY_OPTIONS_MENU_NORMAL,
+                KEY_OPTIONS_MENU_REVERSE
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_AUTO_AIMING,
+            .ConfigStringKeys = 
+            {
+                KEY_OPTIONS_MENU_ON,
+                KEY_OPTIONS_MENU_OFF
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_VIEW_MODE,
+            .ConfigStringKeys = 
+            {
+                KEY_OPTIONS_MENU_NORMAL,
+                KEY_OPTIONS_MENU_SELF_VIEW
+            },
+            .ConfigOffset = 0
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_OPTIONS_MENU_BULLET_ADJUST,
+            .ConfigStringKeys =
+            {
+                "x1",
+                "x2",
+                "x3",
+                "x4",
+                "x5",
+                "x6"
+            },
+            .ConfigOffset = 0
+        }
+    };
 
     int g_OptionsMenu_SelectionHighlightTimer = 0;
     int g_OptionsMenu_SelectedEntry           = 0;
@@ -168,7 +335,7 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        auto widths = OptionsMenu_EntryStringsDraw();
+        auto widths = OptionsMenu_EntriesDraw(ENTRIES);
         OptionsMenu_ConfigDraw();
         OptionsMenu_SelectionHighlightDraw(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
@@ -384,7 +551,7 @@ namespace Silent::Game
     void Options_ExtraOptionsMenu_Control()
     {
 /*
-        //Options_OptionsMenu_EntryStringsDraw();
+        //Options_OptionsMenu_EntriesDraw();
         //Options_OptionsMenu_ConfigDraw();
         //Options_OptionsMenu_SelectionHighlightDraw();
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);

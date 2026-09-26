@@ -341,12 +341,11 @@ namespace Silent
             UpdateGame();
         }
 
-        // Update audio.
         _work.Audio.Update();
-
-        // Update debug and toasts.
-        Debug::Update();
+        _work.Options.Update();
         _work.Toaster.Update();
+
+        Debug::Update();
     }
 
     void ApplicationManager::Render()

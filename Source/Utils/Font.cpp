@@ -178,8 +178,7 @@ namespace Silent::Utils
 
         if (!_textureAtlases.Front.UpdatedIdxs.empty())
         {
-            _textureAtlases.Swap();
-            _textureAtlases.Front.Textures = _textureAtlases.Back.Textures;
+            _textureAtlases.Flush();
         }
     }
 

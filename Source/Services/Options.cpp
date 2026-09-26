@@ -5,6 +5,7 @@
 #include "Input/Input.h"
 #include "Renderer/Common/Constants.h"
 #include "Services/Filesystem.h"
+#include "Utils/DoubleBuffer.h"
 #include "Utils/Parallel.h"
 #include "Utils/Stream.h"
 #include "Utils/Translator.h"
@@ -105,25 +106,35 @@ namespace Silent::Services
     constexpr auto DEFAULT_VIEW_MODE                                = ViewMode::Normal;
     constexpr bool DEFAULT_ENABLE_TOASTS                            = true;
 
+    Options& OptionsManager::GetFront()
+    {
+        return _options.Front;
+    }
+
+    const Options& OptionsManager::GetBack() const
+    {
+        return _options.Back;
+    }
+
     void OptionsManager::SetDefaultGraphicsOptions()
     {
-        _options.WindowedSize           = DEFAULT_WINDOWED_SIZE;
-        _options.EnableMaximized        = DEFAULT_ENABLE_MAXIMIZED;
-        _options.EnableFullscreen       = DEFAULT_ENABLE_FULLSCREEN;
-        _options.BrightnessLevel        = DEFAULT_BRIGHTNESS_LEVEL;
-        _options.FrameRate              = DEFAULT_FRAME_RATE;
-        _options.AspectRatio            = DEFAULT_ASPECT_RATIO;
-        _options.RenderScale            = DEFAULT_RENDER_SCALE;
-        _options.TextureFilter          = DEFAULT_TEXTURE_FILTER;
-        _options.TextQuality            = DEFAULT_TEXT_QUALITY;
-        _options.Lighting               = DEFAULT_LIGHTING;
-        _options.Antialiasing           = DEFAULT_ANTIALIASING;
-        _options.DitheringScale         = DEFAULT_DITHERING_SCALE;
-        _options.EnableAmbientOcclusion = DEFAULT_ENABLE_AMBIENT_OCCLUSION;
-        _options.EnableVertexJitter     = DEFAULT_ENABLE_VERTEX_JITTER;
-        _options.EnableFilmGrain        = DEFAULT_ENABLE_FILM_GRAIN;
-        _options.EnableVignette         = DEFAULT_ENABLE_VIGNETTE;
-        _options.EnableCrtFilter        = DEFAULT_ENABLE_CRT_FILTER;
+        _options.Front.WindowedSize           = DEFAULT_WINDOWED_SIZE;
+        _options.Front.EnableMaximized        = DEFAULT_ENABLE_MAXIMIZED;
+        _options.Front.EnableFullscreen       = DEFAULT_ENABLE_FULLSCREEN;
+        _options.Front.BrightnessLevel        = DEFAULT_BRIGHTNESS_LEVEL;
+        _options.Front.FrameRate              = DEFAULT_FRAME_RATE;
+        _options.Front.AspectRatio            = DEFAULT_ASPECT_RATIO;
+        _options.Front.RenderScale            = DEFAULT_RENDER_SCALE;
+        _options.Front.TextureFilter          = DEFAULT_TEXTURE_FILTER;
+        _options.Front.TextQuality            = DEFAULT_TEXT_QUALITY;
+        _options.Front.Lighting               = DEFAULT_LIGHTING;
+        _options.Front.Antialiasing           = DEFAULT_ANTIALIASING;
+        _options.Front.DitheringScale         = DEFAULT_DITHERING_SCALE;
+        _options.Front.EnableAmbientOcclusion = DEFAULT_ENABLE_AMBIENT_OCCLUSION;
+        _options.Front.EnableVertexJitter     = DEFAULT_ENABLE_VERTEX_JITTER;
+        _options.Front.EnableFilmGrain        = DEFAULT_ENABLE_FILM_GRAIN;
+        _options.Front.EnableVignette         = DEFAULT_ENABLE_VIGNETTE;
+        _options.Front.EnableCrtFilter        = DEFAULT_ENABLE_CRT_FILTER;
     }
 
     void OptionsManager::SetDefaultGameplayOptions()
@@ -131,49 +142,49 @@ namespace Silent::Services
         const auto& translator = g_App.GetTranslator();
         const auto& locales    = translator.GetLocales();
 
-        _options.EnableAutoLoad  = DEFAULT_ENABLE_AUTO_LOAD;
-        _options.EnableSubtitles = DEFAULT_ENABLE_SUBTITLES;
-        _options.Language        = !locales.empty() ? locales.front().Name : EMPTY_STRING;
-        _options.Sound           = DEFAULT_SOUND;
-        _options.BgmVolume       = DEFAULT_BGM_VOLUME;
-        _options.SeVolume        = DEFAULT_SE_VOLUME;
-        _options.BloodColor      = DEFAULT_BLOOD_COLOR;
-        _options.BulletAdjust    = DEFAULT_BULLET_ADJUST;
+        _options.Front.EnableAutoLoad  = DEFAULT_ENABLE_AUTO_LOAD;
+        _options.Front.EnableSubtitles = DEFAULT_ENABLE_SUBTITLES;
+        _options.Front.Language        = !locales.empty() ? locales.front().Name : EMPTY_STRING;
+        _options.Front.Sound           = DEFAULT_SOUND;
+        _options.Front.BgmVolume       = DEFAULT_BGM_VOLUME;
+        _options.Front.SeVolume        = DEFAULT_SE_VOLUME;
+        _options.Front.BloodColor      = DEFAULT_BLOOD_COLOR;
+        _options.Front.BulletAdjust    = DEFAULT_BULLET_ADJUST;
     }
 
     void OptionsManager::SetDefaultInputCustomKmBindingsOptions()
     {
-        _options.KeyboardMouseBindings = DEFAULT_CUSTOM_KEYBOARD_MOUSE_BINDING_PROFILE;
+        _options.Front.KeyboardMouseBindings = DEFAULT_CUSTOM_KEYBOARD_MOUSE_BINDING_PROFILE;
     }
 
     void OptionsManager::SetDefaultInputCustomGamepadBindingOptions()
     {
-        _options.GamepadBindings = DEFAULT_CUSTOM_GAMEPAD_BINDING_PROFILE;
+        _options.Front.GamepadBindings = DEFAULT_CUSTOM_GAMEPAD_BINDING_PROFILE;
     }
 
     void OptionsManager::SetDefaultInputControlsOptions()
     {
-        _options.EnableVibration    = DEFAULT_ENABLE_VIBRATION;
-        _options.MouseSensitivity   = DEFAULT_MOUSE_SENSITIVITY;
-        _options.WeaponControl      = DEFAULT_WEAPON_CONTROL;
-        _options.ViewControl        = DEFAULT_VIEW_CONTROL;
-        _options.RetreatTurnControl = DEFAULT_RETREAT_TURN_CONTROL;
-        _options.WalkRunControl     = DEFAULT_WALK_RUN_CONTROL;
-        _options.DisableAutoAiming  = DEFAULT_DISABLE_AUTO_AIMING;
-        _options.ViewMode           = DEFAULT_VIEW_MODE;
+        _options.Front.EnableVibration    = DEFAULT_ENABLE_VIBRATION;
+        _options.Front.MouseSensitivity   = DEFAULT_MOUSE_SENSITIVITY;
+        _options.Front.WeaponControl      = DEFAULT_WEAPON_CONTROL;
+        _options.Front.ViewControl        = DEFAULT_VIEW_CONTROL;
+        _options.Front.RetreatTurnControl = DEFAULT_RETREAT_TURN_CONTROL;
+        _options.Front.WalkRunControl     = DEFAULT_WALK_RUN_CONTROL;
+        _options.Front.DisableAutoAiming  = DEFAULT_DISABLE_AUTO_AIMING;
+        _options.Front.ViewMode           = DEFAULT_VIEW_MODE;
     }
 
     void OptionsManager::SetDefaultEnhancementsOptions()
     {
-        _options.SkipLogos       = DEFAULT_SKIP_LOGOS;
-        _options.PaperMapQuality = DEFAULT_PAPER_MAP_QUALITY;
-        _options.DialogPause     = DEFAULT_DIALOG_PAUSE;
+        _options.Front.SkipLogos       = DEFAULT_SKIP_LOGOS;
+        _options.Front.PaperMapQuality = DEFAULT_PAPER_MAP_QUALITY;
+        _options.Front.DialogPause     = DEFAULT_DIALOG_PAUSE;
     }
 
     void OptionsManager::SetDefaultSystemOptions()
     {
-        _options.EnableToasts      = DEFAULT_ENABLE_TOASTS;
-        _options.EnableParallelism = GetCoreCount() > 1;
+        _options.Front.EnableToasts      = DEFAULT_ENABLE_TOASTS;
+        _options.Front.EnableParallelism = GetCoreCount() > 1;
     }
 
     bool OptionsManager::HasCreatedNewFile() const
@@ -183,14 +194,14 @@ namespace Silent::Services
 
     void OptionsManager::Initialize()
     {
-        _options.EnableDebugMode = Debug::IS_DEBUG_BUILD;
+        _options.Front.EnableDebugMode = Debug::IS_DEBUG_BUILD;
         SetDefaultOptions();
     }
 
     void OptionsManager::Save()
     {
         // Create options JSON.
-        auto optionsJson = ToOptionsJson(_options);
+        auto optionsJson = ToOptionsJson(_options.Front);
 
         // Write options JSON file.
         auto stream = Stream(GetFilePath(), false, true);
@@ -221,7 +232,13 @@ namespace Silent::Services
         auto optionsJson = stream.ReadJson();
 
         // Read options JSON.
-        _options = FromOptionsJson(optionsJson);
+        _options.Front = FromOptionsJson(optionsJson);
+        Update();
+    }
+
+    void OptionsManager::Update()
+    {
+        _options.Flush();
     }
 
     stdfs::path OptionsManager::GetFilePath() const
@@ -233,8 +250,8 @@ namespace Silent::Services
 
     void OptionsManager::SetDefaultOptions()
     {
-        _options.ActiveKeyboardMouseProfileId = DEFAULT_ACTIVE_KEYBOARD_MOUSE_BINDING_PROFILE_ID;
-        _options.ActiveGamepadProfileId       = DEFAULT_ACTIVE_GAMEPAD_BINDING_PROFILE_ID;
+        _options.Front.ActiveKeyboardMouseProfileId = DEFAULT_ACTIVE_KEYBOARD_MOUSE_BINDING_PROFILE_ID;
+        _options.Front.ActiveGamepadProfileId       = DEFAULT_ACTIVE_GAMEPAD_BINDING_PROFILE_ID;
 
         SetDefaultGraphicsOptions();
         SetDefaultGameplayOptions();
@@ -353,12 +370,12 @@ namespace Silent::Services
 
     const Options* OptionsManager::operator->() const
     {
-        return &_options;
+        return &_options.Front;
     }
 
     Options* OptionsManager::operator->()
     {
-        return &_options;
+        return &_options.Front;
     }
 
     json OptionsManager::ToOptionsJson(const Options& options) const

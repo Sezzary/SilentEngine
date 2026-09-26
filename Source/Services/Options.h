@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Input/Input.h"
+#include "Utils/DoubleBuffer.h"
 
 using namespace Silent::Input;
+using namespace Silent::Utils;
 
 namespace Silent::Services
 {
@@ -214,8 +216,8 @@ namespace Silent::Services
         // Fields
         // =======
 
-        Options _options           = {};
-        bool    _hasCreatedNewFile = false;
+        DoubleBuffer<Options> _options           = {};
+        bool                  _hasCreatedNewFile = false;
 
     public:
         // =============
@@ -224,6 +226,16 @@ namespace Silent::Services
 
         /** @brief Creates a default uninitialized instance. */
         OptionsManager() = default;
+
+        // ========
+        // Getters
+        // ========
+
+        /** @brief Gets the back (staging) options configuration. */
+        Options& GetFront();
+
+        /** @brief Gets the back (reading) options configuration. */
+        const Options& GetBack() const;
 
         // ========
         // Setters
@@ -264,7 +276,7 @@ namespace Silent::Services
         // Utilities
         // ==========
 
-        /** @brief Initializes the options configurations to startup defaults, taking the build mode into account. */
+        /** @brief Initializes the options configuration to startup defaults, taking the build mode into account. */
         void Initialize();
 
         /** @brief Saves the current options configuration to a JSON file on the platforms's workspace folder. */
@@ -273,10 +285,14 @@ namespace Silent::Services
         /** @brief Loads the options configuration from a JSON file on the platforms's workspace folder. */
         void Load();
 
+        /** @brief Flushes the double buffer containing the options configuration . */
+        void Update();
+
         // ==========
         // Operators
         // ==========
 
+        // @todo Deprecated. Must use getters for thread safety.
         const Options* operator->() const;
         Options*       operator->();
 

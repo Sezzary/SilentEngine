@@ -2,7 +2,7 @@
 
 namespace Silent::Utils
 {
-    /** @brief Double-buffered arbitrary data. */
+    /** @brief Double-buffered data. */
     template <typename T>
     struct DoubleBuffer
     {
@@ -10,11 +10,18 @@ namespace Silent::Utils
         T Front = {};
 
         void Swap();
+        void Flush();
     };
 
     template <typename T>
     void DoubleBuffer<T>::Swap()
     {
         std::swap(Back, Front);
+    }
+
+    template <typename T>
+    void DoubleBuffer<T>::Flush()
+    {
+        Back = Front;
     }
 }

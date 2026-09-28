@@ -18,7 +18,6 @@ namespace Silent::Game
         MenuEntryType            Type             = MenuEntryType::Submenu;
         std::string              EntryStringKey   = {};
         std::vector<std::string> ConfigStringKeys = {};
-        int                      ConfigOffset     = 0;
     };
 
     /** @brief Draws a BGM volume bar in the main options menu. */
@@ -31,13 +30,16 @@ namespace Silent::Game
      *
      * Called by `OptionsMenu_BgmVolumeBarDraw` and `OptionsMenu_SfxVolumeBarDraw`.
      */
-    void OptionsMenu_VolumeBarDraw(bool isSfx, uchar vol);
+    void OptionsMenu_VolumeBarDraw(bool isSfx, int vol);
 
     /** @brief Draws the heading and all listed entries in the main options menu.
      *
+     * @param headingStrKey Heading string translation key.
      * @param entries Entries to draw.
+     * @return Pair of entry string widths.
      */
-    std::pair<float, float> OptionsMenu_EntriesDraw(const std::vector<MenuEntry>& entries);
+    std::pair<float, float> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
+                                                    const std::vector<MenuEntry>& entries);
 
     /** @brief Draws gold bullet points next to the listed entries and a highlight indicating the
      * selected entry in the main options menu.

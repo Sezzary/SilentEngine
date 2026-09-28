@@ -21,7 +21,7 @@
     "MainMenu_Normal":       "NORMAL",
     "MainMenu_Hard":         "HARD",
 
-    "OptionsMenu_Heading":        "{M}OPTIONS",
+    "OptionsMenu_Heading":        "OPTIONS",
     "OptionsMenu_Exit":           "Exit",
     "OptionsMenu_BrightLevel":    "Brightness Level",
     "OptionsMenu_ContConfig":     "Controller Config",

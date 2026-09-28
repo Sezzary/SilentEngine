@@ -20,17 +20,47 @@ namespace Silent::Game
     {
         OptionsMenuState_EnterMainOptions,  /** Entering main options menu. */
         OptionsMenuState_MainOptions,       /** In main options menu. */
+        OptionsMenuState_LeaveMainOptions,  /** Leaving main options menu. */
+        OptionsMenuState_Leave,             /** Leaving options menu back to gameplay. */
+
         OptionsMenuState_Brightness,        /** In brightness menu. */
         OptionsMenuState_Controller,        /** In controller config menu. */
-        OptionsMenuState_Leave,             /** Leaving options menu back to gameplay. */
-        OptionsMenuState_LeaveMainOptions,  /** Leaving main options menu. */
         OptionsMenuState_EnterBrightness,   /** Entering brightness menu. */
         OptionsMenuState_EnterController,   /** Entering controller config menu. */
         OptionsMenuState_LeaveBrightness,   /** Leaving brightness menu. */
-        OptionsMenuState_LeaveController    /** Leaving controller config menu. */
+        OptionsMenuState_LeaveController,   /** Leaving controller config menu. */
+
+        OptionsMenuState_EnterGraphics,
+        OptionsMenuState_Graphics,
+        OptionsMenuState_LeaveGraphics,
+        OptionsMenuState_EnterGameplay,
+        OptionsMenuState_Gameplay,
+        OptionsMenuState_LeaveGameplay,
+        OptionsMenuState_EnterInput,
+        OptionsMenuState_Input,
+        OptionsMenuState_LeaveInput,
+        OptionsMenuState_EnterEnhancements,
+        OptionsMenuState_Enhancements,
+        OptionsMenuState_LeaveEnhancements,
+        OptionsMenuState_EnterSystem,
+        OptionsMenuState_System,
+        OptionsMenuState_LeaveSystem,
     };
 
-    /** @brief Options menu entries. */
+    /** @brief Main options menu entries. */
+    enum e_MainOptionsMenuEntry
+    {
+        MainOptionsMenuEntry_Exit,
+        MainOptionsMenuEntry_Graphics,
+        MainOptionsMenuEntry_Gameplay,
+        MainOptionsMenuEntry_Input,
+        MainOptionsMenuEntry_Enhancements,
+        MainOptionsMenuEntry_System,
+
+        MainOptionsMenuEntry_Count
+    };
+
+    /** @brief Options menu entries. @deprecated */
     enum e_OptionsMenuEntry
     {
         OptionsMenuEntry_Exit,
@@ -73,10 +103,11 @@ namespace Silent::Game
         BloodColor_Black  = 11
     };
 
-    extern int g_OptionsMenu_SelectionHighlightTimer;
     extern int g_OptionsMenu_SelectedEntry;
     extern int g_OptionsMenu_PrevSelectedEntry;
     extern int g_OptionsMenu_VisibleEntriesStartIdx;
+    extern int g_OptionsMenu_PrevVisibleEntriesStartIdx;
+    extern int g_OptionsMenu_SelectionHighlightTimer;
 
     /** @brief Options menu game state handler. */
     void GameState_Options_Update();

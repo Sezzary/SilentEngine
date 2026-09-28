@@ -30,7 +30,7 @@ namespace Silent::Game
         OptionsMenu_VolumeBarDraw(true, g_GameWork.config.volumeSe);
     }
 
-    void OptionsMenu_VolumeBarDraw(bool isSfx, uchar vol)
+    void OptionsMenu_VolumeBarDraw(bool isSfx, int vol)
     {
         constexpr int STR_OFFSET_Y = 16;
         constexpr int NOTCH_SIZE_X = 5;
@@ -74,13 +74,15 @@ namespace Silent::Game
         }
     }
 
-    std::pair<float, float> OptionsMenu_EntriesDraw(const std::vector<MenuEntry>& entries)
+    std::pair<float, float> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
+                                                    const std::vector<MenuEntry>& entries)
     {
-        constexpr int  LINE_BASE_X     = 64;
-        constexpr int  LINE_BASE_Y     = 80;
-        constexpr int  LINE_OFFSET_X   = 16;
-        constexpr int  LINE_OFFSET_Y   = 16;
-        constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 6);
+        constexpr int  LINE_BASE_X       = 64;
+        constexpr int  LINE_BASE_Y       = 80;
+        constexpr int  LINE_OFFSET_X     = 16;
+        constexpr int  LINE_OFFSET_Y     = 16;
+        constexpr int  CONFIG_STR_OFFSET = 180;
+        constexpr auto HEADING_STR_POS   = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 6);
 
         const auto& translator = g_App.GetTranslator();
 
@@ -88,7 +90,7 @@ namespace Silent::Game
 
         // Submit heading string.
         Gfx_StringPositionSet(HEADING_STR_POS.x, HEADING_STR_POS.y);
-        Gfx_StringDraw(translator(KEY_OPTIONS_MENU_HEADING));
+        Gfx_StringDraw("{M}" + translator(headingStrKey));
 
         auto widths = std::pair<float, float>{};
 
@@ -99,18 +101,44 @@ namespace Silent::Game
              i < visibleEntriesEndIdx;
              i++)
         {
-            int relIdx = i - g_OptionsMenu_VisibleEntriesStartIdx;
-            Gfx_StringPositionSet(LINE_BASE_X, LINE_BASE_Y + (relIdx * LINE_OFFSET_Y));
-            float width = Gfx_StringDraw(translator(entries[i].EntryStringKey));
+            const auto& entry = entries[i];
 
-            // Store line widths.
-            if (i == g_OptionsMenu_SelectedEntry)
+            int  relIdx = i - g_OptionsMenu_VisibleEntriesStartIdx;
+            auto pos    = Vector2i(LINE_BASE_X, LINE_BASE_Y + (relIdx * LINE_OFFSET_Y));
+
+            Gfx_StringPositionSet(pos.x, pos.y);
+            float width = Gfx_StringDraw(translator(entry.EntryStringKey));
+
+            // Store line widths. @todo Scrolling issues.
+            if (i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
             {
                 widths.second = width;
             }
-            else if (i == g_OptionsMenu_PrevSelectedEntry)
+            else if (i == (g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
             {
                 widths.first = width;
+            }
+
+            switch (entry.Type)
+            {
+                case MenuEntryType::ArrowConfig:
+                {
+                    // Draw config string
+                    Gfx_StringPositionSet(pos.x + CONFIG_STR_OFFSET, pos.y);
+                    float width = Gfx_StringDraw("{M}" + translator(entry.ConfigStringKeys[0])); // @todo Pass index somehow.
+
+                    // Draw arrows.
+                    if (i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
+                    {
+                        // @todo
+                    }
+                    break;
+                }
+                case MenuEntryType::BarConfig:
+                {
+                    // @todo
+                    break;
+                }
             }
         }
 

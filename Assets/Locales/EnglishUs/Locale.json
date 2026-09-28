@@ -19,13 +19,39 @@
     "MainMenu_Normal":       "NORMAL",
     "MainMenu_Hard":         "HARD",
 
-    "OptionsMenu_Heading":        "{M}OPTIONS",
+    "OptionsMenu_Heading":        "OPTIONS",
     "OptionsMenu_Graphics":       "Graphics",
     "OptionsMenu_Gameplay":       "Gameplay",
     "OptionsMenu_Input":          "Input",
     "OptionsMenu_Enhancements":   "Enhancements",
     "OptionsMenu_System":         "System",
-    "OptionsMenu_Exit":           "Exit",
+
+    "GraphicsMenu_Heading":          "GRAPHICS OPTIONS",
+    "GraphicsMenu_Fullscreen":       "Fullscreen",
+    "GraphicsMenu_BrightnessLevel":  "Brightness Level",
+    "GraphicsMenu_FrameRate":        "Frame Rate",
+    "GraphicsMenu_AspectRatio":      "Aspect Ratio",
+    "GraphicsMenu_RenderScale":      "Render Scale",
+    "GraphicsMenu_TextureFilter":    "Texture Filter",
+    "GraphicsMenu_TextQuality":      "Text Quality",
+    "GraphicsMenu_Lighting":         "Lighting",
+    "GraphicsMenu_Antialiasing":     "Antialiasing",
+    "GraphicsMenu_DitheringScale":   "Dithering Scale",
+    "GraphicsMenu_AmbientOcclusion": "Ambient Occlusion",
+    "GraphicsMenu_VertexJitter":     "Vertex Jitter",
+    "GraphicsMenu_FilmGrain":        "Film Grain",
+    "GraphicsMenu_Vignette":         "Vignette",
+    "GraphicsMenu_CrtFilter":        "Crt Filter",
+
+    "GameplayMenu_Heading": "GAMEPLAY OPTIONS",
+
+    "InputMenu_Heading": "INPUT OPTIONS",
+
+    "EnhancementsMenu_Heading": "ENHANCEMENTS OPTIONS",
+
+    "SystemMenu_Heading": "SYSTEM OPTIONS",
+
+    "OptionsMenu_Exit": "Exit",
     "OptionsMenu_BrightLevel":    "Brightness Level",
     "OptionsMenu_ContConfig":     "Controller Config",
     "OptionsMenu_Vibration":      "Vibration",

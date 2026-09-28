@@ -19,7 +19,7 @@
     "MainMenu_Normal":       "NORMAL",
     "MainMenu_Hard":         "DIFÍCIL",
 
-    "OptionsMenu_Heading":        "{M}OPCIONES",
+    "OptionsMenu_Heading":        "OPCIONES",
     "OptionsMenu_Exit":           "Salir",
     "OptionsMenu_BrightLevel":    "Brillo",
     "OptionsMenu_ContConfig":     "Configurar controles",

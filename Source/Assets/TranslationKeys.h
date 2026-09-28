@@ -41,6 +41,31 @@ namespace Silent::Assets
     constexpr char KEY_OPTIONS_MENU_ENHANCEMENTS[]  = "OptionsMenu_Enhancements";
     constexpr char KEY_OPTIONS_MENU_SYSTEM[]        = "OptionsMenu_System";
 
+    constexpr char KEY_GRAPHICS_MENU_HEADING[]           = "GameplayMenu_Heading";
+    constexpr char KEY_GRAPHICS_MENU_FULLSCREEN[]        = "GraphicsMenu_Fullscreen";
+    constexpr char KEY_GRAPHICS_MENU_BRIGHTNESS_LEVEL[]  = "GraphicsMenu_BrightnessLevel";
+    constexpr char KEY_GRAPHICS_MENU_FRAME_RATE[]        = "GraphicsMenu_FrameRate";
+    constexpr char KEY_GRAPHICS_MENU_ASPECT_RATIO[]      = "GraphicsMenu_AspectRatio";
+    constexpr char KEY_GRAPHICS_MENU_RENDER_SCALE[]      = "GraphicsMenu_RenderScale";
+    constexpr char KEY_GRAPHICS_MENU_TEXTURE_FILTER[]    = "GraphicsMenu_TextureFilter";
+    constexpr char KEY_GRAPHICS_MENU_TEXT_QUALITY[]      = "GraphicsMenu_TextQuality";
+    constexpr char KEY_GRAPHICS_MENU_LIGHTING[]          = "GraphicsMenu_Lighting";
+    constexpr char KEY_GRAPHICS_MENU_ANTIALIASING[]      = "GraphicsMenu_Antialiasing";
+    constexpr char KEY_GRAPHICS_MENU_DITHERING_SCALE[]   = "GraphicsMenu_DitheringScale";
+    constexpr char KEY_GRAPHICS_MENU_AMBIENT_OCCLUSION[] = "GraphicsMenu_AmbientOcclusion";
+    constexpr char KEY_GRAPHICS_MENU_VERTEX_JITTER[]     = "GraphicsMenu_VertexJitter";
+    constexpr char KEY_GRAPHICS_MENU_FILM_FRAIN[]        = "GraphicsMenu_FilmGrain";
+    constexpr char KEY_GRAPHICS_MENU_VIGNETTE[]          = "GraphicsMenu_Vignette";
+    constexpr char KEY_GRAPHICS_MENU_CRT_FILTER[]        = "GraphicsMenu_CrtFilter";
+
+    constexpr char KEY_GAMEPLAY_MENU_HEADING[] = "GameplayMenu_Heading";
+
+    constexpr char KEY_INPUT_MENU_HEADING[] = "InputMenu_Heading";
+
+    constexpr char KEY_ENHANCEMENTS_MENU_HEADING[] = "EnhancementsMenu_Heading";
+
+    constexpr char KEY_SYSTEM_MENU_HEADING[] = "SystemMenu_Heading";
+
     constexpr char KEY_OPTIONS_MENU_EXIT[]         = "OptionsMenu_Exit";
     constexpr char KEY_OPTIONS_MENU_BRIGHT_LEVEL[] = "OptionsMenu_BrightLevel";
     constexpr char KEY_OPTIONS_MENU_CONT_CONFIG[]  = "OptionsMenu_ContConfig";
@@ -50,7 +75,7 @@ namespace Silent::Assets
     constexpr char KEY_OPTIONS_MENU_BGM_VOL[]      = "OptionsMenu_BgmVol";
     constexpr char KEY_OPTIONS_MENU_SE_VOL[]       = "OptionsMenu_SeVol";
     constexpr char KEY_OPTIONS_MENU_LANGUAGE[]     = "OptionsMenu_Language";
-    
+
     constexpr char KEY_OPTIONS_MENU_WEAPON_CONTROL[]   = "OptionsMenu_WeaponControl";
     constexpr char KEY_OPTIONS_MENU_BLOOD_COLOR[]      = "OptionsMenu_BloodColor";
     constexpr char KEY_OPTIONS_MENU_VIEW_CONTROL[]     = "OptionsMenu_ViewControl";

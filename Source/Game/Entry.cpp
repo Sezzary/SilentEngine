@@ -50,6 +50,12 @@ namespace Silent::Game
 
         g_SysWork.bgmStatusFlags = BgmStatusFlag_None;
 
+        static bool first = true;
+        if (first)
+        {
+            g_GameWork.gameState = GameState_MainMenu;
+            first = false;
+        }
         // Call update function for current game state.
         if (g_GameStateUpdateFuncs[g_GameWork.gameState])
         {

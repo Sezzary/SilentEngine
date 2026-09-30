@@ -24,8 +24,8 @@ namespace Silent::Game
      */
     void Options_Selection_HighlightDraw(const s_Line2d& line);
 
+    // @deprecated
     /** @brief Draws a blue arrow element used for certain listed entries in the main and extra options menus.
-     * @deprecated
      *
      * @note Called twice if the arrow requires a border, with `isFlashing` passed as `true` and `false` on consecutive
      * calls.

@@ -6,11 +6,16 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
+#include "Game/Bodyprog/Sound/SoundSystem.h"
+#include "Game/Bodyprog/Sound/Sfx.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
+#include "Game/Screens/Options/Graphics/Brightness.h"
+#include "Game/Screens/Options/Graphics/Graphics.h"
 #include "Game/Screens/Options/MenuGraphics.h"
+#include "Game/Screens/Options/Utils.h"
 #include "Input/Input.h"
 
 using namespace Silent::Assets;
@@ -18,228 +23,17 @@ using namespace Silent::Input;
 
 namespace Silent::Game
 {
-    constexpr int LINE_CURSOR_TIMER_MAX = 8;
-
-    static const auto ENTRIES = std::vector<MenuEntry>
-    {
-        MenuEntry
-        {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_EXIT
-        },
-        MenuEntry
-        {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_BRIGHT_LEVEL
-        },
-        MenuEntry
-        {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_CONT_CONFIG
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_VIBRATION,
-            .ConfigStringKeys = 
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_AUTO_LOAD,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_SOUND,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_STEREO,
-                KEY_OPTIONS_MENU_MONAURAL
-            }
-        },
-        MenuEntry
-        {
-            .Type           = MenuEntryType::BarConfig,
-            .EntryStringKey = KEY_OPTIONS_MENU_BGM_VOL
-        },
-        MenuEntry
-        {
-            .Type           = MenuEntryType::BarConfig,
-            .EntryStringKey = KEY_OPTIONS_MENU_SE_VOL
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_LANGUAGE,
-            .ConfigStringKeys = {} // @todo Determined dynamically.
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_WEAPON_CONTROL,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_PRESS,
-                KEY_OPTIONS_MENU_SWITCH
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_BLOOD_COLOR,
-            .ConfigStringKeys = 
-            {
-                KEY_OPTIONS_MENU_NORMAL,
-                KEY_OPTIONS_MENU_GREEN,
-                KEY_OPTIONS_MENU_VIOLET,
-                KEY_OPTIONS_MENU_BLACK
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_VIEW_CONTROL,
-            .ConfigStringKeys = 
-            {
-                KEY_OPTIONS_MENU_NORMAL,
-                KEY_OPTIONS_MENU_REVERSE
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_RETREAT_TURN,
-            .ConfigStringKeys = 
-            {
-                KEY_OPTIONS_MENU_NORMAL,
-                KEY_OPTIONS_MENU_REVERSE
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_WALK_RUN_CONTROL,
-            .ConfigStringKeys = 
-            {
-                KEY_OPTIONS_MENU_NORMAL,
-                KEY_OPTIONS_MENU_REVERSE
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_AUTO_AIMING,
-            .ConfigStringKeys = 
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_VIEW_MODE,
-            .ConfigStringKeys = 
-            {
-                KEY_OPTIONS_MENU_NORMAL,
-                KEY_OPTIONS_MENU_SELF_VIEW
-            }
-        },
-        MenuEntry
-        {
-            .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_OPTIONS_MENU_BULLET_ADJUST,
-            .ConfigStringKeys =
-            {
-                "x1",
-                "x2",
-                "x3",
-                "x4",
-                "x5",
-                "x6"
-            }
-        }
-    };
-
     int g_OptionsMenu_SelectedEntry              = 0;
     int g_OptionsMenu_PrevSelectedEntry          = 0;
     int g_OptionsMenu_VisibleEntriesStartIdx     = 0;
     int g_OptionsMenu_PrevVisibleEntriesStartIdx = 0;
     int g_OptionsMenu_SelectionHighlightTimer    = 0;
 
+    // @deprecated
     static int g_OptionsMenu_SelectedBloodColorEntry = 0;
     static int g_OptionsMenu_BulletMultMax           = 0;
 
-    void ResetOptionsSelection(int selectedEntryIdx = 0)
-    {
-        g_OptionsMenu_SelectedEntry              = 
-        g_OptionsMenu_PrevSelectedEntry          = selectedEntryIdx;
-        g_OptionsMenu_VisibleEntriesStartIdx     = g_OptionsMenu_PrevVisibleEntriesStartIdx;
-        g_OptionsMenu_PrevVisibleEntriesStartIdx = 0;
-        g_OptionsMenu_SelectionHighlightTimer    = 0;
-    }
-
-    void UpdateOptionsSelection(int entryCount)
-    {
-        const auto& input = g_App.GetInput();
-
-        // Increment line move timer.
-        if ((LINE_CURSOR_TIMER_MAX - 1) < g_OptionsMenu_SelectionHighlightTimer)
-        {
-            g_OptionsMenu_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
-        }
-        else
-        {
-            g_OptionsMenu_SelectionHighlightTimer += 2;
-        }
-
-        if (g_OptionsMenu_SelectionHighlightTimer != LINE_CURSOR_TIMER_MAX)
-        {
-            return;
-        }
-
-        g_OptionsMenu_PrevSelectedEntry = g_OptionsMenu_SelectedEntry;
-
-        // Move selection cursor up/down.
-        if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
-        {
-            //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
-
-            g_OptionsMenu_SelectionHighlightTimer = 0;
-            g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + (entryCount - 1)) % entryCount;
-        }
-        if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
-        {
-            //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
-
-            g_OptionsMenu_SelectionHighlightTimer = 0;
-            g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + 1) % entryCount;
-        }
-
-        // Update visible entries region.
-        if (g_OptionsMenu_SelectedEntry < (g_OptionsMenu_VisibleEntriesStartIdx + 1))
-        {
-            g_OptionsMenu_VisibleEntriesStartIdx = std::max(g_OptionsMenu_SelectedEntry - 1, 0);
-        }
-        else if (g_OptionsMenu_SelectedEntry > ((g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_COUNT_MAX) - 2))
-        {
-            int startIdxMax                      = std::max(0, entryCount - VISIBLE_ENTRY_COUNT_MAX);
-            g_OptionsMenu_VisibleEntriesStartIdx = std::min((g_OptionsMenu_SelectedEntry - VISIBLE_ENTRY_COUNT_MAX) + 2, 
-                                                            startIdxMax);
-        }
-    }
-
-    static void Options_MainMenu_Control()
+    static void ControlOptionsMenu()
     {
         static const auto ENTRIES = std::vector<MenuEntry>
         {
@@ -284,7 +78,7 @@ namespace Silent::Game
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         // Block user input if transitioning to new menu.
-        if (g_GameWork.gameStateSteps[0] != OptionsMenuState_MainOptions)
+        if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Options)
         {
             return;
         }
@@ -293,7 +87,7 @@ namespace Silent::Game
         if (g_GameWork.gameStatePrev == GameState_InGame &&
             !input.GetAction(In::Enter).IsClicked() && input.GetAction(In::Option).IsClicked())
         {
-            //Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
+            Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
             Game_StateStepSet(0, OptionsMenuState_Leave);
             return;
         }
@@ -307,7 +101,7 @@ namespace Silent::Game
                 // Exit to gameplay.
                 if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
                     g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     Game_StateStepSet(0, OptionsMenuState_Leave);
@@ -316,9 +110,10 @@ namespace Silent::Game
             }
             case MainOptionsMenuEntry_Graphics:
             {
+                // Enter submenu.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
                     g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
@@ -328,9 +123,10 @@ namespace Silent::Game
             }
             case MainOptionsMenuEntry_Gameplay:
             {
+                // Enter submenu.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
                     g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
@@ -340,9 +136,10 @@ namespace Silent::Game
             }
             case MainOptionsMenuEntry_Input:
             {
+                // Enter submenu.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
                     g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
@@ -352,9 +149,10 @@ namespace Silent::Game
             }
             case MainOptionsMenuEntry_Enhancements:
             {
+                // Enter submenu.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
                     g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
@@ -364,9 +162,10 @@ namespace Silent::Game
             }
             case MainOptionsMenuEntry_System:
             {
+                // Enter submenu.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
                     g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
@@ -381,126 +180,10 @@ namespace Silent::Game
             !input.GetAction(In::Enter).IsClicked()) &&
             input.GetAction(In::Cancel).IsClicked())
         {
-            //Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
+            Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
 
-            g_OptionsMenu_SelectionHighlightTimer = 0;
             g_OptionsMenu_SelectedEntry           = OptionsMenuEntry_Exit;
-        }
-    }
-
-    enum class GraphicsMenuEntry
-    {
-        Fullscreen,
-        BrightnessLevel,
-        FrameRate,
-        AspectRatio,
-        RenderScale,
-        TextureFilter,
-        TextQuality,
-        Lighting,
-        Antialiasing,
-        DitheringScale,
-        AmbientOcclusion,
-        VertexJitter,
-        FilmGrain,
-        Vignette,
-        CrtFilter,
-
-        Count
-    };
-
-    static void Options_GraphicsMenu_Control()
-    {
-        static const auto ENTRIES = std::vector<MenuEntry>
-        {
-            MenuEntry
-            {
-                .Type             = MenuEntryType::ArrowConfig,
-                .EntryStringKey   = KEY_GRAPHICS_MENU_FULLSCREEN,
-                .ConfigStringKeys =
-                {
-                    KEY_OPTIONS_MENU_ON,
-                    KEY_OPTIONS_MENU_OFF
-                }
-            },
-            MenuEntry
-            {
-                .Type           = MenuEntryType::Submenu,
-                .EntryStringKey = KEY_GRAPHICS_MENU_BRIGHTNESS_LEVEL
-            },
-        };
-//KEY_GRAPHICS_MENU_FRAME_RATE
-//KEY_GRAPHICS_MENU_ASPECT_RATIO
-//KEY_GRAPHICS_MENU_RENDER_SCALE
-//KEY_GRAPHICS_MENU_TEXTURE_FILTER
-//KEY_GRAPHICS_MENU_TEXT_QUALITY
-//KEY_GRAPHICS_MENU_LIGHTING
-//KEY_GRAPHICS_MENU_ANTIALIASING
-//KEY_GRAPHICS_MENU_DITHERING_SCALE
-//KEY_GRAPHICS_MENU_AMBIENT_OCCLUSION
-//KEY_GRAPHICS_MENU_VERTEX_JITTER
-//KEY_GRAPHICS_MENU_FILM_FRAIN
-//KEY_GRAPHICS_MENU_VIGNETTE
-//KEY_GRAPHICS_MENU_CRT_FILTER
-
-        const auto& input      = g_App.GetInput();
-        const auto& translator = g_App.GetTranslator();
-
-        // Draw graphics.
-        auto widths = OptionsMenu_EntriesDraw(KEY_GRAPHICS_MENU_HEADING, ENTRIES);
-        OptionsMenu_SelectionHighlightDraw(widths);
-        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
-
-        if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Graphics)
-        {
-            return;
-        }
-
-        UpdateOptionsSelection((int)GraphicsMenuEntry::Count);
-
-        // Handle menu state.
-        switch (g_GameWork.gameStateSteps[1])
-        {
-            case 0:
-            {
-                ResetOptionsSelection();
-
-                ScreenFade_Start(true, true, false);
-                Game_StateStepIncrement(1);
-                break;
-            }
-            case 1:
-            {
-                // Fade screen and leave menu.
-                if (input.GetAction(In::Enter).IsClicked() ||
-                    input.GetAction(In::Cancel).IsClicked())
-                {
-                    if (input.GetAction(In::Enter).IsClicked())
-                    {
-                        //Sd_SfxPlay(Sfx_Confirm, 0, Q8_CLAMPED(0.25f));
-                    }
-                    else
-                    {
-                        //Sd_SfxPlay(Sfx_Cancel, 0, Q8_CLAMPED(0.25f));
-                    }
-
-                    ScreenFade_Start(true, false, false);
-                    Game_StateStepIncrement(1);
-                }
-                break;
-            }
-            case 2:
-            {
-                // Switch to previous menu.
-                if (ScreenFade_IsFinished())
-                {
-                    ResetOptionsSelection(MainOptionsMenuEntry_Graphics);
-
-                    ScreenFade_Start(true, true, false);
-                    Game_StateStepSet(0, OptionsMenuState_LeaveGraphics);
-                }
-                break;
-            }
+            g_OptionsMenu_SelectionHighlightTimer = 0;
         }
     }
 
@@ -543,10 +226,10 @@ namespace Silent::Game
             case OptionsMenuState_Leave:
             {
                 ScreenFade_Start(true, false, false);
-                Game_StateStepSet(0, OptionsMenuState_LeaveMainOptions);
+                Game_StateStepSet(0, OptionsMenuState_LeaveOptions);
                 break;
             }
-            case OptionsMenuState_EnterMainOptions:
+            case OptionsMenuState_EnterOptions:
             {
                 g_GameWork.background2dColor.r = 0;
                 g_GameWork.background2dColor.g = 0;
@@ -600,7 +283,7 @@ namespace Silent::Game
                 //g_OptionsMenu_EntryCount = (g_GameWork.config.extraOptionsEnabled) ? OptionsMenuEntry_Count :
                 //                                                                    (OptionsMenuEntry_Count - 2);
 
-                Game_StateStepSet(0, OptionsMenuState_MainOptions);
+                Game_StateStepSet(0, OptionsMenuState_Options);
                 break;
             }
             case OptionsMenuState_LeaveGraphics:
@@ -609,10 +292,10 @@ namespace Silent::Game
             case OptionsMenuState_LeaveEnhancements:
             case OptionsMenuState_LeaveSystem:
             {
-                Game_StateStepSet(0, OptionsMenuState_MainOptions);
+                Game_StateStepSet(0, OptionsMenuState_Options);
                 break;
             }
-            case OptionsMenuState_LeaveMainOptions:
+            case OptionsMenuState_LeaveOptions:
             {
                 if (ScreenFade_IsFinished())
                 {
@@ -662,7 +345,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_Graphics:
             {
-                Options_GraphicsMenu_Control();
+                ControlGraphicsOptionsMenu();
                 break;
             }
             case OptionsMenuState_Gameplay:
@@ -694,7 +377,14 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuState_Brightness:
-                Options_BrightnessMenu_Control();
+                ControlBrightnessOptionsMenu();
+                break;
+
+            case OptionsMenuState_LeaveBrightness:
+                if (ScreenFade_IsFinished())
+                {
+                    Game_StateStepSet(0, OptionsMenuState_Graphics);
+                }
                 break;
 
             case OptionsMenuState_EnterController:
@@ -712,15 +402,15 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[0])
         {
             case OptionsMenuState_Leave:
-            case OptionsMenuState_MainOptions:
-            case OptionsMenuState_LeaveMainOptions:
+            case OptionsMenuState_Options:
+            case OptionsMenuState_LeaveOptions:
             case OptionsMenuState_EnterGraphics:
             case OptionsMenuState_EnterGameplay:
             case OptionsMenuState_EnterInput:
             case OptionsMenuState_EnterEnhancements:
             case OptionsMenuState_EnterSystem:
             {
-                Options_MainMenu_Control();
+                ControlOptionsMenu();
                 break;
             }
         }
@@ -729,7 +419,159 @@ namespace Silent::Game
     // @deprecated
     void OptionsMenu_Control()
     {
-        constexpr int SOUND_VOL_STEP = 8;
+        constexpr int LINE_CURSOR_TIMER_MAX = 8;
+        constexpr int SOUND_VOL_STEP        = 8;
+
+        static const auto ENTRIES = std::vector<MenuEntry>
+        {
+            MenuEntry
+            {
+                .Type           = MenuEntryType::Submenu,
+                .EntryStringKey = KEY_OPTIONS_MENU_EXIT
+            },
+            MenuEntry
+            {
+                .Type           = MenuEntryType::Submenu,
+                .EntryStringKey = KEY_OPTIONS_MENU_BRIGHT_LEVEL
+            },
+            MenuEntry
+            {
+                .Type           = MenuEntryType::Submenu,
+                .EntryStringKey = KEY_OPTIONS_MENU_CONT_CONFIG
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_VIBRATION,
+                .ConfigStringKeys = 
+                {
+                    KEY_OPTIONS_MENU_ON,
+                    KEY_OPTIONS_MENU_OFF
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_AUTO_LOAD,
+                .ConfigStringKeys =
+                {
+                    KEY_OPTIONS_MENU_ON,
+                    KEY_OPTIONS_MENU_OFF
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_SOUND,
+                .ConfigStringKeys =
+                {
+                    KEY_OPTIONS_MENU_STEREO,
+                    KEY_OPTIONS_MENU_MONAURAL
+                }
+            },
+            MenuEntry
+            {
+                .Type           = MenuEntryType::BarConfig,
+                .EntryStringKey = KEY_OPTIONS_MENU_BGM_VOL
+            },
+            MenuEntry
+            {
+                .Type           = MenuEntryType::BarConfig,
+                .EntryStringKey = KEY_OPTIONS_MENU_SE_VOL
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_LANGUAGE,
+                .ConfigStringKeys = {} // @todo Determined dynamically.
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_WEAPON_CONTROL,
+                .ConfigStringKeys =
+                {
+                    KEY_OPTIONS_MENU_PRESS,
+                    KEY_OPTIONS_MENU_SWITCH
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_BLOOD_COLOR,
+                .ConfigStringKeys = 
+                {
+                    KEY_OPTIONS_MENU_NORMAL,
+                    KEY_OPTIONS_MENU_GREEN,
+                    KEY_OPTIONS_MENU_VIOLET,
+                    KEY_OPTIONS_MENU_BLACK
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_VIEW_CONTROL,
+                .ConfigStringKeys = 
+                {
+                    KEY_OPTIONS_MENU_NORMAL,
+                    KEY_OPTIONS_MENU_REVERSE
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_RETREAT_TURN,
+                .ConfigStringKeys = 
+                {
+                    KEY_OPTIONS_MENU_NORMAL,
+                    KEY_OPTIONS_MENU_REVERSE
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_WALK_RUN_CONTROL,
+                .ConfigStringKeys = 
+                {
+                    KEY_OPTIONS_MENU_NORMAL,
+                    KEY_OPTIONS_MENU_REVERSE
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_AUTO_AIMING,
+                .ConfigStringKeys = 
+                {
+                    KEY_OPTIONS_MENU_ON,
+                    KEY_OPTIONS_MENU_OFF
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_VIEW_MODE,
+                .ConfigStringKeys = 
+                {
+                    KEY_OPTIONS_MENU_NORMAL,
+                    KEY_OPTIONS_MENU_SELF_VIEW
+                }
+            },
+            MenuEntry
+            {
+                .Type             = MenuEntryType::ArrowConfig,
+                .EntryStringKey   = KEY_OPTIONS_MENU_BULLET_ADJUST,
+                .ConfigStringKeys =
+                {
+                    "x1",
+                    "x2",
+                    "x3",
+                    "x4",
+                    "x5",
+                    "x6"
+                }
+            }
+        };
 
         const auto& input = g_App.GetInput();
 
@@ -742,7 +584,7 @@ namespace Silent::Game
         OptionsMenu_SfxVolumeBarDraw();
 
         // Block user input if transitioning to new menu.
-        if (g_GameWork.gameStateSteps[0] != OptionsMenuState_MainOptions)
+        if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Options)
         {
             return;
         }
@@ -768,7 +610,7 @@ namespace Silent::Game
         if (g_GameWork.gameStatePrev == GameState_InGame &&
             !input.GetAction(In::Enter).IsClicked() && input.GetAction(In::Option).IsClicked())
         {
-            //Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
+            Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
             Game_StateStepSet(0, OptionsMenuState_Leave);
             return;
         }
@@ -776,14 +618,14 @@ namespace Silent::Game
         // Move selection cursor up/down.
         if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
-            //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+            Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
             g_OptionsMenu_SelectionHighlightTimer = 0;
             g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + (OptionsMenuEntry_Count - 1)) % OptionsMenuEntry_Count;
         }
         if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
-            //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+            Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
             g_OptionsMenu_SelectionHighlightTimer = 0;
             g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + 1) % OptionsMenuEntry_Count;
@@ -809,7 +651,7 @@ namespace Silent::Game
                 // Exit menu to gameplay.
                 if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
                     Game_StateStepSet(0, OptionsMenuState_Leave);
                 }
                 break;
@@ -818,7 +660,7 @@ namespace Silent::Game
                 // Enter controller screen.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
                     Fs_QueueStartReadTim(FILE_TIM_OPTION2_TIM, IMAGE_BUFFER_3, &g_ControllerButtonAtlasImg);
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterController);
@@ -828,7 +670,7 @@ namespace Silent::Game
             case OptionsMenuEntry_Brightness:
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterBrightness);
                 }
@@ -837,7 +679,7 @@ namespace Silent::Game
             case OptionsMenuEntry_Vibration:
                 if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
-                    //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuMove, 0, 64);
                     g_GameWork.config.vibrationEnabled = !g_GameWork.config.vibrationEnabled << 7;
                 }
                 break;
@@ -845,7 +687,7 @@ namespace Silent::Game
             case OptionsMenuEntry_AutoLoad:
                 if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
-                    //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuMove, 0, 64);
                     g_GameWork.config.autoLoad = (s8)g_GameWork.config.autoLoad == 0;
                 }
                 break;
@@ -853,7 +695,7 @@ namespace Silent::Game
             case OptionsMenuEntry_Sound:
                 if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
                 {
-                    //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+                    Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
                     // Set config.
                     /*int audioType                           = AudioMode_Stereo;
@@ -937,7 +779,7 @@ namespace Silent::Game
             !input.GetAction(In::Enter).IsClicked()) &&
             input.GetAction(In::Cancel).IsClicked())
         {
-            //Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
+            Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
 
             g_OptionsMenu_SelectionHighlightTimer = 0;
             g_OptionsMenu_SelectedEntry           = OptionsMenuEntry_Exit;
@@ -977,7 +819,7 @@ namespace Silent::Game
                 !(g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.enter) &&
                 (g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.option))
             {
-                //Sd_SfxPlay(Sfx_Cancel, 0, 64);
+                Sd_SfxPlay(Sfx_Cancel, 0, 64);
                 Game_StateStepSet(0, OptionsMenuState_Leave);
                 return;
             }
@@ -986,7 +828,7 @@ namespace Silent::Game
             if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighUp)
             {
                 s32 var = 1;
-                //Sd_SfxPlay(Sfx_Back, 0, 64);
+                Sd_SfxPlay(Sfx_Back, 0, 64);
                 g_OptionsMenu_SelectedEntry  = ((g_OptionsMenu_SelectedEntry - var) + g_OptionsMenu_EntryCount) % g_OptionsMenu_EntryCount;
                 g_OptionsMenu_SelectionHighlightTimer = 0;
             }

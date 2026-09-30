@@ -1,25 +1,10 @@
 #pragma once
 
 #include "Game/Common.h"
+#include "Game/Screens/Options/Utils.h"
 
 namespace Silent::Game
 {
-    /** @brief Menu entry types. */
-    enum class MenuEntryType
-    {
-        Submenu,
-        ArrowConfig,
-        BarConfig
-    };
-
-    /** @brief Menu entry data. */
-    struct MenuEntry
-    {
-        MenuEntryType            Type             = MenuEntryType::Submenu;
-        std::string              EntryStringKey   = {};
-        std::vector<std::string> ConfigStringKeys = {};
-    };
-
     /** @brief Draws a BGM volume bar in the main options menu. */
     void OptionsMenu_BgmVolumeBarDraw();
 

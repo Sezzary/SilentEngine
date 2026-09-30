@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Game/Common.h"
-#include "Game/Screens/Options/Brightness.h"
+#include "Game/Screens/Options/Graphics/Brightness.h"
 #include "Game/Screens/Options/Controller.h"
 #include "Game/Screens/Options/MenuGraphics.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
@@ -18,17 +18,17 @@ namespace Silent::Game
     /** @brief Options menu states. Facilitates menu switching via `s_GameWork::gameStateStep[0]`. */
     enum e_OptionsMenuState
     {
-        OptionsMenuState_EnterMainOptions,  /** Entering main options menu. */
-        OptionsMenuState_MainOptions,       /** In main options menu. */
-        OptionsMenuState_LeaveMainOptions,  /** Leaving main options menu. */
-        OptionsMenuState_Leave,             /** Leaving options menu back to gameplay. */
+        OptionsMenuState_EnterOptions,
+        OptionsMenuState_Options,
+        OptionsMenuState_LeaveOptions,
+        OptionsMenuState_Leave,
 
-        OptionsMenuState_Brightness,        /** In brightness menu. */
-        OptionsMenuState_Controller,        /** In controller config menu. */
-        OptionsMenuState_EnterBrightness,   /** Entering brightness menu. */
-        OptionsMenuState_EnterController,   /** Entering controller config menu. */
-        OptionsMenuState_LeaveBrightness,   /** Leaving brightness menu. */
-        OptionsMenuState_LeaveController,   /** Leaving controller config menu. */
+        OptionsMenuState_Brightness,
+        OptionsMenuState_Controller,
+        OptionsMenuState_EnterBrightness,
+        OptionsMenuState_EnterController,
+        OptionsMenuState_LeaveBrightness,
+        OptionsMenuState_LeaveController,
 
         OptionsMenuState_EnterGraphics,
         OptionsMenuState_Graphics,

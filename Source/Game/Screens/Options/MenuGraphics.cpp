@@ -92,11 +92,11 @@ namespace Silent::Game
         Gfx_StringPositionSet(HEADING_STR_POS.x, HEADING_STR_POS.y);
         Gfx_StringDraw("{M}" + translator(headingStrKey));
 
-        auto widths = std::pair<float, float>{};
-
-        // Submit entry strings.
         int visibleEntriesEndIdx = std::min(g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_COUNT_MAX,
                                             (int)entries.size());
+
+        // Submit entry strings.
+        auto widths = std::pair<float, float>{};
         for (int i = g_OptionsMenu_VisibleEntriesStartIdx;
              i < visibleEntriesEndIdx;
              i++)

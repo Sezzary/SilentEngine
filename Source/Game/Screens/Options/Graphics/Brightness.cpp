@@ -12,75 +12,48 @@
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
 #include "Input/Input.h"
+#include "Renderer/Renderer.h"
 #include "Services/Options.h"
 #include "Utils/Translator.h"
 
 using namespace Silent::Assets;
 using namespace Silent::Input;
+using namespace Silent::Renderer;
 using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    static void Options_BrightnessMenu_ConfigDraw()
+    static void Options_BrightnessMenu_LinesDraw(int brightness)
     {
-        const auto& translator = g_App.GetTranslator();
+        constexpr int LINE_COUNT = 20;
 
-        Gfx_StringColorSet(StringColorId_White);
+        auto& renderer = g_App.GetRenderer();
 
-        Gfx_StringPositionSet(SCREEN_WIDTH / 4, 190);
-        Gfx_StringDraw(translator(KEY_BRIGHT_MENU_LEVEL));
-
-        Gfx_StringPositionSet(SCREEN_WIDTH / 2, 190);
-        Gfx_StringDrawInt(1, g_GameWork.config.brightness);
-    }
-
-    static void Options_BrightnessMenu_ArrowsDraw()
-    {
-        static const auto FRONT_ARROWS = std::vector<s_Triangle2d>
+        // Submit vertical lines.
+        for (int i = -(LINE_COUNT / 2); i <= (LINE_COUNT / 2); i++)
         {
-            { { 160 + 8,  120 + 84 }, { 160 + 16, 120 + 76 }, { 160 + 16, 120 + 92 } },
-            { { 160 + 64, 120 + 84 }, { 160 + 56, 120 + 76 }, { 160 + 56, 120 + 92 } }
-        };
+            // Compute start and end points.
+            auto from = Vector2i((SCREEN_WIDTH / 2) + ((SCREEN_WIDTH - 64) / 20) * i, (SCREEN_HEIGHT / 2) - 20);
+            auto to   = Vector2i(from.x, 192);
 
-        static const auto BORDER_ARROWS = std::vector<s_Triangle2d>
-        {
-            { { 160 + 7,  120 + 84 }, { 160 + 17, 120 + 74 }, { 160 + 17, 120 + 94 } },
-            { { 160 + 65, 120 + 84 }, { 160 + 55, 120 + 74 }, { 160 + 55, 120 + 94 } }
-        };
+            // Compute color.
+            uchar colorComp = (brightness * 8) + 4;
+            auto  color     = Color::From8Bit(colorComp, colorComp, colorComp);
 
-        const auto& input = g_App.GetInput();
-
-        // Determine UI movement direction.
-        int dir = 0;
-        if (input.GetAction(In::Left).IsHeld(0.0f, 0.5f))
-        {
-            dir = 1;
-        }
-        else if (input.GetAction(In::Right).IsHeld(0.0f, 0.5f))
-        {
-            dir = 2;
-        }
-        else
-        {
-            dir = 0;
-        }
-
-        // Draw flashing left/right arrows.
-        for (int i = 0; i < FRONT_ARROWS.size(); i++)
-        {
-            Options_Selection_ArrowDraw(FRONT_ARROWS[i], true);
-        }
-
-        // Draw border to highlight flashing left/right arrow corresponding to direction of UI navigation.
-        for (int i = dir - 1; i < dir; i++)
-        {
-            Options_Selection_ArrowDraw(BORDER_ARROWS[i], false);
+            // Submit line.
+            auto line = Shape2d::CreateLine(from, to, color, color);
+            renderer.SubmitShape2d(line);
         }
     }
 
     void ControlBrightnessOptionsMenu()
     {
+        constexpr auto PROMPT_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 6);
+        constexpr auto ENTRY_STR_POS  = Vector2i(SCREEN_WIDTH / 4, (SCREEN_HEIGHT / 12) * 11);
+        constexpr auto CONFIG_STR_POS = Vector2i((SCREEN_WIDTH / 3) * 2, (SCREEN_HEIGHT / 12) * 11);
+        constexpr auto ARROW_OFFSET   = Vector2i(SCREEN_WIDTH / 16, 0);
+
         const auto& input      = g_App.GetInput();
         const auto& translator = g_App.GetTranslator();
         auto&       options    = g_App.GetOptions();
@@ -89,29 +62,37 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[2])
         {
             case 0:
+            {
                 Game_StateStepIncrement(2);
                 break;
-
+            }
             case 1:
+            {
                 ScreenFade_Start(true, true, false);
                 Game_StateStepIncrement(2);
                 break;
-
+            }
             case 2:
-                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
+            {
+                bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+                bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+                if (!isHoldingLeft || !isHoldingRight)
                 {
-                    if (options->BrightnessLevel > 0)
+                    if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                     {
-                        //Sd_SfxPlay(Sfx_Back, 0, Q8(0.25f));
-                        options->BrightnessLevel--;
+                        if (options->BrightnessLevel > 0)
+                        {
+                            //Sd_SfxPlay(Sfx_Back, 0, Q8(0.25f));
+                            options->BrightnessLevel--;
+                        }
                     }
-                }
-                if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
-                {
-                    if (options->BrightnessLevel < BRIGHTNESS_LEVEL_MAX)
+                    if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                     {
-                        //Sd_SfxPlay(Sfx_Back, 0, Q8(0.25f));
-                        options->BrightnessLevel++;
+                        if (options->BrightnessLevel < BRIGHTNESS_LEVEL_MAX)
+                        {
+                            //Sd_SfxPlay(Sfx_Back, 0, Q8(0.25f));
+                            options->BrightnessLevel++;
+                        }
                     }
                 }
 
@@ -132,8 +113,9 @@ namespace Silent::Game
                     Game_StateStepIncrement(2);
                 }
                 break;
-
+            }
             case 3:
+            {
                 // Switch to previous menu.
                 if (ScreenFade_IsFinished())
                 {
@@ -143,15 +125,31 @@ namespace Silent::Game
                     Game_StateStepSet(0, OptionsMenuState_LeaveBrightness);
                 }
                 break;
+            }
         }
 
-        // Submit text prompt.
-        Gfx_StringPositionSet(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5);
+        // Set global string color.
         Gfx_StringColorSet(StringColorId_White);
+
+        // Submit text prompt.
+        Gfx_StringPositionSet(PROMPT_STR_POS.x, PROMPT_STR_POS.y);
         Gfx_StringDraw(translator(KEY_BRIGHT_MENU_PROMPT));
 
-        //Options_BrightnessMenu_LinesDraw(options->BrightnessLevel);
-        Options_BrightnessMenu_ArrowsDraw();
-        Options_BrightnessMenu_ConfigDraw();
+        // Submit vertical lines.
+        Options_BrightnessMenu_LinesDraw(options->BrightnessLevel);
+
+        // Submit entry string.
+        Gfx_StringPositionSet(ENTRY_STR_POS.x, ENTRY_STR_POS.y);
+        Gfx_StringDraw(translator(KEY_BRIGHT_MENU_LEVEL));
+
+        // Submit config string.
+        Gfx_StringPositionSet(CONFIG_STR_POS.x, CONFIG_STR_POS.y);
+        Gfx_StringDraw("{M}" + std::to_string(options->BrightnessLevel));
+
+        // Submit arrows.
+        bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+        bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+        Options_Selection_ArrowDraw(CONFIG_STR_POS - ARROW_OFFSET, SelectionArrowType::Left,  isHoldingLeft  && !isHoldingRight);
+        Options_Selection_ArrowDraw(CONFIG_STR_POS + ARROW_OFFSET, SelectionArrowType::Right, isHoldingRight && !isHoldingLeft);
     }
 }

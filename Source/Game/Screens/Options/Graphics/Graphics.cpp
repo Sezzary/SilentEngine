@@ -38,14 +38,70 @@ namespace Silent::Game
             .Type           = MenuEntryType::Submenu,
             .EntryStringKey = KEY_GRAPHICS_MENU_BRIGHTNESS_LEVEL
         },
-//KEY_GRAPHICS_MENU_FRAME_RATE
-//KEY_GRAPHICS_MENU_ASPECT_RATIO
-//KEY_GRAPHICS_MENU_RENDER_SCALE
-//KEY_GRAPHICS_MENU_TEXTURE_FILTER
-//KEY_GRAPHICS_MENU_TEXT_QUALITY
-//KEY_GRAPHICS_MENU_LIGHTING
-//KEY_GRAPHICS_MENU_ANTIALIASING
-//KEY_GRAPHICS_MENU_DITHERING_SCALE
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_FRAME_RATE,
+            .ConfigStringKeys =
+            {
+            }
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_ASPECT_RATIO,
+            .ConfigStringKeys =
+            {
+            }
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_RENDER_SCALE,
+            .ConfigStringKeys =
+            {
+            }
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_TEXTURE_FILTER,
+            .ConfigStringKeys =
+            {
+            }
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_TEXT_QUALITY,
+            .ConfigStringKeys =
+            {
+            }
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_LIGHTING,
+            .ConfigStringKeys =
+            {
+            }
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_ANTIALIASING,
+            .ConfigStringKeys =
+            {
+            }
+        },
+        MenuEntry
+        {
+            .Type             = MenuEntryType::ArrowConfig,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_DITHERING_SCALE,
+            .ConfigStringKeys =
+            {
+            }
+        },
         MenuEntry
         {
             .Type             = MenuEntryType::ArrowConfig,
@@ -89,7 +145,7 @@ namespace Silent::Game
         MenuEntry
         {
             .Type             = MenuEntryType::ArrowConfig,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_FULLSCREEN,
+            .EntryStringKey   = KEY_GRAPHICS_MENU_CRT_FILTER,
             .ConfigStringKeys =
             {
                 KEY_OPTIONS_MENU_ON,
@@ -128,18 +184,15 @@ namespace Silent::Game
             }
             case 1:
             {
-                // Fade screen and leave menu.
-                if (input.GetAction(In::Enter).IsClicked() ||
-                    input.GetAction(In::Cancel).IsClicked())
+                if (input.GetAction(In::Enter).IsClicked())
                 {
-                    if (input.GetAction(In::Enter).IsClicked())
-                    {
-                        //Sd_SfxPlay(Sfx_Confirm, 0, Q8_CLAMPED(0.25f));
-                    }
-                    else
-                    {
-                        //Sd_SfxPlay(Sfx_Cancel, 0, Q8_CLAMPED(0.25f));
-                    }
+                    //Sd_SfxPlay(Sfx_Confirm, 0, Q8(0.25f));
+
+                    Game_StateStepSet(0, OptionsMenuState_EnterBrightness);
+                }
+                else if (input.GetAction(In::Cancel).IsClicked())
+                {
+                    //Sd_SfxPlay(Sfx_Cancel, 0, Q8(0.25f));
 
                     ScreenFade_Start(true, false, false);
                     Game_StateStepIncrement(1);

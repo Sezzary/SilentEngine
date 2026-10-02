@@ -123,6 +123,11 @@ namespace Silent::Game
             {
                 case MenuEntryType::ArrowConfig:
                 {
+                    if (entry.ConfigStringKeys.empty())
+                    {
+                        break;
+                    }
+
                     // Draw config string
                     Gfx_StringPositionSet(pos.x + CONFIG_STR_OFFSET, pos.y);
                     float width = Gfx_StringDraw("{M}" + translator(entry.ConfigStringKeys[0])); // @todo Pass index somehow.
@@ -174,16 +179,17 @@ namespace Silent::Game
         static auto selectionHighlightTo   = Vector2i::Zero;
 
         // @todo Widths are wrong.
+        // @todo Account for scrolling.
         // Set active selection highlight position references.
         if (g_OptionsMenu_SelectionHighlightTimer == 0)
         {
-            int entryIdxFrom       = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
+            int entryIdxFrom = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
+            int entryIdxTo   = g_OptionsMenu_SelectedEntry     - g_OptionsMenu_VisibleEntriesStartIdx;
+
             selectionHighlightFrom = Vector2i(LINE_BASE_X + (int)ceilf(widths.first),
                                               LINE_BASE_Y + (entryIdxFrom * LINE_OFFSET_Y));
-
-            int entryIdxTo       = g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
-            selectionHighlightTo = Vector2i(LINE_BASE_X + (int)ceilf(widths.second),
-                                            LINE_BASE_Y + (entryIdxTo * LINE_OFFSET_Y));
+            selectionHighlightTo   = Vector2i(LINE_BASE_X + (int)ceilf(widths.second),
+                                              LINE_BASE_Y + (entryIdxTo * LINE_OFFSET_Y));
         }
 
         // Compute sine-based interpolation alpha.

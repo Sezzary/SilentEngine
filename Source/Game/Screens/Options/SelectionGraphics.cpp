@@ -123,6 +123,7 @@ namespace Silent::Game
         constexpr int  DEPTH       = 40;
         constexpr auto COLOR_FLASH = Color::From8Bit(0, 112, 255);
         constexpr auto COLOR_CYAN  = Color::From8Bit(0, 240, 240);
+        constexpr auto POS_OFFSET  = Vector2i(0, 2);
         constexpr auto BASE_ARROWS = std::array<s_Triangle2d, (int)SelectionArrowType::Count>
         {
             s_Triangle2d
@@ -211,9 +212,9 @@ namespace Silent::Game
         const auto& baseArrow  = BASE_ARROWS[(int)type];
         auto        flashArrow = s_Triangle2d
         {
-            pos + baseArrow.vertex0,
-            pos + baseArrow.vertex1,
-            pos + baseArrow.vertex2
+            (pos + baseArrow.vertex0) + POS_OFFSET,
+            (pos + baseArrow.vertex1) + POS_OFFSET,
+            (pos + baseArrow.vertex2) + POS_OFFSET
         };
 
         auto SubmitArrow = [&](const s_Triangle2d& tri, const Color& color0, const Color& color1, const Color& color2,

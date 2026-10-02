@@ -41,7 +41,7 @@ namespace Silent::Assets
     constexpr char KEY_OPTIONS_MENU_ENHANCEMENTS[]  = "OptionsMenu_Enhancements";
     constexpr char KEY_OPTIONS_MENU_SYSTEM[]        = "OptionsMenu_System";
 
-    constexpr char KEY_GRAPHICS_MENU_HEADING[]           = "GameplayMenu_Heading";
+    constexpr char KEY_GRAPHICS_MENU_HEADING[]           = "GraphicsMenu_Heading";
     constexpr char KEY_GRAPHICS_MENU_FULLSCREEN[]        = "GraphicsMenu_Fullscreen";
     constexpr char KEY_GRAPHICS_MENU_BRIGHTNESS_LEVEL[]  = "GraphicsMenu_BrightnessLevel";
     constexpr char KEY_GRAPHICS_MENU_FRAME_RATE[]        = "GraphicsMenu_FrameRate";

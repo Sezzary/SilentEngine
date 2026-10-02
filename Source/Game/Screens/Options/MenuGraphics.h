@@ -21,15 +21,17 @@ namespace Silent::Game
      *
      * @param headingStrKey Heading string translation key.
      * @param entries Entries to draw.
-     * @return Pair of entry string widths.
+     * @return Previous and current entry string widths in retro pixels.
      */
-    std::pair<float, float> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
-                                                    const std::vector<MenuEntry>& entries);
+    std::pair<int, int> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
+                                                const std::vector<MenuEntry>& entries);
 
     /** @brief Draws gold bullet points next to the listed entries and a highlight indicating the
-     * selected entry in the main options menu.
+     * selected entry in options menus.
+     *
+     * @param widths Previous and current entry string widths in retro pixels.
      */
-    void OptionsMenu_SelectionHighlightDraw(const std::pair<float, float>& widths);
+    void OptionsMenu_SelectionHighlightDraw(const std::pair<int, int>& widths);
 
     /** @brief Draws configuration strings and blue arrows to the right of the listed entries in the main options menu. */
     void OptionsMenu_ConfigDraw();

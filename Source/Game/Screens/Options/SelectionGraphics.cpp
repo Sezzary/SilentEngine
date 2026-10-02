@@ -14,25 +14,27 @@ namespace Silent::Game
 {
     void Options_Selection_HighlightDraw(const s_Line2d& line)
     {
+        constexpr int  DEPTH              = 36;
         constexpr auto COLOR_LINE_START   = Color::From8Bit(176, 176, 176);
         constexpr auto COLOR_LINE_END     = Color::From8Bit(160, 128, 64);
         constexpr auto COLOR_SHADOW_START = Color::From8Bit(96,  96,  96);
         constexpr auto COLOR_SHADOW_END   = Color::From8Bit(0,   0,   0);
         constexpr int  SHADOW_WIDTH       = 16;
+        constexpr auto LINE_END_OFFSET    = Vector2i(1, 0);
 
         auto& renderer = g_App.GetRenderer();
 
         // Submit line primitive for underline.
-        auto underlinePrim = Shape2d::CreateLine(line.vertex0, line.vertex1,
+        auto underlinePrim = Shape2d::CreateLine(line.vertex0, line.vertex1 + LINE_END_OFFSET,
                                                  COLOR_LINE_START, COLOR_LINE_END,
-                                                 DEPTH_36, ScaleMode::VerticalEdge, BlendMode::Opaque);
+                                                 DEPTH, ScaleMode::VerticalEdge, BlendMode::Opaque);
         renderer.SubmitShape2d(underlinePrim);
 
         // Submit quad primitive for shadow.
         auto shadowPrim = Shape2d::CreateQuad(Vector2i(line.vertex0.x, line.vertex0.y - SHADOW_WIDTH), line.vertex0,
                                               Vector2i(line.vertex1.x, line.vertex1.y - SHADOW_WIDTH), line.vertex1,
                                               COLOR_SHADOW_END, COLOR_SHADOW_START, COLOR_SHADOW_END, COLOR_SHADOW_START,
-                                              DEPTH_36, ScaleMode::VerticalEdge, BlendMode::Subtract);
+                                              DEPTH - 1, ScaleMode::VerticalEdge, BlendMode::Subtract);
         renderer.SubmitShape2d(shadowPrim);
     }
 
@@ -112,7 +114,8 @@ namespace Silent::Game
         }
 
         // Submit triangle primitive for arrow.
-        int  depth     = DEPTH_40 + (hasOutline ? 0 : 1);
+        constexpr int  DEPTH       = 40;
+        int  depth     = DEPTH + (hasOutline ? 0 : 1);
         auto arrowPrim = Shape2d::CreateTriangle(tri.vertex0, tri.vertex1, tri.vertex2,
                                                  color0, color1, color2,
                                                  depth, ScaleMode::VerticalEdge, BlendMode::Opaque);

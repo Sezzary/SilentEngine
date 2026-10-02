@@ -75,8 +75,8 @@ namespace Silent::Game
         }
     }
 
-    std::pair<float, float> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
-                                                    const std::vector<MenuEntry>& entries)
+    std::pair<int, int> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
+                                                const std::vector<MenuEntry>& entries)
     {
         constexpr auto HEADING_STR_POS     = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
         constexpr auto LINE_BASE           = Vector2i(64, 70);
@@ -97,7 +97,7 @@ namespace Silent::Game
                                             (int)entries.size());
 
         // Submit entry strings.
-        auto widths = std::pair<float, float>{};
+        auto widths = std::pair<int, int>{};
         for (int i = g_OptionsMenu_VisibleEntriesStartIdx; i < visibleEntriesEndIdx; i++)
         {
             const auto& entry = entries[i];
@@ -108,16 +108,17 @@ namespace Silent::Game
 
             // Submit string.
             Gfx_StringPositionSet(pos.x, pos.y);
-            float width = Gfx_StringDraw(translator(entry.EntryStringKey));
+            float width = Gfx_StringDraw(translator(entry.EntryStringKey)) *
+                          (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y);
 
             // Store line widths. @todo Scrolling issues.
-            if (i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
+            if (i == (g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
             {
-                widths.second = width;
+                widths.first = (int)ceilf(width);
             }
-            else if (i == (g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
+            else if (i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
             {
-                widths.first = width;
+                widths.second = (int)ceilf(width);
             }
 
             // Submit config graphics.
@@ -132,7 +133,8 @@ namespace Silent::Game
 
                     // Submit config string.
                     Gfx_StringPositionSet(pos.x + CONFIG_STR_OFFSET, pos.y);
-                    float width = Gfx_StringDraw("{M}" + translator(entry.ConfigStringKeys[0])); // @todo Pass index somehow.
+                    float width = Gfx_StringDraw("{M}" + translator(entry.ConfigStringKeys[0])) *
+                                  (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y); // @todo Pass index somehow.
 
                     // Submit arrows.
                     if (i == g_OptionsMenu_SelectedEntry)
@@ -141,7 +143,7 @@ namespace Silent::Game
                         bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
 
                         // @todo Use width correctly.
-                        float arrowOffset = (width / 2) + CONFIG_ARROW_OFFSET;
+                        int arrowOffset = ((int)ceilf(width) / 2) + CONFIG_ARROW_OFFSET;
                         Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_STR_OFFSET - arrowOffset, 0), 
                                                     SelectionArrowType::Left, isHoldingLeft && !isHoldingRight);
                         Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_STR_OFFSET + arrowOffset, 0),
@@ -160,7 +162,7 @@ namespace Silent::Game
         return widths;
     }
 
-    void OptionsMenu_SelectionHighlightDraw(const std::pair<float, float>& widths)
+    void OptionsMenu_SelectionHighlightDraw(const std::pair<int, int>& widths)
     {
         constexpr int  ENTRY_OFFSET_X = 25;
         constexpr auto LINE_BASE      = Vector2i(39, 72);
@@ -177,9 +179,9 @@ namespace Silent::Game
             int entryIdxFrom = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
             int entryIdxTo   = g_OptionsMenu_SelectedEntry     - g_OptionsMenu_VisibleEntriesStartIdx;
 
-            selectionHighlightFrom = LINE_BASE + Vector2i(ENTRY_OFFSET_X + (int)ceilf(widths.first),
+            selectionHighlightFrom = LINE_BASE + Vector2i(ENTRY_OFFSET_X + widths.first,
                                                           entryIdxFrom * LINE_HEIGHT);
-            selectionHighlightTo   = LINE_BASE + Vector2i(ENTRY_OFFSET_X + (int)ceilf(widths.second),
+            selectionHighlightTo   = LINE_BASE + Vector2i(ENTRY_OFFSET_X + widths.second,
                                                           entryIdxTo * LINE_HEIGHT);
         }
 

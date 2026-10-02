@@ -78,11 +78,13 @@ namespace Silent::Game
     std::pair<float, float> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
                                                     const std::vector<MenuEntry>& entries)
     {
-        constexpr auto HEADING_STR_POS   = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
-        constexpr auto LINE_BASE         = Vector2i(64, 70);
-        constexpr auto LINE_HEIGHT       = 16;
-        constexpr int  CONFIG_STR_OFFSET = 180;
+        constexpr auto HEADING_STR_POS     = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
+        constexpr auto LINE_BASE           = Vector2i(64, 70);
+        constexpr auto LINE_HEIGHT         = 16;
+        constexpr int  CONFIG_STR_OFFSET   = 185;
+        constexpr int  CONFIG_ARROW_OFFSET = 5;
 
+        const auto& input      = g_App.GetInput();
         const auto& translator = g_App.GetTranslator();
 
         Gfx_StringColorSet(StringColorId_White);
@@ -100,9 +102,11 @@ namespace Silent::Game
         {
             const auto& entry = entries[i];
 
+            // Compute position.
             int  relIdx = i - g_OptionsMenu_VisibleEntriesStartIdx;
             auto pos    = LINE_BASE + Vector2i(0, relIdx * LINE_HEIGHT);
 
+            // Submit string.
             Gfx_StringPositionSet(pos.x, pos.y);
             float width = Gfx_StringDraw(translator(entry.EntryStringKey));
 
@@ -116,6 +120,7 @@ namespace Silent::Game
                 widths.first = width;
             }
 
+            // Submit config graphics.
             switch (entry.Type)
             {
                 case MenuEntryType::ArrowConfig:
@@ -125,14 +130,22 @@ namespace Silent::Game
                         break;
                     }
 
-                    // Draw config string
+                    // Submit config string.
                     Gfx_StringPositionSet(pos.x + CONFIG_STR_OFFSET, pos.y);
                     float width = Gfx_StringDraw("{M}" + translator(entry.ConfigStringKeys[0])); // @todo Pass index somehow.
 
-                    // Draw arrows.
-                    if (i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
+                    // Submit arrows.
+                    if (i == g_OptionsMenu_SelectedEntry)
                     {
-                        // @todo
+                        bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+                        bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+
+                        // @todo Use width correctly.
+                        float arrowOffset = (width / 2) + CONFIG_ARROW_OFFSET;
+                        Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_STR_OFFSET - arrowOffset, 0), 
+                                                    SelectionArrowType::Left, isHoldingLeft && !isHoldingRight);
+                        Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_STR_OFFSET + arrowOffset, 0),
+                                                    SelectionArrowType::Right, isHoldingRight && !isHoldingLeft);
                     }
                     break;
                 }

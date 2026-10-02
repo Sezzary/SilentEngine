@@ -44,6 +44,9 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_FRAME_RATE,
             .ConfigStringKeys =
             {
+                KEY_GRAPHICS_MENU_FRAME_RATE_30_FPS,
+                KEY_GRAPHICS_MENU_FRAME_RATE_60_FPS,
+                KEY_GRAPHICS_MENU_FRAME_RATE_UNCAPPED
             }
         },
         MenuEntry
@@ -52,6 +55,9 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_ASPECT_RATIO,
             .ConfigStringKeys =
             {
+                KEY_GRAPHICS_MENU_ASPECT_RATIO_RETRO,
+                KEY_GRAPHICS_MENU_ASPECT_RATIO_WIDE,
+                KEY_GRAPHICS_MENU_ASPECT_RATIO_NATIVE
             }
         },
         MenuEntry
@@ -60,6 +66,9 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_RENDER_SCALE,
             .ConfigStringKeys =
             {
+                KEY_GRAPHICS_MENU_RENDER_SCALE_RETRO,
+                KEY_GRAPHICS_MENU_RENDER_SCALE_RETRO_2X,
+                KEY_GRAPHICS_MENU_RENDER_SCALE_NATIVE
             }
         },
         MenuEntry
@@ -68,6 +77,8 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_TEXTURE_FILTER,
             .ConfigStringKeys =
             {
+                KEY_GRAPHICS_MENU_TEXTURE_FILTER_NEAREST,
+                KEY_GRAPHICS_MENU_TEXTURE_FILTER_LINEAR
             }
         },
         MenuEntry
@@ -76,6 +87,8 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_TEXT_QUALITY,
             .ConfigStringKeys =
             {
+                KEY_GRAPHICS_MENU_TEXT_QUALITY_RETRO,
+                KEY_GRAPHICS_MENU_TEXT_QUALITY_MODERN
             }
         },
         MenuEntry
@@ -84,6 +97,8 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_LIGHTING,
             .ConfigStringKeys =
             {
+                KEY_GRAPHICS_MENU_LIGHTING_RETRO,
+                KEY_GRAPHICS_MENU_LIGHTING_MODERN
             }
         },
         MenuEntry
@@ -92,7 +107,9 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_ANTIALIASING,
             .ConfigStringKeys =
             {
-                KEY_OPTIONS_MENU_OFF
+                KEY_GRAPHICS_MENU_ANTIALIASING_OFF,
+                KEY_GRAPHICS_MENU_ANTIALIASING_LOW,
+                KEY_GRAPHICS_MENU_ANTIALIASING_HIGH
             }
         },
         MenuEntry
@@ -101,6 +118,9 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_DITHERING_SCALE,
             .ConfigStringKeys =
             {
+                KEY_GRAPHICS_MENU_DITHERING_SCALE_RETRO,
+                KEY_GRAPHICS_MENU_DITHERING_SCALE_RETRO_2X,
+                KEY_GRAPHICS_MENU_DITHERING_SCALE_NATIVE
             }
         },
         MenuEntry

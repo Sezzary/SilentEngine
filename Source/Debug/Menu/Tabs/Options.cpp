@@ -12,7 +12,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Debug
 {
-    constexpr const char* FRAME_RATE_ITEMS[]        = { "30 FPS", "60 FPS" };
+    constexpr const char* FRAME_RATE_ITEMS[]        = { "30 FPS", "60 FPS", "Uncapped" };
     constexpr const char* ASPECT_RATIO_ITEMS[]      = { "Retro", "Wide", "Native"  };
     constexpr const char* RENDER_SCALE_ITEMS[]      = { "Retro", "Retro 2x", "Native" };
     constexpr const char* TEXTURE_FILTER_ITEMS[]    = { "Nearest", "Linear" };

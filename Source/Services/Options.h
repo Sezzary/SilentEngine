@@ -26,7 +26,8 @@ namespace Silent::Services
     enum class FrameRateType
     {
         Fps30,
-        Fps60
+        Fps60,
+        Uncapped
     };
 
     enum class AspectRatioType

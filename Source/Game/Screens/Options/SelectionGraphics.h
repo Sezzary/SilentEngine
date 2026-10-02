@@ -35,7 +35,7 @@ namespace Silent::Game
      */
     void Options_Selection_ArrowDraw(const s_Triangle2d& tri, bool isFlashing);
 
-    /** @brief Draws a blue flashing arrow used for certain listed entries in the main and extra options menus.
+    /** @brief Draws a blue flashing arrow used for configs of certain listed entries in options menus.
      *
      * @param pos Screen position in retro pixels (320x240 resolution).
      * @param type Arrow type.
@@ -43,13 +43,10 @@ namespace Silent::Game
      */
     void Options_Selection_ArrowDraw(const Vector2i& pos, SelectionArrowType type, bool hasOutline);
 
-    /** @brief Draws a gold bullet point element used next to listed entries in the main and extra options menus.
+    /** @brief Draws a gold bullet point used next to listed entries in options menus.
      *
-     * @note Called twice to build a whole bullet point, with `isBorder` passed as `true` and `false` on consecutive calls.
-     *
-     * @param quad 2D quad of the bullet point element.
-     * @param isBorder `true` for a border quad, `false` for a quad.
-     * @param isInactive `true` if the entry is unselected, `false` if selected.
+     * @param pos Position in retro pixels (320x240 resolution).
+     * @param isActive `true` if the associated entry is selected, `false` otherwise.
      */
-    void Options_Selection_BulletPointDraw(const s_Quad2d& quad, bool isBorder, bool isInactive);
+    void Options_Selection_BulletPointDraw(const Vector2i& pos, bool isActive);
 }

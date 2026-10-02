@@ -139,11 +139,11 @@ namespace Silent::Renderer
                                 const Color& color0, const Color& color1, const Color& color2, const Color& color3,
                                 int depth, ScaleMode scaleMode, BlendMode blendMode)
     {
-        return Shape2d::CreateQuad((vert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+        return Shape2d::CreateQuad((vert1.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
+                                   (vert0.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                    (vert2.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
                                    (vert3.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                   (vert1.ToVector2() / RETRO_SCREEN_SPACE_RES) * SCREEN_SPACE_RES,
-                                   color0, color2, color3, color1,
+                                   color1, color0, color2, color3,
                                    depth, scaleMode, blendMode);
     }
 }

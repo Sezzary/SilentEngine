@@ -78,12 +78,10 @@ namespace Silent::Game
     std::pair<float, float> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
                                                     const std::vector<MenuEntry>& entries)
     {
-        constexpr int  LINE_BASE_X       = 64;
-        constexpr int  LINE_BASE_Y       = 80;
-        constexpr int  LINE_OFFSET_X     = 16;
-        constexpr int  LINE_OFFSET_Y     = 16;
+        constexpr auto HEADING_STR_POS   = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
+        constexpr auto LINE_BASE         = Vector2i(64, 70);
+        constexpr auto LINE_HEIGHT       = 16;
         constexpr int  CONFIG_STR_OFFSET = 180;
-        constexpr auto HEADING_STR_POS   = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 6);
 
         const auto& translator = g_App.GetTranslator();
 
@@ -98,14 +96,12 @@ namespace Silent::Game
 
         // Submit entry strings.
         auto widths = std::pair<float, float>{};
-        for (int i = g_OptionsMenu_VisibleEntriesStartIdx;
-             i < visibleEntriesEndIdx;
-             i++)
+        for (int i = g_OptionsMenu_VisibleEntriesStartIdx; i < visibleEntriesEndIdx; i++)
         {
             const auto& entry = entries[i];
 
             int  relIdx = i - g_OptionsMenu_VisibleEntriesStartIdx;
-            auto pos    = Vector2i(LINE_BASE_X, LINE_BASE_Y + (relIdx * LINE_OFFSET_Y));
+            auto pos    = LINE_BASE + Vector2i(0, relIdx * LINE_HEIGHT);
 
             Gfx_StringPositionSet(pos.x, pos.y);
             float width = Gfx_StringDraw(translator(entry.EntryStringKey));
@@ -153,28 +149,9 @@ namespace Silent::Game
 
     void OptionsMenu_SelectionHighlightDraw(const std::pair<float, float>& widths)
     {
-        constexpr int BULLET_QUAD_COUNT = 2;
-        constexpr int LINE_BASE_X       = 64;//39;
-        constexpr int LINE_BASE_Y       = 66;//58;
-        constexpr int LINE_OFFSET_Y     = 16;
-
-        // 12x12 quad.
-        constexpr auto BULLET_QUAD_FRONT = s_Quad2d
-        {
-            .vertex0 = Vector2i(40, 65),
-            .vertex1 = Vector2i(40, 77),
-            .vertex2 = Vector2i(52, 65),
-            .vertex3 = Vector2i(52, 77)
-        };
-
-        // 14x14 quad.
-        constexpr auto BULLET_QUAD_BACK = s_Quad2d
-        {
-            .vertex0 = Vector2i(39, 64),
-            .vertex1 = Vector2i(39, 76),
-            .vertex2 = Vector2i(51, 64),
-            .vertex3 = Vector2i(51, 76)
-        };
+        constexpr int  ENTRY_OFFSET_X = 25;
+        constexpr auto LINE_BASE      = Vector2i(39, 72);
+        constexpr int  LINE_HEIGHT    = 16;
 
         static auto selectionHighlightFrom = Vector2i::Zero;
         static auto selectionHighlightTo   = Vector2i::Zero;
@@ -187,10 +164,10 @@ namespace Silent::Game
             int entryIdxFrom = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
             int entryIdxTo   = g_OptionsMenu_SelectedEntry     - g_OptionsMenu_VisibleEntriesStartIdx;
 
-            selectionHighlightFrom = Vector2i(LINE_BASE_X + (int)ceilf(widths.first),
-                                              LINE_BASE_Y + (entryIdxFrom * LINE_OFFSET_Y));
-            selectionHighlightTo   = Vector2i(LINE_BASE_X + (int)ceilf(widths.second),
-                                              LINE_BASE_Y + (entryIdxTo * LINE_OFFSET_Y));
+            selectionHighlightFrom = LINE_BASE + Vector2i(ENTRY_OFFSET_X + (int)ceilf(widths.first),
+                                                          entryIdxFrom * LINE_HEIGHT);
+            selectionHighlightTo   = LINE_BASE + Vector2i(ENTRY_OFFSET_X + (int)ceilf(widths.second),
+                                                          entryIdxTo * LINE_HEIGHT);
         }
 
         // Compute sine-based interpolation alpha. @todo Sine-based math is wrong, using linear for now.
@@ -199,44 +176,20 @@ namespace Silent::Game
 
         // Draw active selection highlight.
         auto highlightLine      = s_Line2d{};
-        highlightLine.vertex0.x = LINE_BASE_X;
+        highlightLine.vertex0.x = LINE_BASE.x;
         highlightLine.vertex1.x = selectionHighlightFrom.x +
                                   Q12_MULT(selectionHighlightTo.x - selectionHighlightFrom.x, interpAlpha);
         highlightLine.vertex1.y = selectionHighlightFrom.y +
-                                  Q12_MULT(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha) +
-                                  LINE_OFFSET_Y;
+                                  Q12_MULT(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha);
         highlightLine.vertex0.y = highlightLine.vertex1.y;
         Options_Selection_HighlightDraw(highlightLine);
 
-        // Draw selection bullet points.
+        // Submit bullet points.
         for (int i = 0; i < VISIBLE_ENTRY_COUNT_MAX; i++)
         {
-            // Set bullet quads.
-            auto bulletQuads = std::array<s_Quad2d, BULLET_QUAD_COUNT>
-            {
-                BULLET_QUAD_FRONT,
-                BULLET_QUAD_BACK
-            };
-            for (auto& quad : bulletQuads)
-            {
-                quad.vertex0.y += i * LINE_OFFSET_Y;
-                quad.vertex1.y += i * LINE_OFFSET_Y;
-                quad.vertex2.y += i * LINE_OFFSET_Y;
-                quad.vertex3.y += i * LINE_OFFSET_Y;
-            }
-
-            // Active selection bullet point.
-            if (i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
-            {
-                Options_Selection_BulletPointDraw(bulletQuads[0], false, false);
-                Options_Selection_BulletPointDraw(bulletQuads[1], true,  false);
-            }
-            // Inactive selection bullet point.
-            else
-            {
-                Options_Selection_BulletPointDraw(bulletQuads[0], false, true);
-                Options_Selection_BulletPointDraw(bulletQuads[1], true,  true);
-            }
+            auto bulletPos = LINE_BASE + Vector2i(0, i * LINE_HEIGHT);
+            bool isActive  = i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx);
+            Options_Selection_BulletPointDraw(bulletPos, isActive);
         }
     }
 

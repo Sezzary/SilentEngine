@@ -92,6 +92,7 @@ namespace Silent::Game
             .EntryStringKey   = KEY_GRAPHICS_MENU_ANTIALIASING,
             .ConfigStringKeys =
             {
+                KEY_OPTIONS_MENU_OFF
             }
         },
         MenuEntry

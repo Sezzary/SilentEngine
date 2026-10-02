@@ -82,10 +82,8 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[0])
         {
             case 0:
-                g_IntervalVBlanks              = 1;
-                g_GameWork.background2dColor.r = 0;
-                g_GameWork.background2dColor.g = 0;
-                g_GameWork.background2dColor.b = 0;
+                g_IntervalVBlanks            = 1;
+                g_GameWork.background2dColor = { 0, 0, 0 };
 
                 if (g_SysWork.processFlags == ProcessFlag_RoomTransition)
                 {

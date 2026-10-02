@@ -231,9 +231,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_EnterOptions:
             {
-                g_GameWork.background2dColor.r = 0;
-                g_GameWork.background2dColor.g = 0;
-                g_GameWork.background2dColor.b = 0;
+                g_GameWork.background2dColor = { 0, 0, 0 };
 
                 ScreenFade_Start(false, true, false);
 
@@ -677,7 +675,8 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuEntry_Vibration:
-                if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
+                if (input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE) ||
+                    input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE))
                 {
                     Sd_SfxPlay(Sfx_MenuMove, 0, 64);
                     g_GameWork.config.vibrationEnabled = !g_GameWork.config.vibrationEnabled << 7;
@@ -685,7 +684,8 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuEntry_AutoLoad:
-                if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
+                if (input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE) ||
+                    input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE))
                 {
                     Sd_SfxPlay(Sfx_MenuMove, 0, 64);
                     g_GameWork.config.autoLoad = (s8)g_GameWork.config.autoLoad == 0;
@@ -693,7 +693,8 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuEntry_Sound:
-                if (input.GetAction(In::Left).IsClicked(0.5f) || input.GetAction(In::Right).IsClicked(0.5f))
+                if (input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE) ||
+                    input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE))
                 {
                     Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 

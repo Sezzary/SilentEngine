@@ -351,7 +351,7 @@ namespace Silent::Game
             }
 
             // Move cursor.
-            if (input.GetAction(In::Up).IsClicked(0.5f) &&
+            if (input.GetAction(In::Up).IsClicked(ACTION_HALF_STATE) &&
                 g_MapMsg_Select.selectedEntryIdx != 0)
             {
                 g_MapMsg_SelectFlashTimer = Q12(0.0f);
@@ -359,7 +359,7 @@ namespace Silent::Game
 
                 //Sd_SfxPlay(Sfx_MenuMove, 0, Q8(0.25f));
             }
-            if (input.GetAction(In::Down).IsClicked(0.5f) &&
+            if (input.GetAction(In::Down).IsClicked(ACTION_HALF_STATE) &&
                 g_MapMsg_Select.selectedEntryIdx != (entryCount - 1))
             {
                 g_MapMsg_SelectFlashTimer = Q12(0.0f);

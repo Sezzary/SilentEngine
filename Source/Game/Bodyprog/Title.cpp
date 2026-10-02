@@ -184,9 +184,7 @@ namespace Silent::Game
         switch (g_MainMenuState)
         {
             case MainMenuState_Start:
-                g_GameWork.background2dColor.r = 0;
-                g_GameWork.background2dColor.g = 0;
-                g_GameWork.background2dColor.b = 0;
+                g_GameWork.background2dColor = { 0, 0, 0 };
 
                 g_IntervalVBlanks = 1;
                 ScreenFade_Start(true, true, false);
@@ -476,9 +474,7 @@ namespace Silent::Game
                     {
                         g_Demo_ReproducedCount++;
 
-                        g_GameWork.background2dColor.r = 0;
-                        g_GameWork.background2dColor.g = 0;
-                        g_GameWork.background2dColor.b = 0;
+                        g_GameWork.background2dColor = { 0, 0, 0 };
 
                         Game_StateSetNext(GameState_MovieIntro);
                     }

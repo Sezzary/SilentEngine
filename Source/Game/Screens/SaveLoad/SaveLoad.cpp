@@ -1701,9 +1701,7 @@ namespace Silent::Game
         g_IntervalVBlanks = 1;
         ScreenFade_Start(true, true, false);
 
-        g_GameWork.background2dColor.r = 0;
-        g_GameWork.background2dColor.g = 0;
-        g_GameWork.background2dColor.b = 0;
+        g_GameWork.background2dColor = { 0, 0, 0 };
 
         //D_800BCD39 = false;
         if (g_GameWork.gameState == GameState_AutoLoadSavegame ||
@@ -1741,8 +1739,8 @@ namespace Silent::Game
 
                 // Memory cards are inserted and user is moving between slots.
                 if (g_Savegame_ElementCount0[0] != 0 && g_Savegame_ElementCount0[1] != 0 &&
-                    (input.GetAction(In::Left).IsClicked(0.5f) ||
-                     input.GetAction(In::Right).IsClicked(0.5f)))
+                    (input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE) ||
+                     input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE)))
                 {
                     g_SelectedSaveSlotIdx ^= 1;
                     SD_Call(Sfx_MenuMove);
@@ -1838,13 +1836,13 @@ namespace Silent::Game
 
                 g_SaveScreen_MemCardStateTextTimer = 0;
 
-                if (input.GetAction(In::Left).IsClicked(0.5f))
+                if (input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE))
                 {
                     isSaveWriteOptionSelected = gameStateStep;
                     SD_Call(Sfx_MenuMove);
                 }
 
-                if (input.GetAction(In::Right).IsClicked(0.5f))
+                if (input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE))
                 {
                     isSaveWriteOptionSelected = false;
                     SD_Call(Sfx_MenuMove);
@@ -1877,9 +1875,7 @@ namespace Silent::Game
             case 2:
                 if (ScreenFade_IsFinished())
                 {
-                    g_GameWork.background2dColor.r = 0;
-                    g_GameWork.background2dColor.g = 0;
-                    g_GameWork.background2dColor.b = 0;
+                    g_GameWork.background2dColor = { 0, 0, 0 };
 
                     Fs_QueueWaitForEmpty();
 

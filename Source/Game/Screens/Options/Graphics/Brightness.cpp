@@ -58,6 +58,9 @@ namespace Silent::Game
         const auto& translator = g_App.GetTranslator();
         auto&       options    = g_App.GetOptions();
 
+        bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+        bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[2])
         {
@@ -74,8 +77,6 @@ namespace Silent::Game
             }
             case 2:
             {
-                bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
-                bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
                 if (!isHoldingLeft || !isHoldingRight)
                 {
                     if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
@@ -147,8 +148,6 @@ namespace Silent::Game
         Gfx_StringDraw("{M}" + std::to_string(options->BrightnessLevel));
 
         // Submit arrows.
-        bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
-        bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
         Options_Selection_ArrowDraw(CONFIG_STR_POS - ARROW_OFFSET, SelectionArrowType::Left,  isHoldingLeft  && !isHoldingRight);
         Options_Selection_ArrowDraw(CONFIG_STR_POS + ARROW_OFFSET, SelectionArrowType::Right, isHoldingRight && !isHoldingLeft);
     }

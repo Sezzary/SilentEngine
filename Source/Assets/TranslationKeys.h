@@ -84,8 +84,26 @@ namespace Silent::Assets
 
     constexpr char KEY_GAMEPLAY_MENU_HEADING[] = "GameplayMenu_Heading";
 
-    constexpr char KEY_INPUT_MENU_HEADING[] = "InputMenu_Heading";
-
+    constexpr char KEY_INPUT_MENU_HEADING[]                      = "InputMenu_Heading";
+    constexpr char KEY_INPUT_MENU_BINDINGS[]                     = "InputMenu_Bindings";
+    constexpr char KEY_INPUT_MENU_ENABLE_VIBRATION[]             = "InputMenu_EnableVibration";
+    constexpr char KEY_INPUT_MENU_MOUSE_SENSITIVITY[]            = "InputMenu_MouseSensitivity";
+    constexpr char KEY_INPUT_MENU_WEAPON_CONTROL[]               = "InputMenu_WeaponControl";
+    constexpr char KEY_INPUT_MENU_WEAPON_CONTROL_SWITCH[]        = "InputMenu_WeaponControl_Switch";
+    constexpr char KEY_INPUT_MENU_WEAPON_CONTROL_PRESS[]         = "InputMenu_WeaponControl_Press";
+    constexpr char KEY_INPUT_MENU_VIEW_CONTROL[]                 = "InputMenu_ViewControl";
+    constexpr char KEY_INPUT_MENU_VIEW_CONTROL_NORMAL[]          = "InputMenu_ViewControl_Normal";
+    constexpr char KEY_INPUT_MENU_VIEW_CONTROL_REVERSE[]         = "InputMenu_ViewControl_Reverse";
+    constexpr char KEY_INPUT_MENU_RETREAT_TURN_CONTROL[]         = "InputMenu_RetreatTurnControl";
+    constexpr char KEY_INPUT_MENU_RETREAT_TURN_CONTROL_NORMAL[]  = "InputMenu_RetreatTurnControl_Normal";
+    constexpr char KEY_INPUT_MENU_RETREAT_TURN_CONTROL_REVERSE[] = "InputMenu_RetreatTurnControl_Reverse";
+    constexpr char KEY_INPUT_MENU_WALK_RUN_CONTROL[]             = "InputMenu_WalkRunControl";
+    constexpr char KEY_INPUT_MENU_WALK_RUN_CONTROL_NORMAL[]      = "InputMenu_WalkRunControl_Normal";
+    constexpr char KEY_INPUT_MENU_WALK_RUN_CONTROL_REVERSE[]     = "InputMenu_WalkRunControl_Reverse";
+    constexpr char KEY_INPUT_MENU_VIEW_MODE[]                    = "InputMenu_ViewMode";
+    constexpr char KEY_INPUT_MENU_VIEW_MODE_NORMAL[]             = "InputMenu_ViewMode_Normal";
+    constexpr char KEY_INPUT_MENU_VIEW_MODE_SELF_VIEW[]          = "InputMenu_ViewMode_SelfView";
+    
     constexpr char KEY_ENHANCEMENTS_MENU_HEADING[] = "EnhancementsMenu_Heading";
 
     constexpr char KEY_SYSTEM_MENU_HEADING[] = "SystemMenu_Heading";

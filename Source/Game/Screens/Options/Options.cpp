@@ -13,9 +13,14 @@
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
+#include "Game/Screens/Options/Gameplay/Gameplay.h"
+#include "Game/Screens/Options/Enhancements/Enhancements.h"
 #include "Game/Screens/Options/Graphics/Brightness.h"
 #include "Game/Screens/Options/Graphics/Graphics.h"
+#include "Game/Screens/Options/Input/Bindings.h"
+#include "Game/Screens/Options/Input/Input.h"
 #include "Game/Screens/Options/MenuGraphics.h"
+#include "Game/Screens/Options/System/System.h"
 #include "Game/Screens/Options/Utils.h"
 #include "Input/Input.h"
 
@@ -34,42 +39,42 @@ namespace Silent::Game
     static int g_OptionsMenu_SelectedBloodColorEntry = 0;
     static int g_OptionsMenu_BulletMultMax           = 0;
 
+    static const auto ENTRIES = std::vector<MenuEntry>
+    {
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_EXIT
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_GRAPHICS
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_GAMEPLAY
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_INPUT
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_ENHANCEMENTS
+        },
+        MenuEntry
+        {
+            .Type           = MenuEntryType::Submenu,
+            .EntryStringKey = KEY_OPTIONS_MENU_SYSTEM
+        },
+    };
+
     static void ControlOptionsMenu()
     {
-        static const auto ENTRIES = std::vector<MenuEntry>
-        {
-            MenuEntry
-            {
-                .Type           = MenuEntryType::Submenu,
-                .EntryStringKey = KEY_OPTIONS_MENU_EXIT
-            },
-            MenuEntry
-            {
-                .Type           = MenuEntryType::Submenu,
-                .EntryStringKey = KEY_OPTIONS_MENU_GRAPHICS
-            },
-            MenuEntry
-            {
-                .Type           = MenuEntryType::Submenu,
-                .EntryStringKey = KEY_OPTIONS_MENU_GAMEPLAY
-            },
-            MenuEntry
-            {
-                .Type           = MenuEntryType::Submenu,
-                .EntryStringKey = KEY_OPTIONS_MENU_INPUT
-            },
-            MenuEntry
-            {
-                .Type           = MenuEntryType::Submenu,
-                .EntryStringKey = KEY_OPTIONS_MENU_ENHANCEMENTS
-            },
-            MenuEntry
-            {
-                .Type           = MenuEntryType::Submenu,
-                .EntryStringKey = KEY_OPTIONS_MENU_SYSTEM
-            },
-        };
-
         const auto& input = g_App.GetInput();
 
         // Submit graphics.
@@ -186,26 +191,6 @@ namespace Silent::Game
             g_OptionsMenu_SelectedEntry           = OptionsMenuEntry_Exit;
             g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
         }
-    }
-
-    static void Options_GameplayMenu_Control()
-    {
-
-    }
-
-    static void Options_InputMenu_Control()
-    {
-
-    }
-
-    static void Options_EnhancementsMenu_Control()
-    {
-
-    }
-
-    static void Options_SystemMenu_Control()
-    {
-
     }
 
     void GameState_Options_Update()
@@ -386,15 +371,15 @@ namespace Silent::Game
                 }
                 break;
 
-            case OptionsMenuState_EnterController:
+            case OptionsMenuState_EnterBindings:
                 if (ScreenFade_IsFinished())
                 {
-                    Game_StateStepSet(0, OptionsMenuState_Controller);
+                    Game_StateStepSet(0, OptionsMenuState_Bindings);
                 }
                 break;
 
-            case OptionsMenuState_Controller:
-                Options_ControllerMenu_Control();
+            case OptionsMenuState_Bindings:
+                Options_BindingsMenu_Control();
                 break;
         }
 
@@ -440,7 +425,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_VIBRATION,
                 .ConfigStringKeys = 
                 {
@@ -450,7 +435,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_AUTO_LOAD,
                 .ConfigStringKeys =
                 {
@@ -460,7 +445,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_SOUND,
                 .ConfigStringKeys =
                 {
@@ -470,23 +455,23 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type           = MenuEntryType::BarConfig,
+                .Type           = MenuEntryType::Bar,
                 .EntryStringKey = KEY_OPTIONS_MENU_BGM_VOL
             },
             MenuEntry
             {
-                .Type           = MenuEntryType::BarConfig,
+                .Type           = MenuEntryType::Bar,
                 .EntryStringKey = KEY_OPTIONS_MENU_SE_VOL
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_LANGUAGE,
                 .ConfigStringKeys = {} // @todo Determined dynamically.
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_WEAPON_CONTROL,
                 .ConfigStringKeys =
                 {
@@ -496,7 +481,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_BLOOD_COLOR,
                 .ConfigStringKeys = 
                 {
@@ -508,7 +493,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_VIEW_CONTROL,
                 .ConfigStringKeys = 
                 {
@@ -518,7 +503,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_RETREAT_TURN,
                 .ConfigStringKeys = 
                 {
@@ -528,7 +513,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_WALK_RUN_CONTROL,
                 .ConfigStringKeys = 
                 {
@@ -538,7 +523,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_AUTO_AIMING,
                 .ConfigStringKeys = 
                 {
@@ -548,7 +533,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_VIEW_MODE,
                 .ConfigStringKeys = 
                 {
@@ -558,7 +543,7 @@ namespace Silent::Game
             },
             MenuEntry
             {
-                .Type             = MenuEntryType::ArrowConfig,
+                .Type             = MenuEntryType::List,
                 .EntryStringKey   = KEY_OPTIONS_MENU_BULLET_ADJUST,
                 .ConfigStringKeys =
                 {
@@ -579,8 +564,8 @@ namespace Silent::Game
         OptionsMenu_ConfigDraw();
         OptionsMenu_SelectionHighlightDraw(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
-        OptionsMenu_BgmVolumeBarDraw();
-        OptionsMenu_SfxVolumeBarDraw();
+        //OptionsMenu_BgmVolumeBarDraw();
+        //OptionsMenu_SfxVolumeBarDraw();
 
         // Block user input if transitioning to new menu.
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Options)
@@ -656,7 +641,7 @@ namespace Silent::Game
                     Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
                     Fs_QueueStartReadTim(FILE_TIM_OPTION2_TIM, IMAGE_BUFFER_3, &g_ControllerButtonAtlasImg);
                     ScreenFade_Start(true, false, false);
-                    Game_StateStepSet(0, OptionsMenuState_EnterController);
+                    Game_StateStepSet(0, OptionsMenuState_EnterBindings);
                 }
                 break;
 

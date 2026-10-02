@@ -91,16 +91,16 @@ namespace Silent::Services
         Black
     };
 
-    enum class ControlInversionType
-    {
-        Normal,
-        Reverse
-    };
-
     enum class WeaponControlType
     {
         Switch,
         Press
+    };
+
+    enum class ControlInversionType
+    {
+        Normal,
+        Reverse
     };
 
     enum class ViewMode

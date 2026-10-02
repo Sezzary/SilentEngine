@@ -24,17 +24,6 @@ namespace Silent::Game
      */
     void Options_Selection_HighlightDraw(const s_Line2d& line);
 
-    // @deprecated
-    /** @brief Draws a blue arrow element used for certain listed entries in the main and extra options menus.
-     *
-     * @note Called twice if the arrow requires a border, with `isFlashing` passed as `true` and `false` on consecutive
-     * calls.
-     *
-     * @param tri 2D triangle of the arrow element.
-     * @param isFlashing `true` for a flashing element with a gradient, `false` for a border.
-     */
-    void Options_Selection_ArrowDraw(const s_Triangle2d& tri, bool isFlashing);
-
     /** @brief Draws a blue flashing arrow used for configs of certain listed entries in options menus.
      *
      * @param pos Screen position in retro pixels (320x240 resolution).

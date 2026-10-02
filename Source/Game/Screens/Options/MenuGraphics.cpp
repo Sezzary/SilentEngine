@@ -11,9 +11,11 @@
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
 #include "Game/Screens/Options/Utils.h"
+#include "Renderer/Renderer.h"
 #include "Utils/Translator.h"
 
 using namespace Silent::Assets;
+using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
@@ -21,57 +23,65 @@ namespace Silent::Game
     int g_ExtraOptionsMenu_EntryCount;
     int g_ExtraOptionsMenu_SelectedBloodColorEntry;
 
-    void OptionsMenu_BgmVolumeBarDraw()
+    void OptionsMenu_BarDraw(const Vector2i& pos, int activeCount)
     {
-        OptionsMenu_VolumeBarDraw(false, g_GameWork.config.volumeBgm);
-    }
-
-    void OptionsMenu_SfxVolumeBarDraw()
-    {
-        OptionsMenu_VolumeBarDraw(true, g_GameWork.config.volumeSe);
-    }
-
-    void OptionsMenu_VolumeBarDraw(bool isSfx, int vol)
-    {
-        constexpr int STR_OFFSET_Y = 16;
-        constexpr int NOTCH_SIZE_X = 5;
-        constexpr int NOTCH_COUNT  = 16;
-
-        // Draw bar notches.
-        for (int i = 0; i < NOTCH_COUNT; i++)
+        constexpr int  DEPTH                = 24;
+        constexpr int  NOTCH_COUNT          = 16;
+        constexpr int  NOTCH_SPACE          = 5;
+        constexpr auto NOTCH_QUAD_BACK_BASE = s_Quad2d
         {
-            for (int j = 1; j >= 0; j--)
-            {
-                if (i < (vol / 8))
-                {
-                    int shade = 160 + (64 * j);
-                    //setRGBC0(poly, color0, color0, color0, 0x28);
-                }
-                else if (i > (vol / 8))
-                {
-                    int shade = 64 + (64 * j);
-                    //setRGBC0(poly, color1, color1, color1, 0x28);
-                }
-                else
-                {
-                    int shade = (((vol & 0x7) * 12) + 64) + (64 * j);
-                    //setRGBC0(poly, color2, color2, color2, 0x28);
-                }
+            .vertex0 = Vector2i(0, -11),
+            .vertex1 = Vector2i(0,  0),
+            .vertex2 = Vector2i(4,  11),
+            .vertex3 = Vector2i(4,  0)
+        };
+        constexpr auto NOTCH_QUAD_FRONT_BASE = s_Quad2d
+        {
+            .vertex0 = Vector2i(1, -9),
+            .vertex1 = Vector2i(1, -1),
+            .vertex2 = Vector2i(4, -9),
+            .vertex3 = Vector2i(4, -1)
+        };
 
-                int xOffset = 24 + (i * 6);
-                int offset  = -69;
+        constexpr auto COLOR_ACTIVE_FRONT   = Color::From8Bit(230, 230, 230);
+        constexpr auto COLOR_ACTIVE_BACK    = Color::From8Bit(164, 164, 164);
+        constexpr auto COLOR_INACTIVE_FRONT = Color::From8Bit(131, 131, 131);
+        constexpr auto COLOR_INACTIVE_BACK  = Color::From8Bit(65,  65,  65);
 
-                int x0Offset = j + 24;
-                int x0       = (x0Offset + (i * 6)) & 0xFFFF;
-                int yOffset  = j + 56;
+        auto& renderer = g_App.GetRenderer();
 
-                //setXY0Fast(poly, x0,                           (isSfx * STR_OFFSET_Y) + yOffset);
-                //setXY1Fast(poly, x0,                           (isSfx * STR_OFFSET_Y) - (j + offset));
-                //setXY2Fast(poly, (xOffset - j) + NOTCH_SIZE_X, (isSfx * STR_OFFSET_Y) + yOffset);
-                //setXY3Fast(poly, (xOffset - j) + NOTCH_SIZE_X, (isSfx * STR_OFFSET_Y) - (j + offset));
-                //addPrim((u8*)ot->org + LAYER_24, poly);
-                //GsOUT_PACKET_P = (u8*)poly + sizeof(POLY_F4);
-            }
+        // Submit notches.
+        int submittedCount = 0;
+        for (int i = -(NOTCH_COUNT / 2); i <= (NOTCH_COUNT / 2); i++)
+        {
+            bool isActive = submittedCount >= activeCount;
+            auto offset   = Vector2i(i * NOTCH_SPACE);
+
+            // Submit back quad.
+            auto backQuad = Shape2d::CreateQuad((pos + offset)+ NOTCH_QUAD_BACK_BASE.vertex0,
+                                                (pos + offset)+ NOTCH_QUAD_BACK_BASE.vertex1,
+                                                (pos + offset)+ NOTCH_QUAD_BACK_BASE.vertex2,
+                                                (pos + offset)+ NOTCH_QUAD_BACK_BASE.vertex3,
+                                                isActive ? COLOR_ACTIVE_BACK : COLOR_INACTIVE_BACK,
+                                                isActive ? COLOR_ACTIVE_BACK : COLOR_INACTIVE_BACK,
+                                                isActive ? COLOR_ACTIVE_BACK : COLOR_INACTIVE_BACK,
+                                                isActive ? COLOR_ACTIVE_BACK : COLOR_INACTIVE_BACK,
+                                                DEPTH, ScaleMode::VerticalEdge, BlendMode::Opaque);
+            renderer.SubmitShape2d(backQuad);
+
+            // Submit front quad.
+            auto frontQuad = Shape2d::CreateQuad((pos + offset) + NOTCH_QUAD_FRONT_BASE.vertex0,
+                                                 (pos + offset) + NOTCH_QUAD_FRONT_BASE.vertex1,
+                                                 (pos + offset) + NOTCH_QUAD_FRONT_BASE.vertex2,
+                                                 (pos + offset) + NOTCH_QUAD_FRONT_BASE.vertex3,
+                                                 isActive ? COLOR_ACTIVE_FRONT : COLOR_INACTIVE_FRONT,
+                                                 isActive ? COLOR_ACTIVE_FRONT : COLOR_INACTIVE_FRONT,
+                                                 isActive ? COLOR_ACTIVE_FRONT : COLOR_INACTIVE_FRONT,
+                                                 isActive ? COLOR_ACTIVE_FRONT : COLOR_INACTIVE_FRONT,
+                                                 DEPTH - 1, ScaleMode::VerticalEdge, BlendMode::Opaque);
+            renderer.SubmitShape2d(frontQuad);
+
+            submittedCount++;
         }
     }
 
@@ -81,7 +91,7 @@ namespace Silent::Game
         constexpr auto HEADING_STR_POS     = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
         constexpr auto LINE_BASE           = Vector2i(64, 70);
         constexpr auto LINE_HEIGHT         = 16;
-        constexpr int  CONFIG_STR_OFFSET   = 185;
+        constexpr int  CONFIG_OFFSET       = 185;
         constexpr int  CONFIG_ARROW_OFFSET = 5;
 
         const auto& input      = g_App.GetInput();
@@ -124,7 +134,7 @@ namespace Silent::Game
             // Submit config graphics.
             switch (entry.Type)
             {
-                case MenuEntryType::ArrowConfig:
+                case MenuEntryType::List:
                 {
                     if (entry.ConfigStringKeys.empty())
                     {
@@ -132,7 +142,7 @@ namespace Silent::Game
                     }
 
                     // Submit config string.
-                    Gfx_StringPositionSet(pos.x + CONFIG_STR_OFFSET, pos.y);
+                    Gfx_StringPositionSet(pos.x + CONFIG_OFFSET, pos.y);
                     float width = Gfx_StringDraw("{M}" + translator(entry.ConfigStringKeys[0])) *
                                   (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y); // @todo Pass index somehow.
 
@@ -144,16 +154,16 @@ namespace Silent::Game
 
                         // @todo Use width correctly.
                         int arrowOffset = ((int)ceilf(width) / 2) + CONFIG_ARROW_OFFSET;
-                        Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_STR_OFFSET - arrowOffset, 0), 
+                        Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_OFFSET - arrowOffset, 0), 
                                                     SelectionArrowType::Left, isHoldingLeft && !isHoldingRight);
-                        Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_STR_OFFSET + arrowOffset, 0),
+                        Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_OFFSET + arrowOffset, 0),
                                                     SelectionArrowType::Right, isHoldingRight && !isHoldingLeft);
                     }
                     break;
                 }
-                case MenuEntryType::BarConfig:
+                case MenuEntryType::Bar:
                 {
-                    // @todo
+                    OptionsMenu_BarDraw(pos + CONFIG_OFFSET, 8); // @todo Pass count somehow.
                     break;
                 }
             }
@@ -256,17 +266,17 @@ namespace Silent::Game
             // Draw flashing left/right arrows.
             for (int i = 0; i < 2; i++)
             {
-                Options_Selection_ArrowDraw(FRONT_ARROWS[(((g_OptionsMenu_SelectedEntry - 4) * 2) + i)], true);
+               //Options_Selection_ArrowDraw(FRONT_ARROWS[(((g_OptionsMenu_SelectedEntry - 4) * 2) + i)], true);
             }
 
             // Draw border to highlight flashing left/right arrow corresponding to direction of UI navigation.
             if (input.GetAction(In::Left).IsHeld())
             {
-                Options_Selection_ArrowDraw(BACK_ARROWS[(g_OptionsMenu_SelectedEntry - 4) * 2], false);
+                //Options_Selection_ArrowDraw(BACK_ARROWS[(g_OptionsMenu_SelectedEntry - 4) * 2], false);
             }
             if (input.GetAction(In::Right).IsHeld())
             {
-                Options_Selection_ArrowDraw(BACK_ARROWS[((g_OptionsMenu_SelectedEntry - 4) * 2) + 1], false);
+                //Options_Selection_ArrowDraw(BACK_ARROWS[((g_OptionsMenu_SelectedEntry - 4) * 2) + 1], false);
             }
         }
 
@@ -390,17 +400,17 @@ namespace Silent::Game
             // Draw flashing left/right arrows.
             for (int i = 0; i < 2; i++)
             {
-                Options_Selection_ArrowDraw(FRONT_ARROWS[(g_ExtraOptionsMenu_SelectedEntry * 2) + i], true);
+                //Options_Selection_ArrowDraw(FRONT_ARROWS[(g_ExtraOptionsMenu_SelectedEntry * 2) + i], true);
             }
 
             // Draw border to highlight flashing left/right arrow corresponding to direction of UI navigation.
             if (input.GetAction(In::Left).IsHeld())
             {
-                Options_Selection_ArrowDraw(BACK_ARROWS[g_ExtraOptionsMenu_SelectedEntry << 1], false);
+                //Options_Selection_ArrowDraw(BACK_ARROWS[g_ExtraOptionsMenu_SelectedEntry << 1], false);
             }
             if (input.GetAction(In::Right).IsHeld())
             {
-                Options_Selection_ArrowDraw(BACK_ARROWS[(g_ExtraOptionsMenu_SelectedEntry << 1) + 1], false);
+                //Options_Selection_ArrowDraw(BACK_ARROWS[(g_ExtraOptionsMenu_SelectedEntry << 1) + 1], false);
             }
         }
 

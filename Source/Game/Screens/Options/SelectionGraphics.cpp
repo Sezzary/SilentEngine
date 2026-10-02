@@ -38,90 +38,6 @@ namespace Silent::Game
         renderer.SubmitShape2d(shadowPrim);
     }
 
-    // @deprecated
-    void Options_Selection_ArrowDraw(const s_Triangle2d& tri, bool hasOutline)
-    {
-        constexpr auto COLOR_FLASH = Color::From8Bit(0, 112, 255);
-        constexpr auto COLOR_CYAN  = Color::From8Bit(0, 240, 240);
-
-        auto& renderer = g_App.GetRenderer();
-
-        // Compute color fade as component in range `[0, 128]`.
-        int colorFade = (g_SysWork.gameStateCounter * 2) % 128;
-
-        // Fade start color.
-        int colorStart = 0;
-        if (colorFade >= 32)
-        {
-            colorStart = 32;
-            if (colorFade < 64)
-            {
-                colorStart = 32;
-            }
-            else if (colorFade < 96)
-            {
-                colorStart = 96 - colorFade;
-            }
-            else
-            {
-                colorStart = 0;
-            }
-        }
-        else
-        {
-            colorStart = colorFade;
-        }
-
-        // Fade end color.
-        int colorEnd = 0;
-        if (colorFade >= 32)
-        {
-            if (colorFade < 64)
-            {
-                colorEnd = colorFade - 32;
-            }
-            else if (colorFade >= 96)
-            {
-                colorEnd = 128 - colorFade;
-            }
-            else
-            {
-                colorEnd = 32;
-            }
-        }
-        else
-        {
-            colorEnd = 0;
-        }
-
-        auto color0 = Color::Clear;
-        auto color1 = Color::Clear;
-        auto color2 = Color::Clear;
-
-        // Set flashing blue-cyan color. @todo Use constant.
-        if (hasOutline)
-        {
-            color0 = Color::From8Bit(0, 112 + (colorEnd * 4), 255);
-            color1 =
-            color2 = Color::From8Bit(0, 112 + (colorStart * 4), 255);
-        }
-        // Set solid cyan color.
-        else
-        {
-            color0 =
-            color1 =
-            color2 = COLOR_CYAN;
-        }
-
-        // Submit triangle primitive for arrow.
-        constexpr int  DEPTH       = 40;
-        int  depth     = DEPTH + (hasOutline ? 0 : 1);
-        auto arrowPrim = Shape2d::CreateTriangle(tri.vertex0, tri.vertex1, tri.vertex2,
-                                                 color0, color1, color2,
-                                                 depth, ScaleMode::VerticalEdge, BlendMode::Opaque);
-        renderer.SubmitShape2d(arrowPrim);
-    }
-
     void Options_Selection_ArrowDraw(const Vector2i& pos, SelectionArrowType type, bool hasOutline)
     {
         constexpr int  DEPTH       = 40;
@@ -292,20 +208,7 @@ namespace Silent::Game
 
     void Options_Selection_BulletPointDraw(const Vector2i& pos, bool isActive)
     {
-        constexpr int DEPTH = 24;
-
-        constexpr auto COLOR_ACTIVE_FRONT_HIGHLIGHT = Color::From8Bit(255, 255, 255);
-        constexpr auto COLOR_ACTIVE_FRONT_MIDTONE   = Color::From8Bit(160, 128, 64);
-        constexpr auto COLOR_ACTIVE_BACK_HIGHLIGHT  = Color::From8Bit(255, 255, 255);
-        constexpr auto COLOR_ACTIVE_BACK_MIDTONE    = Color::From8Bit(160, 128, 64);
-        constexpr auto COLOR_ACTIVE_BACK_SHADOW     = Color::From8Bit(64,  64,  64);
-
-        constexpr auto COLOR_INACTIVE_FRONT_HIGHLIGHT = Color::From8Bit(160, 160, 160);
-        constexpr auto COLOR_INACTIVE_FRONT_MIDTONE   = Color::From8Bit(80,  64,  32);
-        constexpr auto COLOR_INACTIVE_BACK_HIGHLIGHT  = Color::From8Bit(128, 128, 128);
-        constexpr auto COLOR_INACTIVE_BACK_MIDTONE    = Color::From8Bit(40,  32,  16);
-        constexpr auto COLOR_INACTIVE_BACK_SHADOW     = Color::From8Bit(16,  16,  16);
-
+        constexpr int  DEPTH                 = 24;
         constexpr auto BULLET_QUAD_BACK_BASE = s_Quad2d
         {
             .vertex0 = Vector2i(0,  -14),
@@ -320,6 +223,18 @@ namespace Silent::Game
             .vertex2 = Vector2i(13, -13),
             .vertex3 = Vector2i(13, -1)
         };
+
+        constexpr auto COLOR_ACTIVE_FRONT_HIGHLIGHT = Color::From8Bit(255, 255, 255);
+        constexpr auto COLOR_ACTIVE_FRONT_MIDTONE   = Color::From8Bit(160, 128, 64);
+        constexpr auto COLOR_ACTIVE_BACK_HIGHLIGHT  = Color::From8Bit(255, 255, 255);
+        constexpr auto COLOR_ACTIVE_BACK_MIDTONE    = Color::From8Bit(160, 128, 64);
+        constexpr auto COLOR_ACTIVE_BACK_SHADOW     = Color::From8Bit(64,  64,  64);
+
+        constexpr auto COLOR_INACTIVE_FRONT_HIGHLIGHT = Color::From8Bit(160, 160, 160);
+        constexpr auto COLOR_INACTIVE_FRONT_MIDTONE   = Color::From8Bit(80,  64,  32);
+        constexpr auto COLOR_INACTIVE_BACK_HIGHLIGHT  = Color::From8Bit(128, 128, 128);
+        constexpr auto COLOR_INACTIVE_BACK_MIDTONE    = Color::From8Bit(40,  32,  16);
+        constexpr auto COLOR_INACTIVE_BACK_SHADOW     = Color::From8Bit(16,  16,  16);
 
         auto& renderer = g_App.GetRenderer();
 

@@ -1,6 +1,6 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Screens/Options/Controller.h"
+#include "Game/Screens/Options/Input/Bindings.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
@@ -17,22 +17,22 @@ using namespace Silent::Input;
 
 namespace Silent::Game
 {
-    static bool g_ControllerMenu_IsOnActionsPane = false;
+    static bool g_BindingsMenu_IsOnActionsPane = false;
 
-    void Options_ControllerMenu_Control()
+    void Options_BindingsMenu_Control()
     {
-        static auto selectedEntries = s_ControllerMenu_SelectedEntries{};
+        static auto selectedEntries = s_BindingsMenu_SelectedEntries{};
 
         const auto& input = g_App.GetInput();
 
         int boundActionIdx = NO_VALUE;
 
-        // Handle controller config menu state.
+        // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])
         {
-            case ControllerMenuState_Exit:
+            case BindingsMenuState_Exit:
                 ScreenFade_Start(false, true, false);
-                selectedEntries.preset = ControllerMenuState_Exit;
+                selectedEntries.preset = BindingsMenuState_Exit;
 
                 // Leave menu.
                 if (input.GetAction(In::Enter).IsClicked() ||
@@ -41,7 +41,7 @@ namespace Silent::Game
                     //Sd_EngineCmd(Sfx_Cancel);
 
                     ScreenFade_Start(false, false, false);
-                    g_GameWork.gameStateSteps[1] = ControllerMenuState_Leave;
+                    g_GameWork.gameStateSteps[1] = BindingsMenuState_Leave;
                     g_GameWork.gameStateSteps[2] = 0;
                     break;
                 }
@@ -49,27 +49,27 @@ namespace Silent::Game
                 // Move selection cursor up/down.
                 if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    g_GameWork.gameStateSteps[1] = ControllerMenuState_Type3;
+                    g_GameWork.gameStateSteps[1] = BindingsMenuState_Type3;
                     g_GameWork.gameStateSteps[2] = 0;
                 }
                 else if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    g_GameWork.gameStateSteps[1] = ControllerMenuState_Type1;
+                    g_GameWork.gameStateSteps[1] = BindingsMenuState_Type1;
                     g_GameWork.gameStateSteps[2] = 0;
                 }
                 // Move selection cursor left/right.
                 else if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
                          input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                 {
-                    g_GameWork.gameStateSteps[1] = ControllerMenuState_Actions;
+                    g_GameWork.gameStateSteps[1] = BindingsMenuState_Actions;
                     g_GameWork.gameStateSteps[2] = 0;
                 }
                 break;
 
-            case ControllerMenuState_Type1:
-            case ControllerMenuState_Type2:
-            case ControllerMenuState_Type3:
-                selectedEntries.preset = (e_ControllerMenuState)g_GameWork.gameStateSteps[1];
+            case BindingsMenuState_Type1:
+            case BindingsMenuState_Type2:
+            case BindingsMenuState_Type3:
+                selectedEntries.preset = (e_BindingsMenuState)g_GameWork.gameStateSteps[1];
 
                 // Set binding preset.
                 if (input.GetAction(In::Enter).IsClicked())
@@ -81,7 +81,7 @@ namespace Silent::Game
                 else if (input.GetAction(In::Cancel).IsClicked())
                 {
                     //Sd_EngineCmd(Sfx_Cancel);
-                    g_GameWork.gameStateSteps[1] = ControllerMenuState_Exit;
+                    g_GameWork.gameStateSteps[1] = BindingsMenuState_Exit;
                     g_GameWork.gameStateSteps[2] = 0;
                 }
                 // Move selection cursor.
@@ -102,13 +102,13 @@ namespace Silent::Game
                     else if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) ||
                              input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
                     {
-                        g_GameWork.gameStateSteps[1] = ControllerMenuState_Actions;
+                        g_GameWork.gameStateSteps[1] = BindingsMenuState_Actions;
                         g_GameWork.gameStateSteps[2] = 0;
                     }
                 }
                 break;
 
-            case ControllerMenuState_Actions:
+            case BindingsMenuState_Actions:
             {
                 auto actionIdx = selectedEntries.action;
 
@@ -145,17 +145,17 @@ namespace Silent::Game
                 // Bind button to input action.
                 else
                 {
-                    //boundActionIdx = Options_ControllerMenu_ConfigUpdate(actionIdx);
+                    //boundActionIdx = Options_BindingsMenu_ConfigUpdate(actionIdx);
                 }
                 break;
             }
 
-            case ControllerMenuState_Leave:
+            case BindingsMenuState_Leave:
                 // Switch to previous menu.
                 if (ScreenFade_IsFinished())
                 {
                     ScreenFade_Start(true, true, false);
-                    g_GameWork.gameStateSteps[0]   = OptionsMenuState_LeaveController;
+                    g_GameWork.gameStateSteps[0]   = OptionsMenuState_LeaveBindings;
                     g_SysWork.gameStateStepCounter = 0;
                     g_GameWork.gameStateSteps[1]   = 0;
                     g_GameWork.gameStateSteps[2]   = 0;
@@ -163,13 +163,13 @@ namespace Silent::Game
                 break;
         }
 
-        if (g_GameWork.gameStateSteps[1] == ControllerMenuState_Actions)
+        if (g_GameWork.gameStateSteps[1] == BindingsMenuState_Actions)
         {
-            g_ControllerMenu_IsOnActionsPane = true;
+            g_BindingsMenu_IsOnActionsPane = true;
         }
         else
         {
-            g_ControllerMenu_IsOnActionsPane = false;
+            g_BindingsMenu_IsOnActionsPane = false;
         }
 
         // Play cursor navigation SFX.
@@ -182,10 +182,10 @@ namespace Silent::Game
         }
 
         // Draw menu graphics.
-        //Options_ControllerMenu_EntriesDraw(g_ControllerMenu_IsOnActionsPane, selectedEntries.preset, selectedEntries.action, boundActionIdx);
+        //Options_BindingsMenu_EntriesDraw(g_BindingsMenu_IsOnActionsPane, selectedEntries.preset, selectedEntries.action, boundActionIdx);
     }
 
-    void Options_ControllerMenu_EntriesDraw(bool isOnRightPane, int presetsEntryIdx, int actionsEntryIdx, int boundActionIdx) // 0x801E6F60
+    void Options_BindingsMenu_EntriesDraw(bool isOnRightPane, int presetsEntryIdx, int actionsEntryIdx, int boundActionIdx) // 0x801E6F60
     {
         constexpr int STR_BASE_Y    = 22;
         constexpr int STR_OFFSET_Y  = 20;
@@ -260,7 +260,7 @@ namespace Silent::Game
         POLY_G4* poly;
 
         // Draw entry strings.
-        for (i = 0; i < ControllerMenuState_Count; i++)
+        for (i = 0; i < BindingsMenuState_Count; i++)
         {
             Gfx_StringPositionSet(24, STR_BASE_Y + (i * STR_OFFSET_Y));
             Gfx_StringDraw(PRESETS_PANE_ENTRY_STR_KEYS[i], 20);
@@ -295,7 +295,7 @@ namespace Silent::Game
                 // Draw button icon.
                 if (i != boundActionIdx)
                 {
-                    //Options_ControllerMenu_ButtonIconsDraw(ICON_OFFSET_X, strYPos - 114, *contConfig);
+                    //Options_BindingsMenu_ButtonIconsDraw(ICON_OFFSET_X, strYPos - 114, *contConfig);
                 }
 
                 if (i == actionsEntryIdx)

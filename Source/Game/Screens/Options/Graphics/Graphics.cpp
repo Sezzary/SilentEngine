@@ -25,7 +25,7 @@ namespace Silent::Game
     {
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_FULLSCREEN,
             .ConfigStringKeys =
             {
@@ -40,7 +40,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_FRAME_RATE,
             .ConfigStringKeys =
             {
@@ -51,7 +51,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_ASPECT_RATIO,
             .ConfigStringKeys =
             {
@@ -62,7 +62,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_RENDER_SCALE,
             .ConfigStringKeys =
             {
@@ -73,7 +73,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_TEXTURE_FILTER,
             .ConfigStringKeys =
             {
@@ -83,7 +83,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_TEXT_QUALITY,
             .ConfigStringKeys =
             {
@@ -93,7 +93,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_LIGHTING,
             .ConfigStringKeys =
             {
@@ -103,7 +103,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_ANTIALIASING,
             .ConfigStringKeys =
             {
@@ -114,7 +114,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_DITHERING_SCALE,
             .ConfigStringKeys =
             {
@@ -125,7 +125,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_AMBIENT_OCCLUSION,
             .ConfigStringKeys =
             {
@@ -135,7 +135,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_VERTEX_JITTER,
             .ConfigStringKeys =
             {
@@ -145,7 +145,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_FILM_FRAIN,
             .ConfigStringKeys =
             {
@@ -155,7 +155,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_VIGNETTE,
             .ConfigStringKeys =
             {
@@ -165,7 +165,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::ArrowConfig,
+            .Type             = MenuEntryType::List,
             .EntryStringKey   = KEY_GRAPHICS_MENU_CRT_FILTER,
             .ConfigStringKeys =
             {

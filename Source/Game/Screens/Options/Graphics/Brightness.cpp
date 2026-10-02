@@ -24,7 +24,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    static void Options_BrightnessMenu_LinesDraw(int brightness)
+    static void SubmitLines(int brightness)
     {
         constexpr int LINE_COUNT = 20;
 
@@ -137,7 +137,7 @@ namespace Silent::Game
         Gfx_StringDraw(translator(KEY_BRIGHT_MENU_PROMPT));
 
         // Submit vertical lines.
-        Options_BrightnessMenu_LinesDraw(options->BrightnessLevel);
+        SubmitLines(options->BrightnessLevel);
 
         // Submit entry string.
         Gfx_StringPositionSet(ENTRY_STR_POS.x, ENTRY_STR_POS.y);

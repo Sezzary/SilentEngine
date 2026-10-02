@@ -2,7 +2,7 @@
 
 #include "Game/Common.h"
 #include "Game/Screens/Options/Graphics/Brightness.h"
-#include "Game/Screens/Options/Controller.h"
+#include "Game/Screens/Options/Input/Bindings.h"
 #include "Game/Screens/Options/MenuGraphics.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
 
@@ -19,11 +19,11 @@ namespace Silent::Game
         OptionsMenuState_Leave,
 
         OptionsMenuState_Brightness,
-        OptionsMenuState_Controller,
+        OptionsMenuState_Bindings,
         OptionsMenuState_EnterBrightness,
-        OptionsMenuState_EnterController,
+        OptionsMenuState_EnterBindings,
         OptionsMenuState_LeaveBrightness,
-        OptionsMenuState_LeaveController,
+        OptionsMenuState_LeaveBindings,
 
         OptionsMenuState_EnterGraphics,
         OptionsMenuState_Graphics,

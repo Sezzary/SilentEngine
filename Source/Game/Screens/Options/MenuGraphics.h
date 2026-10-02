@@ -5,17 +5,11 @@
 
 namespace Silent::Game
 {
-    /** @brief Draws a BGM volume bar in the main options menu. */
-    void OptionsMenu_BgmVolumeBarDraw();
-
-    /** @brief Draws an SFX volume bar in the main options menu. */
-    void OptionsMenu_SfxVolumeBarDraw();
-
-    /** @brief Draws a volume bar.
+    /** @brief Draws a notched bar.
      *
-     * Called by `OptionsMenu_BgmVolumeBarDraw` and `OptionsMenu_SfxVolumeBarDraw`.
+     * @param activeCount Active notch count.
      */
-    void OptionsMenu_VolumeBarDraw(bool isSfx, int vol);
+    void OptionsMenu_BarDraw(int activeCount);
 
     /** @brief Draws the heading and all listed entries in the main options menu.
      *

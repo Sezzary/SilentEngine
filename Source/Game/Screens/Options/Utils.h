@@ -8,8 +8,9 @@ namespace Silent::Game
     enum class MenuEntryType
     {
         Submenu,
-        ArrowConfig,
-        BarConfig
+        Boolean, // @todo Use to simplify some list entries.
+        List,
+        Bar
     };
 
     /** @brief Menu entry data. */

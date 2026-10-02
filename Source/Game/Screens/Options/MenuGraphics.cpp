@@ -10,6 +10,7 @@
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
+#include "Game/Screens/Options/Utils.h"
 #include "Utils/Translator.h"
 
 using namespace Silent::Assets;
@@ -181,7 +182,7 @@ namespace Silent::Game
         // @todo Widths are wrong.
         // @todo Account for scrolling.
         // Set active selection highlight position references.
-        if (g_OptionsMenu_SelectionHighlightTimer == 0)
+        if (g_OptionsMenu_SelectionHighlightTimer == Q12(0.0f))
         {
             int entryIdxFrom = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
             int entryIdxTo   = g_OptionsMenu_SelectedEntry     - g_OptionsMenu_VisibleEntriesStartIdx;
@@ -192,8 +193,9 @@ namespace Silent::Game
                                               LINE_BASE_Y + (entryIdxTo * LINE_OFFSET_Y));
         }
 
-        // Compute sine-based interpolation alpha.
-        q19_12 interpAlpha = Math_Sin(g_OptionsMenu_SelectionHighlightTimer << 7);
+        // Compute sine-based interpolation alpha. @todo Sine-based math is wrong, using linear for now.
+        //q19_12 interpAlpha = Math_Sin(g_OptionsMenu_SelectionHighlightTimer);
+        q19_12 interpAlpha = Q12_DIV(g_OptionsMenu_SelectionHighlightTimer, LINE_CURSOR_TIMER_MAX);
 
         // Draw active selection highlight.
         auto highlightLine      = s_Line2d{};

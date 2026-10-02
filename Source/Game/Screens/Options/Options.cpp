@@ -9,6 +9,7 @@
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/Sound/Sfx.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
+#include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
@@ -23,11 +24,11 @@ using namespace Silent::Input;
 
 namespace Silent::Game
 {
-    int g_OptionsMenu_SelectedEntry              = 0;
-    int g_OptionsMenu_PrevSelectedEntry          = 0;
-    int g_OptionsMenu_VisibleEntriesStartIdx     = 0;
-    int g_OptionsMenu_PrevVisibleEntriesStartIdx = 0;
-    int g_OptionsMenu_SelectionHighlightTimer    = 0;
+    int    g_OptionsMenu_SelectedEntry              = 0;
+    int    g_OptionsMenu_PrevSelectedEntry          = 0;
+    int    g_OptionsMenu_VisibleEntriesStartIdx     = 0;
+    int    g_OptionsMenu_PrevVisibleEntriesStartIdx = 0;
+    q19_12 g_OptionsMenu_SelectionHighlightTimer    = Q12(0.0f);
 
     // @deprecated
     static int g_OptionsMenu_SelectedBloodColorEntry = 0;
@@ -183,7 +184,7 @@ namespace Silent::Game
             Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
 
             g_OptionsMenu_SelectedEntry           = OptionsMenuEntry_Exit;
-            g_OptionsMenu_SelectionHighlightTimer = 0;
+            g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
         }
     }
 
@@ -244,7 +245,7 @@ namespace Silent::Game
                 g_OptionsMenu_PrevSelectedEntry       = 0;
                 g_OptionsMenu_SelectedEntry           = 0;
                 g_OptionsMenu_PrevSelectedEntry       = 0;
-                g_OptionsMenu_SelectionHighlightTimer = 0;
+                g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
                 g_OptionsMenu_BulletMultMax           = 1;
                 unlockedOptFlags                      = g_GameWork.config.extraOptionsEnabled;
                 
@@ -588,14 +589,8 @@ namespace Silent::Game
         }
 
         // Increment line move timer.
-        if ((LINE_CURSOR_TIMER_MAX - 1) < g_OptionsMenu_SelectionHighlightTimer)
-        {
-            g_OptionsMenu_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
-        }
-        else
-        {
-            g_OptionsMenu_SelectionHighlightTimer += 2;
-        }
+        g_OptionsMenu_SelectionHighlightTimer = CLAMP(g_OptionsMenu_SelectionHighlightTimer + g_DeltaTime,
+                                                      Q12(0.0f), Q12(1.0f));
 
         if (g_OptionsMenu_SelectionHighlightTimer != LINE_CURSOR_TIMER_MAX)
         {
@@ -618,14 +613,14 @@ namespace Silent::Game
         {
             Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
-            g_OptionsMenu_SelectionHighlightTimer = 0;
+            g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
             g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + (OptionsMenuEntry_Count - 1)) % OptionsMenuEntry_Count;
         }
         if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
         {
             Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
-            g_OptionsMenu_SelectionHighlightTimer = 0;
+            g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
             g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + 1) % OptionsMenuEntry_Count;
         }
 
@@ -782,7 +777,7 @@ namespace Silent::Game
         {
             Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
 
-            g_OptionsMenu_SelectionHighlightTimer = 0;
+            g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
             g_OptionsMenu_SelectedEntry           = OptionsMenuEntry_Exit;
         }
     }
@@ -802,14 +797,8 @@ namespace Silent::Game
         }
 
         // Increment line move timer.
-        if ((LINE_CURSOR_TIMER_MAX - 1) < g_OptionsMenu_SelectionHighlightTimer)
-        {
-            g_OptionsMenu_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
-        }
-        else
-        {
-            g_OptionsMenu_SelectionHighlightTimer++;
-        }
+        g_OptionsMenu_SelectionHighlightTimer = CLAMP(g_OptionsMenu_SelectionHighlightTimer + g_DeltaTime,
+                                                      Q12(0.0f), Q12(1.0f));
 
         if (g_OptionsMenu_SelectionHighlightTimer == LINE_CURSOR_TIMER_MAX)
         {
@@ -831,14 +820,14 @@ namespace Silent::Game
                 s32 var = 1;
                 Sd_SfxPlay(Sfx_Back, 0, 64);
                 g_OptionsMenu_SelectedEntry  = ((g_OptionsMenu_SelectedEntry - var) + g_OptionsMenu_EntryCount) % g_OptionsMenu_EntryCount;
-                g_OptionsMenu_SelectionHighlightTimer = 0;
+                g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
             }
             if (g_Controller0->buttonFlags.pulsed & ControllerFlag_LStickHighDown)
             {
                 Sd_SfxPlay(Sfx_Back, 0, 64);
                 g_OptionsMenu_SelectedEntry++;
                 g_OptionsMenu_SelectedEntry  = g_OptionsMenu_SelectedEntry % g_OptionsMenu_EntryCount;
-                g_OptionsMenu_SelectionHighlightTimer = 0;
+                g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
             }
 
             // Handle config change.

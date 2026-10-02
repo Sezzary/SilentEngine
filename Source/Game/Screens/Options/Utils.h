@@ -2,6 +2,8 @@
 
 namespace Silent::Game
 {
+    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(1 / 8.0f);
+
     /** @brief Menu entry types. */
     enum class MenuEntryType
     {

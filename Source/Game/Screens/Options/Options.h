@@ -103,11 +103,11 @@ namespace Silent::Game
         BloodColor_Black  = 11
     };
 
-    extern int g_OptionsMenu_SelectedEntry;
-    extern int g_OptionsMenu_PrevSelectedEntry;
-    extern int g_OptionsMenu_VisibleEntriesStartIdx;
-    extern int g_OptionsMenu_PrevVisibleEntriesStartIdx;
-    extern int g_OptionsMenu_SelectionHighlightTimer;
+    extern int    g_OptionsMenu_SelectedEntry;
+    extern int    g_OptionsMenu_PrevSelectedEntry;
+    extern int    g_OptionsMenu_VisibleEntriesStartIdx;
+    extern int    g_OptionsMenu_PrevVisibleEntriesStartIdx;
+    extern q19_12 g_OptionsMenu_SelectionHighlightTimer;
 
     /** @brief Options menu game state handler. */
     void GameState_Options_Update();

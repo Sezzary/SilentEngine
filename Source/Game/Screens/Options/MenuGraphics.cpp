@@ -187,12 +187,12 @@ namespace Silent::Game
                 const auto& binding = std::get<MenuEntryEnumBinding>(entry.Binding);
 
                 int configIdx = binding.GetIdx();
-                if (configIdx > 0 && configIdx < binding.ConfigStringKeys.size())
+                if (configIdx >= 0 && configIdx < binding.ConfigStringKeys.size())
                 {
-                    const auto& configStrKey = binding.ConfigStringKeys[configIdx];
+                    const auto& configKey = binding.ConfigStringKeys[configIdx];
 
                     bool isSelected = i == g_OptionsMenu_SelectedEntry;
-                    OptionsMenu_DrawConfigString(pos + CONFIG_OFFSET, configStrKey, isSelected);
+                    OptionsMenu_DrawConfigKey(pos + CONFIG_OFFSET, configKey, isSelected);
                 }
             }
             else if (std::holds_alternative<MenuEntryBarBinding>(entry.Binding))

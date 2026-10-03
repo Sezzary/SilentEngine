@@ -13,78 +13,64 @@ namespace Silent::Game
     {
         MenuEntry
         {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_INPUT_MENU_BINDINGS
+            .EntryStringKey = KEY_INPUT_MENU_BINDINGS,
+            .Binding        = MenuEntrySubmenuBinding{}
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_INPUT_MENU_ENABLE_VIBRATION,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
+            .EntryStringKey = KEY_INPUT_MENU_ENABLE_VIBRATION,
+            .Binding        = BindMenuEntryBool(&Options::EnableVibration)
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_INPUT_MENU_MOUSE_SENSITIVITY,
-            .ConfigStringKeys =
-            {
-                "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "10",
-                "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"
-            }
+            .EntryStringKey = KEY_INPUT_MENU_MOUSE_SENSITIVITY,
+            .Binding        = BindMenuEntryRange(&Options::MouseSensitivity,
+                                                 MOUSE_SENSITIVITY_MIN, MOUSE_SENSITIVITY_MAX)
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_INPUT_MENU_WEAPON_CONTROL,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_INPUT_MENU_WEAPON_CONTROL,
+            .Binding        = BindMenuEntryEnum(&Options::WeaponControl,
             {
                 KEY_INPUT_MENU_WEAPON_CONTROL_SWITCH,
                 KEY_INPUT_MENU_WEAPON_CONTROL_PRESS
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_INPUT_MENU_VIEW_CONTROL,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_INPUT_MENU_VIEW_CONTROL,
+            .Binding        = BindMenuEntryEnum(&Options::ViewControl,
             {
                 KEY_INPUT_MENU_VIEW_CONTROL_NORMAL,
                 KEY_INPUT_MENU_VIEW_CONTROL_REVERSE
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_INPUT_MENU_RETREAT_TURN_CONTROL,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_INPUT_MENU_RETREAT_TURN_CONTROL,
+            .Binding        = BindMenuEntryEnum(&Options::RetreatTurnControl,
             {
                 KEY_INPUT_MENU_RETREAT_TURN_CONTROL_NORMAL,
                 KEY_INPUT_MENU_RETREAT_TURN_CONTROL_REVERSE
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_INPUT_MENU_WALK_RUN_CONTROL,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_INPUT_MENU_WALK_RUN_CONTROL,
+            .Binding        = BindMenuEntryEnum(&Options::WalkRunControl,
             {
                 KEY_INPUT_MENU_WALK_RUN_CONTROL_NORMAL,
                 KEY_INPUT_MENU_WALK_RUN_CONTROL_REVERSE
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_INPUT_MENU_VIEW_MODE,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_INPUT_MENU_VIEW_MODE,
+            .Binding        = BindMenuEntryEnum(&Options::ViewMode,
             {
                 KEY_INPUT_MENU_VIEW_MODE_NORMAL,
                 KEY_INPUT_MENU_VIEW_MODE_SELF_VIEW
-            }
+            })
         }
     };
 

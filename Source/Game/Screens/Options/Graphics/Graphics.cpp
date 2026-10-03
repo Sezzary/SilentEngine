@@ -13,10 +13,12 @@
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/MenuGraphics.h"
 #include "Game/Screens/Options/Utils.h"
+#include "Services/Options.h"
 #include "Utils/Translator.h"
 
 using namespace Silent::Assets;
 using namespace Silent::Input;
+using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Game
@@ -25,153 +27,115 @@ namespace Silent::Game
     {
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_FULLSCREEN,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
+            .EntryStringKey = KEY_GRAPHICS_MENU_FULLSCREEN,
+            .Binding        = BindMenuEntryBool(&Options::EnableFullscreen)
         },
         MenuEntry
         {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_GRAPHICS_MENU_BRIGHTNESS_LEVEL
+            .EntryStringKey = KEY_GRAPHICS_MENU_BRIGHTNESS_LEVEL,
+            .Binding        = MenuEntrySubmenuBinding{}
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_FRAME_RATE,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_GRAPHICS_MENU_FRAME_RATE,
+            .Binding        = BindMenuEntryEnum(&Options::FrameRate,
             {
                 KEY_GRAPHICS_MENU_FRAME_RATE_30_FPS,
                 KEY_GRAPHICS_MENU_FRAME_RATE_60_FPS,
                 KEY_GRAPHICS_MENU_FRAME_RATE_UNCAPPED
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_ASPECT_RATIO,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_GRAPHICS_MENU_ASPECT_RATIO,
+            .Binding        = BindMenuEntryEnum(&Options::AspectRatio,
             {
                 KEY_GRAPHICS_MENU_ASPECT_RATIO_RETRO,
                 KEY_GRAPHICS_MENU_ASPECT_RATIO_WIDE,
                 KEY_GRAPHICS_MENU_ASPECT_RATIO_NATIVE
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_RENDER_SCALE,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_GRAPHICS_MENU_RENDER_SCALE,
+            .Binding        = BindMenuEntryEnum(&Options::RenderScale,
             {
                 KEY_GRAPHICS_MENU_RENDER_SCALE_RETRO,
                 KEY_GRAPHICS_MENU_RENDER_SCALE_RETRO_2X,
                 KEY_GRAPHICS_MENU_RENDER_SCALE_NATIVE
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_TEXTURE_FILTER,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_GRAPHICS_MENU_TEXTURE_FILTER,
+            .Binding        = BindMenuEntryEnum(&Options::TextureFilter,
             {
                 KEY_GRAPHICS_MENU_TEXTURE_FILTER_NEAREST,
                 KEY_GRAPHICS_MENU_TEXTURE_FILTER_LINEAR
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_TEXT_QUALITY,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_GRAPHICS_MENU_TEXT_QUALITY,
+            .Binding        = BindMenuEntryEnum(&Options::TextQuality,
             {
                 KEY_GRAPHICS_MENU_TEXT_QUALITY_RETRO,
                 KEY_GRAPHICS_MENU_TEXT_QUALITY_MODERN
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_LIGHTING,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_GRAPHICS_MENU_LIGHTING,
+            .Binding        = BindMenuEntryEnum(&Options::Lighting,
             {
                 KEY_GRAPHICS_MENU_LIGHTING_RETRO,
                 KEY_GRAPHICS_MENU_LIGHTING_MODERN
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_ANTIALIASING,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_GRAPHICS_MENU_ANTIALIASING,
+            .Binding        = BindMenuEntryEnum(&Options::Antialiasing,
             {
                 KEY_GRAPHICS_MENU_ANTIALIASING_OFF,
                 KEY_GRAPHICS_MENU_ANTIALIASING_LOW,
                 KEY_GRAPHICS_MENU_ANTIALIASING_HIGH
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_DITHERING_SCALE,
-            .ConfigStringKeys =
+            .EntryStringKey = KEY_GRAPHICS_MENU_DITHERING_SCALE,
+            .Binding        = BindMenuEntryEnum(&Options::DitheringScale,
             {
                 KEY_GRAPHICS_MENU_DITHERING_SCALE_RETRO,
                 KEY_GRAPHICS_MENU_DITHERING_SCALE_RETRO_2X,
                 KEY_GRAPHICS_MENU_DITHERING_SCALE_NATIVE
-            }
+            })
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_AMBIENT_OCCLUSION,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
+            .EntryStringKey = KEY_GRAPHICS_MENU_AMBIENT_OCCLUSION,
+            .Binding        = BindMenuEntryBool(&Options::EnableAmbientOcclusion)
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_VERTEX_JITTER,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
+            .EntryStringKey = KEY_GRAPHICS_MENU_VERTEX_JITTER,
+            .Binding        = BindMenuEntryBool(&Options::EnableVertexJitter)
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_FILM_FRAIN,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
+            .EntryStringKey = KEY_GRAPHICS_MENU_FILM_FRAIN,
+            .Binding        = BindMenuEntryBool(&Options::EnableFilmGrain)
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_VIGNETTE,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
+            .EntryStringKey = KEY_GRAPHICS_MENU_VIGNETTE,
+            .Binding        = BindMenuEntryBool(&Options::EnableVignette)
         },
         MenuEntry
         {
-            .Type             = MenuEntryType::List,
-            .EntryStringKey   = KEY_GRAPHICS_MENU_CRT_FILTER,
-            .ConfigStringKeys =
-            {
-                KEY_OPTIONS_MENU_ON,
-                KEY_OPTIONS_MENU_OFF
-            }
+            .EntryStringKey = KEY_GRAPHICS_MENU_CRT_FILTER,
+            .Binding        = BindMenuEntryBool(&Options::EnableCrtFilter)
         }
     };
 
@@ -181,8 +145,8 @@ namespace Silent::Game
         const auto& translator = g_App.GetTranslator();
 
         // Draw graphics.
-        auto widths = OptionsMenu_EntriesDraw(KEY_GRAPHICS_MENU_HEADING, ENTRIES);
-        OptionsMenu_SelectionHighlightDraw(widths);
+        auto widths = OptionsMenu_DrawEntries(KEY_GRAPHICS_MENU_HEADING, ENTRIES);
+        OptionsMenu_DrawSelectionHighlight(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Graphics)

@@ -40,19 +40,6 @@ namespace Silent::Utils
      */
     std::string GetUtf8Substring(const std::string& str, int pos, int count);
 
-    /** @brief Gets the sign of a value.
-     *
-     * @tparam T Numeric type.
-     * @param val Value to check.
-     * @return `1` if the value is >= 0, `-1` otherwise.
-     */
-    template <typename T>
-    requires std::is_arithmetic_v<T>
-    int GetSign(T val)
-    {
-        return (val >= 0) ? 1 : -1;
-    }
-
     /** @brief Finds a read-only value associated with a given key in a hash map.
      *
      * @tparam TKey Key type.

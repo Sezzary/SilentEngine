@@ -269,7 +269,8 @@ namespace Silent::Debug
                 }
 
                 // `Mouse sensitivity` slider.
-                if (ImGui::SliderInt("Mouse sensitivity", &options->MouseSensitivity, 1, MOUSE_SENSITIVITY_MAX))
+                if (ImGui::SliderInt("Mouse sensitivity", &options->MouseSensitivity,
+                                     MOUSE_SENSITIVITY_MIN, MOUSE_SENSITIVITY_MAX))
                 {
                     isOptChanged = true;
                 }

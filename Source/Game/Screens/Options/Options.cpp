@@ -43,33 +43,33 @@ namespace Silent::Game
     {
         MenuEntry
         {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_EXIT
+            .EntryStringKey = KEY_OPTIONS_MENU_EXIT,
+            .Binding        = MenuEntrySubmenuBinding{}
         },
         MenuEntry
         {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_GRAPHICS
+            .EntryStringKey = KEY_OPTIONS_MENU_GRAPHICS,
+            .Binding        = MenuEntrySubmenuBinding{}
         },
         MenuEntry
         {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_GAMEPLAY
+            .EntryStringKey = KEY_OPTIONS_MENU_GAMEPLAY,
+            .Binding        = MenuEntrySubmenuBinding{}
         },
         MenuEntry
         {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_INPUT
+            .EntryStringKey = KEY_OPTIONS_MENU_INPUT,
+            .Binding        = MenuEntrySubmenuBinding{}
         },
         MenuEntry
         {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_ENHANCEMENTS
+            .EntryStringKey = KEY_OPTIONS_MENU_ENHANCEMENTS,
+            .Binding        = MenuEntrySubmenuBinding{}
         },
         MenuEntry
         {
-            .Type           = MenuEntryType::Submenu,
-            .EntryStringKey = KEY_OPTIONS_MENU_SYSTEM
+            .EntryStringKey = KEY_OPTIONS_MENU_SYSTEM,
+            .Binding        = MenuEntrySubmenuBinding{}
         },
     };
 
@@ -78,9 +78,9 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Submit graphics.
-        auto widths = OptionsMenu_EntriesDraw(KEY_OPTIONS_MENU_HEADING, ENTRIES);
+        auto widths = OptionsMenu_DrawEntries(KEY_OPTIONS_MENU_HEADING, ENTRIES);
         //OptionsMenu_ConfigDraw();
-        OptionsMenu_SelectionHighlightDraw(widths);
+        OptionsMenu_DrawSelectionHighlight(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         // Block user input if transitioning to new menu.
@@ -406,7 +406,7 @@ namespace Silent::Game
         constexpr int LINE_CURSOR_TIMER_MAX = 8;
         constexpr int SOUND_VOL_STEP        = 8;
 
-        static const auto ENTRIES = std::vector<MenuEntry>
+        /*static const auto ENTRIES = std::vector<MenuEntry>
         {
             MenuEntry
             {
@@ -555,14 +555,14 @@ namespace Silent::Game
                     "x6"
                 }
             }
-        };
+        };*/
 
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        auto widths = OptionsMenu_EntriesDraw(KEY_OPTIONS_MENU_HEADING, ENTRIES);
+        //auto widths = OptionsMenu_DrawEntries(KEY_OPTIONS_MENU_HEADING, ENTRIES);
         OptionsMenu_ConfigDraw();
-        OptionsMenu_SelectionHighlightDraw(widths);
+        //OptionsMenu_DrawSelectionHighlight(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
         //OptionsMenu_BgmVolumeBarDraw();
         //OptionsMenu_SfxVolumeBarDraw();
@@ -770,9 +770,9 @@ namespace Silent::Game
     void Options_ExtraOptionsMenu_Control()
     {
 /*
-        //Options_OptionsMenu_EntriesDraw();
+        //Options_OptionsMenu_DrawEntries();
         //Options_OptionsMenu_ConfigDraw();
-        //Options_OptionsMenu_SelectionHighlightDraw();
+        //Options_OptionsMenu_DrawSelectionHighlight();
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         // Block user input if transitioning to new menu.

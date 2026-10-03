@@ -17,7 +17,7 @@ namespace Silent::Game
 
     /** @brief Draws a scaling entry selection highlight in the main and extra options menus.
      *
-     * Called by `OptionsMenu_SelectionHighlightDraw`.
+     * Called by `OptionsMenu_DrawSelectionHighlight`.
      *
      * @param line 2D line for the highlight underline and shadow.
      * @param hasShadow `true` for a highlight with a shadow and a line, `false` for a line only. Always passed as `true`.

@@ -23,7 +23,43 @@ namespace Silent::Game
     int g_ExtraOptionsMenu_EntryCount;
     int g_ExtraOptionsMenu_SelectedBloodColorEntry;
 
-    void OptionsMenu_BarDraw(const Vector2i& pos, int activeCount)
+    static void OptionsMenu_DrawConfigString(const Vector2i& pos, const std::string& str, bool isSelectedEntry)
+    {
+        constexpr int ARROW_SPACE = 4;
+
+        const auto& input = g_App.GetInput();
+
+        // Submit string.
+        Gfx_StringPositionSet(pos.x, pos.y);
+        float width = Gfx_StringDraw("{M}" + str) * (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y);
+
+        // Submit arrows.
+        if (isSelectedEntry)
+        {
+            bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+            bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+
+            int arrowOffset = (int)ceilf(width * 0.5f) + ARROW_SPACE;
+            Options_Selection_ArrowDraw(pos - Vector2i(arrowOffset, 0),
+                                        SelectionArrowType::Left, isHoldingLeft && !isHoldingRight);
+            Options_Selection_ArrowDraw(pos + Vector2i(arrowOffset, 0),
+                                        SelectionArrowType::Right, isHoldingRight && !isHoldingLeft);
+        }
+    }
+
+    static void OptionsMenu_DrawConfigKey(const Vector2i& pos, const std::string& key, bool isSelectedEntry)
+    {
+        const auto& translator = g_App.GetTranslator();
+
+        OptionsMenu_DrawConfigString(pos, translator(key), isSelectedEntry);
+    }
+
+    static void OptionsMenu_DrawConfigValue(const Vector2i& pos, int val, bool isSelectedEntry)
+    {
+        OptionsMenu_DrawConfigString(pos, std::to_string(val), isSelectedEntry);
+    }
+
+    void OptionsMenu_DrawConfigBar(const Vector2i& pos, int activeCount)
     {
         constexpr int  DEPTH                = 24;
         constexpr int  NOTCH_COUNT          = 16;
@@ -85,14 +121,12 @@ namespace Silent::Game
         }
     }
 
-    std::pair<int, int> OptionsMenu_EntriesDraw(const std::string& headingStrKey,
-                                                const std::vector<MenuEntry>& entries)
+    std::pair<int, int> OptionsMenu_DrawEntries(const std::string& headingStrKey, const std::vector<MenuEntry>& entries)
     {
-        constexpr auto HEADING_STR_POS     = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
-        constexpr auto LINE_BASE           = Vector2i(64, 70);
-        constexpr auto LINE_HEIGHT         = 16;
-        constexpr int  CONFIG_OFFSET       = 185;
-        constexpr int  CONFIG_ARROW_OFFSET = 5;
+        constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
+        constexpr auto LINE_BASE       = Vector2i(64, 70);
+        constexpr auto LINE_HEIGHT     = 16;
+        constexpr auto CONFIG_OFFSET   = Vector2i(185, 0);
 
         const auto& input      = g_App.GetInput();
         const auto& translator = g_App.GetTranslator();
@@ -131,48 +165,48 @@ namespace Silent::Game
                 widths.second = (int)ceilf(width);
             }
 
-            // Submit config graphics.
-            switch (entry.Type)
+            // Submit graphics.
+            if (std::holds_alternative<MenuEntryBoolBinding>(entry.Binding))
             {
-                case MenuEntryType::List:
+                const auto& binding   = std::get<MenuEntryBoolBinding>(entry.Binding);
+                const char* configKey = binding.GetState() ? KEY_OPTIONS_MENU_ON : KEY_OPTIONS_MENU_OFF;
+
+                bool isSelected = i == g_OptionsMenu_SelectedEntry;
+                OptionsMenu_DrawConfigKey(pos + CONFIG_OFFSET, configKey, isSelected);
+            }
+            else if (std::holds_alternative<MenuEntryRangeBinding>(entry.Binding))
+            {
+                const auto& binding = std::get<MenuEntryRangeBinding>(entry.Binding);
+
+                int  configVal  = binding.GetValue();
+                bool isSelected = i == g_OptionsMenu_SelectedEntry;
+                OptionsMenu_DrawConfigValue(pos + CONFIG_OFFSET, configVal, isSelected);
+            }
+            else if (std::holds_alternative<MenuEntryEnumBinding>(entry.Binding))
+            {
+                const auto& binding = std::get<MenuEntryEnumBinding>(entry.Binding);
+
+                int configIdx = binding.GetIdx();
+                if (configIdx > 0 && configIdx < binding.ConfigStringKeys.size())
                 {
-                    if (entry.ConfigStringKeys.empty())
-                    {
-                        break;
-                    }
+                    const auto& configStrKey = binding.ConfigStringKeys[configIdx];
 
-                    // Submit config string.
-                    Gfx_StringPositionSet(pos.x + CONFIG_OFFSET, pos.y);
-                    float width = Gfx_StringDraw("{M}" + translator(entry.ConfigStringKeys[0])) *
-                                  (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y); // @todo Pass index somehow.
-
-                    // Submit arrows.
-                    if (i == g_OptionsMenu_SelectedEntry)
-                    {
-                        bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
-                        bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
-
-                        // @todo Use width correctly.
-                        int arrowOffset = ((int)ceilf(width) / 2) + CONFIG_ARROW_OFFSET;
-                        Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_OFFSET - arrowOffset, 0), 
-                                                    SelectionArrowType::Left, isHoldingLeft && !isHoldingRight);
-                        Options_Selection_ArrowDraw(pos + Vector2i(CONFIG_OFFSET + arrowOffset, 0),
-                                                    SelectionArrowType::Right, isHoldingRight && !isHoldingLeft);
-                    }
-                    break;
+                    bool isSelected = i == g_OptionsMenu_SelectedEntry;
+                    OptionsMenu_DrawConfigString(pos + CONFIG_OFFSET, configStrKey, isSelected);
                 }
-                case MenuEntryType::Bar:
-                {
-                    OptionsMenu_BarDraw(pos + CONFIG_OFFSET, 8); // @todo Pass count somehow.
-                    break;
-                }
+            }
+            else if (std::holds_alternative<MenuEntryBarBinding>(entry.Binding))
+            {
+                const auto& binding = std::get<MenuEntryBarBinding>(entry.Binding);
+
+                OptionsMenu_DrawConfigBar(pos + CONFIG_OFFSET, binding.GetValue());
             }
         }
 
         return widths;
     }
 
-    void OptionsMenu_SelectionHighlightDraw(const std::pair<int, int>& widths)
+    void OptionsMenu_DrawSelectionHighlight(const std::pair<int, int>& widths)
     {
         constexpr int  ENTRY_OFFSET_X = 25;
         constexpr auto LINE_BASE      = Vector2i(39, 72);

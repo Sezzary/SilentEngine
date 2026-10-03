@@ -12,6 +12,7 @@ namespace Silent::Services
     constexpr int SOUND_VOLUME_MAX      = 128;
     constexpr int BULLET_ADJUST_MIN     = 1;
     constexpr int BULLET_ADJUST_MAX     = 6;
+    constexpr int MOUSE_SENSITIVITY_MIN = 1;
     constexpr int MOUSE_SENSITIVITY_MAX = 20;
 
     enum class GraphicsPresetType
@@ -27,46 +28,60 @@ namespace Silent::Services
     {
         Fps30,
         Fps60,
-        Uncapped
+        Uncapped,
+
+        Count
     };
 
     enum class AspectRatioType
     {
         Retro,
         Wide,
-        Native
+        Native,
+
+        Count
     };
 
     enum class RenderScaleType
     {
         Retro,
         Retro2x,
-        Native
+        Native,
+
+        Count
     };
 
     enum class TextureFilterType
     {
         Nearest,
-        Linear
+        Linear,
+
+        Count
     };
 
     enum class TextQualityType
     {
         Retro,
-        Modern
+        Modern,
+
+        Count
     };
 
     enum class LightingType
     {
         Retro,
-        Modern
+        Modern,
+
+        Count
     };
 
     enum class AntialiasingType
     {
         None,
-        Low, /** FXAA. */
-        High /** SMAA. */
+        Low,  /** FXAA. */
+        High, /** SMAA. */
+
+        Count
     };
 
     enum class DitheringScaleType
@@ -74,13 +89,17 @@ namespace Silent::Services
         None,
         Retro,
         Retro2x,
-        Native
+        Native,
+
+        Count
     };
 
     enum class SoundType
     {
         Stereo,
-        Monaural
+        Monaural,
+
+        Count
     };
 
     enum class BloodColorType
@@ -88,37 +107,49 @@ namespace Silent::Services
         Normal,
         Green,
         Violet,
-        Black
+        Black,
+
+        Count
     };
 
     enum class WeaponControlType
     {
         Switch,
-        Press
+        Press,
+
+        Count
     };
 
     enum class ControlInversionType
     {
         Normal,
-        Reverse
+        Reverse,
+
+        Count
     };
 
     enum class ViewMode
     {
         Normal,
-        SelfView
+        SelfView,
+
+        Count
     };
 
     enum class PaperMapQualityType
     {
         Retro,
         Modern,
+
+        Count
     };
 
     enum class DialogPauseType
     {
         Retro,
-        Refined
+        Refined,
+
+        Count
     };
 
     /** @brief User options configuration data. */
@@ -232,7 +263,7 @@ namespace Silent::Services
         // Getters
         // ========
 
-        /** @brief Gets the back (staging) options configuration. */
+        /** @brief Gets the front (staging) options configuration. */
         Options& GetFront();
 
         /** @brief Gets the back (reading) options configuration. */

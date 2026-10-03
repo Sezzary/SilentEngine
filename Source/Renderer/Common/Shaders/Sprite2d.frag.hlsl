@@ -44,6 +44,6 @@ float4 main(Input input) : SV_Target
     alpha       = lerp(alpha, step(0.5f, alpha), float(IsFastAlpha));
 
     // Compute final color.
-    float3 finalColor = input.Color.rgb * texColor.rgb;
+    float3 finalColor = (input.Color.rgb * texColor.rgb) * input.Color.a;
     return float4(finalColor, alpha);
 }

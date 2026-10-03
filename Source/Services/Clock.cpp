@@ -20,6 +20,11 @@ namespace Silent::Services
         return std::min(_ticks, TICKS_MAX);
     }
 
+    const Performance& ClockManager::GetPerformance() const
+    {
+        return _performance;
+    }
+
     bool ClockManager::TestInterval(int intervalTicks, int offsetTicks) const
     {
         intervalTicks = std::max(intervalTicks, 0);
@@ -40,6 +45,9 @@ namespace Silent::Services
     {
         _ticks              = 0;
         _prevUptimeDuration = GetUptimeMicroseconds();
+
+        _fpses.reserve(TICKS_PER_SECOND);
+        _durations.reserve(TICKS_PER_SECOND);
     }
 
     void ClockManager::Update()
@@ -54,6 +62,56 @@ namespace Silent::Services
         if (_ticks != 0)
         {
             _prevUptimeDuration += _ticks * TICK_INTERVAL_DURATION;
+        }
+    }
+
+    void ClockManager::UpdatePerformance()
+    {
+        static int ticks = 0;
+        ticks++;
+
+        // Compute tick duration.
+        uint64 dur = GetUptimeMicroseconds() - _prevUptimeDuration;
+        _durations.push_back(dur);
+
+        // Compute instantaneous FPS for current tick.
+        if (dur > 0)
+        {
+            float fps = (float)TICKS_PER_SECOND / ((float)dur / (float)MICROSEC_PER_SEC);
+            if (fps > TICKS_PER_SECOND)
+            {
+                fps = TICKS_PER_SECOND;
+            }
+
+            _fpses.push_back(fps);
+        }
+        else
+        {
+            _fpses.push_back(TICKS_PER_SECOND);
+        }
+
+        // Update performance stats.
+        if (ticks >= TICKS_PER_SECOND)
+        {
+            // Update average FPS.
+            _performance.Fps = 0.0f;
+            for (float fps : _fpses)
+            {
+                _performance.Fps += fps;
+            }
+            _performance.Fps /= (float)TICKS_PER_SECOND;
+
+            // Update average frame time.
+            _performance.FrameTime = 0;
+            for (uint64 dur : _durations)
+            {
+                _performance.FrameTime += dur;
+            }
+            _performance.FrameTime /= TICKS_PER_SECOND;
+
+            ticks = 0;
+            _fpses.clear();
+            _durations.clear();
         }
     }
 

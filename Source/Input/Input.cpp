@@ -461,7 +461,7 @@ namespace Silent::Input
                     action.Update(state);
                     if (state != 0.0f)
                     {
-                        _states.Device.HasUserActionInput;
+                        _states.Device.HasUserActionInput = true;
                     }
                 }
             }

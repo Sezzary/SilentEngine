@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Input/Input.h"
+#include "Utils/DoubleBuffer.h"
 
 using namespace Silent::Input;
+using namespace Silent::Utils;
 
 namespace Silent::Services
 {
@@ -10,6 +12,7 @@ namespace Silent::Services
     constexpr int SOUND_VOLUME_MAX      = 128;
     constexpr int BULLET_ADJUST_MIN     = 1;
     constexpr int BULLET_ADJUST_MAX     = 6;
+    constexpr int MOUSE_SENSITIVITY_MIN = 1;
     constexpr int MOUSE_SENSITIVITY_MAX = 20;
 
     enum class GraphicsPresetType
@@ -24,46 +27,61 @@ namespace Silent::Services
     enum class FrameRateType
     {
         Fps30,
-        Fps60
+        Fps60,
+        Uncapped,
+
+        Count
     };
 
     enum class AspectRatioType
     {
         Retro,
         Wide,
-        Native
+        Native,
+
+        Count
     };
 
     enum class RenderScaleType
     {
         Retro,
         Retro2x,
-        Native
+        Native,
+
+        Count
     };
 
     enum class TextureFilterType
     {
         Nearest,
-        Linear
+        Linear,
+
+        Count
     };
 
     enum class TextQualityType
     {
         Retro,
-        Modern
+        Modern,
+
+        Count
     };
 
     enum class LightingType
     {
         Retro,
-        Modern
+        Modern,
+
+        Count
     };
 
     enum class AntialiasingType
     {
         None,
-        Low, /** FXAA. */
-        High /** SMAA. */
+        Low,  /** FXAA. */
+        High, /** SMAA. */
+
+        Count
     };
 
     enum class DitheringScaleType
@@ -71,13 +89,17 @@ namespace Silent::Services
         None,
         Retro,
         Retro2x,
-        Native
+        Native,
+
+        Count
     };
 
     enum class SoundType
     {
         Stereo,
-        Monaural
+        Monaural,
+
+        Count
     };
 
     enum class BloodColorType
@@ -85,37 +107,49 @@ namespace Silent::Services
         Normal,
         Green,
         Violet,
-        Black
-    };
+        Black,
 
-    enum class ControlInversionType
-    {
-        Normal,
-        Reverse
+        Count
     };
 
     enum class WeaponControlType
     {
         Switch,
-        Press
+        Press,
+
+        Count
+    };
+
+    enum class ControlInversionType
+    {
+        Normal,
+        Reverse,
+
+        Count
     };
 
     enum class ViewMode
     {
         Normal,
-        SelfView
+        SelfView,
+
+        Count
     };
 
     enum class PaperMapQualityType
     {
         Retro,
         Modern,
+
+        Count
     };
 
     enum class DialogPauseType
     {
         Retro,
-        Refined
+        Refined,
+
+        Count
     };
 
     /** @brief User options configuration data. */
@@ -188,6 +222,7 @@ namespace Silent::Services
         // Enhancements
         // =============
 
+        bool                SkipLogos       = false;
         PaperMapQualityType PaperMapQuality = PaperMapQualityType::Retro;
         DialogPauseType     DialogPause     = DialogPauseType::Retro;
 
@@ -203,7 +238,6 @@ namespace Silent::Services
 
         bool EnableToasts      = false;
         bool EnableParallelism = false;
-        bool EnableLogos       = false;
     };
 
     /** @brief User options configuration manager. */
@@ -214,7 +248,8 @@ namespace Silent::Services
         // Fields
         // =======
 
-        Options _options = {};
+        DoubleBuffer<Options> _options           = {};
+        bool                  _hasCreatedNewFile = false;
 
     public:
         // =============
@@ -223,6 +258,16 @@ namespace Silent::Services
 
         /** @brief Creates a default uninitialized instance. */
         OptionsManager() = default;
+
+        // ========
+        // Getters
+        // ========
+
+        /** @brief Gets the front (staging) options configuration. */
+        Options& GetFront();
+
+        /** @brief Gets the back (reading) options configuration. */
+        const Options& GetBack() const;
 
         // ========
         // Setters
@@ -250,10 +295,20 @@ namespace Silent::Services
         void SetDefaultSystemOptions();
 
         // ==========
+        // Inquirers
+        // ==========
+
+        /** @brief Checks if a new options JSON had to be created on the system when attempting a load.
+         *
+         * @return `true` if a new file was created, `false` otherwise.
+         */
+        bool HasCreatedNewFile() const;
+
+        // ==========
         // Utilities
         // ==========
 
-        /** @brief Initializes the options configurations to startup defaults, taking the build mode into account. */
+        /** @brief Initializes the options configuration to startup defaults, taking the build mode into account. */
         void Initialize();
 
         /** @brief Saves the current options configuration to a JSON file on the platforms's workspace folder. */
@@ -262,10 +317,14 @@ namespace Silent::Services
         /** @brief Loads the options configuration from a JSON file on the platforms's workspace folder. */
         void Load();
 
+        /** @brief Flushes the double buffer containing the options configuration . */
+        void Update();
+
         // ==========
         // Operators
         // ==========
 
+        // @todo Deprecated. Must use getters for thread safety.
         const Options* operator->() const;
         Options*       operator->();
 
@@ -273,6 +332,12 @@ namespace Silent::Services
         // ========
         // Helpers
         // ========
+
+        /** @brief Gets the path of the options JSON.
+         *
+         * @return Options JSON path.
+         */
+        stdfs::path GetFilePath() const;
 
         /** @brief Resets all configuration options to defaults.
          *

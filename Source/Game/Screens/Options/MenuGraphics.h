@@ -1,43 +1,36 @@
 #pragma once
 
 #include "Game/Common.h"
+#include "Game/Screens/Options/Utils.h"
 
 namespace Silent::Game
 {
-    /** @brief Draws a BGM volume bar in the main options menu. */
-    void Options_MainOptionsMenu_BgmVolumeBarDraw();
-
-    /** @brief Draws an SFX volume bar in the main options menu. */
-    void Options_MainOptionsMenu_SfxVolumeBarDraw();
-
-    /** @brief Draws a volume bar.
+    /** @brief Submits a notched bar to draw.
      *
-     * Called by `Options_MainOptionsMenu_BgmVolumeBarDraw` and `Options_MainOptionsMenu_SfxVolumeBarDraw`.
+     * @param activeCount Active notch count.
      */
-    void Options_MainOptionsMenu_VolumeBarDraw(bool isSfx, uchar vol);
+    void OptionsMenu_DrawConfigBar(int activeCount);
 
-    /** @brief Draws the heading and all listed entry strings in the main options menu. */
-    void Options_MainOptionsMenu_EntryStringsDraw();
-
-    /** @brief Draws the heading and all listed entry strings in the extra options menu. */
-    void Options_ExtraOptionsMenu_EntryStringsDraw();
-
-    /** @brief Draws gold bullet points next to the listed entries and a highlight indicating the
-     * selected entry in the main options menu.
+    /** @brief Submits the heading and all listed entries to draw in the main options menu.
+     *
+     * @param headingStrKey Heading string translation key.
+     * @param entries Entries to draw.
+     * @return Previous and current entry string widths in retro pixels.
      */
-    void Options_MainOptionsMenu_SelectionHighlightDraw();
+    std::pair<int, int> OptionsMenu_DrawEntries(const std::string& headingStrKey, const std::vector<MenuEntry>& entries);
 
-    /** @brief Draws gold bullet points next to the listed entries and a highlight indicating the
-     * selected entry in the extra options menu.
+    /** @brief Submits gold bullet points next to the listed entries and a highlight indicating the selected entry to
+     * draw in options menus.
+     *
+     * @param widths Previous and current entry string widths in retro pixels.
      */
-    void Options_ExtraOptionsMenu_SelectionHighlightDraw();
+    void OptionsMenu_DrawSelectionHighlight(const std::pair<int, int>& widths);
 
-    /** @brief Draws the background vignette of Harry in the main and extra options menus. */
-    void Options_Menu_VignetteDraw();
-
+    // @deprecated
     /** @brief Draws configuration strings and blue arrows to the right of the listed entries in the main options menu. */
-    void Options_MainOptionsMenu_ConfigDraw();
+    void OptionsMenu_ConfigDraw();
 
+    // @deprecated
     /** @brief Draws configuration strings and blue arrows to the right of the listed entries in the extra options menu. */
     void Options_ExtraOptionsMenu_ConfigDraw();
 }

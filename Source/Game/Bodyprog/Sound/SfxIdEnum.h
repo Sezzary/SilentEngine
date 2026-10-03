@@ -419,6 +419,6 @@ namespace Silent::Game
         Sfx_XaAudio725 = 4821,
         Sfx_XaAudio726 = 4822,
 
-        Sfx_Hack = NO_VALUE, // @hack Force enum to be treated as `s32`.
+        Sfx_Count
     };
 }

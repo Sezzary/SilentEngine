@@ -24,18 +24,21 @@ namespace Silent::Utils
      */
     char* CopyString(const char src[], int size);
 
-    /** @brief Gets the sign of a value.
+    /** @brief Gets the UTF-8 code points in a string.
      *
-     * @tparam T Numeric type.
-     * @param val Value to check.
-     * @return `1` if the value is >= 0, `-1` otherwise.
+     * @param str String to parse.
+     * @return UTF-8 code points.
      */
-    template <typename T>
-    requires std::is_arithmetic_v<T>
-    int GetSign(T val)
-    {
-        return (val >= 0) ? 1 : -1;
-    }
+    std::vector<char32> GetUtf8CodePoints(const std::string& str);
+
+    /** @brief Slices a UTF-8 string.
+     *
+     * @param str String to slice.
+     * @param pos Index of the first code point.
+     * @param count Number of code points to slice.
+     * @return Sliced UTF-8 string.
+     */
+    std::string GetUtf8Substring(const std::string& str, int pos, int count);
 
     /** @brief Finds a read-only value associated with a given key in a hash map.
      *

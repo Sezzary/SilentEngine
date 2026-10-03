@@ -30,38 +30,34 @@ namespace Silent::Game
         MapMsgIdx_NowMaking         = 14  /** @unused? */
     };
 
-    /** @brief Map message states.
-     *
-     * Return states used by `MapMsg_Draw`.
-     */
+    /** @brief Map message states. Returned by `MapMsg_Draw`. */
     enum e_MapMsgState
     {
         MapMsgState_Finish       = NO_VALUE, /** Initial setup complete, cutscene timer complete, or input to continue from user received. */
         MapMsgState_Idle         = 0,        /** Continue displaying message. */
-        MapMsgState_SelectEntry0 = 1,        /** First entry selected in selection dialog. */
-        MapMsgState_SelectEntry1 = 2,        /** Second entry selected in selection dialog. */
-        MapMsgState_SelectEntry2 = 3         /** Third entry selected in selection dialog. */
+        MapMsgState_SelectEntry1 = 1,        /** First entry selected in selection dialog. */
+        MapMsgState_SelectEntry2 = 2,        /** Second entry selected in selection dialog. */
+        MapMsgState_SelectEntry3 = 3         /** Third entry selected in selection dialog. */
     };
 
-    enum e_MapMsgAudioLoadBlock
+    /** @brief Map message audio types. */
+    enum e_MapMsgAudioType
     {
-        MapMsgAudioLoadBlock_None = 0, // TODO: Some code checks only for bit 0, so it should mean something.
-        MapMsgAudioLoadBlock_Unk1 = 1,
-        MapMsgAudioLoadBlock_J2   = 3  // `J2` map messages set this, causing voice audio to not load.
-                                       // `J2` cutscenes use single audio file for all lines (e.g. video tape cutscene).
+        MapMsgAudioType_None                 = 0,
+        MapMsgAudioType_VoiceClipUnskippable = 1, /** Set by `{J0}`. For unskippable cutscenes with individual audio files per message page. */
+        MapMsgAudioType_VoiceClipSkippable   = 2, /** Set by `{J1}`. For skippable cutscenes with individual audio files per message page. */
+        MapMsgAudioType_VoiceStream          = 3  /** Set by `{J2}`. For unskippable cutscenes with a single audio file (e.g. video tape cutscene). */
     };
 
     struct s_MapMsgSelect
     {
-        s8 maxIdx;
-        u8 selectedEntryIdx;
+        int maxIdx;
+        int selectedEntryIdx;
     };
 
-    s32 Gfx_MapMsg_Draw(s32 mapMsgIdx);
+    int Gfx_MapMsg_Draw(int mapMsgIdx);
 
-    s32 Gfx_MapMsg_SelectionUpdate(u8 mapMsgIdx, s32* displayLength);
-
-    void func_8003708C(s16* ptr0, u16* ptr1);
+    MsgSelectArg Gfx_MapMsg_SelectionUpdate(int mapMsgIdx, int* displayLength);
 
     void func_80037124();
 }

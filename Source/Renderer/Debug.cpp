@@ -7,21 +7,13 @@
 
 namespace Silent::Renderer
 {
-    bool RendererBase::SubmitTriangle3d(const Triangle3d& tri)
-    {
-        if (_scene.Objects.Triangles3d.size() >= TRI_3D_COUNT_MAX)
-        {
-            Debug::Log("Attempted to submit 3D triangle to full container.",
-                       Debug::LogLevel::Warning, Debug::LogMode::Debug);
-            return false;
-        }
-
-        _scene.Objects.Triangles3d.push_back(tri);
-        return true;
-    }
-
     void RendererBase::SubmitDebugGui(std::function<void()> drawFunc)
     {
+        if (!g_App.IsDrawTick())
+        {
+            return;
+        }
+
         if (_scene.Frame.Back.DebugGuiDrawCalls.size() >= DEBUG_GUI_COUNT_MAX)
         {
             Debug::Log("Attempted to submit debug GUI draw call to full container.",
@@ -41,7 +33,7 @@ namespace Silent::Renderer
     void RendererBase::SubmitDebugLine(const Vector2& from, const Vector2& to, const Color& color, ScaleMode scaleMode,
                                        Debug::Page page)
     {
-        if (!Debug::CheckPage(page))
+        if (!Debug::CheckPage(page) || !g_App.IsDrawTick())
         {
             return;
         }
@@ -52,7 +44,7 @@ namespace Silent::Renderer
 
     void RendererBase::SubmitDebugLine(const Vector3& from, const Vector3& to, const Color& color, Debug::Page page)
     {
-        if (!Debug::CheckPage(page))
+        if (!Debug::CheckPage(page) || !g_App.IsDrawTick())
         {
             return;
         }
@@ -65,7 +57,7 @@ namespace Silent::Renderer
     void RendererBase::SubmitDebugTriangle(const Vector2& vert0, const Vector2& vert1, const Vector2& vert2,
                                            const Color& color, ScaleMode scaleMode, Debug::Page page)
     {
-        if (!Debug::CheckPage(page))
+        if (!Debug::CheckPage(page) || !g_App.IsDrawTick())
         {
             return;
         }
@@ -77,7 +69,7 @@ namespace Silent::Renderer
     void RendererBase::SubmitDebugTriangle(const Vector3& vert0, const Vector3& vert1, const Vector3& vert2,
                                            const Color& color, Debug::Page page)
     {
-        if (!Debug::CheckPage(page))
+        if (!Debug::CheckPage(page) || !g_App.IsDrawTick())
         {
             return;
         }

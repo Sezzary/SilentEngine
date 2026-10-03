@@ -74,46 +74,6 @@ namespace Silent::Debug
             return;
         }
 
-        // @todo Make this cleaner.
-
-        static auto fpses     = std::vector<float>{};
-        static auto durations = std::vector<uint64>{};
-
-        // Update render stats. @todo Move this elsewhere. Maybe time class could handle it?
-        g_Work.FrameCount++;
-        uint64 now      = SDL_GetPerformanceCounter();
-        uint64 duration = ((now - g_Work.PrevTime) * ClockManager::MICROSEC_PER_SEC) / SDL_GetPerformanceFrequency();
-        if (duration >= (ClockManager::MICROSEC_PER_SEC / TICKS_PER_SECOND))
-        {
-            fpses.push_back((float)g_Work.FrameCount / (float)(duration / (float)ClockManager::MICROSEC_PER_SEC));
-            durations.push_back(duration);
-
-            if (fpses.size() >= TICKS_PER_SECOND)
-            {
-                g_Work.Fps = 0.0f;
-                for (float fps : fpses)
-                {
-                    g_Work.Fps += fps;
-                }
-                g_Work.Fps /= (float)TICKS_PER_SECOND;
-
-                g_Work.FrameTime = 0;
-                for (uint64 duration : durations)
-                {
-                    g_Work.FrameTime += duration;
-                }
-                g_Work.FrameTime /= TICKS_PER_SECOND;
-
-                fpses.clear();
-                durations.clear();
-            }
-
-            //g_Work.Fps        = (float)g_Work.FrameCount / (float)(duration / (float)ClockManager::MICROSEC_PER_SEC);
-            //g_Work.FrameTime  = duration;
-            g_Work.FrameCount = 0;
-            g_Work.PrevTime   = now;
-        }
-
         CreateMenu();
         //ImGui::ShowDemoWindow();
 

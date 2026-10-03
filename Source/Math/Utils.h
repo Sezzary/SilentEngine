@@ -40,6 +40,23 @@ namespace Silent::Math
      */
     float Remap(float x, float fromMin, float fromMax, float toMin, float toMax);
 
+    /** @brief Wraps a value to be within the range `[min, max]`.
+     *
+     * @param val Value to wrap.
+     * @param min Lower bound.
+     * @param max Upper bound.
+     * @return `val` wrapped to the valid range.
+     */
+    int WrapRange(int val, int min, int max);
+
+    /** @brief Wraps a value to be within the range `[0, max]`.
+     *
+     * @param val Value to wrap.
+     * @param max Upper bound.
+     * @return `val` wrapped to the valid positive range.
+     */
+    int WrapRange(int val, int max);
+
     /** @brief Checks if two values are approximately equal.
      *
      * @param a First value.
@@ -115,4 +132,29 @@ namespace Silent::Math
      */
     bool IsPointOnLeft(const Vector3& from, const Vector3& to, const Vector3& ref,
                        const Vector3& axis = Vector3::UnitY);
+
+    /** @brief Gets the sign of a value.
+     *
+     * @tparam T Numeric type.
+     * @param val Value to check.
+     * @return `1` if the value is >= 0, `-1` otherwise.
+     */
+    template <typename T>
+    requires std::is_arithmetic_v<T>
+    int GetSign(T val)
+    {
+        return (val >= 0) ? 1 : -1;
+    }
+
+    /** @brief Wraps an enum entry index to the valid enum range.
+     *
+     * @note The enum must be sequential, start from 0, and have a final entry named `Count`.
+     *
+     * @param idx Entry index wrap.
+     */
+    template <typename Enum>
+    Enum WrapEnum(int idx)
+    {
+        return (Enum)WrapRange(idx, (int)Enum::Count);
+    }
 }

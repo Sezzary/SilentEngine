@@ -2,15 +2,6 @@
 
 namespace Silent::Game
 {
-    extern q19_12 g_ScreenFadeProgress; // Not originally `extern`.
-
-    /** @note This is defined in `screen_draw.c` because inbetween this and
-     * the previous variable (`g_PrevScreenFadeProgress`) there is garbage
-     * data. It suggests this variable was defined in a file separate from
-     * `screen_fade.c`.
-     */
-    extern q19_12 g_ScreenFadeTimestep;
-
     void Screen_RectInterlacedClear(s16 x, s16 y, s16 w, s16 h, u8 r, u8 g, u8 b);
 
     void Screen_Refresh(s32 screenWidth, bool isInterlaced);

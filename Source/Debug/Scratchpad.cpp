@@ -11,6 +11,8 @@
 #include "Utils/Parallel.h"
 
 #include "Game/Screens/Options/MenuGraphics.h"
+#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Text/TextDraw.h"
 
 using namespace Silent::Game;
 
@@ -45,9 +47,25 @@ namespace Silent::Debug
     {
         if constexpr (IS_DEBUG_BUILD)
         {
-            auto& input    = g_App.GetInput();
-            auto& renderer = g_App.GetRenderer();
-            auto& fonts    = g_App.GetFonts();
+            const auto& options    = g_App.GetOptions();
+            const auto& translator = g_App.GetTranslator();
+            auto&       input      = g_App.GetInput();
+            auto&       renderer   = g_App.GetRenderer();
+            auto&       fonts      = g_App.GetFonts();
+
+            return;
+
+            auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
+            //auto msg = GetParsedMsg("打撃系の武器は、攻撃ボタンの押し方に{N}よって攻撃方法が変化します。",
+            //                        fontName, SERIF_FONT_LINE_HEIGHT);
+            auto msg = GetParsedMsg("{J0(3.0)}{C0}The {C1}phones {C2}are {C3}all {C4}dead,{N}{C7}and the radio, too.",
+                                    fontName, SERIF_FONT_LINE_HEIGHT);
+            //auto msg = GetParsedMsg(translator("M0S00Msg_14"),
+            //                        fontName, SERIF_FONT_LINE_HEIGHT);
+
+            int styleFlags = (int)TextStyleFlags::Gradient |
+                             (int)TextStyleFlags::Shadow;
+            DrawParsedMsg(msg, Vector2::Zero, SERIF_FONT_SCALE, styleFlags);
 
             return;
 
@@ -79,32 +97,30 @@ namespace Silent::Debug
 
             // ====================================
 
-            Options_MainOptionsMenu_EntryStringsDraw();
-
             // Sprite test.
 
             // Cursor.
             auto cursorPos    = SnapToGrid(input.GetCursorPosition(), g_App.GetWindowResolution().ToVector2(), RETRO_SCREEN_SPACE_RES.y);
-            auto cursorSprite = Sprite2d::CreateSprite2d("TIM/BG_ETC.TIM", Vector2(0.0f, 64.0f / 256.0f), Vector2(32.0f / 128.0f, 96.0f / 256.0f),
-                                                         SCREEN_SPACE_RES / 2.0f, 0.0f, 1.0f, 0.75f, Color::White, NO_VALUE,
+            auto cursorSprite = Sprite2d::CreateSprite2d("Psx/TIM/BG_ETC.TIM", Vector2(0.0f, 64.0f / 256.0f), Vector2(32.0f / 128.0f, 96.0f / 256.0f),
+                                                         SCREEN_SPACE_RES * 0.5f, 0.0f, 1.0f, 0.75f, Color::White, NO_VALUE,
                                                          0, AlignMode::Center, ScaleMode::HorizontalEdge, BlendMode::Alpha);
             renderer.SubmitSprite2d(cursorSprite);
 
             //return;
 
-            //auto sprite0 = Sprite2d::CreateSprite2d("TIM/HERO_PIC.TIM", Vector2::Zero, Vector2::One,
+            //auto sprite0 = Sprite2d::CreateSprite2d("Psx/TIM/HERO_PIC.TIM", Vector2::Zero, Vector2::One,
             //                                        Vector2(50.0f, 50.0f), 0.0f, Vector2::One, Color::White, 0,
-            //                                        1100, AlignMode::Center, ScaleMode::VerticalEdge, BlendMode::Opaque);
+            //                                        DEPTH_2D_MAX, AlignMode::Center, ScaleMode::VerticalEdge, BlendMode::Opaque);
             //renderer.SubmitSprite2d(sprite0);
 
             // Text.
             auto text = Text2d::CreateText2d("Śliwka", "RetroSerif",
-                                             cursorPos, 0.0f, RETRO_PIXEL_SCALE.y * 16.0f, 1.0f,
+                                             cursorPos, 0.0f, RETRO_PIXEL_SCALE.y * 16.0f,
                                              Color::White, (int)TextStyleFlags::Gradient | (int)TextStyleFlags::Shadow | (int)TextStyleFlags::HalfHeight,
                                              1, AlignMode::BottomLeft);
             renderer.SubmitText2d(text);
             //auto text2 = Text2d::CreateText2d("Have you seen a little girl?", "SmoothSerif",
-            //                                  Vector2(10.0f, 20.0f), 0/*DEG_TO_RAD(45.0f)*/, 1.0f / 14.0f, 1.0f, 
+            //                                  Vector2(10.0f, 20.0f), 0/*DEG_TO_RAD(45.0f)*/, 1.0f / 14.0f,
             //                                  Color::White, (int)TextStyleFlags::Gradient | (int)TextStyleFlags::Shadow,
             //                                  1, AlignMode::CenterLeft);
             //renderer.SubmitText2d(text2);

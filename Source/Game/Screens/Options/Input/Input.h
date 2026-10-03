@@ -2,5 +2,5 @@
 
 namespace Silent::Game
 {
-    void Screen_VSyncCallback();
+    void Options_InputMenu_Control();
 }

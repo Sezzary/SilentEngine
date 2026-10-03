@@ -14,6 +14,7 @@ Arguments:
                      `Linux`   : Generates .SPV shaders.
 """
 
+
 import logging
 import os
 import platform
@@ -25,12 +26,14 @@ import sys
 from argparse import ArgumentParser
 from pathlib  import Path
 
+
 SHADERCROSS_NAME = "shadercross"
 BASE_PATH        = Path(__file__).parent
 SHADERCROSS_PATH = BASE_PATH / SHADERCROSS_NAME
 SOURCES_PATH     = BASE_PATH / "../Source/Renderer/Common/Shaders"
 OUTPUT_PATH      = BASE_PATH / "../Build/Assets/Shaders"
 TEMP_OUTPUT_PATH = OUTPUT_PATH / ".temp"
+
 
 def _create_parser():
     """
@@ -39,6 +42,7 @@ def _create_parser():
     parser = ArgumentParser()
     parser.add_argument("--buildOs", "-os", type=str)
     return parser
+
 
 def _get_shadercross_exe():
     """
@@ -60,6 +64,7 @@ def _get_shadercross_exe():
 
     return shadercross_exe
 
+
 def _get_output_formats(build_os: str):
     """
     Get the platform-specific shader formats to build according to the passed `build_os` argument.
@@ -75,6 +80,7 @@ def _get_output_formats(build_os: str):
         raise Exception(f"Passed invalid `build_os` argument `{build_os}`.")
 
     return formats
+
 
 def _get_shader_headers(source_path: Path):
     """
@@ -107,11 +113,13 @@ def _get_shader_headers(source_path: Path):
 
     return header_paths
 
+
 def _cleanup():
     """
     Delete temporary build files.
     """
     shutil.rmtree(TEMP_OUTPUT_PATH, ignore_errors=True)
+
 
 def main():
     try:
@@ -208,6 +216,7 @@ def main():
         # Fail.
         logging.error(f"{ex}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

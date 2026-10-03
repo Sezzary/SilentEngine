@@ -21,7 +21,7 @@ namespace Silent::Game
 
     extern s_FsImageDesc D_800A9A04;
 
-    extern s32 D_800A9A0C; // Old IDB name `FS_AllFilesLoaded`, though FS code doesn't set it.
+    extern bool g_IsLoadingFinished;
 
     extern s32 g_MapEventSysState; /** `e_InventoryItemId` */
 

@@ -12,7 +12,7 @@ namespace Silent::Game
     void GameBoot_SavegameInitialize(s8 overlayId, s32 difficulty) // 0x800350BC
     {
         s32  i;
-        s32* ovlEnemyStatesPtr;
+        s32* mapEnemyStatesPtr;
 
         bzero(g_SavegamePtr, sizeof(s_Savegame));
 
@@ -20,7 +20,7 @@ namespace Silent::Game
 
         difficulty = CLAMP(difficulty, GameDifficulty_Easy, GameDifficulty_Hard);
 
-        ovlEnemyStatesPtr = g_SavegamePtr->ovlEnemyStates;
+        mapEnemyStatesPtr = g_SavegamePtr->mapEnemyStates;
 
         g_SavegamePtr->gameDifficulty = difficulty;
         g_SavegamePtr->paperMapIdx     = PaperMapIdx_OldTown;
@@ -29,8 +29,8 @@ namespace Silent::Game
         // Odd code. Possibly a hack.
         for (i = 0; i < 45; i++)
         {
-            ovlEnemyStatesPtr[44] = NO_VALUE;
-            ovlEnemyStatesPtr--;
+            mapEnemyStatesPtr[44] = NO_VALUE;
+            mapEnemyStatesPtr--;
         }
 
         //Game_SavegameResetPlayer();

@@ -11,25 +11,6 @@
 
 namespace Silent::Game
 {
-    void Joy_Init() // 0x8003441C
-    {
-        // @stub
-    }
-
-    void Joy_ReadP1() // 0x80034450
-    {
-        s_ControllerData* cont;
-
-        cont = &g_GameWork.controllers[0];
-        memcpy(&cont->analogController, &g_GameWork.rawController, sizeof(s_AnalogController));
-    }
-
-    void Joy_Update() // 0x8003446C
-    {
-        Joy_ReadP1();
-        Joy_ControllerDataUpdate();
-    }
-
     void Joy_ControllerDataUpdate() // 0x80034494
     {
         constexpr int CONTROLLER_COUNT             = 2;

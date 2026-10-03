@@ -1197,6 +1197,6 @@ namespace Silent::Game
         EventFlag_1641 = 1641,
         EventFlag_1642 = 1642,
 
-        EventFlag_Hack = -1, // @hack Force enum to be treated as `s32`.
+        EventFlag_Count
     };
 }

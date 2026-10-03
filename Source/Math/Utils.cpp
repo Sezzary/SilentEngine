@@ -21,6 +21,28 @@ namespace Silent::Math
         return roundf(x / step) * step;
     }
 
+    int WrapRange(int val, int min, int max)
+    {
+        int range = max - min;
+        if (range <= 0)
+        {
+            return min;
+        }
+
+        int offset = (val - min) % range;
+        if (offset < 0)
+        {
+            offset += range;
+        }
+
+        return min + offset;
+    }
+
+    int WrapRange(int val, int max)
+    {
+        return WrapRange(val, 0, max);
+    }
+
     float Remap(float x, float fromMin, float fromMax, float toMin, float toMax)
     {
         float alpha = (x - fromMin) / (fromMax - fromMin);

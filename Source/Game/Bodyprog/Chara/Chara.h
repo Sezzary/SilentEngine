@@ -6,12 +6,12 @@
 
 namespace Silent::Game
 {
-    constexpr int NPC_COUNT_MAX        = 6;
-    constexpr int NPC_BONE_COUNT_MAX   = 10 * NPC_COUNT_MAX;
-    constexpr int CHARA_GROUP_COUNT    = 4; /** While up to 6 NPCs and a player can exist in the game world, only 4 different character
-                                             * types (including the player) can be loaded at a time.
-                                             */
-    constexpr int CHARA_FORCE_FREE_ALL = 0xFF; /** `Chara_Load` can force free already loaded models to make room for new ones. */
+    constexpr int  NPC_COUNT_MAX        = 6;
+    constexpr int  NPC_BONE_COUNT_MAX   = 10 * NPC_COUNT_MAX;
+    constexpr int  CHARA_GROUP_COUNT    = 4;                  /** While up to 6 NPCs and a player can exist in the game world, only 4 different character
+                                                               * types (including the player) can be loaded at a time.
+                                                               */
+    constexpr int  CHARA_FORCE_FREE_ALL = 0xFF;               /** `Chara_Load` can force free already loaded models to make room for new ones. */
 
     /** @brief Character flags. Used by `s_SubCharacter::flags`. */
     enum e_CharaFlags
@@ -110,8 +110,7 @@ namespace Silent::Game
 
         Chara_Padlock          = 44,
 
-        Chara_Count,
-        Chara_Hack = NO_VALUE, // @hack Force enum to be treated as `s32`.
+        Chara_Count
     };
 
     // Collision-related.
@@ -581,7 +580,7 @@ namespace Silent::Game
         q3_12             headingAngle;
         s16               flags;          /** `e_CharaFlags` */
         s8                field_40;       // In player: Index of the NPC attacking the player. Spawn index for Air Screamer?
-                                          // In NPCs: Unknown. `Game_NpcRoomInitSpawn` sugests it indicates the NPC index in `s_Savegame::ovlEnemyStates`.
+                                          // In NPCs: Unknown. `Game_NpcRoomInitSpawn` sugests it indicates the NPC index in `s_Savegame::mapEnemyStates`.
         s8                attackReceived; // Packed weapon attack indicating what attack has been performed to the character. See `WEAPON_ATTACK`.
         s_SubCharacter_44 field_44;
         q19_12            health;

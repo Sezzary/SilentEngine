@@ -18,6 +18,7 @@ Arguments:
     --exeChecksum, -c   : Verify the integrity of the executable without extracting.
 """
 
+
 import logging
 import os
 
@@ -30,17 +31,20 @@ from struct      import Struct
 from typing      import BinaryIO, Iterable
 from zlib        import crc32
 
+
 class RomFlags(IntFlag):
     NONE                 = 0
     ENCRYPTED_1ST_FOLDER = 1 << 0
     NO_XA_CONTAINER      = 1 << 1
     ALT_FILE_STRUCT      = 1 << 2
 
+
 class SubmodeFlags(IntFlag):
     NONE  = 0
     VIDEO = 1 << 1
     AUDIO = 1 << 2
     DATA  = 1 << 3
+
 
 @dataclass
 class Release:
@@ -53,12 +57,14 @@ class Release:
     filetypes:  list[str]
     flags:      RomFlags
 
+
 @dataclass
 class TableEntry:
     path:   Path
     type:   str
     size:   int
     offset: int
+
 
 FILESIZE_STEP      = 256
 MODE_1_SECTOR_SIZE = 2048
@@ -159,6 +165,7 @@ FILE_RENAMES = {
     "TEST/DEV.TIM":   "CHARA/MAN.TIM"
 }
 
+
 def _create_parser():
     """
     Create an argument parser for the script.
@@ -171,6 +178,7 @@ def _create_parser():
     parser.add_argument("--exeChecksum", "-c", action="store_true")
     return parser
 
+
 def _get_checksum(exe: BinaryIO):
     """
     Generate a SHA-1 checksum from a release executable.
@@ -179,6 +187,7 @@ def _get_checksum(exe: BinaryIO):
     """
     exe.seek(0)
     return crc32(exe.read(4096))
+
 
 def _detect_release(checksum: int, name: str) -> Release:
     """
@@ -195,6 +204,7 @@ def _detect_release(checksum: int, name: str) -> Release:
     logging.error(f"Executable `{name}` has an unrecognized checksum: [{checksum:08X}]")
     logging.error("\tIt is not a supported Silent Hill executable.")
     return None
+
 
 def _parse_entry(entry, release):
     meta, file_0, file_1 = ENTRY_STRUCT.unpack(entry)
@@ -227,11 +237,13 @@ def _parse_entry(entry, release):
         # size, lba, name, path, type
         return (meta >> 19) & 0xFFF, meta & 0x7FFFF, name, release.dirs[dir_idx], release.filetypes[ext_idx]
 
+
 def _format_entry(size, lba, name, path, type, release):
     name    = name.ljust(8)
     namesep = ','.join(f"'{name[i]}'" for i in range(0, len(name)))
 
     return f'{{ {lba:#07x}, {size:4d}, {release.dirs.index(path):2d}, FN({namesep}), {release.filetypes.index(type):2d} }}'
+
 
 def _decrypt_overlay(data: bytes):
     output       = bytearray(data)
@@ -244,6 +256,7 @@ def _decrypt_overlay(data: bytes):
         output_array[i] ^= seed
 
     return output
+
 
 def _decompress_lzss_file(data: bytes) -> bytes:
     """
@@ -315,6 +328,7 @@ def _decompress_lzss_file(data: bytes) -> bytes:
 
     return bytes(output)
 
+
 def _extract_cd_stream(data: bytes, base_path: Path):
     # Check for `XaFlags.VIDEO` or `XaFlags.DATA` flag to determine if format should be `STR` (video) or `XA` (audio).
     is_video_stream = False
@@ -340,6 +354,7 @@ def _extract_cd_stream(data: bytes, base_path: Path):
             submode = sector[2]
             if (submode & (SubmodeFlags.VIDEO | SubmodeFlags.AUDIO | SubmodeFlags.DATA)):
                 _file.write(CD_XA_SYNC_HEADER + sector)
+
 
 def _extract(entries:Iterable[TableEntry], output: Path, file: BinaryIO, sector_size: int, release_flags: int):
     idx = 0
@@ -382,6 +397,7 @@ def _extract(entries:Iterable[TableEntry], output: Path, file: BinaryIO, sector_
         with output_path.open("wb") as _file:
             _file.write(data)
         idx = idx + 1
+
 
 def main():
     logging.basicConfig(level=logging.INFO)
@@ -438,6 +454,7 @@ def main():
     #    file.write(enum_text)
 
     logging.info("Asset extraction completed successfully.")
+
 
 if __name__ == "__main__":
     main()

@@ -12,7 +12,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Debug
 {
-    constexpr const char* FRAME_RATE_ITEMS[]        = { "30 FPS", "60 FPS" };
+    constexpr const char* FRAME_RATE_ITEMS[]        = { "30 FPS", "60 FPS", "Uncapped" };
     constexpr const char* ASPECT_RATIO_ITEMS[]      = { "Retro", "Wide", "Native"  };
     constexpr const char* RENDER_SCALE_ITEMS[]      = { "Retro", "Retro 2x", "Native" };
     constexpr const char* TEXTURE_FILTER_ITEMS[]    = { "Nearest", "Linear" };
@@ -269,7 +269,8 @@ namespace Silent::Debug
                 }
 
                 // `Mouse sensitivity` slider.
-                if (ImGui::SliderInt("Mouse sensitivity", &options->MouseSensitivity, 1, MOUSE_SENSITIVITY_MAX))
+                if (ImGui::SliderInt("Mouse sensitivity", &options->MouseSensitivity,
+                                     MOUSE_SENSITIVITY_MIN, MOUSE_SENSITIVITY_MAX))
                 {
                     isOptChanged = true;
                 }
@@ -331,20 +332,26 @@ namespace Silent::Debug
                     isOptChanged = true;
                 }
 
+                // `Skip logos` checkbox.
+                if (ImGui::Checkbox("Skip logos", &options->SkipLogos))
+                {
+                    isOptChanged = true;
+                }
+
+                // `Paper map quality` combo.
+                int paperMapQuality = (int)options->PaperMapQuality;
+                if (ImGui::Combo("Paper map quality", &paperMapQuality, PAPER_MAP_QUALITY_ITEMS, IM_ARRAYSIZE(PAPER_MAP_QUALITY_ITEMS)))
+                {
+                    options->PaperMapQuality = (PaperMapQualityType)paperMapQuality;
+                    isOptChanged             = true;
+                }
+
                 // `Dialog pause` combo.
                 int dialogPause = (int)options->DialogPause;
                 if (ImGui::Combo("Dialog pause", &dialogPause, DIALOG_PAUSE_ITEMS, IM_ARRAYSIZE(DIALOG_PAUSE_ITEMS)))
                 {
                     options->DialogPause = (DialogPauseType)dialogPause;
                     isOptChanged         = true;
-                }
-
-                // `Paper map` combo.
-                int paperMap = (int)options->PaperMapQuality;
-                if (ImGui::Combo("Paper map quality", &paperMap, PAPER_MAP_QUALITY_ITEMS, IM_ARRAYSIZE(PAPER_MAP_QUALITY_ITEMS)))
-                {
-                    options->PaperMapQuality = (PaperMapQualityType)paperMap;
-                    isOptChanged             = true;
                 }
             }
 
@@ -355,12 +362,6 @@ namespace Silent::Debug
                 if (ImGui::Button("Reset##4"))
                 {
                     options.SetDefaultSystemOptions();
-                    isOptChanged = true;
-                }
-
-                // `Enable logos` checkbox.
-                if (ImGui::Checkbox("Enable logos", &options->EnableLogos))
-                {
                     isOptChanged = true;
                 }
 

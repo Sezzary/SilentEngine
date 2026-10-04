@@ -124,9 +124,9 @@ namespace Silent::Game
     std::pair<int, int> OptionsMenu_DrawEntries(const std::string& headingStrKey, const std::vector<MenuEntry>& entries)
     {
         constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
-        constexpr auto LINE_BASE       = Vector2i(64, 70);
+        constexpr auto LINE_BASE       = Vector2i(56, 70);
         constexpr auto LINE_HEIGHT     = 16;
-        constexpr auto CONFIG_OFFSET   = Vector2i(185, 0);
+        constexpr auto CONFIG_OFFSET   = Vector2i(194, 0);
 
         const auto& input      = g_App.GetInput();
         const auto& translator = g_App.GetTranslator();
@@ -169,7 +169,7 @@ namespace Silent::Game
             if (std::holds_alternative<MenuEntryBoolBinding>(entry.Binding))
             {
                 const auto& binding   = std::get<MenuEntryBoolBinding>(entry.Binding);
-                const char* configKey = binding.GetState() ? KEY_OPTIONS_MENU_ON : KEY_OPTIONS_MENU_OFF;
+                const char* configKey = binding.GetState() ? KEY_OPTIONS_MENU_CONFIG_ON : KEY_OPTIONS_MENU_CONFIG_OFF;
 
                 bool isSelected = i == g_OptionsMenu_SelectedEntry;
                 OptionsMenu_DrawConfigKey(pos + CONFIG_OFFSET, configKey, isSelected);
@@ -209,13 +209,12 @@ namespace Silent::Game
     void OptionsMenu_DrawSelectionHighlight(const std::pair<int, int>& widths)
     {
         constexpr int  ENTRY_OFFSET_X = 25;
-        constexpr auto LINE_BASE      = Vector2i(39, 72);
+        constexpr auto LINE_BASE      = Vector2i(31, 72);
         constexpr int  LINE_HEIGHT    = 16;
 
         static auto selectionHighlightFrom = Vector2i::Zero;
         static auto selectionHighlightTo   = Vector2i::Zero;
 
-        // @todo Widths are wrong.
         // @todo Account for scrolling.
         // Set active selection highlight position references.
         if (g_OptionsMenu_SelectionHighlightTimer == Q12(0.0f))
@@ -284,10 +283,10 @@ namespace Silent::Game
 
         const char* CONFIG_STR_KEYS[] =
         {
-            KEY_OPTIONS_MENU_ON,
-            KEY_OPTIONS_MENU_OFF,
-            KEY_OPTIONS_MENU_STEREO,
-            KEY_OPTIONS_MENU_MONAURAL
+            //KEY_OPTIONS_MENU_ON,
+            //KEY_OPTIONS_MENU_OFF,
+            //KEY_OPTIONS_MENU_STEREO,
+            //KEY_OPTIONS_MENU_MONAURAL
         };
 
         const auto& input = g_App.GetInput();

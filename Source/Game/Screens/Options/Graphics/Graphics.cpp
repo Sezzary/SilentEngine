@@ -1,25 +1,21 @@
 #include "Framework.h"
+#include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Screens/Options/Graphics/Graphics.h"
 
-#include "Game/Screens/Options/Utils.h"
-
 #include "Application.h"
-#include "Input/Input.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Game.h"
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/MenuGraphics.h"
 #include "Game/Screens/Options/Utils.h"
+#include "Input/Input.h"
 #include "Services/Options.h"
-#include "Utils/Translator.h"
 
 using namespace Silent::Assets;
 using namespace Silent::Input;
 using namespace Silent::Services;
-using namespace Silent::Utils;
 
 namespace Silent::Game
 {
@@ -120,6 +116,7 @@ namespace Silent::Game
             .EntryStringKey = KEY_GRAPHICS_MENU_DITHERING_SCALE,
             .Binding        = BindMenuEntryEnum(&Options::DitheringScale,
             {
+                KEY_GRAPHICS_MENU_DITHERING_SCALE_OFF,
                 KEY_GRAPHICS_MENU_DITHERING_SCALE_RETRO,
                 KEY_GRAPHICS_MENU_DITHERING_SCALE_RETRO_2X,
                 KEY_GRAPHICS_MENU_DITHERING_SCALE_NATIVE
@@ -152,10 +149,9 @@ namespace Silent::Game
         }
     };
 
-    void ControlGraphicsOptionsMenu()
+    void OptionsMenu_ControlGraphicsMenu()
     {
-        const auto& input      = g_App.GetInput();
-        const auto& translator = g_App.GetTranslator();
+        const auto& input = g_App.GetInput();
 
         // Draw graphics.
         auto widths = OptionsMenu_DrawEntries(KEY_GRAPHICS_MENU_HEADING, ENTRIES);
@@ -169,7 +165,7 @@ namespace Silent::Game
             return;
         }
 
-        OptionsMenu_UpdateSelection((int)GraphicsMenuEntry::Count);
+        OptionsMenu_UpdateSelection(ENTRIES.size());
 
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])

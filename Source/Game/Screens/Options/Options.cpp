@@ -329,7 +329,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_Graphics:
             {
-                ControlGraphicsOptionsMenu();
+                OptionsMenu_ControlGraphicsMenu();
                 break;
             }
             case OptionsMenuState_Gameplay:
@@ -339,7 +339,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_Input:
             {
-                Options_InputMenu_Control();
+                OptionsMenu_ControlInputMenu();
                 break;
             }
             case OptionsMenuState_Enhancements:
@@ -561,7 +561,7 @@ namespace Silent::Game
 
         // Draw graphics.
         //auto widths = OptionsMenu_DrawEntries(KEY_OPTIONS_MENU_HEADING, ENTRIES);
-        OptionsMenu_ConfigDraw();
+        //OptionsMenu_ConfigDraw();
         //OptionsMenu_DrawSelectionHighlight(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
         //OptionsMenu_BgmVolumeBarDraw();

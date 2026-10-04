@@ -10,7 +10,64 @@ using namespace Silent::Input;
 
 namespace Silent::Game
 {
-    void UpdateOptionsSelection(int entryCount)
+    void OptionsMenu_UpdateConfig(const std::vector<MenuEntry>& entries)
+    {
+        const auto& input   = g_App.GetInput();
+        auto&       options = g_App.GetOptions();
+
+        auto& entry = entries[g_OptionsMenu_SelectedEntry];
+
+        // Check if `Left` or `Right` action is clicked.
+        bool isLeftClicked  = input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE);
+        bool isRightClicked = input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE);
+        if (!isLeftClicked && !isRightClicked)
+        {
+            return;
+        }
+
+        // Set config.
+        if (std::holds_alternative<MenuEntryBoolBinding>(entry.Binding))
+        {
+            const auto& binding = std::get<MenuEntryBoolBinding>(entry.Binding);
+
+            binding.SetState(!binding.GetState());
+        }
+        else if (std::holds_alternative<MenuEntryRangeBinding>(entry.Binding))
+        {
+            const auto& binding = std::get<MenuEntryRangeBinding>(entry.Binding);
+
+            binding.SetValue(binding.GetValue() + (isLeftClicked ? -1 : 1));
+        }
+        else if (std::holds_alternative<MenuEntryEnumBinding>(entry.Binding))
+        {
+            const auto& binding = std::get<MenuEntryEnumBinding>(entry.Binding);
+
+            binding.SetIdx(binding.GetIdx() + (isLeftClicked ? -1 : 1));
+        }
+        else if (std::holds_alternative<MenuEntryBarBinding>(entry.Binding))
+        {
+            const auto& binding = std::get<MenuEntryBarBinding>(entry.Binding);
+
+            if (isLeftClicked && binding.GetValue() > 0)
+            {
+                binding.SetValue(binding.GetValue() - 1);
+            }
+            else if (isRightClicked && binding.GetValue() < 16) // @todo Demagic.
+            {
+                binding.SetValue(binding.GetValue() + 1);
+            }
+        }
+
+        // Execute post-update callback.
+        if (entry.OnUpdate)
+        {
+            entry.OnUpdate();
+        }
+
+        options.Save();
+    }
+
+    void OptionsMenu_UpdateSelection(int entryCount)
     {
         const auto& input = g_App.GetInput();
 
@@ -57,7 +114,7 @@ namespace Silent::Game
         }
     }
 
-    void ResetOptionsSelection(int selectedEntryIdx)
+    void OptionsMenu_ResetSelection(int selectedEntryIdx)
     {
         g_OptionsMenu_SelectedEntry              = 
         g_OptionsMenu_PrevSelectedEntry          = selectedEntryIdx;

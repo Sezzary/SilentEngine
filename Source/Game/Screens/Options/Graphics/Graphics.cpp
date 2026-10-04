@@ -28,7 +28,14 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_GRAPHICS_MENU_FULLSCREEN,
-            .Binding        = BindMenuEntryBool(&Options::EnableFullscreen)
+            .Binding        = BindMenuEntryBool(&Options::EnableFullscreen),
+            .OnUpdate       = []()
+            {
+                auto& options = g_App.GetOptions().GetFront();
+
+                options.EnableFullscreen = !options.EnableFullscreen; // @todo Hack, do this properly.
+                g_App.ToggleFullscreen();
+            }
         },
         MenuEntry
         {
@@ -63,7 +70,13 @@ namespace Silent::Game
                 KEY_GRAPHICS_MENU_RENDER_SCALE_RETRO,
                 KEY_GRAPHICS_MENU_RENDER_SCALE_RETRO_2X,
                 KEY_GRAPHICS_MENU_RENDER_SCALE_NATIVE
-            })
+            }),
+            .OnUpdate = []()
+            {
+                auto& renderer = g_App.GetRenderer();
+
+                renderer.SignalResize();
+            }
         },
         MenuEntry
         {
@@ -149,19 +162,21 @@ namespace Silent::Game
         OptionsMenu_DrawSelectionHighlight(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
+        OptionsMenu_UpdateConfig(ENTRIES);
+
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Graphics)
         {
             return;
         }
 
-        UpdateOptionsSelection((int)GraphicsMenuEntry::Count);
+        OptionsMenu_UpdateSelection((int)GraphicsMenuEntry::Count);
 
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])
         {
             case 0:
             {
-                ResetOptionsSelection();
+                OptionsMenu_ResetSelection();
 
                 ScreenFade_Start(true, true, false);
                 Game_StateStepIncrement(1);
@@ -189,7 +204,7 @@ namespace Silent::Game
                 // Switch to previous menu.
                 if (ScreenFade_IsFinished())
                 {
-                    ResetOptionsSelection(MainOptionsMenuEntry_Graphics);
+                    OptionsMenu_ResetSelection(MainOptionsMenuEntry_Graphics);
 
                     ScreenFade_Start(true, true, false);
                     Game_StateStepSet(0, OptionsMenuState_LeaveGraphics);

@@ -47,8 +47,10 @@ namespace Silent::Game
     /** @brief Menu entry data. */
     struct MenuEntry
     {
-        std::string      EntryStringKey = {};
-        MenuEntryBinding Binding        = {};
+        std::string           EntryStringKey = {};
+        MenuEntryBinding      Binding        = {};
+        std::function<void()> OnUpdate       = nullptr;
+
     };
 
     inline MenuEntryBoolBinding BindMenuEntryBool(bool Options::* field)
@@ -104,7 +106,9 @@ namespace Silent::Game
         };
     }
 
-    void UpdateOptionsSelection(int entryCount);
+    void OptionsMenu_UpdateConfig(const std::vector<MenuEntry>& entries);
 
-    void ResetOptionsSelection(int selectedEntryIdx = 0);
+    void OptionsMenu_UpdateSelection(int entryCount);
+
+    void OptionsMenu_ResetSelection(int selectedEntryIdx = 0);
 }

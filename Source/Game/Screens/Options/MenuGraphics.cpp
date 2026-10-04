@@ -36,14 +36,14 @@ namespace Silent::Game
         // Submit arrows.
         if (isSelectedEntry)
         {
-            bool isHoldingLeft  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
-            bool isHoldingRight = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+            bool isLeftHeld  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+            bool isRightHeld = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
 
             int arrowOffset = (int)ceilf(width * 0.5f) + ARROW_SPACE;
             Options_Selection_ArrowDraw(pos - Vector2i(arrowOffset, 0),
-                                        SelectionArrowType::Left, isHoldingLeft && !isHoldingRight);
+                                        SelectionArrowType::Left, isLeftHeld && !isRightHeld);
             Options_Selection_ArrowDraw(pos + Vector2i(arrowOffset, 0),
-                                        SelectionArrowType::Right, isHoldingRight && !isHoldingLeft);
+                                        SelectionArrowType::Right, isRightHeld && !isLeftHeld);
         }
     }
 

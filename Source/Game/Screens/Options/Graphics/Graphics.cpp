@@ -154,17 +154,15 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        auto widths = OptionsMenu_DrawEntries(KEY_GRAPHICS_MENU_HEADING, ENTRIES);
-        OptionsMenu_DrawSelectionHighlight(widths);
+        OptionsMenu_DrawEntries(KEY_GRAPHICS_MENU_HEADING, ENTRIES);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
-
-        OptionsMenu_UpdateConfig(ENTRIES);
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Graphics)
         {
             return;
         }
 
+        OptionsMenu_UpdateConfig(ENTRIES);
         OptionsMenu_UpdateSelection(ENTRIES.size());
 
         // Handle menu state.

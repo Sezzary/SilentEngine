@@ -8,6 +8,7 @@ using namespace Silent::Services;
 namespace Silent::Game
 {
     constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(1 / 8.0f);
+    constexpr int    BAR_NOTCH_COUNT       = 16;
 
     struct MenuEntrySubmenuBinding
     {
@@ -23,6 +24,8 @@ namespace Silent::Game
     {
         std::function<int()>     GetValue = nullptr;
         std::function<void(int)> SetValue = nullptr;
+        int                      Min      = 0;
+        int                      Max      = 0;
     };
 
     struct MenuEntryEnumBinding
@@ -36,13 +39,22 @@ namespace Silent::Game
     {
         std::function<int()>     GetValue = nullptr;
         std::function<void(int)> SetValue = nullptr;
+        int                      Max      = 0;
+    };
+
+    struct MenuEntryStringsBinding
+    {
+        std::function<int()>                      GetIdx     = nullptr;
+        std::function<void(int)>                  SetIdx     = nullptr;
+        std::function<std::vector<std::string>()> GetStrings = nullptr;
     };
 
     using MenuEntryBinding = std::variant<MenuEntrySubmenuBinding,
                                           MenuEntryBoolBinding,
                                           MenuEntryRangeBinding,
                                           MenuEntryEnumBinding,
-                                          MenuEntryBarBinding>;
+                                          MenuEntryBarBinding,
+                                          MenuEntryStringsBinding>;
 
     /** @brief Menu entry data. */
     struct MenuEntry
@@ -83,7 +95,8 @@ namespace Silent::Game
             {
                 auto& options  = g_App.GetOptions().GetFront();
                 options.*field = WrapRange(val, min, max);
-            }
+            },
+            .Max = max
         };
     }
 
@@ -103,6 +116,24 @@ namespace Silent::Game
                 options.*field = WrapEnum<EnumT>(idx);
             },
             .ConfigStringKeys = std::move(configStrKeys)
+        };
+    }
+
+    inline MenuEntryBarBinding BindMenuEntryBar(int Options::* field, int max)
+    {
+        return MenuEntryBarBinding
+        {
+            .GetValue = [field]()
+            {
+                const auto& options = g_App.GetOptions().GetBack();
+                return options.*field;
+            },
+            .SetValue = [field, max](int val)
+            {
+                auto& options  = g_App.GetOptions().GetFront();
+                options.*field = std::clamp(val, 0, max);
+            },
+            .Max = max
         };
     }
 

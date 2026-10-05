@@ -78,9 +78,8 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Submit graphics.
-        auto widths = OptionsMenu_DrawEntries(KEY_OPTIONS_MENU_HEADING, ENTRIES);
+        OptionsMenu_DrawEntries(KEY_OPTIONS_MENU_HEADING, ENTRIES);
         //OptionsMenu_ConfigDraw();
-        OptionsMenu_DrawSelectionHighlight(widths);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         // Block user input if transitioning to new menu.

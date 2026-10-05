@@ -4,9 +4,11 @@
 #include "Application.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Screens/Options/Options.h"
+#include "Services/Options.h"
 #include "Input/Input.h"
 
 using namespace Silent::Input;
+using namespace Silent::Services;
 
 namespace Silent::Game
 {
@@ -15,56 +17,94 @@ namespace Silent::Game
         const auto& input   = g_App.GetInput();
         auto&       options = g_App.GetOptions();
 
-        auto& entry = entries[g_OptionsMenu_SelectedEntry];
-
-        // Check if `Left` or `Right` action is clicked.
-        bool isLeftClicked  = input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE);
-        bool isRightClicked = input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE);
-        if (!isLeftClicked && !isRightClicked)
-        {
-            return;
-        }
+        const auto& entry = entries[g_OptionsMenu_SelectedEntry];
 
         // Set config.
+        bool isOptChanged = false;
         if (std::holds_alternative<MenuEntryBoolBinding>(entry.Binding))
         {
-            const auto& binding = std::get<MenuEntryBoolBinding>(entry.Binding);
+            if (input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE) ||
+                input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE))
+            {
+                const auto& binding = std::get<MenuEntryBoolBinding>(entry.Binding);
 
-            binding.SetState(!binding.GetState());
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetState(!binding.GetState());
+                isOptChanged = true;
+            }
         }
         else if (std::holds_alternative<MenuEntryRangeBinding>(entry.Binding))
         {
             const auto& binding = std::get<MenuEntryRangeBinding>(entry.Binding);
 
-            binding.SetValue(binding.GetValue() + (isLeftClicked ? -1 : 1));
+            if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
+                binding.GetValue() > binding.Min)
+            {
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetValue(binding.GetValue() - 1);
+                isOptChanged = true;
+            }
+            else if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
+                     binding.GetValue() < binding.Max)
+            {
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetValue(binding.GetValue() + 1);
+                isOptChanged = true;
+            }
         }
         else if (std::holds_alternative<MenuEntryEnumBinding>(entry.Binding))
         {
             const auto& binding = std::get<MenuEntryEnumBinding>(entry.Binding);
 
-            binding.SetIdx(binding.GetIdx() + (isLeftClicked ? -1 : 1));
+            if (input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE))
+            {
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetIdx(binding.GetIdx() - 1);
+                isOptChanged = true;
+            }
+            else if (input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE))
+            {
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetIdx(binding.GetIdx() + 1);
+                isOptChanged = true;
+            }
         }
         else if (std::holds_alternative<MenuEntryBarBinding>(entry.Binding))
         {
             const auto& binding = std::get<MenuEntryBarBinding>(entry.Binding);
 
-            if (isLeftClicked && binding.GetValue() > 0)
+            if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC * 0.25f, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
+                binding.GetValue() > 0)
             {
-                binding.SetValue(binding.GetValue() - 1);
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetValue(binding.GetValue() - (binding.Max / BAR_NOTCH_COUNT));
+                isOptChanged = true;
             }
-            else if (isRightClicked && binding.GetValue() < 16) // @todo Demagic.
+            else if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC * 0.25f, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
+                     binding.GetValue() < binding.Max)
             {
-                binding.SetValue(binding.GetValue() + 1);
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetValue(binding.GetValue() + (binding.Max / BAR_NOTCH_COUNT));
+                isOptChanged = true;
             }
         }
 
-        // Execute post-update callback.
-        if (entry.OnUpdate)
+        if (isOptChanged)
         {
-            entry.OnUpdate();
-        }
+            if (entry.OnUpdate)
+            {
+                entry.OnUpdate();
+            }
 
-        options.Save();
+            options.Save();
+        }
     }
 
     void OptionsMenu_UpdateSelection(int entryCount)
@@ -121,5 +161,59 @@ namespace Silent::Game
         g_OptionsMenu_VisibleEntriesStartIdx     = g_OptionsMenu_PrevVisibleEntriesStartIdx;
         g_OptionsMenu_PrevVisibleEntriesStartIdx = 0;
         g_OptionsMenu_SelectionHighlightTimer    = Q12(0.0f);
+    }
+
+    void Options_ControlSubmenu(int stateStep, const std::string& headingKey, const std::vector<MenuEntry>& entries,
+                                int prevMenuEntryIdx, int state, int leaveState)
+    {
+        const auto& input = g_App.GetInput();
+
+        // Draw graphics.
+        OptionsMenu_DrawEntries(headingKey, entries);
+        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+
+        if (g_GameWork.gameStateSteps[0] != state)
+        {
+            return;
+        }
+
+        OptionsMenu_UpdateConfig(entries);
+        OptionsMenu_UpdateSelection(entries.size());
+
+        // Handle menu state.
+        switch (g_GameWork.gameStateSteps[stateStep])
+        {
+            case 0:
+            {
+                OptionsMenu_ResetSelection();
+
+                //ScreenFade_Start(true, true, false);
+                Game_StateStepIncrement(stateStep);
+                break;
+            }
+            case 1:
+            {
+                if (input.GetAction(In::Cancel).IsClicked())
+                {
+                    //Sd_SfxPlay(Sfx_Cancel, 0, Q8(0.25f));
+
+                    //ScreenFade_Start(true, false, false);
+                    Game_StateStepIncrement(stateStep);
+                }
+                break;
+            }
+            case 2:
+            {
+                // Switch to previous menu.
+                /*if (ScreenFade_IsFinished())
+                {
+                    OptionsMenu_ResetSelection(prevMenuEntryIdx);
+
+                    ScreenFade_Start(true, true, false);
+                    Game_StateStepSet(stateStep - 1, leaveState);
+                }*/
+                break;
+            }
+        }
     }
 }

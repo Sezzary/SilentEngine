@@ -44,7 +44,7 @@ namespace Silent::Renderer
 
     /** @brief Converts a position in percent to retro screen pixels.
      *
-     * @param pos Screen position in retro screen pixels (320x240 resolution).
+     * @param pos Screen position in retro pixels (320x240 resolution).
      * @return Screen position in percent.
      */
     Vector2i ConvertScreenPercentToRetroPixels(const Vector2& pos);

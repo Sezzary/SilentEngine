@@ -23,7 +23,7 @@ namespace Silent::Math
 
     int WrapRange(int val, int min, int max)
     {
-        int range = max - min;
+        int range = (max - min) + 1;
         if (range <= 0)
         {
             return min;

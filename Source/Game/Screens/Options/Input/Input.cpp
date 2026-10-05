@@ -95,17 +95,15 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        auto widths = OptionsMenu_DrawEntries(KEY_INPUT_MENU_HEADING, ENTRIES);
-        OptionsMenu_DrawSelectionHighlight(widths);
+        OptionsMenu_DrawEntries(KEY_INPUT_MENU_HEADING, ENTRIES);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
-
-        OptionsMenu_UpdateConfig(ENTRIES);
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Input)
         {
             return;
         }
 
+        OptionsMenu_UpdateConfig(ENTRIES);
         OptionsMenu_UpdateSelection(ENTRIES.size());
 
         // Handle menu state.
@@ -121,13 +119,7 @@ namespace Silent::Game
             }
             case 1:
             {
-                /*if (input.GetAction(In::Enter).IsClicked())
-                {
-                    //Sd_SfxPlay(Sfx_Confirm, 0, Q8(0.25f));
-
-                    Game_StateStepSet(0, OptionsMenuState_EnterBrightness);
-                }
-                else */if (input.GetAction(In::Cancel).IsClicked())
+                if (input.GetAction(In::Cancel).IsClicked())
                 {
                     //Sd_SfxPlay(Sfx_Cancel, 0, Q8(0.25f));
 

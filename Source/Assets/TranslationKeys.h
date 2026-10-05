@@ -83,15 +83,21 @@ namespace Silent::Assets
     constexpr char KEY_GRAPHICS_MENU_VIGNETTE[]                 = "GraphicsMenu_Vignette";
     constexpr char KEY_GRAPHICS_MENU_CRT_FILTER[]               = "GraphicsMenu_CrtFilter";
 
-    constexpr char KEY_GAMEPLAY_MENU_HEADING[]      = "GameplayMenu_Heading";
-    constexpr char KEY_GAMEPLAY_MENU_AUTO_LOAD[]    = "GameplayMenu_AutoLoad";
-    constexpr char KEY_GAMEPLAY_MENU_SUBTITLES[]    = "GameplayMenu_Subtitles";
-    constexpr char KEY_GAMEPLAY_MENU_LANGUAGE[]     = "GameplayMenu_Language";
-    constexpr char KEY_GAMEPLAY_MENU_SOUND[]        = "GameplayMenu_Sound";
-    constexpr char KEY_GAMEPLAY_MENU_BGM_VOLUME[]   = "GameplayMenu_BgmVolume";
-    constexpr char KEY_GAMEPLAY_MENU_SE_VOLUME[]    = "GameplayMenu_SeVolume";
-    constexpr char KEY_GAMEPLAY_MENU_BLOOD_COLOR[]  = "GameplayMenu_BloodColor";
-    constexpr char KEY_GAMEPLAY_MENU_BULLE_ADJUST[] = "GameplayMenu_BulletAdjust";
+    constexpr char KEY_GAMEPLAY_MENU_HEADING[]            = "GameplayMenu_Heading";
+    constexpr char KEY_GAMEPLAY_MENU_AUTO_LOAD[]          = "GameplayMenu_AutoLoad";
+    constexpr char KEY_GAMEPLAY_MENU_SUBTITLES[]          = "GameplayMenu_Subtitles";
+    constexpr char KEY_GAMEPLAY_MENU_LANGUAGE[]           = "GameplayMenu_Language";
+    constexpr char KEY_GAMEPLAY_MENU_SOUND[]              = "GameplayMenu_Sound";
+    constexpr char KEY_GAMEPLAY_MENU_SOUND_STEREO[]       = "GameplayMenu_Sound_Stereo";
+    constexpr char KEY_GAMEPLAY_MENU_SOUND_MONAURAL[]     = "GameplayMenu_Sound_Monaural";
+    constexpr char KEY_GAMEPLAY_MENU_BGM_VOLUME[]         = "GameplayMenu_BgmVolume";
+    constexpr char KEY_GAMEPLAY_MENU_SE_VOLUME[]          = "GameplayMenu_SeVolume";
+    constexpr char KEY_GAMEPLAY_MENU_BLOOD_COLOR[]        = "GameplayMenu_BloodColor";
+    constexpr char KEY_GAMEPLAY_MENU_BLOOD_COLOR_NORMAL[] = "GameplayMenu_BloodColor_Normal";
+    constexpr char KEY_GAMEPLAY_MENU_BLOOD_COLOR_GREEN[]  = "GameplayMenu_BloodColor_Green";
+    constexpr char KEY_GAMEPLAY_MENU_BLOOD_COLOR_VIOLET[] = "GameplayMenu_BloodColor_Violet";
+    constexpr char KEY_GAMEPLAY_MENU_BLOOD_COLOR_BLACK[]  = "GameplayMenu_BloodColor_Black";
+    constexpr char KEY_GAMEPLAY_MENU_BULLET_ADJUST[]      = "GameplayMenu_BulletAdjust";
 
     constexpr char KEY_INPUT_MENU_HEADING[]                      = "InputMenu_Heading";
     constexpr char KEY_INPUT_MENU_BINDINGS_CONFIG[]              = "InputMenu_BindingsConfig";

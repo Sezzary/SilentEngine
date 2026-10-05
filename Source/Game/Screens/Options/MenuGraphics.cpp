@@ -59,23 +59,29 @@ namespace Silent::Game
         OptionsMenu_DrawConfigString(pos, std::to_string(val), isSelectedEntry);
     }
 
-    void OptionsMenu_DrawConfigBar(const Vector2i& pos, int activeCount)
+    /** @brief Submits a notched bar to draw.
+     *
+     * @param pos Screen position in retro pixels (320x240).
+     * @param activeCount Active notch count.
+     * @param isSelectedEntry Is highlighted by the cursor.
+     */
+    static void OptionsMenu_DrawConfigBar(const Vector2i& pos, int activeCount, bool isSelectedEntry)
     {
         constexpr int  DEPTH                = 24;
-        constexpr int  NOTCH_COUNT          = 16;
-        constexpr int  NOTCH_SPACE          = 5;
+        constexpr int  ARROW_SPACE          = 4;
+        constexpr int  NOTCH_SPACE          = 6;
         constexpr auto NOTCH_QUAD_BACK_BASE = s_Quad2d
         {
-            .vertex0 = Vector2i(0, -11),
+            .vertex0 = Vector2i(0, -13),
             .vertex1 = Vector2i(0,  0),
-            .vertex2 = Vector2i(4,  11),
-            .vertex3 = Vector2i(4,  0)
+            .vertex2 = Vector2i(5, -13),
+            .vertex3 = Vector2i(5,  0)
         };
         constexpr auto NOTCH_QUAD_FRONT_BASE = s_Quad2d
         {
-            .vertex0 = Vector2i(1, -9),
+            .vertex0 = Vector2i(1, -12),
             .vertex1 = Vector2i(1, -1),
-            .vertex2 = Vector2i(4, -9),
+            .vertex2 = Vector2i(4, -12),
             .vertex3 = Vector2i(4, -1)
         };
 
@@ -84,14 +90,17 @@ namespace Silent::Game
         constexpr auto COLOR_INACTIVE_FRONT = Color::From8Bit(131, 131, 131);
         constexpr auto COLOR_INACTIVE_BACK  = Color::From8Bit(65,  65,  65);
 
-        auto& renderer = g_App.GetRenderer();
+        const auto& input    = g_App.GetInput();
+        auto&       renderer = g_App.GetRenderer();
 
         // Submit notches.
         int submittedCount = 0;
-        for (int i = -(NOTCH_COUNT / 2); i <= (NOTCH_COUNT / 2); i++)
+        for (int i = -(BAR_NOTCH_COUNT / 2); i < (BAR_NOTCH_COUNT / 2); i++)
         {
-            bool isActive = submittedCount >= activeCount;
-            auto offset   = Vector2i(i * NOTCH_SPACE);
+            submittedCount++;
+
+            bool isActive = submittedCount <= activeCount;
+            auto offset   = Vector2i(i * NOTCH_SPACE, 0);
 
             // Submit back quad.
             auto backQuad = Shape2d::CreateQuad((pos + offset)+ NOTCH_QUAD_BACK_BASE.vertex0,
@@ -116,12 +125,73 @@ namespace Silent::Game
                                                  isActive ? COLOR_ACTIVE_FRONT : COLOR_INACTIVE_FRONT,
                                                  DEPTH - 1, ScaleMode::VerticalEdge, BlendMode::Opaque);
             renderer.SubmitShape2d(frontQuad);
+        }
 
-            submittedCount++;
+        // Submit arrows.
+        if (isSelectedEntry)
+        {
+            bool isLeftHeld  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+            bool isRightHeld = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
+
+            int arrowOffset = ((BAR_NOTCH_COUNT / 2) * NOTCH_SPACE) + ARROW_SPACE;
+            Options_Selection_ArrowDraw(pos - Vector2i(arrowOffset, 0),
+                                        SelectionArrowType::Left, isLeftHeld && !isRightHeld);
+            Options_Selection_ArrowDraw(pos + Vector2i(arrowOffset, 0),
+                                        SelectionArrowType::Right, isRightHeld && !isLeftHeld);
         }
     }
 
-    std::pair<int, int> OptionsMenu_DrawEntries(const std::string& headingStrKey, const std::vector<MenuEntry>& entries)
+    /** @brief Submits gold bullet points next to the listed entries and a highlight indicating the selected entry to
+     * draw in options menus.
+     *
+     * @param @todo
+     */
+    static void OptionsMenu_DrawSelectionHighlight(const std::pair<int, int>& widths)
+    {
+        constexpr int  ENTRY_OFFSET_X = 25;
+        constexpr auto LINE_BASE      = Vector2i(31, 72);
+        constexpr int  LINE_HEIGHT    = 16;
+
+        static auto selectionHighlightFrom = Vector2i::Zero;
+        static auto selectionHighlightTo   = Vector2i::Zero;
+
+        // @todo Account for scrolling.
+        // Set active selection highlight position references.
+        if (g_OptionsMenu_SelectionHighlightTimer == Q12(0.0f))
+        {
+            int entryIdxFrom = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
+            int entryIdxTo   = g_OptionsMenu_SelectedEntry     - g_OptionsMenu_VisibleEntriesStartIdx;
+
+            selectionHighlightFrom = LINE_BASE + Vector2i(ENTRY_OFFSET_X + widths.first,
+                                                          entryIdxFrom * LINE_HEIGHT);
+            selectionHighlightTo   = LINE_BASE + Vector2i(ENTRY_OFFSET_X + widths.second,
+                                                          entryIdxTo * LINE_HEIGHT);
+        }
+
+        // Compute sine-based interpolation alpha. @todo Sine-based math is wrong, using linear for now.
+        //q19_12 interpAlpha = Math_Sin(g_OptionsMenu_SelectionHighlightTimer);
+        q19_12 interpAlpha = Q12_DIV(g_OptionsMenu_SelectionHighlightTimer, LINE_CURSOR_TIMER_MAX);
+
+        // Draw active selection highlight.
+        auto highlightLine      = s_Line2d{};
+        highlightLine.vertex0.x = LINE_BASE.x;
+        highlightLine.vertex1.x = selectionHighlightFrom.x +
+                                  Q12_MULT(selectionHighlightTo.x - selectionHighlightFrom.x, interpAlpha);
+        highlightLine.vertex1.y = selectionHighlightFrom.y +
+                                  Q12_MULT(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha);
+        highlightLine.vertex0.y = highlightLine.vertex1.y;
+        Options_Selection_HighlightDraw(highlightLine);
+
+        // Submit bullet points.
+        for (int i = 0; i < VISIBLE_ENTRY_COUNT_MAX; i++)
+        {
+            auto bulletPos = LINE_BASE + Vector2i(0, i * LINE_HEIGHT);
+            bool isActive  = i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx);
+            Options_Selection_BulletPointDraw(bulletPos, isActive);
+        }
+    }
+
+    void OptionsMenu_DrawEntries(const std::string& headingStrKey, const std::vector<MenuEntry>& entries)
     {
         constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
         constexpr auto LINE_BASE       = Vector2i(56, 70);
@@ -199,56 +269,20 @@ namespace Silent::Game
             {
                 const auto& binding = std::get<MenuEntryBarBinding>(entry.Binding);
 
-                OptionsMenu_DrawConfigBar(pos + CONFIG_OFFSET, binding.GetValue());
+                int  activeCount = (int)floorf(((float)binding.GetValue() / (float)binding.Max) * BAR_NOTCH_COUNT);
+                bool isSelected  = i == g_OptionsMenu_SelectedEntry;
+                OptionsMenu_DrawConfigBar(pos + CONFIG_OFFSET, activeCount, isSelected);
+            }
+            else if (std::holds_alternative<MenuEntryStringsBinding>(entry.Binding))
+            {
+                const auto& binding = std::get<MenuEntryStringsBinding>(entry.Binding);
+
+                bool isSelected = i == g_OptionsMenu_SelectedEntry;
+                OptionsMenu_DrawConfigString(pos + CONFIG_OFFSET, binding.GetStrings()[binding.GetIdx()], isSelected);
             }
         }
 
-        return widths;
-    }
-
-    void OptionsMenu_DrawSelectionHighlight(const std::pair<int, int>& widths)
-    {
-        constexpr int  ENTRY_OFFSET_X = 25;
-        constexpr auto LINE_BASE      = Vector2i(31, 72);
-        constexpr int  LINE_HEIGHT    = 16;
-
-        static auto selectionHighlightFrom = Vector2i::Zero;
-        static auto selectionHighlightTo   = Vector2i::Zero;
-
-        // @todo Account for scrolling.
-        // Set active selection highlight position references.
-        if (g_OptionsMenu_SelectionHighlightTimer == Q12(0.0f))
-        {
-            int entryIdxFrom = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
-            int entryIdxTo   = g_OptionsMenu_SelectedEntry     - g_OptionsMenu_VisibleEntriesStartIdx;
-
-            selectionHighlightFrom = LINE_BASE + Vector2i(ENTRY_OFFSET_X + widths.first,
-                                                          entryIdxFrom * LINE_HEIGHT);
-            selectionHighlightTo   = LINE_BASE + Vector2i(ENTRY_OFFSET_X + widths.second,
-                                                          entryIdxTo * LINE_HEIGHT);
-        }
-
-        // Compute sine-based interpolation alpha. @todo Sine-based math is wrong, using linear for now.
-        //q19_12 interpAlpha = Math_Sin(g_OptionsMenu_SelectionHighlightTimer);
-        q19_12 interpAlpha = Q12_DIV(g_OptionsMenu_SelectionHighlightTimer, LINE_CURSOR_TIMER_MAX);
-
-        // Draw active selection highlight.
-        auto highlightLine      = s_Line2d{};
-        highlightLine.vertex0.x = LINE_BASE.x;
-        highlightLine.vertex1.x = selectionHighlightFrom.x +
-                                  Q12_MULT(selectionHighlightTo.x - selectionHighlightFrom.x, interpAlpha);
-        highlightLine.vertex1.y = selectionHighlightFrom.y +
-                                  Q12_MULT(selectionHighlightTo.y - selectionHighlightFrom.y, interpAlpha);
-        highlightLine.vertex0.y = highlightLine.vertex1.y;
-        Options_Selection_HighlightDraw(highlightLine);
-
-        // Submit bullet points.
-        for (int i = 0; i < VISIBLE_ENTRY_COUNT_MAX; i++)
-        {
-            auto bulletPos = LINE_BASE + Vector2i(0, i * LINE_HEIGHT);
-            bool isActive  = i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx);
-            Options_Selection_BulletPointDraw(bulletPos, isActive);
-        }
+        OptionsMenu_DrawSelectionHighlight(widths);
     }
 
     void OptionsMenu_ConfigDraw()

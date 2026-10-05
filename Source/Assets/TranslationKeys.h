@@ -133,15 +133,6 @@ namespace Silent::Assets
     constexpr char KEY_SYSTEM_MENU_TOASTS[]      = "SystemMenu_Toasts";
     constexpr char KEY_SYSTEM_MENU_PARALLELISM[] = "SystemMenu_Parallelism";
 
-    constexpr char KEY_OPTIONS_MENU_BRIGHT_LEVEL[] = "OptionsMenu_BrightLevel";
-    constexpr char KEY_OPTIONS_MENU_CONT_CONFIG[]  = "OptionsMenu_ContConfig";
-    constexpr char KEY_OPTIONS_MENU_VIBRATION[]    = "OptionsMenu_Vibration";
-    constexpr char KEY_OPTIONS_MENU_AUTO_LOAD[]    = "OptionsMenu_AutoLoad";
-    constexpr char KEY_OPTIONS_MENU_SOUND[]        = "OptionsMenu_Sound";
-    constexpr char KEY_OPTIONS_MENU_BGM_VOL[]      = "OptionsMenu_BgmVol";
-    constexpr char KEY_OPTIONS_MENU_SE_VOL[]       = "OptionsMenu_SeVol";
-    constexpr char KEY_OPTIONS_MENU_LANGUAGE[]     = "OptionsMenu_Language";
-
     constexpr char KEY_BRIGHT_MENU_PROMPT[] = "BrightMenu_Prompt";
     constexpr char KEY_BRIGHT_MENU_LEVEL[]  = "BrightMenu_Level";
 

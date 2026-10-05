@@ -34,7 +34,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_GAMEPLAY_MENU_LANGUAGE,
-            .Binding        = MenuEntryLangugeBinding::Bind(&Options::Language)
+            .Binding        = MenuEntryLanguageBinding::Bind(&Options::Language)
         },
         MenuEntry
         {

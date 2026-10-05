@@ -35,8 +35,8 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_INPUT_MENU_MOUSE_SENSITIVITY,
-            .Binding        = BindMenuEntryRange(&Options::MouseSensitivity,
-                                                 MOUSE_SENSITIVITY_MIN, MOUSE_SENSITIVITY_MAX)
+            .Binding        = MenuEntryRangeBinding::Bind(&Options::MouseSensitivity,
+                                                          MOUSE_SENSITIVITY_MIN, MOUSE_SENSITIVITY_MAX)
         },
         MenuEntry
         {

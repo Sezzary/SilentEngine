@@ -51,13 +51,12 @@ namespace Silent::Game
         static MenuEntryBarBinding Bind(int Options::* field, int max);
     };
 
-    struct MenuEntryLangugeBinding
+    struct MenuEntryLanguageBinding
     {
-        std::function<int()>                      GetIdx     = nullptr;
-        std::function<void(int)>                  SetIdx     = nullptr;
-        std::function<std::vector<std::string>()> GetStrings = nullptr;
+        std::function<int()>     GetLocaleIdx = nullptr;
+        std::function<void(int)> SetLocale    = nullptr;
 
-        static MenuEntryLangugeBinding Bind(std::string Options::* field);
+        static MenuEntryLanguageBinding Bind(std::string Options::* field);
     };
 
     using MenuEntryBinding = std::variant<MenuEntrySubmenuBinding,
@@ -65,7 +64,7 @@ namespace Silent::Game
                                           MenuEntryRangeBinding,
                                           MenuEntryEnumBinding,
                                           MenuEntryBarBinding,
-                                          MenuEntryLangugeBinding>;
+                                          MenuEntryLanguageBinding>;
 
     /** @brief Menu entry data. */
     struct MenuEntry

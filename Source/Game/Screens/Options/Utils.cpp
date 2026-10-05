@@ -65,11 +65,11 @@ namespace Silent::Game
         };
     }
 
-    MenuEntryLangugeBinding MenuEntryLangugeBinding::Bind(std::string Options::* field)
+    MenuEntryLanguageBinding MenuEntryLanguageBinding::Bind(std::string Options::* field)
     {
-        return MenuEntryLangugeBinding
+        return MenuEntryLanguageBinding
         {
-            .GetIdx = []()
+            .GetLocaleIdx = []()
             {
                 const auto& translator = g_App.GetTranslator();
 
@@ -84,27 +84,16 @@ namespace Silent::Game
 
                 return 0;
             },
-            .SetIdx = [](int idx)
+            .SetLocale = [field](int localeIdx)
             {
                 auto& options    = g_App.GetOptions().GetFront();
                 auto& translator = g_App.GetTranslator();
 
                 const auto& locales = translator.GetLocales();
 
-                options.Language = locales[idx].Name;
-                translator.SetActiveLocale(locales[idx].Name);
-            },
-            .GetStrings = []()
-            {
-                const auto& translator = g_App.GetTranslator();
-
-                auto names = std::vector<std::string>{};
-                for (const auto& locale : translator.GetLocales())
-                {
-                    names.push_back(locale.Name);
-                }
-
-                return names;
+                int wrappedLocaleIdx = WrapRange(localeIdx, locales.size() - 1);
+                options.*field       = locales[wrappedLocaleIdx].Name;
+                translator.SetActiveLocale(locales[wrappedLocaleIdx].Name);
             }
         };
     }
@@ -189,6 +178,28 @@ namespace Silent::Game
                 //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
                 binding.SetValue(binding.GetValue() + (binding.Max / BAR_NOTCH_COUNT));
+                isOptChanged = true;
+            }
+        }
+        else if (std::holds_alternative<MenuEntryLanguageBinding>(entry.Binding))
+        {
+            const auto& binding = std::get<MenuEntryLanguageBinding>(entry.Binding);
+
+            const auto& translator = g_App.GetTranslator();
+            const auto& locales    = translator.GetLocales();
+
+            if (input.GetAction(In::Left).IsClicked(ACTION_HALF_STATE))
+            {
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetLocale(binding.GetLocaleIdx() - 1);
+                isOptChanged = true;
+            }
+            else if (input.GetAction(In::Right).IsClicked(ACTION_HALF_STATE))
+            {
+                //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
+
+                binding.SetLocale(binding.GetLocaleIdx() + 1);
                 isOptChanged = true;
             }
         }

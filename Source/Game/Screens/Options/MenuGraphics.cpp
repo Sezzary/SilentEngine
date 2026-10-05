@@ -273,9 +273,9 @@ namespace Silent::Game
                 bool isSelected  = i == g_OptionsMenu_SelectedEntry;
                 OptionsMenu_DrawConfigBar(pos + CONFIG_OFFSET, activeCount, isSelected);
             }
-            else if (std::holds_alternative<MenuEntryStringsBinding>(entry.Binding))
+            else if (std::holds_alternative<MenuEntryLangugeBinding>(entry.Binding))
             {
-                const auto& binding = std::get<MenuEntryStringsBinding>(entry.Binding);
+                const auto& binding = std::get<MenuEntryLangugeBinding>(entry.Binding);
 
                 bool isSelected = i == g_OptionsMenu_SelectedEntry;
                 OptionsMenu_DrawConfigString(pos + CONFIG_OFFSET, binding.GetStrings()[binding.GetIdx()], isSelected);

@@ -30,7 +30,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_INPUT_MENU_VIBRATION,
-            .Binding        = BindMenuEntryBool(&Options::EnableVibration)
+            .Binding        = MenuEntryBoolBinding::Bind(&Options::EnableVibration)
         },
         MenuEntry
         {
@@ -41,7 +41,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_INPUT_MENU_WEAPON_CONTROL,
-            .Binding        = BindMenuEntryEnum(&Options::WeaponControl,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::WeaponControl,
             {
                 KEY_INPUT_MENU_WEAPON_CONTROL_SWITCH,
                 KEY_INPUT_MENU_WEAPON_CONTROL_PRESS
@@ -50,7 +50,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_INPUT_MENU_VIEW_CONTROL,
-            .Binding        = BindMenuEntryEnum(&Options::ViewControl,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::ViewControl,
             {
                 KEY_INPUT_MENU_VIEW_CONTROL_NORMAL,
                 KEY_INPUT_MENU_VIEW_CONTROL_REVERSE
@@ -59,7 +59,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_INPUT_MENU_RETREAT_TURN_CONTROL,
-            .Binding        = BindMenuEntryEnum(&Options::RetreatTurnControl,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::RetreatTurnControl,
             {
                 KEY_INPUT_MENU_RETREAT_TURN_CONTROL_NORMAL,
                 KEY_INPUT_MENU_RETREAT_TURN_CONTROL_REVERSE
@@ -68,7 +68,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_INPUT_MENU_WALK_RUN_CONTROL,
-            .Binding        = BindMenuEntryEnum(&Options::WalkRunControl,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::WalkRunControl,
             {
                 KEY_INPUT_MENU_WALK_RUN_CONTROL_NORMAL,
                 KEY_INPUT_MENU_WALK_RUN_CONTROL_REVERSE
@@ -77,12 +77,12 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_INPUT_MENU_AUTO_AIMING,
-            .Binding        = BindMenuEntryBool(&Options::DisableAutoAiming)
+            .Binding        = MenuEntryBoolBinding::Bind(&Options::DisableAutoAiming)
         },
         MenuEntry
         {
             .EntryStringKey = KEY_INPUT_MENU_VIEW_MODE,
-            .Binding        = BindMenuEntryEnum(&Options::ViewMode,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::ViewMode,
             {
                 KEY_INPUT_MENU_VIEW_MODE_NORMAL,
                 KEY_INPUT_MENU_VIEW_MODE_SELF_VIEW
@@ -103,15 +103,15 @@ namespace Silent::Game
             return;
         }
 
-        OptionsMenu_UpdateConfig(ENTRIES);
-        OptionsMenu_UpdateSelection(ENTRIES.size());
+        Options_UpdateConfig(ENTRIES);
+        Options_UpdateSelection(ENTRIES.size());
 
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])
         {
             case 0:
             {
-                OptionsMenu_ResetSelection();
+                Options_ResetSelection();
 
                 ScreenFade_Start(true, true, false);
                 Game_StateStepIncrement(1);
@@ -133,7 +133,7 @@ namespace Silent::Game
                 // Switch to previous menu.
                 if (ScreenFade_IsFinished())
                 {
-                    OptionsMenu_ResetSelection(MainOptionsMenuEntry_Input);
+                    Options_ResetSelection(MainOptionsMenuEntry_Input);
 
                     ScreenFade_Start(true, true, false);
                     Game_StateStepSet(0, OptionsMenuState_LeaveInput);

@@ -24,12 +24,12 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_SYSTEM_MENU_TOASTS,
-            .Binding        = BindMenuEntryBool(&Options::EnableToasts)
+            .Binding        = MenuEntryBoolBinding::Bind(&Options::EnableToasts)
         },
         MenuEntry
         {
             .EntryStringKey = KEY_SYSTEM_MENU_PARALLELISM,
-            .Binding        = BindMenuEntryBool(&Options::EnableParallelism)
+            .Binding        = MenuEntryBoolBinding::Bind(&Options::EnableParallelism)
         }
     };
 
@@ -46,15 +46,15 @@ namespace Silent::Game
             return;
         }
 
-        OptionsMenu_UpdateConfig(ENTRIES);
-        OptionsMenu_UpdateSelection(ENTRIES.size());
+        Options_UpdateConfig(ENTRIES);
+        Options_UpdateSelection(ENTRIES.size());
 
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])
         {
             case 0:
             {
-                OptionsMenu_ResetSelection();
+                Options_ResetSelection();
 
                 ScreenFade_Start(true, true, false);
                 Game_StateStepIncrement(1);
@@ -76,7 +76,7 @@ namespace Silent::Game
                 // Switch to previous menu.
                 if (ScreenFade_IsFinished())
                 {
-                    OptionsMenu_ResetSelection(MainOptionsMenuEntry_System);
+                    Options_ResetSelection(MainOptionsMenuEntry_System);
 
                     ScreenFade_Start(true, true, false);
                     Game_StateStepSet(0, OptionsMenuState_LeaveSystem);

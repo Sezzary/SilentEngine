@@ -24,61 +24,22 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_GAMEPLAY_MENU_AUTO_LOAD,
-            .Binding        = BindMenuEntryBool(&Options::EnableAutoLoad)
+            .Binding        = MenuEntryBoolBinding::Bind(&Options::EnableAutoLoad)
         },
         MenuEntry
         {
             .EntryStringKey = KEY_GAMEPLAY_MENU_SUBTITLES,
-            .Binding        = BindMenuEntryBool(&Options::EnableSubtitles)
+            .Binding        = MenuEntryBoolBinding::Bind(&Options::EnableSubtitles)
         },
         MenuEntry
         {
             .EntryStringKey = KEY_GAMEPLAY_MENU_LANGUAGE,
-            .Binding        = MenuEntryStringsBinding
-            {
-                .GetIdx = []()
-                {
-                    const auto& translator = g_App.GetTranslator();
-
-                    const auto& locales = translator.GetLocales();
-                    for (int i = 0; i < locales.size(); i++)
-                    {
-                        if (locales[i].Name == translator.GetActiveLocaleName())
-                        {
-                            return i;
-                        }
-                    }
-
-                    return 0;
-                },
-                .SetIdx = [](int idx)
-                {
-                    auto& options    = g_App.GetOptions().GetFront();
-                    auto& translator = g_App.GetTranslator();
-
-                    const auto& locales = translator.GetLocales();
-
-                    options.Language = locales[idx].Name;
-                    translator.SetActiveLocale(locales[idx].Name);
-                },
-                .GetStrings = []()
-                {
-                    const auto& translator = g_App.GetTranslator();
-
-                    auto names = std::vector<std::string>{};
-                    for (const auto& locale : translator.GetLocales())
-                    {
-                        names.push_back(locale.Name);
-                    }
-
-                    return names;
-                }
-            }
+            .Binding        = MenuEntryLangugeBinding::Bind(&Options::Language)
         },
         MenuEntry
         {
             .EntryStringKey = KEY_GAMEPLAY_MENU_SOUND,
-            .Binding        = BindMenuEntryEnum(&Options::Sound,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::Sound,
             {
                 KEY_GAMEPLAY_MENU_SOUND_STEREO,
                 KEY_GAMEPLAY_MENU_SOUND_MONAURAL
@@ -87,17 +48,17 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_GAMEPLAY_MENU_BGM_VOLUME,
-            .Binding        = BindMenuEntryBar(&Options::BgmVolume, SOUND_VOLUME_MAX)
+            .Binding        = MenuEntryBarBinding::Bind(&Options::BgmVolume, SOUND_VOLUME_MAX)
         },
         MenuEntry
         {
             .EntryStringKey = KEY_GAMEPLAY_MENU_SE_VOLUME,
-            .Binding        = BindMenuEntryBar(&Options::SeVolume, SOUND_VOLUME_MAX)
+            .Binding        = MenuEntryBarBinding::Bind(&Options::SeVolume, SOUND_VOLUME_MAX)
         },
         MenuEntry
         {
             .EntryStringKey = KEY_GAMEPLAY_MENU_BLOOD_COLOR,
-            .Binding        = BindMenuEntryEnum(&Options::BloodColor,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::BloodColor,
             {
                 KEY_GAMEPLAY_MENU_BLOOD_COLOR_NORMAL,
                 KEY_GAMEPLAY_MENU_BLOOD_COLOR_GREEN,
@@ -108,7 +69,7 @@ namespace Silent::Game
         //MenuEntry
         //{
         //    .EntryStringKey = KEY_GAMEPLAY_MENU_BULLET_ADJUST,
-        //    .Binding        = BindMenuEntryEnum(&Options::BulletAdjust,
+        //    .Binding        = MenuEntryEnumBinding::Bind(&Options::BulletAdjust,
         //    {
         //        // @todo
         //    })
@@ -128,15 +89,15 @@ namespace Silent::Game
             return;
         }
 
-        OptionsMenu_UpdateConfig(ENTRIES);
-        OptionsMenu_UpdateSelection(ENTRIES.size());
+        Options_UpdateConfig(ENTRIES);
+        Options_UpdateSelection(ENTRIES.size());
 
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])
         {
             case 0:
             {
-                OptionsMenu_ResetSelection();
+                Options_ResetSelection();
 
                 ScreenFade_Start(true, true, false);
                 Game_StateStepIncrement(1);
@@ -158,7 +119,7 @@ namespace Silent::Game
                 // Switch to previous menu.
                 if (ScreenFade_IsFinished())
                 {
-                    OptionsMenu_ResetSelection(MainOptionsMenuEntry_Gameplay);
+                    Options_ResetSelection(MainOptionsMenuEntry_Gameplay);
 
                     ScreenFade_Start(true, true, false);
                     Game_StateStepSet(0, OptionsMenuState_LeaveGameplay);

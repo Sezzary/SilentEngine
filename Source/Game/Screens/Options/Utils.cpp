@@ -12,7 +12,104 @@ using namespace Silent::Services;
 
 namespace Silent::Game
 {
-    void OptionsMenu_UpdateConfig(const std::vector<MenuEntry>& entries)
+    MenuEntryBoolBinding MenuEntryBoolBinding::Bind(bool Options::* field)
+    {
+        return MenuEntryBoolBinding
+        {
+            .GetState = [field]()
+            {
+                const auto& options = g_App.GetOptions().GetBack();
+                return options.*field;
+            },
+            .SetState = [field](bool state)
+            {
+                auto& options = g_App.GetOptions().GetFront();
+                options.*field = state;
+            }
+        };
+    }
+
+    MenuEntryRangeBinding MenuEntryRangeBinding::Bind(int Options::* field, int min, int max)
+    {
+        return MenuEntryRangeBinding
+        {
+            .GetValue = [field]()
+            {
+                const auto& options = g_App.GetOptions().GetBack();
+                return options.*field;
+            },
+            .SetValue = [field, min, max](int val)
+            {
+                auto& options  = g_App.GetOptions().GetFront();
+                options.*field = WrapRange(val, min, max);
+            },
+            .Max = max
+        };
+    }
+
+    MenuEntryBarBinding MenuEntryBarBinding::Bind(int Options::* field, int max)
+    {
+        return MenuEntryBarBinding
+        {
+            .GetValue = [field]()
+            {
+                const auto& options = g_App.GetOptions().GetBack();
+                return options.*field;
+            },
+            .SetValue = [field, max](int val)
+            {
+                auto& options  = g_App.GetOptions().GetFront();
+                options.*field = std::clamp(val, 0, max);
+            },
+            .Max = max
+        };
+    }
+
+    MenuEntryLangugeBinding MenuEntryLangugeBinding::Bind(std::string Options::* field)
+    {
+        return MenuEntryLangugeBinding
+        {
+            .GetIdx = []()
+            {
+                const auto& translator = g_App.GetTranslator();
+
+                const auto& locales = translator.GetLocales();
+                for (int i = 0; i < locales.size(); i++)
+                {
+                    if (locales[i].Name == translator.GetActiveLocaleName())
+                    {
+                        return i;
+                    }
+                }
+
+                return 0;
+            },
+            .SetIdx = [](int idx)
+            {
+                auto& options    = g_App.GetOptions().GetFront();
+                auto& translator = g_App.GetTranslator();
+
+                const auto& locales = translator.GetLocales();
+
+                options.Language = locales[idx].Name;
+                translator.SetActiveLocale(locales[idx].Name);
+            },
+            .GetStrings = []()
+            {
+                const auto& translator = g_App.GetTranslator();
+
+                auto names = std::vector<std::string>{};
+                for (const auto& locale : translator.GetLocales())
+                {
+                    names.push_back(locale.Name);
+                }
+
+                return names;
+            }
+        };
+    }
+
+    void Options_UpdateConfig(const std::vector<MenuEntry>& entries)
     {
         const auto& input   = g_App.GetInput();
         auto&       options = g_App.GetOptions();
@@ -78,7 +175,7 @@ namespace Silent::Game
         {
             const auto& binding = std::get<MenuEntryBarBinding>(entry.Binding);
 
-            if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC * 0.25f, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
+            if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC * 0.5f, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
                 binding.GetValue() > 0)
             {
                 //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
@@ -86,7 +183,7 @@ namespace Silent::Game
                 binding.SetValue(binding.GetValue() - (binding.Max / BAR_NOTCH_COUNT));
                 isOptChanged = true;
             }
-            else if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC * 0.25f, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
+            else if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC * 0.5f, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
                      binding.GetValue() < binding.Max)
             {
                 //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
@@ -107,7 +204,7 @@ namespace Silent::Game
         }
     }
 
-    void OptionsMenu_UpdateSelection(int entryCount)
+    void Options_UpdateSelection(int entryCount)
     {
         const auto& input = g_App.GetInput();
 
@@ -154,7 +251,7 @@ namespace Silent::Game
         }
     }
 
-    void OptionsMenu_ResetSelection(int selectedEntryIdx)
+    void Options_ResetSelection(int selectedEntryIdx)
     {
         g_OptionsMenu_SelectedEntry              = 
         g_OptionsMenu_PrevSelectedEntry          = selectedEntryIdx;
@@ -177,15 +274,15 @@ namespace Silent::Game
             return;
         }
 
-        OptionsMenu_UpdateConfig(entries);
-        OptionsMenu_UpdateSelection(entries.size());
+        Options_UpdateConfig(entries);
+        Options_UpdateSelection(entries.size());
 
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[stateStep])
         {
             case 0:
             {
-                OptionsMenu_ResetSelection();
+                Options_ResetSelection();
 
                 //ScreenFade_Start(true, true, false);
                 Game_StateStepIncrement(stateStep);
@@ -207,7 +304,7 @@ namespace Silent::Game
                 // Switch to previous menu.
                 /*if (ScreenFade_IsFinished())
                 {
-                    OptionsMenu_ResetSelection(prevMenuEntryIdx);
+                    Options_ResetSelection(prevMenuEntryIdx);
 
                     ScreenFade_Start(true, true, false);
                     Game_StateStepSet(stateStep - 1, leaveState);

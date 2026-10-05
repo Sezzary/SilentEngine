@@ -24,12 +24,12 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_ENHANCEMENTS_MENU_SKIP_LOGOS,
-            .Binding        = BindMenuEntryBool(&Options::SkipLogos)
+            .Binding        = MenuEntryBoolBinding::Bind(&Options::SkipLogos)
         },
         MenuEntry
         {
             .EntryStringKey = KEY_ENHANCEMENTS_MENU_PAPER_MAP_QUALITY,
-            .Binding        = BindMenuEntryEnum(&Options::PaperMapQuality,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::PaperMapQuality,
             {
                 KEY_ENHANCEMENTS_MENU_PAPER_MAP_QUALITY_RETRO,
                 KEY_ENHANCEMENTS_MENU_PAPER_MAP_QUALITY_MODERN
@@ -38,7 +38,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_ENHANCEMENTS_MENU_DIALOG_PAUSE,
-            .Binding        = BindMenuEntryEnum(&Options::DialogPause,
+            .Binding        = MenuEntryEnumBinding::Bind(&Options::DialogPause,
             {
                 KEY_ENHANCEMENTS_MENU_DIALOG_PAUSE_RETRO,
                 KEY_ENHANCEMENTS_MENU_DIALOG_PAUSE_REFINED
@@ -59,15 +59,15 @@ namespace Silent::Game
             return;
         }
 
-        OptionsMenu_UpdateConfig(ENTRIES);
-        OptionsMenu_UpdateSelection(ENTRIES.size());
+        Options_UpdateConfig(ENTRIES);
+        Options_UpdateSelection(ENTRIES.size());
 
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[1])
         {
             case 0:
             {
-                OptionsMenu_ResetSelection();
+                Options_ResetSelection();
 
                 ScreenFade_Start(true, true, false);
                 Game_StateStepIncrement(1);
@@ -89,7 +89,7 @@ namespace Silent::Game
                 // Switch to previous menu.
                 if (ScreenFade_IsFinished())
                 {
-                    OptionsMenu_ResetSelection(MainOptionsMenuEntry_Enhancements);
+                    Options_ResetSelection(MainOptionsMenuEntry_Enhancements);
 
                     ScreenFade_Start(true, true, false);
                     Game_StateStepSet(0, OptionsMenuState_LeaveEnhancements);

@@ -97,7 +97,7 @@ namespace Silent::Game
             return;
         }
 
-        OptionsMenu_UpdateSelection(MainOptionsMenuEntry_Count);
+        Options_UpdateSelection(MainOptionsMenuEntry_Count);
 
         switch (g_OptionsMenu_SelectedEntry)
         {

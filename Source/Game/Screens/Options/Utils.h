@@ -28,8 +28,9 @@ namespace Silent::Game
         std::function<void(int)> SetValue = nullptr;
         int                      Min      = 0;
         int                      Max      = 0;
+        std::string              Prefix   = {};
 
-        static MenuEntryRangeBinding Bind(int Options::* field, int min, int max);
+        static MenuEntryRangeBinding Bind(int Options::* field, int min, int max, const std::string& prefix = {});
     };
 
     struct MenuEntryEnumBinding

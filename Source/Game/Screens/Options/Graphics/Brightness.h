@@ -5,5 +5,5 @@
 namespace Silent::Game
 {
     /** @brief Controller for the brightness options menu. */
-    void ControlBrightnessOptionsMenu();
+    void Options_ControlBrightnessMenu();
 }

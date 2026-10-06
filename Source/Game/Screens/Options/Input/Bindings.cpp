@@ -19,7 +19,7 @@ namespace Silent::Game
 {
     static bool g_BindingsMenu_IsOnActionsPane = false;
 
-    void Options_BindingsMenu_Control()
+    void Options_ControlBindingsConfigMenu()
     {
         static auto selectedEntries = s_BindingsMenu_SelectedEntries{};
 

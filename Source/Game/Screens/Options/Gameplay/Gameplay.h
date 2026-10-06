@@ -2,5 +2,5 @@
 
 namespace Silent::Game
 {
-    void Options_GameplayMenu_Control();
+    void Options_ControlGameplayMenu();
 }

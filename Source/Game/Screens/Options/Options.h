@@ -106,10 +106,4 @@ namespace Silent::Game
 
     /** @brief Options menu game state handler. */
     void GameState_Options_Update();
-
-    /** @brief Controller for the options menu. */
-    void OptionsMenu_Control();
-
-    /** @brief Controller for the extra options menu. */
-    void Options_ExtraOptionsMenu_Control();
 }

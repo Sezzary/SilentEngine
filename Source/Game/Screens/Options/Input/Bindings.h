@@ -43,14 +43,14 @@ namespace Silent::Game
     struct s_BindingsMenu_SelectedEntries
     {
         e_BindingsMenuState preset;
-        e_InputAction         action;
+        e_InputAction       action;
     };
 
-    /** @brief Controller for the controller configuration options menu.
+    /** @brief Controller for the bindings configuration options menu.
      *
      * Handles the menu state, user input, SFX, and graphics drawing.
     */
-    void Options_BindingsMenu_Control();
+    void Options_ControlBindingsConfigMenu();
 
     /** @brief Changes the button mapping based on the input and updates the configuration.
      *

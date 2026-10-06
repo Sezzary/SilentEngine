@@ -47,7 +47,7 @@ namespace Silent::Game
         }
     }
 
-    void ControlBrightnessOptionsMenu()
+    void Options_ControlBrightnessMenu()
     {
         constexpr auto PROMPT_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 6);
         constexpr auto ENTRY_STR_POS  = Vector2i(SCREEN_WIDTH / 4, (SCREEN_HEIGHT / 12) * 11);
@@ -148,7 +148,7 @@ namespace Silent::Game
         Gfx_StringDraw("{M}" + std::to_string(options->BrightnessLevel));
 
         // Submit arrows.
-        Options_Selection_ArrowDraw(CONFIG_STR_POS - ARROW_OFFSET, SelectionArrowType::Left,  isLeftHeld  && !isRightHeld);
-        Options_Selection_ArrowDraw(CONFIG_STR_POS + ARROW_OFFSET, SelectionArrowType::Right, isRightHeld && !isLeftHeld);
+        Options_DrawArrow(CONFIG_STR_POS - ARROW_OFFSET, SelectionArrowType::Left,  isLeftHeld  && !isRightHeld);
+        Options_DrawArrow(CONFIG_STR_POS + ARROW_OFFSET, SelectionArrowType::Right, isRightHeld && !isLeftHeld);
     }
 }

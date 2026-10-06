@@ -29,7 +29,7 @@ namespace Silent::Game
         };
     }
 
-    MenuEntryRangeBinding MenuEntryRangeBinding::Bind(int Options::* field, int min, int max)
+    MenuEntryRangeBinding MenuEntryRangeBinding::Bind(int Options::* field, int min, int max, const std::string& prefix)
     {
         return MenuEntryRangeBinding
         {
@@ -43,7 +43,9 @@ namespace Silent::Game
                 auto& options  = g_App.GetOptions().GetFront();
                 options.*field = WrapRange(val, min, max);
             },
-            .Max = max
+            .Min    = min,
+            .Max    = max,
+            .Prefix = prefix
         };
     }
 
@@ -277,7 +279,7 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        OptionsMenu_DrawEntries(headingKey, entries);
+        Options_DrawEntries(headingKey, entries);
         //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         if (g_GameWork.gameStateSteps[0] != state)

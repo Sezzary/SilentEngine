@@ -79,7 +79,7 @@ namespace Silent::Assets
     constexpr char KEY_GRAPHICS_MENU_DITHERING_SCALE_NATIVE[]   = "GraphicsMenu_DitheringScale_Native";
     constexpr char KEY_GRAPHICS_MENU_AMBIENT_OCCLUSION[]        = "GraphicsMenu_AmbientOcclusion";
     constexpr char KEY_GRAPHICS_MENU_VERTEX_JITTER[]            = "GraphicsMenu_VertexJitter";
-    constexpr char KEY_GRAPHICS_MENU_FILM_FRAIN[]               = "GraphicsMenu_FilmGrain";
+    constexpr char KEY_GRAPHICS_MENU_FILM_GRAIN[]               = "GraphicsMenu_FilmGrain";
     constexpr char KEY_GRAPHICS_MENU_VIGNETTE[]                 = "GraphicsMenu_Vignette";
     constexpr char KEY_GRAPHICS_MENU_CRT_FILTER[]               = "GraphicsMenu_CrtFilter";
 

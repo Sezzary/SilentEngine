@@ -155,6 +155,6 @@ namespace Silent::Math
     template <typename Enum>
     Enum WrapEnum(int idx)
     {
-        return (Enum)WrapRange(idx, (int)Enum::Count);
+        return (Enum)WrapRange(idx, (int)Enum::Count - 1);
     }
 }

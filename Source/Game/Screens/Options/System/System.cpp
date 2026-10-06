@@ -33,12 +33,12 @@ namespace Silent::Game
         }
     };
 
-    void Options_SystemMenu_Control()
+    void Options_ControlSystemMenu()
     {
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        OptionsMenu_DrawEntries(KEY_SYSTEM_MENU_HEADING, ENTRIES);
+        Options_DrawEntries(KEY_SYSTEM_MENU_HEADING, ENTRIES);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_System)

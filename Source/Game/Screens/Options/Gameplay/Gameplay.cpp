@@ -66,22 +66,19 @@ namespace Silent::Game
                 KEY_GAMEPLAY_MENU_BLOOD_COLOR_BLACK
             })
         },
-        //MenuEntry
-        //{
-        //    .EntryStringKey = KEY_GAMEPLAY_MENU_BULLET_ADJUST,
-        //    .Binding        = MenuEntryEnumBinding::Bind(&Options::BulletAdjust,
-        //    {
-        //        // @todo
-        //    })
-        //}
+        MenuEntry
+        {
+            .EntryStringKey = KEY_GAMEPLAY_MENU_BULLET_ADJUST,
+            .Binding        = MenuEntryRangeBinding::Bind(&Options::BulletAdjust, 1, 6, "x")
+        }
     };
 
-    void Options_GameplayMenu_Control()
+    void Options_ControlGameplayMenu()
     {
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        OptionsMenu_DrawEntries(KEY_GAMEPLAY_MENU_HEADING, ENTRIES);
+        Options_DrawEntries(KEY_GAMEPLAY_MENU_HEADING, ENTRIES);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Gameplay)

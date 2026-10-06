@@ -224,12 +224,8 @@ namespace Silent::Game
 
         // Submit selection arrows. @todo Work out proper width.
         auto arrowOffset = Vector2i((int)ceilf(width * 0.5f) + ARROW_OFFSET_BUFFER_X, 0);
-        Options_Selection_ArrowDraw(LABEL_POS - arrowOffset,
-                                    SelectionArrowType::Left,
-                                    input.GetAction(In::Left).IsHeld());
-        Options_Selection_ArrowDraw(LABEL_POS + arrowOffset,
-                                    SelectionArrowType::Right,
-                                    input.GetAction(In::Right).IsHeld());
+        Options_DrawArrow(LABEL_POS - arrowOffset, SelectionArrowType::Left, input.GetAction(In::Left).IsHeld());
+        Options_DrawArrow(LABEL_POS + arrowOffset, SelectionArrowType::Right, input.GetAction(In::Right).IsHeld());
 
         // Submit language comment text.
         Gfx_StringDraw("{L0}" + langComment, INT_MAX, true);

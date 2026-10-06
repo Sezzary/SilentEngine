@@ -134,7 +134,7 @@ namespace Silent::Game
         },
         MenuEntry
         {
-            .EntryStringKey = KEY_GRAPHICS_MENU_FILM_FRAIN,
+            .EntryStringKey = KEY_GRAPHICS_MENU_FILM_GRAIN,
             .Binding        = MenuEntryBoolBinding::Bind(&Options::EnableFilmGrain)
         },
         MenuEntry
@@ -149,12 +149,12 @@ namespace Silent::Game
         }
     };
 
-    void OptionsMenu_ControlGraphicsMenu()
+    void Options_ControlGraphicsMenu()
     {
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
-        OptionsMenu_DrawEntries(KEY_GRAPHICS_MENU_HEADING, ENTRIES);
+        Options_DrawEntries(KEY_GRAPHICS_MENU_HEADING, ENTRIES);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         if (g_GameWork.gameStateSteps[0] != OptionsMenuState_Graphics)
@@ -182,6 +182,7 @@ namespace Silent::Game
                 {
                     //Sd_SfxPlay(Sfx_Confirm, 0, Q8(0.25f));
 
+                    ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterBrightness);
                 }
                 else if (input.GetAction(In::Cancel).IsClicked())

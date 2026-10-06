@@ -12,7 +12,7 @@ using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
-    void Options_Selection_HighlightDraw(const s_Line2d& line)
+    void Options_DrawHighlight(const s_Line2d& line)
     {
         constexpr int  DEPTH              = 36;
         constexpr auto COLOR_LINE_START   = Color::From8Bit(176, 176, 176);
@@ -38,12 +38,13 @@ namespace Silent::Game
         renderer.SubmitShape2d(shadowPrim);
     }
 
-    void Options_Selection_ArrowDraw(const Vector2i& pos, SelectionArrowType type, bool hasOutline)
+    void Options_DrawArrow(const Vector2i& pos, SelectionArrowType type, bool hasOutline)
     {
         constexpr int  DEPTH       = 40;
         constexpr auto COLOR_FLASH = Color::From8Bit(0, 112, 255);
         constexpr auto COLOR_CYAN  = Color::From8Bit(0, 240, 240);
         constexpr auto POS_OFFSET  = Vector2i(0, 2);
+
         constexpr auto ARROW_BASES = std::array<s_Triangle2d, (int)SelectionArrowType::Count>
         {
             s_Triangle2d
@@ -124,7 +125,7 @@ namespace Silent::Game
         auto color1 = Color::Clear;
         auto color2 = Color::Clear;
 
-        // Set flashing blue-cyan color. @todo Use constant. Base blue is wrong?
+        // Set flashing blue-cyan color. @todo Use constant. Base blue is wrong.
         color0 = Color::From8Bit(0, 112 + (colorEnd * 4), 255);
         color1 =
         color2 = Color::From8Bit(0, 112 + (colorStart * 4), 255);
@@ -206,9 +207,10 @@ namespace Silent::Game
         }
     }
 
-    void Options_Selection_BulletPointDraw(const Vector2i& pos, bool isActive)
+    void Options_DrawBulletPoint(const Vector2i& pos, bool isActive)
     {
-        constexpr int  DEPTH                 = 24;
+        constexpr int DEPTH = 24;
+
         constexpr auto BULLET_QUAD_BACK_BASE = s_Quad2d
         {
             .vertex0 = Vector2i(0,  -14),

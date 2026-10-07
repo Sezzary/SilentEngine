@@ -233,7 +233,8 @@ namespace Silent::Game
             return;
         }
 
-        g_OptionsMenu_PrevSelectedEntry          = g_OptionsMenu_SelectedEntry;
+        g_OptionsMenu_PrevSelectedEntry                   = g_OptionsMenu_SelectedEntry;
+        g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
         g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
         // Move selection cursor up/down.
@@ -254,6 +255,7 @@ namespace Silent::Game
 
         // Update visible entries region.
         if (g_OptionsMenu_SelectedEntry < (g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_SCROLL_BUFFER))
+        if (g_OptionsMenu_SelectedEntry < (g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_SCROLL_BUFFER))
         {
             g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
             g_OptionsMenu_VisibleEntriesStartIdx     = std::max(g_OptionsMenu_SelectedEntry - VISIBLE_ENTRY_SCROLL_BUFFER,
@@ -271,6 +273,10 @@ namespace Silent::Game
 
     void Options_ResetSelection(int selectedEntryIdx)
     {
+        g_OptionsMenu_SelectedEntry           = 
+        g_OptionsMenu_PrevSelectedEntry       = selectedEntryIdx;
+        g_OptionsMenu_VisibleEntriesStartIdx  = 0;
+        g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
         g_OptionsMenu_SelectedEntry           = 
         g_OptionsMenu_PrevSelectedEntry       = selectedEntryIdx;
         g_OptionsMenu_VisibleEntriesStartIdx  = 0;

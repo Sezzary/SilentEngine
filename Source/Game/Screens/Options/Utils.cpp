@@ -233,7 +233,8 @@ namespace Silent::Game
             return;
         }
 
-        g_OptionsMenu_PrevSelectedEntry = g_OptionsMenu_SelectedEntry;
+        g_OptionsMenu_PrevSelectedEntry          = g_OptionsMenu_SelectedEntry;
+        g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
         // Move selection cursor up/down.
         if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
@@ -252,25 +253,25 @@ namespace Silent::Game
         }
 
         // Update visible entries region.
-        if (g_OptionsMenu_SelectedEntry < (g_OptionsMenu_VisibleEntriesStartIdx + 1))
+        if (g_OptionsMenu_SelectedEntry < (g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_SCROLL_BUFFER))
         {
-            g_OptionsMenu_VisibleEntriesStartIdx = std::max(g_OptionsMenu_SelectedEntry - 1, 0);
+            g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
+            g_OptionsMenu_VisibleEntriesStartIdx     = std::max(g_OptionsMenu_SelectedEntry - 1, 0);
         }
-        else if (g_OptionsMenu_SelectedEntry > ((g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_COUNT_MAX) - 2))
+        else if (g_OptionsMenu_SelectedEntry > (((g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_COUNT_MAX) - VISIBLE_ENTRY_SCROLL_BUFFER) - 1))
         {
-            int startIdxMax                      = std::max(0, entryCount - VISIBLE_ENTRY_COUNT_MAX);
-            g_OptionsMenu_VisibleEntriesStartIdx = std::min((g_OptionsMenu_SelectedEntry - VISIBLE_ENTRY_COUNT_MAX) + 2, 
-                                                            startIdxMax);
+            g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
+            g_OptionsMenu_VisibleEntriesStartIdx     = std::min(((g_OptionsMenu_SelectedEntry - VISIBLE_ENTRY_COUNT_MAX) + VISIBLE_ENTRY_SCROLL_BUFFER) + 1, 
+                                                                std::max(0, entryCount - VISIBLE_ENTRY_COUNT_MAX));
         }
     }
 
     void Options_ResetSelection(int selectedEntryIdx)
     {
-        g_OptionsMenu_SelectedEntry              = 
-        g_OptionsMenu_PrevSelectedEntry          = selectedEntryIdx;
-        g_OptionsMenu_VisibleEntriesStartIdx     = g_OptionsMenu_PrevVisibleEntriesStartIdx;
-        g_OptionsMenu_PrevVisibleEntriesStartIdx = 0;
-        g_OptionsMenu_SelectionHighlightTimer    = Q12(0.0f);
+        g_OptionsMenu_SelectedEntry           = 
+        g_OptionsMenu_PrevSelectedEntry       = selectedEntryIdx;
+        g_OptionsMenu_VisibleEntriesStartIdx  = 0;
+        g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
     }
 
     void Options_ControlSubmenu(int stateStep, const std::string& headingKey, const std::vector<MenuEntry>& entries,

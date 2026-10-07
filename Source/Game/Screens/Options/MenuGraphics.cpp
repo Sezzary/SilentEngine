@@ -133,7 +133,7 @@ namespace Silent::Game
      *
      * @param @todo
      */
-    static void Options_DrawSelectionHighlight(const std::pair<int, int>& widths)
+    static void Options_DrawSelectionHighlight(int curWidth, int prevWidth)
     {
         constexpr int  ENTRY_OFFSET_X = 25;
         constexpr auto LINE_BASE      = Vector2i(31, 72);
@@ -142,15 +142,14 @@ namespace Silent::Game
         static auto selectionHighlightFrom = Vector2i::Zero;
         static auto selectionHighlightTo   = Vector2i::Zero;
 
-        // @todo Account for scrolling.
         // Set active selection highlight position references.
         if (g_OptionsMenu_SelectionHighlightTimer == Q12(0.0f))
         {
-            int entryIdxFrom = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx;
+            int entryIdxFrom = g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_PrevVisibleEntriesStartIdx;
             int entryIdxTo   = g_OptionsMenu_SelectedEntry     - g_OptionsMenu_VisibleEntriesStartIdx;
 
-            selectionHighlightFrom = LINE_BASE + Vector2i(ENTRY_OFFSET_X + widths.first,  entryIdxFrom * LINE_HEIGHT);
-            selectionHighlightTo   = LINE_BASE + Vector2i(ENTRY_OFFSET_X + widths.second, entryIdxTo   * LINE_HEIGHT);
+            selectionHighlightFrom = LINE_BASE + Vector2i(ENTRY_OFFSET_X + prevWidth, entryIdxFrom * LINE_HEIGHT);
+            selectionHighlightTo   = LINE_BASE + Vector2i(ENTRY_OFFSET_X + curWidth,  entryIdxTo   * LINE_HEIGHT);
         }
 
         // Compute sine-based interpolation alpha. @todo Sine-based math is wrong, using linear for now.
@@ -189,7 +188,8 @@ namespace Silent::Game
                                             (int)entries.size());
 
         // Run through entries.
-        auto widths = std::pair<int, int>{};
+        int curWidth  = 0;
+        int prevWidth = 0;
         for (int i = g_OptionsMenu_VisibleEntriesStartIdx; i < visibleEntriesEndIdx; i++)
         {
             const auto& entry = entries[i];
@@ -203,7 +203,7 @@ namespace Silent::Game
             // Submit bullet point.
             auto bulletPos = (LINE_BASE + BULLET_OFFSET) +
                              Vector2i(0, (i - g_OptionsMenu_VisibleEntriesStartIdx) * LINE_HEIGHT);
-            bool isActive  = i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx);
+            bool isActive  = i == g_OptionsMenu_SelectedEntry;
             Options_DrawBulletPoint(bulletPos, isActive);
 
             // Submit string.
@@ -211,14 +211,14 @@ namespace Silent::Game
             float width = Gfx_StringDraw(translator(entry.EntryStringKey)) *
                           (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y);
 
-            // Store line widths. @todo Scrolling issues.
-            if (i == (g_OptionsMenu_PrevSelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
+            // Store line widths.
+            if (i == g_OptionsMenu_PrevSelectedEntry)
             {
-                widths.first = (int)ceilf(width);
+                prevWidth = (int)ceilf(width);
             }
-            else if (i == (g_OptionsMenu_SelectedEntry - g_OptionsMenu_VisibleEntriesStartIdx))
+            else if (i == g_OptionsMenu_SelectedEntry)
             {
-                widths.second = (int)ceilf(width);
+                curWidth = (int)ceilf(width);
             }
 
             // Submit config graphics.
@@ -266,6 +266,6 @@ namespace Silent::Game
             }
         }
 
-        Options_DrawSelectionHighlight(widths);
+        Options_DrawSelectionHighlight(curWidth, prevWidth);
     }
 }

@@ -105,7 +105,6 @@ namespace Silent::Game
                 if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked())
                 {
                     Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
-                    g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     Game_StateStepSet(0, OptionsMenuState_Leave);
                 }
@@ -117,7 +116,6 @@ namespace Silent::Game
                 if (input.GetAction(In::Enter).IsClicked())
                 {
                     Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-                    g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterGraphics);
@@ -130,7 +128,6 @@ namespace Silent::Game
                 if (input.GetAction(In::Enter).IsClicked())
                 {
                     Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-                    g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterGameplay);
@@ -143,7 +140,6 @@ namespace Silent::Game
                 if (input.GetAction(In::Enter).IsClicked())
                 {
                     Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-                    g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterInput);
@@ -156,7 +152,6 @@ namespace Silent::Game
                 if (input.GetAction(In::Enter).IsClicked())
                 {
                     Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-                    g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterEnhancements);
@@ -169,7 +164,6 @@ namespace Silent::Game
                 if (input.GetAction(In::Enter).IsClicked())
                 {
                     Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-                    g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
                     ScreenFade_Start(true, false, false);
                     Game_StateStepSet(0, OptionsMenuState_EnterSystem);

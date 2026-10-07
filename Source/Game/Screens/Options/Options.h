@@ -8,7 +8,8 @@
 
 namespace Silent::Game
 {
-    constexpr int VISIBLE_ENTRY_COUNT_MAX = 9;
+    constexpr int VISIBLE_ENTRY_COUNT_MAX     = 9;
+    constexpr int VISIBLE_ENTRY_SCROLL_BUFFER = 1;
 
     /** @brief Options menu states. Facilitates menu switching via `s_GameWork::gameStateStep[0]`. */
     enum e_OptionsMenuState

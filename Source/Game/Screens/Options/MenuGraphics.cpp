@@ -152,9 +152,9 @@ namespace Silent::Game
             selectionHighlightTo   = LINE_BASE + Vector2i(ENTRY_OFFSET_X + curWidth,  entryIdxTo   * LINE_HEIGHT);
         }
 
-        // Compute sine-based interpolation alpha. @todo Sine-based math is wrong, using linear for now.
-        //q19_12 interpAlpha = Math_Sin(g_OptionsMenu_SelectionHighlightTimer);
-        q19_12 interpAlpha = Q12_DIV(g_OptionsMenu_SelectionHighlightTimer, LINE_CURSOR_TIMER_MAX);
+        // Compute sine-based interpolation alpha.
+        q19_12 interpAlpha = Math_EaseOutSine(Q12(0.0f), Q12(1.0f),
+                                              Q12_DIV(g_OptionsMenu_SelectionHighlightTimer, LINE_CURSOR_TIMER_MAX));
 
         // Draw active selection highlight.
         auto highlightLine      = s_Line2d{};

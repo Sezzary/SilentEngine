@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Math/Compatibility.h"
-#include "Math/FixedPoint.h"
+#include "Math/FixedPoint/Conversion.h"
 
 namespace Silent::Math
 {
@@ -308,7 +308,7 @@ namespace Silent::Math
 
     // @hack Checks if `val >= -range && val < range`.
     // Needed to allow `li XX, (range * 2), sltu` to be emitted instead of just `sltiu`.
-    inline static bool Math_CheckSignedRange(int val, int range)
+    static inline bool Math_CheckSignedRange(int val, int range)
     {
         return (uint)(val + range) > (range * 2);
     }
@@ -347,4 +347,49 @@ namespace Silent::Math
      * @return Fixed-point product of `a` and `b`.
      */
     int Math_MulFixed(int a, int b, int shift);
+
+    /** @brief Computes linear interpolation between two values in Q19.12.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    q19_12 Math_Lerp(q19_12 a, q19_12 b, q19_12 alpha);
+
+    /** @brief Computes smoothstep interpolation between two values in Q19.12.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    q19_12 Math_Smoothstep(q19_12 a, q19_12 b, q19_12 alpha);
+
+    /** @brief Computes sinusoidal ease-in interpolation between two values in Q19.12.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    q19_12 Math_EaseInSine(q19_12 a, q19_12 b, q19_12 alpha);
+
+    /** @brief Computes sinusoidal ease-out interpolation between two values in Q19.12.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    q19_12 Math_EaseOutSine(q19_12 a, q19_12 b, q19_12 alpha);
+
+    /** @brief Computes sinusoidal ease-in-out interpolation between two values in Q19.12.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    q19_12 Math_EaseInOutSine(q19_12 a, q19_12 b, q19_12 alpha);
 }

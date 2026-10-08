@@ -1,8 +1,10 @@
 #include "Framework.h"
-#include "Math/Legacy.h"
+#include "Math/FixedPoint/Utils.h"
 
 #include "Math/Constants.h"
-#include "Math/FixedPoint.h"
+#include "Math/FixedPoint/Arithmetic.h"
+#include "Math/FixedPoint/Conversion.h"
+#include "Math/Utils.h"
 
 namespace Silent::Math
 {
@@ -215,5 +217,30 @@ namespace Silent::Math
     int Math_MulFixed(int a, int b, int shift)
     {
         return FP_MULTIPLY(a, b, shift);
+    }
+
+    q19_12 Math_Lerp(q19_12 a, q19_12 b, q19_12 alpha)
+    {
+        return Q12(std::lerp(Q12_TO_FLT(a), Q12_TO_FLT(b), Q12_TO_FLT(alpha)));
+    }
+
+    q19_12 Math_Smoothstep(q19_12 a, q19_12 b, q19_12 alpha)
+    {
+        return Q12(Smoothstep(Q12_TO_FLT(a), Q12_TO_FLT(b), Q12_TO_FLT(alpha)));
+    }
+
+    q19_12 Math_EaseInSine(q19_12 a, q19_12 b, q19_12 alpha)
+    {
+        return Q12(EaseInSine(Q12_TO_FLT(a), Q12_TO_FLT(b), Q12_TO_FLT(alpha)));
+    }
+
+    q19_12 Math_EaseOutSine(q19_12 a, q19_12 b, q19_12 alpha)
+    {
+        return Q12(EaseOutSine(Q12_TO_FLT(a), Q12_TO_FLT(b), Q12_TO_FLT(alpha)));
+    }
+
+    q19_12 Math_EaseInOutSine(q19_12 a, q19_12 b, q19_12 alpha)
+    {
+        return Q12(EaseInOutSine(Q12_TO_FLT(a), Q12_TO_FLT(b), Q12_TO_FLT(alpha)));
     }
 }

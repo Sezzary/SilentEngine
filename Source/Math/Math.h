@@ -1,8 +1,11 @@
 #pragma once
 
 #include "Math/Constants.h"
-#include "Math/FixedPoint.h"
-#include "Math/Legacy.h"
+#include "Math/FixedPoint/Arithmetic.h"
+#include "Math/FixedPoint/Arithmetic.h"
+#include "Math/FixedPoint/Constants.h"
+#include "Math/FixedPoint/Conversion.h"
+#include "Math/FixedPoint/Utils.h"
 #include "Math/Objects/AxisAlignedBoundingBox.h"
 #include "Math/Objects/AxisAlignedBoundingRect.h"
 #include "Math/Objects/AxisAngle.h"

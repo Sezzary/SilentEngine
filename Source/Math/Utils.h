@@ -40,6 +40,42 @@ namespace Silent::Math
      */
     float Remap(float x, float fromMin, float fromMax, float toMin, float toMax);
 
+    /** @brief Computes smoothstep interpolation between two values.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    float Smoothstep(float a, float b, float alpha);
+
+    /** @brief Computes sinusoidal ease-in interpolation between two values.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    float EaseInSine(float a, float b, float alpha);
+
+    /** @brief Computes sinusoidal ease-out interpolation between two values.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    float EaseOutSine(float a, float b, float alpha);
+
+    /** @brief Computes sinusoidal ease-in-out interpolation between two values.
+     *
+     * @param a First value.
+     * @param b Second value.
+     * @param alpha Interpolation alpha.
+     * @return Interpolated value.
+     */
+    float EaseInOutSine(float a, float b, float alpha);
+
     /** @brief Wraps a value to be within the range `[min, max]`.
      *
      * @param val Value to wrap.
@@ -137,7 +173,7 @@ namespace Silent::Math
      *
      * @tparam T Numeric type.
      * @param val Value to check.
-     * @return `1` if the value is >= 0, `-1` otherwise.
+     * @return `1` if the value is `>= 0`, `-1` otherwise.
      */
     template <typename T>
     requires std::is_arithmetic_v<T>

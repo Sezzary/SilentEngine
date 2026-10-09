@@ -7,7 +7,7 @@ using namespace Silent::Services;
 
 namespace Silent::Game
 {
-    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(1 / 8.0f);
+    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(1.0f / 8.0f);
     constexpr int    BAR_NOTCH_COUNT       = 16;
 
     /** @brief Submenu entry options binding. */

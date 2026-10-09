@@ -99,9 +99,9 @@ namespace Silent::Game
 
     void GameState_LanguageScreen_Update()
     {
-        constexpr auto  LABEL_POS             = Vector2i(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 4) * 3);
-        constexpr int   ARROW_OFFSET_BUFFER_X = 2;
-        constexpr float FADE_SEC              = 1.0f;
+        constexpr auto  LABEL_POS   = Vector2i(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 4) * 3);
+        constexpr int   ARROW_SPACE = 4;
+        constexpr float FADE_SEC    = 1.0f;
 
         const auto& input      = g_App.GetInput();
         auto&       assets     = g_App.GetAssets();
@@ -152,7 +152,7 @@ namespace Silent::Game
                 }
 
                 // Select language.
-                if (input.GetAction(In::Left).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
+                if (input.GetAction(In::Left).IsClicked())
                 {
                     SD_Call(Sfx_MenuMove);
 
@@ -162,7 +162,7 @@ namespace Silent::Game
                         langIdx = locales.size() - 1;
                     }
                 }
-                else if (input.GetAction(In::Right).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
+                else if (input.GetAction(In::Right).IsClicked())
                 {
                     SD_Call(Sfx_MenuMove);
 
@@ -220,11 +220,11 @@ namespace Silent::Game
         // Submit language label text.
         Gfx_StringPositionSet(LABEL_POS.x, LABEL_POS.y);
         Gfx_StringColorSet(StringColorId_White);
-        float width = Gfx_StringDraw("{M}" + langLabel);
+        float width = Gfx_StringDraw("{M}" + langLabel) * (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y);
 
-        // Submit selection arrows. @todo Work out proper width.
-        auto arrowOffset = Vector2i((int)ceilf(width * 0.5f) + ARROW_OFFSET_BUFFER_X, 0);
-        Options_DrawArrow(LABEL_POS - arrowOffset, SelectionArrowType::Left, input.GetAction(In::Left).IsHeld());
+        // Submit selection arrows.
+        auto arrowOffset = Vector2i((int)ceilf(width * 0.5f) + ARROW_SPACE, 0);
+        Options_DrawArrow(LABEL_POS - arrowOffset, SelectionArrowType::Left,  input.GetAction(In::Left).IsHeld());
         Options_DrawArrow(LABEL_POS + arrowOffset, SelectionArrowType::Right, input.GetAction(In::Right).IsHeld());
 
         // Submit language comment text.

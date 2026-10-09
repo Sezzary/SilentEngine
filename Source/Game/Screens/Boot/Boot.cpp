@@ -223,7 +223,7 @@ namespace Silent::Game
         float width = Gfx_StringDraw("{M}" + langLabel) * (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y);
 
         // Submit selection arrows.
-        auto arrowOffset = Vector2i((int)ceilf(width * 0.5f) + ARROW_SPACE, 0);
+        auto arrowOffset = Vector2i((int)std::ceil(width * 0.5f) + ARROW_SPACE, 0);
         Options_DrawArrow(LABEL_POS - arrowOffset, SelectionArrowType::Left,  input.GetAction(In::Left).IsHeld());
         Options_DrawArrow(LABEL_POS + arrowOffset, SelectionArrowType::Right, input.GetAction(In::Right).IsHeld());
 

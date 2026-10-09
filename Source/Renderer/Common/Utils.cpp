@@ -69,13 +69,13 @@ namespace Silent::Renderer
         // Compute grid size.
         auto  res      = g_App.GetWindowResolution(); // @todo NOT thread safe!! Cannot use this function in renderer.
         float rawScale = res.y / virtualHeight;
-        float scale    = std::max(1.0f, floorf(rawScale));
+        float scale    = std::max(1.0f, std::floor(rawScale));
         auto  gridSize = Vector2(res.x / rawScale, virtualHeight);
 
         // Compute snapped pixel position.
         auto uv           = pos / 100.0f;
-        auto snappedPixel = Vector2(roundf(uv.x * gridSize.x), 
-                                    roundf(uv.y * gridSize.y));
+        auto snappedPixel = Vector2(std::round(uv.x * gridSize.x), 
+                                    std::round(uv.y * gridSize.y));
 
         // Compute snapped screen position in percent.
         return (snappedPixel / gridSize) * SCREEN_SPACE_RES;

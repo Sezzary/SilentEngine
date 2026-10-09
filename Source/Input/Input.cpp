@@ -596,7 +596,7 @@ namespace Silent::Input
         ushort freqHigh    = hasHighFreq ? (ushort)(intensity * USHRT_MAX) : 0;
 
         // Compute duration.
-        int durationMs = (int)roundf(TICK_TO_SEC(_rumble.DurationTicks) * 1000);
+        int durationMs = (int)std::round(TICK_TO_SEC(_rumble.DurationTicks) * 1000);
 
         // Rumble gamepad.
         if (!SDL_RumbleGamepad(_gamepad.Device, freqLow, freqHigh, durationMs))

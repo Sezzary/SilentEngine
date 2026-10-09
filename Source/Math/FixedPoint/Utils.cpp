@@ -144,13 +144,13 @@ namespace Silent::Math
     q19_12 Math_Sin(q19_12 angle)
     {
         float rad = (((float)angle / (float)Q12_ANGLE(360.0f)) * 2.0f) * PI;
-        return (q19_12)(glm::sin(rad) * (float)Q12_ANGLE(360.0f));
+        return (q19_12)(std::sin(rad) * (float)Q12_ANGLE(360.0f));
     }
 
     q19_12 Math_Cos(q19_12 angle)
     {
         float rad = (((float)angle / (float)Q12_ANGLE(360.0f)) * 2.0f) * PI;
-        return (q19_12)(glm::cos(rad) * (float)Q12_ANGLE(360.0f));
+        return (q19_12)(std::cos(rad) * (float)Q12_ANGLE(360.0f));
     }
 
     q19_12 Math_Ratan2(int x, int y)

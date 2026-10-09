@@ -40,7 +40,7 @@ namespace Silent::Debug
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("FPS:", 0, 0);
                     ImGui::TableSetColumnIndex(1);
-                    ImGui::Text("%d", (int)roundf(perf.Fps), 0, 1);
+                    ImGui::Text("%d", (int)std::round(perf.Fps), 0, 1);
 
                     // `Frame time` info.
                     ImGui::TableNextRow();

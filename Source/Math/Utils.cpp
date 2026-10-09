@@ -8,17 +8,17 @@ namespace Silent::Math
 {
     float FloorToStep(float x, float step)
     {
-        return floorf(x / step) * step;
+        return std::floor(x / step) * step;
     }
 
     float CeilToStep(float x, float step)
     {
-        return ceilf(x / step) * step;
+        return std::ceil(x / step) * step;
     }
 
     float RoundToStep(float x, float step)
     {
-        return roundf(x / step) * step;
+        return std::round(x / step) * step;
     }
 
     float Remap(float x, float fromMin, float fromMax, float toMin, float toMax)
@@ -38,19 +38,19 @@ namespace Silent::Math
     float EaseInSine(float a, float b, float alpha)
     {
         alpha = std::clamp(alpha, 0.0f, 1.0f);
-        return std::lerp(a, b, 1.0f - glm::cos((alpha * PI) * 0.5f));
+        return std::lerp(a, b, 1.0f - std::cos((alpha * PI) * 0.5f));
     }
 
     float EaseOutSine(float a, float b, float alpha)
     {
         alpha = std::clamp(alpha, 0.0f, 1.0f);
-        return std::lerp(a, b, glm::sin((alpha * PI) * 0.5f));
+        return std::lerp(a, b, std::sin((alpha * PI) * 0.5f));
     }
 
     float EaseInOutSine(float a, float b, float alpha)
     {
         alpha = std::clamp(alpha, 0.0f, 1.0f);
-        return std::lerp(a, b, (1.0f - glm::cos(alpha * PI)) * 0.5f);
+        return std::lerp(a, b, (1.0f - std::cos(alpha * PI)) * 0.5f);
     }
 
     int WrapRange(int val, int min, int max)

@@ -725,14 +725,14 @@ namespace Silent::Game
 
     static inline void Game_StateStepIncrement(int stepIdx)
     {    
-        if(stepIdx == 0)
+        if (stepIdx == 0)
         {
             g_SysWork.gameStateStepCounter = 0;
             g_GameWork.gameStateSteps[1]   = 0;
             g_GameWork.gameStateSteps[2]   = 0;
             g_GameWork.gameStateSteps[0]++;
         }
-        else if(stepIdx == 1)
+        else if (stepIdx == 1)
         {
             g_GameWork.gameStateSteps[1]++;
             g_GameWork.gameStateSteps[2] = 0;

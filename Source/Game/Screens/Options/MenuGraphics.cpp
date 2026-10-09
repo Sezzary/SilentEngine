@@ -35,7 +35,7 @@ namespace Silent::Game
             bool isLeftHeld  = input.GetAction(In::Left).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
             bool isRightHeld = input.GetAction(In::Right).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
 
-            int arrowOffset = (int)ceilf(width * 0.5f) + ARROW_SPACE;
+            int arrowOffset = (int)std::ceil(width * 0.5f) + ARROW_SPACE;
             Options_DrawArrow(pos - Vector2i(arrowOffset, 0), SelectionArrowType::Left,  isLeftHeld  && !isRightHeld);
             Options_DrawArrow(pos + Vector2i(arrowOffset, 0), SelectionArrowType::Right, isRightHeld && !isLeftHeld);
         }
@@ -214,11 +214,11 @@ namespace Silent::Game
             // Store line widths.
             if (i == g_OptionsMenu_PrevSelectedEntry)
             {
-                prevWidth = (int)ceilf(width);
+                prevWidth = (int)std::ceil(width);
             }
             else if (i == g_OptionsMenu_SelectedEntry)
             {
-                curWidth = (int)ceilf(width);
+                curWidth = (int)std::ceil(width);
             }
 
             // Submit config graphics.
@@ -252,7 +252,7 @@ namespace Silent::Game
             {
                 const auto& binding = std::get<MenuEntryBarBinding>(entry.Binding);
 
-                int activeCount = (int)floorf(((float)binding.GetValue() / (float)binding.Max) * BAR_NOTCH_COUNT);
+                int activeCount = (int)std::floor(((float)binding.GetValue() / (float)binding.Max) * BAR_NOTCH_COUNT);
                 Options_DrawConfigBar(configPos, activeCount, isSelected);
             }
             else if (std::holds_alternative<MenuEntryLanguageBinding>(entry.Binding))

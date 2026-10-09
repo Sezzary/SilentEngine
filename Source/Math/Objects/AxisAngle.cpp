@@ -60,7 +60,7 @@ namespace Silent::Math
 
     Vector3 AxisAngle::ToDirection() const
     {
-        return (Axis * glm::cos(Angle)) + (Axis * (1.0f - glm::cos(Angle)));
+        return (Axis * std::cos(Angle)) + (Axis * (1.0f - std::cos(Angle)));
     }
 
     EulerAngles AxisAngle::ToEulerAngles() const
@@ -72,8 +72,8 @@ namespace Silent::Math
     Quaternion AxisAngle::ToQuaternion() const
     {
         float halfAngle    = Angle / 2.0f;
-        float sinHalfAngle = glm::sin(halfAngle);
-        float cosHalfAngle = glm::cos(halfAngle);
+        float sinHalfAngle = std::sin(halfAngle);
+        float cosHalfAngle = std::cos(halfAngle);
 
         return Quaternion(Axis.x * sinHalfAngle,
                           Axis.y * sinHalfAngle,
@@ -83,8 +83,8 @@ namespace Silent::Math
 
     Matrix AxisAngle::ToRotationMatrix() const
     {
-        float sinAngle    = glm::sin(Angle);
-        float cosAngle    = glm::cos(Angle);
+        float sinAngle    = std::sin(Angle);
+        float cosAngle    = std::cos(Angle);
         float invCosAngle = 1.0f - cosAngle;
     
         return Matrix(cosAngle + SQUARE(Axis.x) * invCosAngle,

@@ -147,7 +147,7 @@ namespace Silent::Math
             return Vector3i(FP_TO(x, shift), FP_TO(y, shift), FP_TO(z, shift));
         }
 
-        return Vector3i((int)roundf(x), (int)roundf(y), (int)roundf(z));
+        return Vector3i((int)std::round(x), (int)std::round(y), (int)std::round(z));
     }
 
     const glm::vec3& Vector3::ToGlmVec3() const

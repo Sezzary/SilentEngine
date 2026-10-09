@@ -1,80 +1,94 @@
 #pragma once
 
 #include "Game/Common.h"
-#include "Game/Screens/Options/Brightness.h"
-#include "Game/Screens/Options/Controller.h"
+#include "Game/Screens/Options/Graphics/Brightness.h"
+#include "Game/Screens/Options/Input/Bindings.h"
 #include "Game/Screens/Options/MenuGraphics.h"
-#include "Game/Screens/Options/ScreenPosition.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
 
 namespace Silent::Game
 {
-    constexpr int DEPTH_24   = 24;
-    constexpr int DEPTH_40   = 40;
-    constexpr int DEPTH_36   = 36;
-    constexpr int DEPTH_8148 = 8148;
+    constexpr int VISIBLE_ENTRY_COUNT_MAX     = 9;
+    constexpr int VISIBLE_ENTRY_SCROLL_BUFFER = 1;
 
     /** @brief Options menu states. Facilitates menu switching via `s_GameWork::gameStateStep[0]`. */
     enum e_OptionsMenuState
     {
-        OptionsMenuState_EnterMainOptions  = 0,  /** Entering main options menu. */
-        OptionsMenuState_MainOptions       = 1,  /** In main options menu. */
-        OptionsMenuState_ScreenPos         = 2,  /** In screen position menu. */
-        OptionsMenuState_Brightness        = 3,  /** In brightness menu. */
-        OptionsMenuState_Controller        = 4,  /** In controller config menu. */
-        OptionsMenuState_Leave             = 5,  /** Leaving options menu back to gameplay. */
-        OptionsMenuState_LeaveMainOptions  = 6,  /** Leaving main options menu. */
-        OptionsMenuState_EnterScreenPos    = 7,  /** Entering screen position menu. */
-        OptionsMenuState_EnterBrightness   = 8,  /** Entering brightness menu. */
-        OptionsMenuState_EnterController   = 9,  /** Entering controller config menu. */
-        OptionsMenuState_LeaveScreenPos    = 10, /** Leaving screen position menu. */
-        OptionsMenuState_LeaveBrightness   = 11, /** Leaving brightness menu. */
-        OptionsMenuState_LeaveController   = 12, /** Leaving controller config menu. */
-        OptionsMenuState_EnterExtraOptions = 13, /** Entering extra options menu. */
-        OptionsMenuState_ExtraOptions      = 14, /** In extra options menu. */
-        OptionsMenuState_LeaveExtraOptions = 15  /** Leaving extra options menu. */
+        OptionsMenuState_EnterOptions,
+        OptionsMenuState_Options,
+        OptionsMenuState_LeaveOptions,
+        OptionsMenuState_Leave,
+
+        OptionsMenuState_Brightness,
+        OptionsMenuState_Bindings,
+        OptionsMenuState_EnterBrightness,
+        OptionsMenuState_EnterBindings,
+        OptionsMenuState_LeaveBrightness,
+        OptionsMenuState_LeaveBindings,
+
+        OptionsMenuState_EnterGraphics,
+        OptionsMenuState_Graphics,
+        OptionsMenuState_LeaveGraphics,
+        OptionsMenuState_EnterGameplay,
+        OptionsMenuState_Gameplay,
+        OptionsMenuState_LeaveGameplay,
+        OptionsMenuState_EnterInput,
+        OptionsMenuState_Input,
+        OptionsMenuState_LeaveInput,
+        OptionsMenuState_EnterEnhancements,
+        OptionsMenuState_Enhancements,
+        OptionsMenuState_LeaveEnhancements,
+        OptionsMenuState_EnterSystem,
+        OptionsMenuState_System,
+        OptionsMenuState_LeaveSystem,
     };
 
     /** @brief Main options menu entries. */
     enum e_MainOptionsMenuEntry
     {
         MainOptionsMenuEntry_Exit,
-        MainOptionsMenuEntry_Brightness,
-        MainOptionsMenuEntry_Controller,
-        MainOptionsMenuEntry_ScreenPosition,
-        MainOptionsMenuEntry_Vibration,
-        MainOptionsMenuEntry_AutoLoad,
-        MainOptionsMenuEntry_Sound,
-        MainOptionsMenuEntry_BgmVolume,
-        MainOptionsMenuEntry_SfxVolume,
+        MainOptionsMenuEntry_Graphics,
+        MainOptionsMenuEntry_Gameplay,
+        MainOptionsMenuEntry_Input,
+        MainOptionsMenuEntry_Enhancements,
+        MainOptionsMenuEntry_System,
 
         MainOptionsMenuEntry_Count
     };
 
-    /** @brief Extra options menu entries. */
-    enum e_ExtraOptionsMenuEntry
+    /** @brief Options menu entries. @deprecated */
+    enum e_OptionsMenuEntry
     {
-        ExtraOptionsMenuEntry_WeaponCtrl   = 0,
-        ExtraOptionsMenuEntry_Blood        = 1,
-        ExtraOptionsMenuEntry_ViewCtrl     = 2,
-        ExtraOptionsMenuEntry_RetreatTurn  = 3,
-        ExtraOptionsMenuEntry_MovementCtrl = 4,
-        ExtraOptionsMenuEntry_AutoAiming   = 5,
-        ExtraOptionsMenuEntry_ViewMode     = 6,
-        ExtraOptionsMenuEntry_BulletMult   = 7,
+        OptionsMenuEntry_Exit,
+        OptionsMenuEntry_Brightness,
+        OptionsMenuEntry_Controller,
+        OptionsMenuEntry_Vibration,
+        OptionsMenuEntry_AutoLoad,
+        OptionsMenuEntry_Sound,
+        OptionsMenuEntry_BgmVolume,
+        OptionsMenuEntry_SfxVolume,
+        OptionsMenuEntry_Language,
+        OptionsMenuEntry_WeaponCtrl,
+        OptionsMenuEntry_Blood,
+        OptionsMenuEntry_ViewCtrl,
+        OptionsMenuEntry_RetreatTurn,
+        OptionsMenuEntry_WalkRunCtrl,
+        OptionsMenuEntry_AutoAiming,
+        OptionsMenuEntry_ViewMode,
+        OptionsMenuEntry_BulletAdjust,
 
-        ExtraOptionsMenuEntry_Count        = 8
+        OptionsMenuEntry_Count
     };
 
     /** @brief Blood color menu entries. */
     enum e_BloodColorMenuEntry
     {
-        BloodColorMenuEntry_Normal = 0,
-        BloodColorMenuEntry_Green  = 1,
-        BloodColorMenuEntry_Violet = 2,
-        BloodColorMenuEntry_Black  = 3,
+        BloodColorMenuEntry_Normal,
+        BloodColorMenuEntry_Green,
+        BloodColorMenuEntry_Violet,
+        BloodColorMenuEntry_Black,
 
-        BloodColorMenuEntry_Count  = 4
+        BloodColorMenuEntry_Count
     };
 
     enum e_BloodColor
@@ -85,22 +99,12 @@ namespace Silent::Game
         BloodColor_Black  = 11
     };
 
-    extern int g_MainOptionsMenu_SelectedEntry;
-    extern int g_ExtraOptionsMenu_SelectedEntry;
-    extern int g_MainOptionsMenu_PrevSelectedEntry;
-    extern int g_ExtraOptionsMenu_PrevSelectedEntry;
-
-    extern s32 g_Options_SelectionHighlightTimer;
+    extern int    g_OptionsMenu_SelectedEntry;
+    extern int    g_OptionsMenu_PrevSelectedEntry;
+    extern int    g_OptionsMenu_VisibleEntriesStartIdx;
+    extern int    g_OptionsMenu_PrevVisibleEntriesStartIdx;
+    extern q19_12 g_OptionsMenu_SelectionHighlightTimer;
 
     /** @brief Options menu game state handler. */
     void GameState_Options_Update();
-
-    /** @brief Controller for the main options menu.
-     *
-     * Handles menu states, user input, and graphics draw calls.
-     */
-    void Options_MainOptionsMenu_Control();
-
-    /** @brief Controller for the extra options menu. */
-    void Options_ExtraOptionsMenu_Control();
 }

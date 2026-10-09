@@ -13,22 +13,16 @@ using namespace Silent::Assets;
 
 namespace Silent::Game
 {
-    /** @brief Wraps a filesystem queue entry index to `FS_QUEUE_LENGTH`.
-     *
-     * @param idx Index to wrap.
-     * @return Wrapped `idx`.
-     */
-    #define FSQUEUE_IDX_WRAP(idx) \
-        ((u32)(idx) % FS_QUEUE_LENGTH)
-
     s_FsQueue g_FsQueue;
 
-    bool Fs_QueueIsEntryLoaded(s32 queueIdx)
+    bool Fs_QueueIsEntryLoaded(int queueIdx)
     {
-        return queueIdx < g_FsQueue.postLoad.idx;
+        // @todo Need to check equivalent.
+        return true;
+        //return queueIdx < g_FsQueue.postLoad.idx;
     }
 
-    s32 Fs_QueueGetLength()
+    int Fs_QueueGetLength()
     {
         const auto& assets = g_App.GetAssets();
 
@@ -37,8 +31,7 @@ namespace Silent::Game
 
     bool Fs_QueueChunksLoad()
     {
-        // @todo
-        //D_800C489C = true;
+        g_Demo_IsLoadingChunks = true;
 
         bool result = false;
         if (Fs_QueueGetLength() == 0)
@@ -56,34 +49,13 @@ namespace Silent::Game
 
         while (assets.IsBusy())
         {
-            // @todo calls to this function should be deprecated. Blocking behaviours shouldn't occur the port.
+            // @todo Blocking behaviours shouldn't occur anymore.
         }
-
-        // @todo Are any of these important?
-        /*func_800892A4(0);
-        func_80089128();
-
-        while (true)
-        {
-            VSync(SyncMode_Wait);
-            if (Fs_QueueGetLength() <= 0)
-            {
-                break;
-            }
-
-            Fs_QueueUpdate();
-        }
-
-        func_800892A4(1);
-        DrawSync(SyncMode_Wait);
-        VSync(SyncMode_Wait);*/
     }
 
     const std::future<void>& Fs_QueueStartSeek(e_FsFile fileIdx)
     {
-        auto& assets = g_App.GetAssets();
-
-        return assets.Load(fileIdx);
+        return Fs_QueueStartRead(fileIdx);
     }
 
     const std::future<void>& Fs_QueueStartRead(e_FsFile fileIdx)
@@ -95,23 +67,26 @@ namespace Silent::Game
 
     const std::future<void>& Fs_QueueStartRead(e_FsFile fileIdx, void* dest)
     {
-        auto& assets = g_App.GetAssets();
-
-        return assets.Load(fileIdx);
+        return Fs_QueueStartRead(fileIdx);
     }
 
-    const std::future<void>& Fs_QueueStartReadTim(e_FsFile fileIdx, void* dest, const s_FsImageDesc* image)
+    const std::future<void>& Fs_QueueStartReadTim(e_FsFile fileIdx, void* dest, s_FsImageDesc* image)
     {
         auto& assets = g_App.GetAssets();
 
-        return assets.Load(fileIdx);
+        if (image != nullptr)
+        {
+            image->AssetName = assets.GetName((int)fileIdx);
+        }
+
+        return Fs_QueueStartRead(fileIdx);
     }
 
-    const std::future<void>& Fs_QueueStartReadAnm(s32 idx, s32 charaId, void* dest, GsCOORDINATE2* coords)
+    const std::future<void>& Fs_QueueStartReadAnm(int idx, int charaId, void* dest, GsCOORDINATE2* coords)
     {
         auto& assets = g_App.GetAssets();
 
-        s32            fileIdx;
+        int            fileIdx;
         s_FsQueueExtra extra;
 
         fileIdx             = CHARA_FILE_INFOS[charaId].animFileIdx; // @todo Port over `CHARA_FILE_INFOS`.
@@ -121,81 +96,10 @@ namespace Silent::Game
         return assets.Load(fileIdx);
     }
 
-    s32 Fs_QueueEnqueue(e_FsFile fileIdx, u8 op, u8 postLoad, u8 alloc, void* data, u32 unused0, s_FsQueueExtra* extra)
-    {
-        // @stub
-        return 0;
-    }
-
-    void Fs_QueueInitialize()
-    {
-        // @stub
-    }
-
     void Fs_QueueReset()
     {
         // @stub
         // @todo Previously cleared the queue, should that translate to clearing all loaded assets?
-    }
-
-    void Fs_QueueUpdate()
-    {
-        // @stub
-        // @todo `Fs_QueueUpdatePostLoad` call seemed important.
-    }
-
-    bool Fs_QueueUpdateSeek(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
-    }
-
-    bool Fs_QueueUpdateRead(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
-    }
-
-    bool Fs_QueueAllocEntryData(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
-    }
-
-    bool Fs_QueueCanRead(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
-    }
-
-    bool Fs_QueueDoBuffersOverlap(u8* data0, u32 size0, u8* data1, u32 size1)
-    {
-        // @stub
-        return false;
-    }
-
-    bool Fs_QueueTickSetLoc(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
-    }
-
-    bool Fs_QueueTickRead(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
-    }
-
-    bool Fs_QueueResetTick(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
-    }
-
-    bool Fs_QueueTickReadPcDrv(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
     }
 
     bool Fs_QueueUpdatePostLoad(s_FsQueueEntry* entry)
@@ -205,16 +109,10 @@ namespace Silent::Game
         return true;
     }
 
-    bool Fs_QueuePostLoadTim(s_FsQueueEntry* entry)
-    {
-        // @stub
-        return true;
-    }
-
     bool Fs_QueuePostLoadAnm(s_FsQueueEntry* entry)
     {
         // @todo Seems important, not decompiled yet.
-        //Fs_CharaAnimInfoUpdate(entry->extra.anm.field_0, entry->extra.anm.charaId_4, entry->externalData,
+        //Fs_CharaAnimDataUpdate(entry->extra.anm.field_0, entry->extra.anm.charaId_4, entry->externalData,
         //                       entry->extra.anm.coords_8);
         return true;
     }

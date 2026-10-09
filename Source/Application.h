@@ -51,9 +51,10 @@ namespace Silent
         // Fields
         // =======
 
-        SDL_Window* _window   = nullptr;
-        bool        _isPaused = false;
-        bool        _quit     = false;
+        SDL_Window* _window     = nullptr;
+        bool        _isDrawTick = false;
+        bool        _isPaused   = false;
+        bool        _quit       = false;
         
         ApplicationWork   _work           = {};
         ParallelExecutor  _renderExecutor = ParallelExecutor(1);
@@ -161,6 +162,17 @@ namespace Silent
          * @return Window scale.
          */
         float GetDpiScale() const;
+
+        // ==========
+        // Inquirers
+        // ==========
+
+        /** @brief Determines if the active tick can be used to submit immediate-mode objects to draw.
+         * Used to prevent drawing stale objects when the game logic is catching up.
+         *
+         * @return `true` if the active tick is a draw tick, `false` otherwise
+         */
+        bool IsDrawTick() const;
 
         // ==========
         // Utilities

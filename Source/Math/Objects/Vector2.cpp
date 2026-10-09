@@ -120,7 +120,7 @@ namespace Silent::Math
     Vector2i Vector2::ToVector2i(int shift) const
     {
         return (shift != NO_VALUE) ? Vector2i(FP_TO(x, shift), FP_TO(y, shift)) :
-                                     Vector2i((int)roundf(x), (int)roundf(y));
+                                     Vector2i((int)std::round(x), (int)std::round(y));
     }
 
     const glm::vec2& Vector2::ToGlmVec2() const

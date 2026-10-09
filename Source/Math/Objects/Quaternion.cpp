@@ -25,9 +25,9 @@ namespace Silent::Math
         axis.Normalize();
 
         float halfRad    = rad / 2.0f;
-        float sinHalfRad = glm::sin(halfRad);
+        float sinHalfRad = std::sin(halfRad);
 
-        w = glm::cos(halfRad);
+        w = std::cos(halfRad);
         x = axis.x * sinHalfRad;
         y = axis.y * sinHalfRad;
         z = axis.z * sinHalfRad;

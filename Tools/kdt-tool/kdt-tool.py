@@ -27,9 +27,11 @@ appears to give a more accurate real-world tempo, so I've decided to use it univ
 sources and report your results please. Thanks!
 """
 
+
 import os
 import struct
 import sys
+
 
 class Kdt:
     SIZE_LIMIT         = 50 * 1024 * 1024
@@ -476,6 +478,7 @@ class Kdt:
                 self.midi[self.midi_output_offset : self.midi_output_offset + 4] = b"\xFF\x01\x01\x3F"
                 self.midi_output_offset                                         += 4
 
+
 def convert_kdt_to_midi(path):
     kdt = Kdt(path, log=False, convert=True)
 
@@ -528,6 +531,7 @@ def convert_kdt_to_midi(path):
     with open(os.path.splitext(kdt.path)[0] + ".MID", "wb") as midi:
         midi.write(kdt.midi[: kdt.midi_output_offset])
 
+
 def dump_events(path):
     kdt = Kdt(path, log=True, convert=False)
 
@@ -543,6 +547,7 @@ def dump_events(path):
             kdt.read_sequence()
 
         print("\n" * 5)
+
 
 def main(argc=len(sys.argv), argv=sys.argv):
 
@@ -568,6 +573,7 @@ def main(argc=len(sys.argv), argv=sys.argv):
         return True
 
     return False
+
 
 if __name__=="__main__":
     main()

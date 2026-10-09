@@ -44,11 +44,6 @@ namespace Silent::Debug
         std::vector<std::string> Messages  = {};
         uint64                   StartTime = 0;
 
-        float  Fps        = 0.0f;
-        int    FrameTime  = 0;
-        int    FrameCount = 0;
-        uint64 PrevTime   = 0;
-
         Page Page                = Page::Renderer;
         bool EnableDebugMenu     = false;
         bool EnableWireframeMode = false;

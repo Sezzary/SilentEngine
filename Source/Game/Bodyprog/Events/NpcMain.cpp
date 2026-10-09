@@ -18,9 +18,9 @@ namespace Silent::Game
 
     void Savegame_EnemyStateUpdate(s_SubCharacter* chara) // 0x80037DC4
     {
-        if (g_SavegamePtr->gameDifficulty <= GameDifficulty_Normal/* || Rng_RandQ12() >= Q12_ANGLE(108.0f)*/)
+        if (g_SavegamePtr->gameDifficulty <= GameDifficulty_Normal/* || Rng_RandQ12() >= Q12(0.3f)*/)
         {
-            g_SavegamePtr->ovlEnemyStates[g_SavegamePtr->mapIdx] &= ~(1 << chara->field_40);
+            g_SavegamePtr->mapEnemyStates[g_SavegamePtr->mapIdx] &= ~(1 << chara->field_40);
         }
     }
 
@@ -69,7 +69,7 @@ namespace Silent::Game
 
         npcIdx             = 0;
         curCharaSpawn      = g_MapOverlayHdr.charaSpawnInfos[0];
-        ovlEnemiesStatePtr = &g_SavegamePtr->ovlEnemyStates[g_SavegamePtr->mapIdx];
+        ovlEnemiesStatePtr = &g_SavegamePtr->mapEnemyStates[g_SavegamePtr->mapIdx];
 
         if (cond == false)
         {
@@ -284,16 +284,16 @@ namespace Silent::Game
                     if (isLowVisInterior)
                     {
                         // Check X axis.
-                        s32 playerCell = (g_SysWork.playerWork.player.position.vx + (Q12(CHUNK_CELL_SIZE) * 4)) / Q12(CHUNK_CELL_SIZE);
-                        s32 npcCell    = (curNpc->position.vx                     + (Q12(CHUNK_CELL_SIZE) * 4)) / Q12(CHUNK_CELL_SIZE);
+                        s32 playerCell = (g_SysWork.playerWork.player.position.vx + (Q12(CHUNK_SIZE) * 4)) / Q12(CHUNK_SIZE);
+                        s32 npcCell    = (curNpc->position.vx                     + (Q12(CHUNK_SIZE) * 4)) / Q12(CHUNK_SIZE);
                         if (npcCell != playerCell)
                         {
                             continue;
                         }
 
                         // Check Z axis.
-                        playerCell = (g_SysWork.playerWork.player.position.vz + (Q12(CHUNK_CELL_SIZE) * 4)) / Q12(CHUNK_CELL_SIZE);
-                        npcCell    = (curNpc->position.vz                     + (Q12(CHUNK_CELL_SIZE) * 4)) / Q12(CHUNK_CELL_SIZE);
+                        playerCell = (g_SysWork.playerWork.player.position.vz + (Q12(CHUNK_SIZE) * 4)) / Q12(CHUNK_SIZE);
+                        npcCell    = (curNpc->position.vz                     + (Q12(CHUNK_SIZE) * 4)) / Q12(CHUNK_SIZE);
                         if (npcCell != playerCell)
                         {
                             continue;

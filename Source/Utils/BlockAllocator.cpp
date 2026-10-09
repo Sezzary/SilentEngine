@@ -57,7 +57,8 @@ namespace Silent::Utils
         }
 
         // Out of memory.
-        Debug::Log(Fmt("Attempted to allocate memory block of size {}: out of memory.", size), Debug::LogLevel::Warning);
+        Debug::Log(Fmt("Attempted to allocate memory block of size {}: out of memory.", size),
+                       Debug::LogLevel::Warning);
         return NO_VALUE;
     }
 

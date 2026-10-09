@@ -5,6 +5,7 @@ Generates a launcher application for the active platform.
 If a generated launcher already exists and is outdated, it will be overwritten.
 """
 
+
 import logging
 import os
 import platform
@@ -14,12 +15,14 @@ import sys
 
 from pathlib import Path
 
+
 BASE_PATH        = Path(__file__).parent
 BUILD_PATH       = BASE_PATH / "../Build"
 RESOURCES_PATH   = BASE_PATH / "Resources"
 TEMP_OUTPUT_PATH = BUILD_PATH / ".temp"
 LAUNCHER_SPEC    = BUILD_PATH / "Launcher.spec"
 LAUNCHER_SCRIPT  = BASE_PATH / "Launcher.py"
+
 
 def _get_platform_name():
     """

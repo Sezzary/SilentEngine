@@ -154,5 +154,5 @@ namespace Silent::Game
     /** @brief Updates the death load screen. */
     void GameState_AutoLoadSavegame_Update();
 
-    void func_801E737C();
+    void SaveScreen_AutoLoad_SelectSave();
 }

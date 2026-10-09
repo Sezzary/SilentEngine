@@ -2,14 +2,6 @@
 
 namespace Silent::Game
 {
-    /** @brief Handles the general controller
-     * handling, controller IO stream and state.
-     * Game controller logic seems to have been split among many parts of
-     * the game depending on the state or screen the player is using.
-     * For example, the controller logic for the inventory screen is handled separately from the
-     * one for the in-game state.
-     */
-
     constexpr int  INPUT_ACTION_COUNT   = 14;
     constexpr int  CONTROLLER_COUNT_MAX = 2;
     constexpr q0_7 STICK_DEADZONE       = FP_STICK(0.5f);
@@ -131,15 +123,6 @@ namespace Silent::Game
 
     extern s_ControllerData* const g_Controller0;
     extern s_ControllerData* const g_Controller1;
-
-    /** @brief Initializes controller 1. */
-    void Joy_Init();
-
-    /** @brief Reads analog data from controller 1. */
-    void Joy_ReadP1();
-
-    /** @brief Updates input data for all controllers. */
-    void Joy_Update();
 
     /** @brief Updates digital data for all controllers, additionally handling special directional cases. */
     void Joy_ControllerDataUpdate();

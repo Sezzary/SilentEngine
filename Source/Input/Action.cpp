@@ -199,8 +199,8 @@ namespace Silent::Input
         float activeDelaySec   = (_ticksActive > SEC_TO_TICK(initialDelaySec)) ? delaySec : initialDelaySec;
         int   activeDelayTicks = SEC_TO_TICK(activeDelaySec);
 
-        int delayTicks     = (int)floorf(_ticksActive     / activeDelayTicks) * activeDelayTicks;
-        int prevDelayTicks = (int)floorf(_prevTicksActive / activeDelayTicks) * activeDelayTicks;
+        int delayTicks     = (int)std::floor(_ticksActive     / activeDelayTicks) * activeDelayTicks;
+        int prevDelayTicks = (int)std::floor(_prevTicksActive / activeDelayTicks) * activeDelayTicks;
         return delayTicks > prevDelayTicks;
     }
 

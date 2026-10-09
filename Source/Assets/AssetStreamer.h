@@ -97,12 +97,19 @@ namespace Silent::Assets
         // Getters
         // ========
 
+        /** @brief Gets the name of an asset by index.
+         *
+         * @param idx Asset index.
+         * @return Asset name.
+         */
+        const std::string& GetName(int idx) const;
+
         /** @brief Gets the index of an asset by name.
          *
          * @param name Asset name.
          * @return Asset index.
          */
-        int GetIdx(const std::string& name);
+        int GetIdx(const std::string& name) const;
 
         /** @brief Gets a vector containing the names of all loaded assets.
          *

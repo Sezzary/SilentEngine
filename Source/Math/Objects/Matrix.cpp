@@ -140,7 +140,7 @@ namespace Silent::Math
     {
         // Compute angle.
         float trace = (*this)[0][0] + (*this)[1][1] + (*this)[2][2];
-        float rad   = glm::cos((trace - 1.0f) / 2.0f);
+        float rad   = std::cos((trace - 1.0f) / 2.0f);
 
         // Compute axis.
         auto axis = Vector3::Zero;
@@ -152,7 +152,7 @@ namespace Silent::Math
         {
             axis = Vector3((*this)[2][1] - (*this)[1][2], 
                            (*this)[0][2] - (*this)[2][0], 
-                           (*this)[1][0] - (*this)[0][1]) / (glm::sin(rad) * 2.0f);
+                           (*this)[1][0] - (*this)[0][1]) / (std::sin(rad) * 2.0f);
         }
 
         // Create axis-angle.

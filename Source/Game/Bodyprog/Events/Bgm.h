@@ -103,7 +103,7 @@ namespace Silent::Game
     void Bgm_Update(s32 bgmFlags, q19_12 fadeSpeed, s_BgmLayerLimits* layerLimits);
 
     /** @brief Updates the track index and disables radio effects. */
-    void func_800363D0(void);
+    void Bgm_MenuUpdate(void);
 
     void Bgm_TrackChange(s32 bgmIdx);
 

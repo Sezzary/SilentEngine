@@ -62,13 +62,25 @@ namespace Silent::Assets
         { AssetType::Tmd, { ParseTmd, QueueTmdGpuUpload, QueueTmdGpuRelease } }
     };
 
-    int AssetStreamer::GetIdx(const std::string& name)
+    const std::string& AssetStreamer::GetName(int idx) const
     {
-        const auto* asset = (*this)[name];
-        if (asset == nullptr)
+        const auto* name = Find(_names, idx);
+        if (name == nullptr)
+        {
+            return EMPTY_STRING;
+        }
+
+        return *name;
+    }
+
+    int AssetStreamer::GetIdx(const std::string& name) const
+    {
+        const auto* assetPtr = Find(_assets, name);
+        if (assetPtr == nullptr)
         {
             return NO_VALUE;
         }
+        const auto& asset = *assetPtr;
 
         return asset->Idx;
     }

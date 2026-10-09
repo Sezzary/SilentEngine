@@ -166,12 +166,16 @@ namespace Silent::Math
 
     EulerAngles EulerAngles::operator*(float scalar) const
     {
-        return EulerAngles((short)roundf((float)x * scalar), (short)roundf((float)y * scalar), (short)roundf((float)z * scalar));
+        return EulerAngles((short)std::round((float)x * scalar),
+                           (short)std::round((float)y * scalar),
+                           (short)std::round((float)z * scalar));
     }
 
     EulerAngles EulerAngles::operator/(float scalar) const
     {
-        return EulerAngles((short)roundf((float)x / scalar), (short)roundf((float)y / scalar), (short)roundf((float)z / scalar));
+        return EulerAngles((short)std::round((float)x / scalar),
+                           (short)std::round((float)y / scalar),
+                           (short)std::round((float)z / scalar));
     }
 
     short EulerAngles::InterpConstant(short from, short to, short angularVel)
@@ -193,7 +197,7 @@ namespace Silent::Math
         }
 
         short delta = to - from;
-        return (short)roundf(from + (delta * std::clamp(alpha, 0.0f, 1.0f)));
+        return (short)std::round(from + (delta * std::clamp(alpha, 0.0f, 1.0f)));
     }
 
     bool EulerAngles::Compare(short angle0, short angle1, short epsilon)

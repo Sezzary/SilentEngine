@@ -8,23 +8,71 @@ namespace Silent::Math
 {
     float FloorToStep(float x, float step)
     {
-        return floorf(x / step) * step;
+        return std::floor(x / step) * step;
     }
 
     float CeilToStep(float x, float step)
     {
-        return ceilf(x / step) * step;
+        return std::ceil(x / step) * step;
     }
 
     float RoundToStep(float x, float step)
     {
-        return roundf(x / step) * step;
+        return std::round(x / step) * step;
     }
 
     float Remap(float x, float fromMin, float fromMax, float toMin, float toMax)
     {
         float alpha = (x - fromMin) / (fromMax - fromMin);
         return std::lerp(toMin, toMax, alpha);
+    }
+
+    float Smoothstep(float a, float b, float alpha)
+    {
+        alpha = std::clamp(alpha, a, b);
+
+        alpha = std::clamp((alpha - a) / (b - a), 0.0f, 1.0f);
+        return CUBE(alpha) * (alpha * ((alpha * 6.0f) - 15.0f) + 10.0f);
+    }
+
+    float EaseInSine(float a, float b, float alpha)
+    {
+        alpha = std::clamp(alpha, 0.0f, 1.0f);
+        return std::lerp(a, b, 1.0f - std::cos((alpha * PI) * 0.5f));
+    }
+
+    float EaseOutSine(float a, float b, float alpha)
+    {
+        alpha = std::clamp(alpha, 0.0f, 1.0f);
+        return std::lerp(a, b, std::sin((alpha * PI) * 0.5f));
+    }
+
+    float EaseInOutSine(float a, float b, float alpha)
+    {
+        alpha = std::clamp(alpha, 0.0f, 1.0f);
+        return std::lerp(a, b, (1.0f - std::cos(alpha * PI)) * 0.5f);
+    }
+
+    int WrapRange(int val, int min, int max)
+    {
+        int range = (max - min) + 1;
+        if (range <= 0)
+        {
+            return min;
+        }
+
+        int offset = (val - min) % range;
+        if (offset < 0)
+        {
+            offset += range;
+        }
+
+        return min + offset;
+    }
+
+    int WrapRange(int val, int max)
+    {
+        return WrapRange(val, 0, max);
     }
 
     bool IsApproxEqual(float a, float b, float epsilon)

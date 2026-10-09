@@ -12,39 +12,69 @@ using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
-    void Options_Selection_HighlightDraw(const s_Line2d& line)
+    void Options_DrawHighlight(const s_Line2d& line)
     {
+        constexpr int  DEPTH              = 36;
         constexpr auto COLOR_LINE_START   = Color::From8Bit(176, 176, 176);
         constexpr auto COLOR_LINE_END     = Color::From8Bit(160, 128, 64);
         constexpr auto COLOR_SHADOW_START = Color::From8Bit(96,  96,  96);
         constexpr auto COLOR_SHADOW_END   = Color::From8Bit(0,   0,   0);
         constexpr int  SHADOW_WIDTH       = 16;
+        constexpr auto LINE_END_OFFSET    = Vector2i(1, 0);
 
         auto& renderer = g_App.GetRenderer();
 
         // Submit line primitive for underline.
-        auto underlinePrim = Shape2d::CreateLine(line.vertex0, line.vertex1,
-                                                     COLOR_LINE_START, COLOR_LINE_END,
-                                                     DEPTH_36, ScaleMode::VerticalEdge, BlendMode::Opaque);
+        auto underlinePrim = Shape2d::CreateLine(line.vertex0, line.vertex1 + LINE_END_OFFSET,
+                                                 COLOR_LINE_START, COLOR_LINE_END,
+                                                 DEPTH, ScaleMode::VerticalEdge, BlendMode::Opaque);
         renderer.SubmitShape2d(underlinePrim);
 
         // Submit quad primitive for shadow.
         auto shadowPrim = Shape2d::CreateQuad(Vector2i(line.vertex0.x, line.vertex0.y - SHADOW_WIDTH), line.vertex0,
-                                                  Vector2i(line.vertex1.x, line.vertex1.y - SHADOW_WIDTH), line.vertex1,
-                                                  COLOR_SHADOW_END, COLOR_SHADOW_START, COLOR_SHADOW_END, COLOR_SHADOW_START,
-                                                  DEPTH_36, ScaleMode::VerticalEdge, BlendMode::Subtract);
+                                              Vector2i(line.vertex1.x, line.vertex1.y - SHADOW_WIDTH), line.vertex1,
+                                              COLOR_SHADOW_END, COLOR_SHADOW_START, COLOR_SHADOW_END, COLOR_SHADOW_START,
+                                              DEPTH - 1, ScaleMode::VerticalEdge, BlendMode::Subtract);
         renderer.SubmitShape2d(shadowPrim);
     }
 
-    void Options_Selection_ArrowDraw(const s_Triangle2d& tri, bool isFlashing)
+    void Options_DrawArrow(const Vector2i& pos, SelectionArrowType type, bool hasOutline)
     {
-        constexpr auto COLOR_FLASH_BASE = Color::From8Bit(0, 112, 255);
-        constexpr auto COLOR_CYAN       = Color::From8Bit(0, 240, 240);
+        constexpr int  DEPTH       = 40;
+        constexpr auto COLOR_FLASH = Color::From8Bit(0, 112, 255);
+        constexpr auto COLOR_CYAN  = Color::From8Bit(0, 240, 240);
+        constexpr auto POS_OFFSET  = Vector2i(0, 2);
 
-        auto& renderer = g_App.GetRenderer();
+        constexpr auto ARROW_BASES = std::array<s_Triangle2d, (int)SelectionArrowType::Count>
+        {
+            s_Triangle2d
+            {
+                Vector2i( 0, -8),
+                Vector2i(-8,  0),
+                Vector2i( 8,  0)
+            },
+            s_Triangle2d
+            {
+                Vector2i( 0, 8),
+                Vector2i(-8, 0),
+                Vector2i( 8, 0)
+            },
+            s_Triangle2d
+            {
+                Vector2i(-8, -8),
+                Vector2i( 0, -16),
+                Vector2i( 0,  0)
+            },
+            s_Triangle2d
+            {
+                Vector2i(8, -8),
+                Vector2i(0, -16),
+                Vector2i(0,  0)
+            }
+        };
 
-        // Compute color fade as component in range `[0.0f, 0.5f]`.
-        int colorFade = g_SysWork.counters_1C[0] & (Q8_COLOR(0.5f) - 1);
+        // Compute color fade as component in range `[0, 128]`.
+        int colorFade = (g_SysWork.gameStateCounter * 2) % 128;
 
         // Fade start color.
         int colorStart = 0;
@@ -95,69 +125,143 @@ namespace Silent::Game
         auto color1 = Color::Clear;
         auto color2 = Color::Clear;
 
-        // Set flashing blue-cyan color.
-        if (isFlashing)
-        {
-            color0 = Color::From8Bit(COLOR_FLASH_BASE.R8(), COLOR_FLASH_BASE.G8() + colorEnd, colorEnd, COLOR_FLASH_BASE.B8());
-            color1 =
-            color2 = Color::From8Bit(COLOR_FLASH_BASE.R8(), COLOR_FLASH_BASE.G8() + colorStart, COLOR_FLASH_BASE.B8());
-        }
-        // Set solid cyan color.
-        else
-        {
-            color0 =
-            color1 =
-            color2 = COLOR_CYAN;
-        }
+        // Set flashing blue-cyan color. @todo Use constant. Base blue is wrong.
+        color0 = Color::From8Bit(0, 112 + (colorEnd * 4), 255);
+        color1 =
+        color2 = Color::From8Bit(0, 112 + (colorStart * 4), 255);
 
-        // Submit triangle primitive for arrow.
-        auto arrowPrim = Shape2d::CreateTriangle(tri.vertex0, tri.vertex1, tri.vertex2,
-                                                     color0, color1, color2,
-                                                     DEPTH_40, ScaleMode::VerticalEdge, BlendMode::Opaque);
-        renderer.SubmitShape2d(arrowPrim);
+        const auto& baseArrow  = ARROW_BASES[(int)type];
+        auto        flashArrow = s_Triangle2d
+        {
+            (pos + baseArrow.vertex0) + POS_OFFSET,
+            (pos + baseArrow.vertex1) + POS_OFFSET,
+            (pos + baseArrow.vertex2) + POS_OFFSET
+        };
+
+        auto SubmitArrow = [&](const s_Triangle2d& tri, const Color& color0, const Color& color1, const Color& color2,
+                               bool isOutline)
+        {
+            auto& renderer = g_App.GetRenderer();
+
+            // Submit triangle primitive for arrow.
+            int  depth = DEPTH + (isOutline ? 1 : 0);
+            auto prim  = Shape2d::CreateTriangle(tri.vertex0, tri.vertex1, tri.vertex2,
+                                                 color0, color1, color2,
+                                                 depth, ScaleMode::VerticalEdge, BlendMode::Opaque);
+            renderer.SubmitShape2d(prim);
+        };
+
+        // Submit flashing arrow.
+        SubmitArrow(flashArrow, color0, color1, color2, false);
+
+        // Submit flashing outline.
+        if (hasOutline)
+        {
+            switch (type)
+            {
+                case SelectionArrowType::Up:
+                {
+                    auto bgArrow = s_Triangle2d
+                    {
+                        flashArrow.vertex0 + Vector2i( 0, -1),
+                        flashArrow.vertex1 + Vector2i(-2,  1),
+                        flashArrow.vertex2 + Vector2i( 2,  1)
+                    };
+                    SubmitArrow(bgArrow, COLOR_CYAN, COLOR_CYAN, COLOR_CYAN, true);
+                    break;
+                }
+                case SelectionArrowType::Down:
+                {
+                    auto bgArrow = s_Triangle2d
+                    {
+                        flashArrow.vertex0 + Vector2i( 0, -1),
+                        flashArrow.vertex1 + Vector2i(-2,  1),
+                        flashArrow.vertex2 + Vector2i( 2,  1)
+                    };
+                    SubmitArrow(bgArrow, COLOR_CYAN, COLOR_CYAN, COLOR_CYAN, true);
+                    break;
+                }
+                case SelectionArrowType::Left:
+                {
+                    auto bgArrow = s_Triangle2d
+                    {
+                        flashArrow.vertex0 + Vector2i(-1,  0),
+                        flashArrow.vertex1 + Vector2i( 1, -2),
+                        flashArrow.vertex2 + Vector2i( 1,  2)
+                    };
+                    SubmitArrow(bgArrow, COLOR_CYAN, COLOR_CYAN, COLOR_CYAN, true);
+                    break;
+                }
+                case SelectionArrowType::Right:
+                {
+                    auto bgArrow = s_Triangle2d
+                    {
+                        flashArrow.vertex0 + Vector2i( 1,  0),
+                        flashArrow.vertex1 + Vector2i(-1, -2),
+                        flashArrow.vertex2 + Vector2i(-1,  2)
+                    };
+                    SubmitArrow(bgArrow, COLOR_CYAN, COLOR_CYAN, COLOR_CYAN, true);
+                    break;
+                }
+            }
+        }
     }
 
-    void Options_Selection_BulletPointDraw(const s_Quad2d& quad, bool isBorder, bool isInactive)
+    void Options_DrawBulletPoint(const Vector2i& pos, bool isActive)
     {
-        constexpr auto COLOR_ACTIVE_CENTER_HIGHLIGHT   = Color::From8Bit(255, 255, 255);
-        constexpr auto COLOR_ACTIVE_CENTER_MIDTONE     = Color::From8Bit(160, 128, 64);
-        constexpr auto COLOR_ACTIVE_BORDER_HIGHLIGHT   = Color::From8Bit(255, 255, 255);
-        constexpr auto COLOR_ACTIVE_BORDER_MIDTONE     = Color::From8Bit(160, 128, 64);
-        constexpr auto COLOR_ACTIVE_BORDER_SHADOW      = Color::From8Bit(64,  64,  64);
+        constexpr int DEPTH = 24;
 
-        constexpr auto COLOR_INACTIVE_CENTER_HIGHLIGHT = Color::From8Bit(160, 160, 160);
-        constexpr auto COLOR_INACTIVE_CENTER_MIDTONE   = Color::From8Bit(80,  64,  32);
-        constexpr auto COLOR_INACTIVE_BORDER_HIGHLIGHT = Color::From8Bit(128, 128, 128);
-        constexpr auto COLOR_INACTIVE_BORDER_MIDTONE   = Color::From8Bit(40,  32,  16);
-        constexpr auto COLOR_INACTIVE_BORDER_SHADOW    = Color::From8Bit(16,  16,  16);
+        constexpr auto BULLET_QUAD_BACK_BASE = s_Quad2d
+        {
+            .vertex0 = Vector2i(0,  -14),
+            .vertex1 = Vector2i(0,   0),
+            .vertex2 = Vector2i(14, -14),
+            .vertex3 = Vector2i(14,  0)
+        };
+        constexpr auto BULLET_QUAD_FRONT_BASE = s_Quad2d
+        {
+            .vertex0 = Vector2i(1,  -13),
+            .vertex1 = Vector2i(1,  -1),
+            .vertex2 = Vector2i(13, -13),
+            .vertex3 = Vector2i(13, -1)
+        };
+
+        constexpr auto COLOR_ACTIVE_FRONT_HIGHLIGHT = Color::From8Bit(255, 255, 255);
+        constexpr auto COLOR_ACTIVE_FRONT_MIDTONE   = Color::From8Bit(160, 128, 64);
+        constexpr auto COLOR_ACTIVE_BACK_HIGHLIGHT  = Color::From8Bit(255, 255, 255);
+        constexpr auto COLOR_ACTIVE_BACK_MIDTONE    = Color::From8Bit(160, 128, 64);
+        constexpr auto COLOR_ACTIVE_BACK_SHADOW     = Color::From8Bit(64,  64,  64);
+
+        constexpr auto COLOR_INACTIVE_FRONT_HIGHLIGHT = Color::From8Bit(160, 160, 160);
+        constexpr auto COLOR_INACTIVE_FRONT_MIDTONE   = Color::From8Bit(80,  64,  32);
+        constexpr auto COLOR_INACTIVE_BACK_HIGHLIGHT  = Color::From8Bit(128, 128, 128);
+        constexpr auto COLOR_INACTIVE_BACK_MIDTONE    = Color::From8Bit(40,  32,  16);
+        constexpr auto COLOR_INACTIVE_BACK_SHADOW     = Color::From8Bit(16,  16,  16);
 
         auto& renderer = g_App.GetRenderer();
 
-        auto color0 = Color::Clear;
-        auto color1 = Color::Clear;
-        auto color2 = Color::Clear;
-        auto color3 = Color::Clear;
+        // Submit back quad.
+        auto backQuad = Shape2d::CreateQuad(pos + BULLET_QUAD_BACK_BASE.vertex0,
+                                            pos + BULLET_QUAD_BACK_BASE.vertex1,
+                                            pos + BULLET_QUAD_BACK_BASE.vertex2,
+                                            pos + BULLET_QUAD_BACK_BASE.vertex3,
+                                            isActive ? COLOR_ACTIVE_BACK_HIGHLIGHT : COLOR_INACTIVE_BACK_HIGHLIGHT,
+                                            isActive ? COLOR_ACTIVE_BACK_MIDTONE   : COLOR_INACTIVE_BACK_MIDTONE,
+                                            isActive ? COLOR_ACTIVE_BACK_MIDTONE   : COLOR_INACTIVE_BACK_MIDTONE,
+                                            isActive ? COLOR_ACTIVE_BACK_SHADOW    : COLOR_INACTIVE_BACK_SHADOW,
+                                            DEPTH, ScaleMode::VerticalEdge, BlendMode::Opaque);
+        renderer.SubmitShape2d(backQuad);
 
-        // Set colors.
-        if (isBorder)
-        {
-            color0 = isInactive ? COLOR_INACTIVE_BORDER_HIGHLIGHT : COLOR_ACTIVE_BORDER_HIGHLIGHT;
-            color1 = isInactive ? COLOR_INACTIVE_BORDER_MIDTONE   : COLOR_ACTIVE_BORDER_MIDTONE;
-            color2 = isInactive ? COLOR_INACTIVE_BORDER_MIDTONE   : COLOR_ACTIVE_BORDER_MIDTONE;
-            color3 = isInactive ? COLOR_INACTIVE_BORDER_SHADOW    : COLOR_ACTIVE_BORDER_SHADOW;
-        }
-        else
-        {
-            color0 = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
-            color1 = isInactive ? COLOR_INACTIVE_CENTER_HIGHLIGHT : COLOR_ACTIVE_CENTER_HIGHLIGHT;
-            color2 = isInactive ? COLOR_INACTIVE_CENTER_HIGHLIGHT : COLOR_ACTIVE_CENTER_HIGHLIGHT;
-            color3 = isInactive ? COLOR_INACTIVE_CENTER_MIDTONE   : COLOR_ACTIVE_CENTER_MIDTONE;
-        }
-
-        // Submit quad primitive for bullet point element.
-        auto elementPrim = Shape2d::CreateQuad(quad.vertex0, quad.vertex1, quad.vertex2, quad.vertex3,
-                                               color0, color1, color2, color3,
-                                               DEPTH_24, ScaleMode::VerticalEdge, BlendMode::Opaque);
-        renderer.SubmitShape2d(elementPrim);
+        // Submit front quad.
+        auto frontQuad = Shape2d::CreateQuad(pos + BULLET_QUAD_FRONT_BASE.vertex0,
+                                             pos + BULLET_QUAD_FRONT_BASE.vertex1,
+                                             pos + BULLET_QUAD_FRONT_BASE.vertex2,
+                                             pos + BULLET_QUAD_FRONT_BASE.vertex3,
+                                             isActive ? COLOR_ACTIVE_FRONT_MIDTONE   : COLOR_INACTIVE_FRONT_MIDTONE,
+                                             isActive ? COLOR_ACTIVE_FRONT_HIGHLIGHT : COLOR_INACTIVE_FRONT_HIGHLIGHT,
+                                             isActive ? COLOR_ACTIVE_FRONT_HIGHLIGHT : COLOR_INACTIVE_FRONT_HIGHLIGHT,
+                                             isActive ? COLOR_ACTIVE_FRONT_MIDTONE   : COLOR_INACTIVE_FRONT_MIDTONE,
+                                             DEPTH - 1, ScaleMode::VerticalEdge, BlendMode::Opaque);
+        renderer.SubmitShape2d(frontQuad);
     }
 }

@@ -65,7 +65,6 @@ namespace Silent::Renderer
         Vector2     Position   = Vector2::Zero;
         float       Rotation   = 0.0f;
         float       Scale      = 0.0f;
-        float       Tracking   = 0.0f;
         Color       Col        = Color::White;
         int         StyleFlags = (int)TextStyleFlags::None;
         int         Depth      = 0;
@@ -78,7 +77,6 @@ namespace Silent::Renderer
          * @param pos Screen position in percent.
          * @param rot Rotation in radians.
          * @param scale Scale relative to the screen height.
-         * @param tracking Additional tracking between glyphs relative to the point size. @todo Implement properly.
          * @param color Glyph tint color.
          * @param styleFlags Style flags.
          * @param depth Glyph layer render priority.
@@ -86,7 +84,7 @@ namespace Silent::Renderer
          * @return Shaped 2D text.
          */
         static Text2d CreateText2d(const std::string& msg, const std::string& fontName,
-                                   const Vector2& pos, float rot, float scale, float tracking,
+                                   const Vector2& pos, float rot, float scale,
                                    const Color& color, int styleFlags,
                                    int depth = 0, AlignMode alignMode = AlignMode::Center);
     };

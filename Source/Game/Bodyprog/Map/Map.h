@@ -147,9 +147,9 @@ namespace Silent::Game
     enum e_AreaTransitionFlags
     {
         AreaTransitionFlag_None               = 0,
-        AreaTransitionFlag_UnfreezeWorld      = 1 << 0, /** TODO: Dual purpose: `SysState_ReadMessage` unfreezes the world if set, while `GameBoot_WorldStartup` calls `Map_WorldClear`? */
+        AreaTransitionFlag_UnfreezeWorld      = 1 << 0, /** TODO: Dual purpose: `SysState_ReadMessage` unfreezes the world if set, while `GameBoot_InGameStartup` calls `WorldGfx_MapReset`? */
         AreaTransitionFlag_SkipFadeIn         = 1 << 1, /** Skips fade-in when returning to `GameState_InGame`. */
-        AreaTransitionFlag_SkipAmbientSfxInit = 1 << 2  /** TODO: Skips the `Sd_AmbientSfxInit` call in `GameBoot_WorldStartup`? */
+        AreaTransitionFlag_SkipAmbientSfxInit = 1 << 2  /** TODO: Skips the `Sd_AmbientSfxInit` call in `GameBoot_InGameStartup`? */
     };
 
     enum e_WorldModelLocation

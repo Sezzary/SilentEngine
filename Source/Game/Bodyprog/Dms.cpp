@@ -24,7 +24,7 @@ namespace Silent::Game
             Math_Vector3Zero(pos);
             Math_SVectorZero(rot);
 
-            Debug::Msg((charaName + " doesn't exist in DMS.").c_str());
+            Debug::Msg(charaName + " doesn't exist in DMS.");
         }
         else
         {

@@ -70,8 +70,10 @@ namespace Silent::Math
      * @param base Base value to subtract.
      * @return Minimum of `a` and `b`, minus `base`.
      */
-    #define MIN_EXTENT_OFFSET(a, b, base) \
-        (((a) < (b)) ? ((a) - (base)) : ((b) - (base)))
+    constexpr auto MIN_EXTENT_OFFSET = [](auto a, auto b, auto base)
+    {
+        return (a < b) ? (a - base) : (b - base);
+    };
 
     /** @brief Determines the larger of two values.
      *

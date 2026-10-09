@@ -80,10 +80,8 @@ namespace Silent::Debug
         g_Work.Messages.clear();
     }
 
-    void Msg(const char* msg, ...)
+    void Msg(const std::string& msg)
     {
-        constexpr int BUFFER_SIZE = 255;
-
         // Check if debug menu is enabled.
         if (!g_Work.EnableDebugMenu)
         {
@@ -97,23 +95,13 @@ namespace Silent::Debug
             return;
         }
 
-        // Initialize string buffer.
-        char buffer[BUFFER_SIZE];
-        std::memset(buffer, 0, BUFFER_SIZE);
-
-        // Format string.
-        va_list args;
-        va_start(args, msg);
-        vsnprintf(buffer, BUFFER_SIZE, msg, args);
-        va_end(args);
-
         // @lock Restrict `Messages` access.
         static auto mutex = std::mutex();
         {
             auto lock = ParallelLock(mutex);
 
             // Add message.
-            g_Work.Messages.push_back(buffer);
+            g_Work.Messages.push_back(msg);
         }
     }
 
@@ -202,7 +190,7 @@ namespace Silent::Debug
         {
             uint64 endTime  = SDL_GetPerformanceCounter();
             uint64 duration = endTime - g_Work.StartTime;
-            Msg("Execution (μs): %d", duration);
+            Msg(Fmt("Execution (μs): {}", duration));
         }
     }
 

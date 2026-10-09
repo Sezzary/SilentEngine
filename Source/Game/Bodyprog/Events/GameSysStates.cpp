@@ -73,13 +73,11 @@ namespace Silent::Game
     s_RadioNpcInfo g_RadioNpcInfos[2];
     s_MapPoint2d   D_800BCDB0;
     s32            g_ItemTriggerItemIds[5];
-    u8             D_800BCDD4;
+    u8             g_MapAreaLoadCounter;
     s_EventData*   g_MapEventData;
 
     void GameState_InGame_Update() // 0x80038BD4
     {
-        s_SubCharacter* player;
-
         Demo_DemoRandSeedBackup();
 
         switch (g_GameWork.gameStateSteps[0])
@@ -160,7 +158,7 @@ namespace Silent::Game
 
             Demo_DemoRandSeedRestore();
 
-            player = &g_SysWork.playerWork.player;
+            auto* player = &g_SysWork.playerWork.player;
             //Player_Update(player, FS_BUFFER_0, g_SysWork.playerBoneCoords);
 
             Demo_DemoRandSeedRestore();
@@ -622,7 +620,7 @@ namespace Silent::Game
                 //func_800892A4(1);
 
                 // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
-                Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
+                Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
 
                 // Return to game.
                 Game_StateSetNext(GameState_InGame);
@@ -654,7 +652,7 @@ namespace Silent::Game
 
         if (g_SysWork.sfxPairIdx == SfxPairIdx_7)
         {
-            D_800BCDD4          = 0;
+            g_MapAreaLoadCounter          = 0;
             g_SysWork.sysState |= SysFlag_LoadActive;
         }
 
@@ -685,7 +683,7 @@ namespace Silent::Game
             }
         }
 
-        Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
+        Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
 
         if (g_MapEventData->field_8_24)
         {
@@ -764,7 +762,7 @@ namespace Silent::Game
                 break;
 
             case MapMsgState_SelectEntry1:
-                Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
+                Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
                 SysWork_StateSetNext(SysState_Gameplay);
                 g_MapOverlayHdr.playerControlUnfreeze(false);
                 break;
@@ -846,7 +844,7 @@ namespace Silent::Game
     {
         if (g_MapEventData->transitionFlags != AreaTransitionFlag_None)
         {
-            Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
+            Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
         }
 
         g_DeltaTime = g_DeltaTimeCpy;
@@ -856,7 +854,7 @@ namespace Silent::Game
     void SysState_EventSetFlag_Update() // 0x8003A460
     {
         g_DeltaTime = g_DeltaTimeCpy;
-        Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
+        Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
         g_SysWork.sysState = SysState_Gameplay;
     }
 
@@ -866,7 +864,7 @@ namespace Silent::Game
 
         SD_Call(((u16)g_MapEventParam + Sfx_Base) & 0xFFFF);
 
-        Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
+        Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
         g_SysWork.sysState = SysState_Gameplay;
     }
 
@@ -1077,7 +1075,7 @@ namespace Silent::Game
 
         g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
 
-        Savegame_EventFlagSetAlt(g_MapEventData->completeEventFlag);
+        Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
         g_MapOverlayHdr.mapEventFuncs[g_MapEventParam]();
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
     }

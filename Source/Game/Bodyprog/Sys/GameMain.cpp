@@ -57,8 +57,8 @@ namespace Silent::Game
         GameState_MovieOpening_Update,
         GameState_LoadScreen_Update,               // @todo
         GameState_InGame_Update,                   // @todo
-        GameState_MapEvent_Update,                 // @todo
-        GameState_ExitMovie_Update,                // @todo
+        GameState_MapEvent_Update,
+        GameState_ExitMovie_Update,
         nullptr,//GameState_ItemScreens_Update,    // @todo
         nullptr,//GameState_PaperMapScreen_Update, // @todo
         GameState_LoadSavegameScreen_Update,       // @todo

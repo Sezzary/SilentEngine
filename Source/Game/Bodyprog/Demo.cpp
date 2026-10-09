@@ -351,8 +351,8 @@ namespace Silent::Game
 
                 if (g_Demo_CurFrameData->gameStateExpected != gameWork->gameState)
                 {
-                    Debug::Msg("STEP ERROR: [H: %d]/[M: %d]",
-                               g_Demo_CurFrameData->gameStateExpected, gameWork->gameState);
+                    Debug::Msg(Fmt("STEP ERROR: [H: {}]/[M: {}]",
+                               (int)g_Demo_CurFrameData->gameStateExpected, (int)gameWork->gameState));
 
                     g_Demo_CurFrameData = nullptr;
                 }

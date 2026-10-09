@@ -234,7 +234,7 @@ namespace Silent::Utils
 
         Debug::Msg("=== Spatial Hash Debug ===");
 
-        Debug::Msg("Cells: %d", _cells.size());
+        Debug::Msg(Fmt("Cells: {}", _cells.size()));
         for (const auto& [key, cell] : _cells)
         {
             Debug::CreateBox(cell.Aabb.ToObb(), BOX_COLOR);

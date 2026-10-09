@@ -45,14 +45,15 @@ namespace Silent::Game
 
     void GameState_LoadScreen_Update(void) // 0x800348E8
     {
+        constexpr int LOAD_COUNT_MAX = 20;
+
         GameBoot_LoadingScreen();
-        GameBoot_WorldStartup();
+        GameBoot_InGameStartup();
 
         if (g_SysWork.sysState & SysFlag_LoadActive)
         {
-            D_800BCDD4++;
-
-            if (D_800BCDD4 >= 21)
+            g_MapAreaLoadCounter++;
+            if (g_MapAreaLoadCounter > LOAD_COUNT_MAX)
             {
                 g_SysWork.sysState &= ~SysFlag_LoadActive;
 
@@ -72,13 +73,12 @@ namespace Silent::Game
         g_GameWork.gameStateSteps[0]   = gameStateStep0 + 1;
     }
 
-    void GameBoot_WorldStartup(void) // 0x80034964
+    void GameBoot_InGameStartup(void) // 0x80034964
     {
-        // It makes up to 5 attemps. If the load fails, it restarts
-        // the entire process by restarting the timer used to check if a demo
-        // should be triggered.
+        // Makes up to 5 attemps. If the load fails, the timer used to check if a demo should be triggered is restarted.
         static int demoLoadAttempCount = 0;
 
+        // Handle boot startup step.
         switch (g_GameWork.gameStateSteps[0])
         {
             case 0:
@@ -176,12 +176,12 @@ namespace Silent::Game
                 break;
 
             case 7:
-                //if (AreaLoad_TransitionFlags() & AreaTransitionFlag_UnfreezeWorld)
+                if (AreaLoad_TransitionFlags() & AreaTransitionFlag_UnfreezeWorld)
                 {
-                    //Map_WorldClear();
+                    //WorldGfx_MapReset();
                 }
 
-                //Ipd_PlayerChunkInit(&g_MapOverlayHdr, g_SysWork.playerWork.player.position.vx, g_SysWork.playerWork.player.position.vz);
+                //WorldGfx_MapInit(&g_MapOverlayHdr, g_SysWork.playerWork.player.position.vx, g_SysWork.playerWork.player.position.vz);
                 if (g_SysWork.processFlags == ProcessFlag_OverlayTransition)
                 {
                     Game_RadioSoundStop();
@@ -197,7 +197,7 @@ namespace Silent::Game
                 break;
 
             case 9:
-                //if (Bgm_Init() == 0)
+                //if (Sd_BgmInit() == 0)
                 {
                     g_GameWork.gameState = GameState_MainLoadScreen;
                     Game_StateStepIncrement(0);
@@ -211,14 +211,14 @@ namespace Silent::Game
                     g_SysWork.sysState |= SysFlag_DemoActive;
                 }
 
-                //if (AreaLoad_TransitionFlags() & EventParamUnkState_2 || Sd_AmbientSfxInit() == 0)
+                if (AreaLoad_TransitionFlags() & AreaTransitionFlag_SkipAmbientSfxInit/* || Sd_AmbientSfxInit() == 0*/)
                 {
                     Game_StateStepIncrement(0);
                 }
                 break;
 
             case 11:
-                if (g_SysWork.gameStateCounter >= 60)
+                if (g_SysWork.gameStateCounter >= SECONDS_60_FPS(1))
                 {
                     if (g_SysWork.processFlags == ProcessFlag_RoomTransition)
                     {
@@ -229,7 +229,9 @@ namespace Silent::Game
                         //GameBoot_InGameInit();
                     }
 
-                    if (g_SysWork.processFlags <= (u32)ProcessFlag_OverlayTransition)
+                    if (g_SysWork.processFlags == ProcessFlag_None || 
+                        g_SysWork.processFlags == ProcessFlag_RoomTransition ||
+                        g_SysWork.processFlags == ProcessFlag_OverlayTransition)
                     {
                         //AreaLoad_TransitionSound();
                     }
@@ -244,15 +246,13 @@ namespace Silent::Game
                 {
                     Game_StateSetNext(GameState_InGame);
 
-                    //if (AreaLoad_TransitionFlags() & AreaTransitionFlag_SkipFadeIn)
+                    if (AreaLoad_TransitionFlags() & AreaTransitionFlag_SkipFadeIn)
                     {
                         g_GameWork.gameStateSteps[0] = 1;
-                        g_Screen_FadeStatus          = SCREEN_FADE_STATUS(ScreenFadeState_ResetTimestep, IS_SCREEN_FADE_WHITE(g_Screen_FadeStatus));
+                        g_Screen_FadeStatus          = SCREEN_FADE_STATUS(ScreenFadeState_ResetTimestep,
+                                                                          IS_SCREEN_FADE_WHITE(g_Screen_FadeStatus));
                     }
                 }
-                break;
-
-            default:
                 break;
         }
     }

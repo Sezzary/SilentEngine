@@ -723,6 +723,18 @@ namespace Silent::Game
         return step;
     }
 
+    /** @brief Increments one of the three game state step counters.
+     *
+     * The steps form a hierarchy used by the `gameState` machines:
+     *   [0] = state step, [1] = sub-step, [2] = sub-sub-step.
+     *
+     * @note Incrementing a step cascades a reset downward: changing a higher 
+     * level invalidates the steps nested within it, so all levels lower
+     * than `stepIdx` are reset to 0.
+     * Incrementing [0] additionally clears the `gameStateStepCounter` frame counter.
+     *
+     * @param stepIdx Step index to increment: 0, 1, or 2.
+     */
     static inline void Game_StateStepIncrement(int stepIdx)
     {    
         if (stepIdx == 0)

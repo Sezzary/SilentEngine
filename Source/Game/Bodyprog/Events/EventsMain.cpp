@@ -194,7 +194,7 @@ namespace Silent::Game
             // (Same as `SysState_EventSetFlag_Update`.)
             if (mapEvent->sysState == SysState_EventSetFlag)
             {
-                Savegame_EventFlagSetAlt(mapEvent->completeEventFlag);
+                Savegame_EventFlagSet(mapEvent->completeEventFlag);
                 break;
             }
 

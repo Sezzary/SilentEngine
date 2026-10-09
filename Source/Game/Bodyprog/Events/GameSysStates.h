@@ -15,7 +15,7 @@ namespace Silent::Game
     /** Related to special item interactions. */
     extern s32 g_ItemTriggerItemIds[5];
 
-    extern u8 D_800BCDD4;
+    extern u8 g_MapAreaLoadCounter;
 
     extern s_EventData* g_MapEventData;
 

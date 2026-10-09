@@ -258,9 +258,7 @@ namespace Silent::Game
             else if (std::holds_alternative<MenuEntryLanguageBinding>(entry.Binding))
             {
                 const auto& binding = std::get<MenuEntryLanguageBinding>(entry.Binding);
-
-                const auto& translator = g_App.GetTranslator();
-                const auto& locale     = translator.GetLocales()[binding.GetLocaleIdx()];
+                const auto& locale  = translator.GetLocales()[binding.GetLocaleIdx()];
 
                 Options_DrawConfigString(pos + CONFIG_OFFSET, locale.Label, isSelected);
             }

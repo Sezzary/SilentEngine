@@ -190,7 +190,7 @@ namespace Silent::Game
                 g_GameWork.gameStateSteps[0]++;
 
             case 8:
-                //if (Ipd_ChunkInitCheck() != false)
+                //if (WorldGfx_ChunkInitCheck() != false)
                 {
                     Game_StateStepIncrement(0);
                 }

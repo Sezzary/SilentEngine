@@ -80,6 +80,8 @@ namespace Silent::Game
         std::string           EntryStringKey = {};
         MenuEntryBinding      Binding        = {};
         std::function<void()> OnUpdate       = nullptr;
+        std::function<bool()> CanUpdate      = nullptr;
+        std::function<bool()> IsEnabled      = nullptr;
     };
 
     template <typename EnumT>

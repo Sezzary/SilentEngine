@@ -174,9 +174,9 @@ namespace Silent::Game
                 {
                     auto bgArrow = s_Triangle2d
                     {
-                        flashArrow.vertex0 + Vector2i( 0, -1),
-                        flashArrow.vertex1 + Vector2i(-2,  1),
-                        flashArrow.vertex2 + Vector2i( 2,  1)
+                        flashArrow.vertex0 + Vector2i( 0,  1),
+                        flashArrow.vertex1 + Vector2i(-2, -1),
+                        flashArrow.vertex2 + Vector2i( 2, -1)
                     };
                     SubmitArrow(bgArrow, COLOR_CYAN, COLOR_CYAN, COLOR_CYAN, true);
                     break;

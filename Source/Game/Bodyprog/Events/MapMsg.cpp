@@ -220,7 +220,8 @@ namespace Silent::Game
                 rolloutState = 0;
                 menuSelection = Gfx_MapMsg_SelectionUpdate(g_MapMsg_CurrentIdx, &displayLength);
 
-                if (menuSelection == MsgSelectArg::Select2 || menuSelection == MsgSelectArg::Select3)
+                if (menuSelection == MsgSelectArg::Select2 ||
+                    menuSelection == MsgSelectArg::Select3)
                 {
                     rolloutState = NO_VALUE;
                 }

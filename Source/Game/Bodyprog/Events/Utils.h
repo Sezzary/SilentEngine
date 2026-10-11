@@ -372,7 +372,7 @@ namespace Silent::Game
      * @param pickupType Common pickup item ID of the item to be picked up (`e_CommonPickupItemId`).
      * @param eventFlagIdx Index of the event flag to set.
      */
-    void Event_CommonItemTake(u32 pickupType, e_EventFlag eventFlagIdx);
+    void Event_CommonItemTake(e_CommonPickupItemId pickupType, e_EventFlag eventFlagIdx);
 
     /** @brief Handles a paper map pickup event.
      *

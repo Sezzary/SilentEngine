@@ -84,7 +84,7 @@ namespace Silent::Game
         VC_AREA_WIDE    = 2,
         VC_AREA_OUTDOOR = 3,
 
-        //VC_AREA_SUU     = 4 /** Count. Disabled to remove size warning since it's unused. */
+        VC_AREA_SUU     = 4 /** @unused Count. */
     };
 
     /** @brief Rail camera set command types. */
@@ -106,7 +106,7 @@ namespace Silent::Game
     /** @brief Debug camera mode state steps. */
     enum e_DebugCameraMode
     {
-        DebugCameraMode_Collide          = 0,
+        DebugCameraMode_Collide            = 0,
         DebugCameraMode_SetReference       = 1,
         DebugCameraMode_AnalogStickControl = 2,
         DebugCameraMode_ResetReference     = 3, // TODO: Name uncertain.

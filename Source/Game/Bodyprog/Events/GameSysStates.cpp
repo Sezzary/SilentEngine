@@ -331,7 +331,7 @@ namespace Silent::Game
                 g_SysWork.sysStateSteps[0] = 1;
 
             case 1:
-                //if (Ipd_ChunkInitCheck() != 0)
+                //if (WorldGfx_ChunkInitCheck() != 0)
                 {
                     SD_Call(19);
                     //GameFs_OptionBinLoad();
@@ -566,7 +566,7 @@ namespace Silent::Game
                         g_SysWork.sysStateSteps[0] = 1;
 
                     case 1:
-                        /*if (Ipd_ChunkInitCheck() != 0)
+                        /*if (WorldGfx_ChunkInitCheck() != 0)
                         {
                             g_SysWork.sysStateSteps[0]++;
                         }*/

@@ -106,6 +106,10 @@ namespace Silent::Game
         auto&       options = g_App.GetOptions();
 
         const auto& entry = entries[g_OptionsMenu_SelectedEntry];
+        if (entry.CanUpdate && !entry.CanUpdate())
+        {
+            return;
+        }
 
         // Set config.
         bool isOptChanged = false;

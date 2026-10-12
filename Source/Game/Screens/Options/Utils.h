@@ -106,7 +106,7 @@ namespace Silent::Game
 
     void Options_UpdateConfig(const std::vector<MenuEntry>& entries);
 
-    void Options_UpdateSelection(int entryCount);
+    void Options_UpdateSelection(const std::vector<MenuEntry>& entries);
 
     void Options_ResetSelection(int selectedEntryIdx = 0);
 

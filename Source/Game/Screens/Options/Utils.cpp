@@ -226,7 +226,7 @@ namespace Silent::Game
         }
     }
 
-    void Options_UpdateSelection(int entryCount)
+    void Options_UpdateSelection(const std::vector<MenuEntry>& entries)
     {
         const auto& input = g_App.GetInput();
 
@@ -252,6 +252,21 @@ namespace Silent::Game
         g_OptionsMenu_PrevSelectedEntry          = g_OptionsMenu_SelectedEntry;
         g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
+        // Enter submenu.
+        if (input.GetAction(In::Enter).IsClicked(ACTION_HALF_STATE))
+        {
+            const auto& entry = entries[g_OptionsMenu_SelectedEntry];
+
+            if (std::holds_alternative<MenuEntrySubmenuBinding>(entry.Binding))
+            {
+                const auto& binding = std::get<MenuEntrySubmenuBinding>(entry.Binding);
+
+                ScreenFade_Start(true, false, false);
+                Game_StateStepSet(0, binding.MenuState);
+                return;
+            }
+        }
+
         // Move selection cursor up/down.
         if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
             !input.GetAction(In::Down).IsHeld(0.0f, GUI_PULSE_STATE_MIN))
@@ -259,7 +274,7 @@ namespace Silent::Game
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
             g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
-            g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + (entryCount - 1)) % entryCount;
+            g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + (entries.size() - 1)) % entries.size();
         }
         else if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
                  !input.GetAction(In::Up).IsHeld(0.0f, GUI_PULSE_STATE_MIN))
@@ -267,7 +282,7 @@ namespace Silent::Game
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
             g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
-            g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + 1) % entryCount;
+            g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + 1) % entries.size();
         }
 
         // Update visible entries region.
@@ -283,7 +298,7 @@ namespace Silent::Game
             g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
             g_OptionsMenu_VisibleEntriesStartIdx     = std::min(((g_OptionsMenu_SelectedEntry - VISIBLE_ENTRY_COUNT_MAX) +
                                                                  VISIBLE_ENTRY_SCROLL_BUFFER) + 1, 
-                                                                std::max(0, entryCount - VISIBLE_ENTRY_COUNT_MAX));
+                                                                std::max(0, (int)entries.size() - VISIBLE_ENTRY_COUNT_MAX));
         }
     }
 
@@ -310,7 +325,7 @@ namespace Silent::Game
             return;
         }
 
-        Options_UpdateSelection(entries.size());
+        Options_UpdateSelection(entries);
         Options_UpdateConfig(entries);
 
         // Handle menu state.

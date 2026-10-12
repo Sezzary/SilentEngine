@@ -229,16 +229,13 @@ namespace Silent::Game
             Options_DrawBulletPoint(bulletPos, isActive);
 
             // Set string color.
-            if (entry.CanUpdate)
+            if (entry.CanUpdate ? entry.CanUpdate() : true)
             {
-                if (entry.CanUpdate())
-                {
-                    Gfx_StringColorSet(StringColorId_White);
-                }
-                else
-                {
-                    Gfx_StringColorSet(StringColorId_DarkGrey);
-                }
+                Gfx_StringColorSet(StringColorId_White);
+            }
+            else
+            {
+                Gfx_StringColorSet(StringColorId_DarkGrey);
             }
 
             // Submit string.

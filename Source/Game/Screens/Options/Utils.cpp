@@ -2,7 +2,10 @@
 #include "Game/Screens/Options/Utils.h"
 
 #include "Application.h"
+#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
+#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Game.h"
 #include "Game/Screens/Options/Options.h"
 #include "Services/Options.h"
 #include "Input/Input.h"
@@ -106,10 +109,12 @@ namespace Silent::Game
         auto&       options = g_App.GetOptions();
 
         const auto& entry = entries[g_OptionsMenu_SelectedEntry];
-        if (entry.CanUpdate && !entry.CanUpdate())
-        {
-            return;
-        }
+
+        // @todo Tries to execute even when not set??
+        //if (entry.CanUpdate && !entry.CanUpdate())
+        //{
+        //    return;
+        //}
 
         // Set config.
         bool isOptChanged = false;
@@ -225,11 +230,18 @@ namespace Silent::Game
     {
         const auto& input = g_App.GetInput();
 
-        // Increment line move timer.
-        g_OptionsMenu_SelectionHighlightTimer += g_DeltaTime;
-        if (g_OptionsMenu_SelectionHighlightTimer >= LINE_CURSOR_TIMER_MAX)
+        // Increment line move timer. @todo Selection highlight doesn't update after page switch until cursor is moved.
+        if (g_OptionsMenu_SelectionHighlightTimer == NO_VALUE)
         {
-            g_OptionsMenu_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
+            g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
+        }
+        else
+        {
+            g_OptionsMenu_SelectionHighlightTimer += g_DeltaTime;
+            if (g_OptionsMenu_SelectionHighlightTimer >= LINE_CURSOR_TIMER_MAX)
+            {
+                g_OptionsMenu_SelectionHighlightTimer = LINE_CURSOR_TIMER_MAX;
+            }
         }
 
         if (g_OptionsMenu_SelectionHighlightTimer != LINE_CURSOR_TIMER_MAX)
@@ -241,14 +253,16 @@ namespace Silent::Game
         g_OptionsMenu_PrevVisibleEntriesStartIdx = g_OptionsMenu_VisibleEntriesStartIdx;
 
         // Move selection cursor up/down.
-        if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
+        if (input.GetAction(In::Up).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
+            !input.GetAction(In::Down).IsHeld(0.0f, GUI_PULSE_STATE_MIN))
         {
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
             g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
             g_OptionsMenu_SelectedEntry           = (g_OptionsMenu_SelectedEntry + (entryCount - 1)) % entryCount;
         }
-        if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN))
+        else if (input.GetAction(In::Down).IsPulsed(GUI_PULSE_DELAY_SEC, GUI_PULSE_INITIAL_DELAY_SEC, GUI_PULSE_STATE_MIN) &&
+                 !input.GetAction(In::Up).IsHeld(0.0f, GUI_PULSE_STATE_MIN))
         {
             //Sd_SfxPlay(Sfx_MenuMove, 0, 64);
 
@@ -275,38 +289,39 @@ namespace Silent::Game
 
     void Options_ResetSelection(int selectedEntryIdx)
     {
-        g_OptionsMenu_SelectedEntry           = 
-        g_OptionsMenu_PrevSelectedEntry       = selectedEntryIdx;
-        g_OptionsMenu_VisibleEntriesStartIdx  = 0;
-        g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
+        g_OptionsMenu_SelectedEntry              = 
+        g_OptionsMenu_PrevSelectedEntry          = selectedEntryIdx;
+        g_OptionsMenu_VisibleEntriesStartIdx     =
+        g_OptionsMenu_PrevVisibleEntriesStartIdx = 0; // @todo What if selected entry is outside default visible region?
+        g_OptionsMenu_SelectionHighlightTimer    = NO_VALUE;
     }
 
-    void Options_ControlSubmenu(int stateStep, const std::string& headingKey, const std::vector<MenuEntry>& entries,
-                                int prevMenuEntryIdx, int state, int leaveState)
+    void Options_ControlSubmenu(const std::string& headingKey, const std::vector<MenuEntry>& entries, int menuStateStep,
+                                int menuState, int leaveMenuState, int prevMenuEntryIdx)
     {
         const auto& input = g_App.GetInput();
 
         // Draw graphics.
         Options_DrawEntries(headingKey, entries);
-        //Screen_BackgroundImgDraw(&g_ItemInspectionImg);
+        Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
-        if (g_GameWork.gameStateSteps[0] != state)
+        if (g_GameWork.gameStateSteps[0] != menuState)
         {
             return;
         }
 
-        Options_UpdateConfig(entries);
         Options_UpdateSelection(entries.size());
+        Options_UpdateConfig(entries);
 
         // Handle menu state.
-        switch (g_GameWork.gameStateSteps[stateStep])
+        switch (g_GameWork.gameStateSteps[menuStateStep])
         {
             case 0:
             {
                 Options_ResetSelection();
 
-                //ScreenFade_Start(true, true, false);
-                Game_StateStepIncrement(stateStep);
+                ScreenFade_Start(true, true, false);
+                Game_StateStepIncrement(menuStateStep);
                 break;
             }
             case 1:
@@ -315,21 +330,21 @@ namespace Silent::Game
                 {
                     //Sd_SfxPlay(Sfx_Cancel, 0, Q8(0.25f));
 
-                    //ScreenFade_Start(true, false, false);
-                    Game_StateStepIncrement(stateStep);
+                    ScreenFade_Start(true, false, false);
+                    Game_StateStepIncrement(menuStateStep);
                 }
                 break;
             }
             case 2:
             {
                 // Switch to previous menu.
-                /*if (ScreenFade_IsFinished())
+                if (ScreenFade_IsFinished())
                 {
                     Options_ResetSelection(prevMenuEntryIdx);
 
                     ScreenFade_Start(true, true, false);
-                    Game_StateStepSet(stateStep - 1, leaveState);
-                }*/
+                    Game_StateStepSet(menuStateStep - 1, leaveMenuState);
+                }
                 break;
             }
         }

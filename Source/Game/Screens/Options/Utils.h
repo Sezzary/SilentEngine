@@ -7,12 +7,13 @@ using namespace Silent::Services;
 
 namespace Silent::Game
 {
-    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(1.0f / 8.0f);
+    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(GUI_PULSE_DELAY_SEC);
     constexpr int    BAR_NOTCH_COUNT       = 16;
 
     /** @brief Submenu entry options binding. */
     struct MenuEntrySubmenuBinding
     {
+        int MenuState = 0;
     };
 
     /** @brief Boolean entry options binding. */
@@ -108,4 +109,8 @@ namespace Silent::Game
     void Options_UpdateSelection(int entryCount);
 
     void Options_ResetSelection(int selectedEntryIdx = 0);
+
+    void Options_ControlSubmenu(const std::string& headingKey, const std::vector<MenuEntry>& entries, int menuStateStep,
+                                int menuState, int leaveMenuState,
+                                int prevMenuEntryIdx);
 }

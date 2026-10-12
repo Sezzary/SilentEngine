@@ -43,32 +43,50 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_EXIT,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_Leave
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_GRAPHICS,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterGraphics
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_GAMEPLAY,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterGameplay
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_INPUT,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterInput
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_ENHANCEMENTS,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterEnhancements
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_SYSTEM,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterSystem
+            }
         },
     };
 
@@ -102,7 +120,8 @@ namespace Silent::Game
             case MainOptionsMenuEntry_Exit:
             {
                 // Exit to gameplay.
-                if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked())
+                if (input.GetAction(In::Enter).IsClicked() ||
+                    input.GetAction(In::Cancel).IsClicked())
                 {
                     Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
 

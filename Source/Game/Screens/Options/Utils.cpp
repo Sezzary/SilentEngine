@@ -7,14 +7,19 @@
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Game.h"
 #include "Game/Screens/Options/Options.h"
-#include "Services/Options.h"
+#include "Gui/Button.h"
+#include "Gui/Cursor.h"
 #include "Input/Input.h"
+#include "Services/Options.h"
 
+using namespace Silent::Gui;
 using namespace Silent::Input;
 using namespace Silent::Services;
 
 namespace Silent::Game
 {
+    Cursor g_Options_Cursor = Cursor();
+
     MenuEntryBoolBinding MenuEntryBoolBinding::Bind(bool Options::* field)
     {
         return MenuEntryBoolBinding
@@ -229,6 +234,8 @@ namespace Silent::Game
     void Options_UpdateSelection(const std::vector<MenuEntry>& entries)
     {
         const auto& input = g_App.GetInput();
+
+        g_Options_Cursor.Update();
 
         // Increment line move timer. @todo Selection highlight doesn't update after page switch until cursor is moved.
         if (g_OptionsMenu_SelectionHighlightTimer == NO_VALUE)

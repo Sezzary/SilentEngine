@@ -190,15 +190,13 @@ namespace Silent::Game
                                             (int)entries.size());
 
         // Submit scroll arrows.
-        bool isUpHeld   = input.GetAction(In::Up).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
-        bool isDownHeld = input.GetAction(In::Down).IsHeld(0.0f, GUI_PULSE_STATE_MIN);
         if (g_OptionsMenu_VisibleEntriesStartIdx > 0)
         {
-            Options_DrawArrow(UP_ARROW_POS, SelectionArrowType::Up, isUpHeld && !isDownHeld);
+            Options_DrawArrow(UP_ARROW_POS, SelectionArrowType::Up, false);
         }
         if (visibleEntriesEndIdx < entries.size())
         {
-            Options_DrawArrow(DOWN_ARROW_POS, SelectionArrowType::Down, isDownHeld && !isUpHeld);
+            Options_DrawArrow(DOWN_ARROW_POS, SelectionArrowType::Down, false);
         }
 
         // Run through entries.

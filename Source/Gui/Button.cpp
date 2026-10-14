@@ -48,14 +48,14 @@ namespace Silent::Gui
     {
         *this = Button(ConvertRetroScreenPixelsToPercent(center),
                        ConvertRetroScreenPixelsToPercent(extents),
-                       scaleMode,
-                       onEnter,
-                       onInside,
-                       onLeave,
-                       onOutside,
-                       onClick,
-                       onHold,
-                       onRelease);
+                       std::move(scaleMode),
+                       std::move(onEnter),
+                       std::move(onInside),
+                       std::move(onLeave),
+                       std::move(onOutside),
+                       std::move(onClick),
+                       std::move(onHold),
+                       std::move(onRelease));
     }
 
     void Button::Update(bool isFocused)
@@ -81,9 +81,19 @@ namespace Silent::Gui
         Update(bounds.Intersects(pos), SELECT_ACTION_IDS); 
     }
 
+    void Button::SetCenter(const Vector2& center)
+    {
+        Center = center;
+    }
+
+    void Button::SetExtents(const Vector2& extents)
+    {
+        Extents = extents;
+    }
+
     void Button::Debug() const
     {
-        // @todo
+        // @todo Visualise button.
         //Debug::CreateRectangle();
     }
 
@@ -93,7 +103,7 @@ namespace Silent::Gui
 
         for (auto actionId : actionIds)
         {
-            if (input.GetAction(actionId).IsClicked())
+            if (input.GetAction(actionId).IsClicked(ACTION_HALF_STATE))
             {
                 return true;
             }
@@ -108,7 +118,7 @@ namespace Silent::Gui
 
         for (auto actionId : actionIds)
         {
-            if (input.GetAction(actionId).IsHeld())
+            if (input.GetAction(actionId).IsHeld(0.0f, ACTION_HALF_STATE))
             {
                 return true;
             }
@@ -123,7 +133,7 @@ namespace Silent::Gui
 
         for (auto actionId : actionIds)
         {
-            if (input.GetAction(actionId).IsReleased())
+            if (input.GetAction(actionId).IsReleased(0.0f, ACTION_HALF_STATE))
             {
                 return true;
             }

@@ -1,8 +1,11 @@
 #pragma once
 
 #include "Application.h"
+#include "Gui/Button.h"
+#include "Gui/Cursor.h"
 #include "Services/Options.h"
 
+using namespace Silent::Gui;
 using namespace Silent::Services;
 
 namespace Silent::Game
@@ -78,12 +81,16 @@ namespace Silent::Game
     /** @brief Menu entry data. */
     struct MenuEntry
     {
-        std::string           EntryStringKey = {};
-        MenuEntryBinding      Binding        = {};
-        std::function<void()> OnUpdate       = nullptr;
-        std::function<bool()> CanUpdate      = nullptr;
-        std::function<bool()> IsEnabled      = nullptr;
+        std::string      EntryStringKey = {};
+        MenuEntryBinding Binding        = {};
+        Button           Region         = Button();
+
+        std::function<void()> OnUpdate  = nullptr;
+        std::function<bool()> CanUpdate = nullptr;
+        std::function<bool()> IsEnabled = nullptr;
     };
+
+    extern Cursor g_Options_Cursor;
 
     template <typename EnumT>
     MenuEntryEnumBinding MenuEntryEnumBinding::Bind(EnumT Options::* field, std::vector<std::string> configStrKeys)

@@ -41,6 +41,9 @@ namespace Silent::Gui
         // Constructors
         // =============
 
+        /** @brief Constructs and uninitialized default instance. */
+        Button() = default;
+
         /** @brief Creates an instance from a center and extents in screen percent with callbacks.
          *
          * @param center Center in screen percent.
@@ -84,6 +87,22 @@ namespace Silent::Gui
                Callback onClick,
                Callback onHold,
                Callback onRelease);
+
+        // ========
+        // Setters
+        // ========
+
+        /** @brief Sets the button center.
+         *
+         * @param center New center.
+         */
+        void SetCenter(const Vector2& center);
+
+        /** @brief Sets the button extents.
+         *
+         * @param extents New extents.
+         */
+        void SetExtents(const Vector2& extents);
 
         // ==========
         // Utilities

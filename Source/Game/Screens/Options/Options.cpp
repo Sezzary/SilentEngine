@@ -149,6 +149,12 @@ namespace Silent::Game
             //Game_TimerUpdate();
         }
 
+        // Draw cursor.
+        if (g_Options_Cursor.IsEnabled())
+        {
+            g_Options_Cursor.Draw();
+        }
+
         // Handle options menu state.
         int unlockedOptFlags = 0;
         switch (g_GameWork.gameStateSteps[0])

@@ -460,7 +460,7 @@ namespace Silent::Game
         g_StringColorId = colorId;
     }
 
-    void Gfx_MapMsg_Reset()
+    void MapMsg_Reset()
     {
         g_StringColorId                  = StringColorId_White;
         g_SysWork.enableHalfHeightGlyphs = false;

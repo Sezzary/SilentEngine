@@ -2,6 +2,17 @@
 
 namespace Silent::Game
 {
+    /** @brief Lens flare rotation types. TODO: Rough name. Also probably belongs in a different file. */
+    enum e_LensFlareType
+    {
+        LensFlareType_Default = 0,
+        LensFlareType_Custom  = 1,
+        LensFlareType_Preset1 = 2,
+        LensFlareType_Preset2 = 3,
+        LensFlareType_Preset3 = 4,
+        LensFlareType_Preset4 = 5
+    };
+
     /** @brief Camera path flags. */
     enum VC_ROAD_FLAGS
     {

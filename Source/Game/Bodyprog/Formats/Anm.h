@@ -12,7 +12,7 @@ namespace Silent::Game
     };
 
     /** @brief ANM file header. */
-    typedef struct s_AnmHeader
+    struct s_AnmHeader
     {
         u16           dataOffset;
         u8            rotationBoneCount;

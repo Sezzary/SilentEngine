@@ -32,7 +32,6 @@ namespace Silent::Game
             .lim_rd_max_hy  = Q4(6.0f),
             .lim_rd_min_hy  = Q4(-6.0f),
             .ofs_watch_hy   = Q4(0.5f),
-            .field_15          = 1,
             .cam_mv_type    = VC_MV_CHASE,
             .fix_ang_x      = Q8_ANGLE(0.0f),
             .fix_ang_y      = Q8_ANGLE(0.0f)
@@ -47,7 +46,6 @@ namespace Silent::Game
             .lim_rd_max_hy  = Q4(0.0f),
             .lim_rd_min_hy  = Q4(0.0f),
             .ofs_watch_hy   = Q4(0.0f),
-            .field_15          = 0,
             .cam_mv_type    = VC_MV_CHASE,
             .fix_ang_x      = Q8_ANGLE(0.0f),
             .fix_ang_y      = Q8_ANGLE(0.0f)

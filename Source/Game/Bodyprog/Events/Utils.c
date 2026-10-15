@@ -178,7 +178,7 @@ void Event_SysStateBranchOnFlag(e_EventFlag eventFlagIdx, int stepTrue, int step
 
 void Event_DisplayMapMsg(bool hasSelection, int mapMsgIdx, int step0, int step1, int step2, bool incSubStep)
 {
-    int mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
+    int mapMsgState = MapMsg_Draw(mapMsgIdx);
     if (mapMsgState <= MapMsgState_Idle)
     {
         return;
@@ -546,7 +546,7 @@ void Event_DisplayMapMsgWithAudio(int mapMsgIdx, u8* audioIdx, const u16* audioC
 {
     g_SysWork.bgmStatusFlags |= BgmStatusFlag_VoiceDialog;
 
-    int mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
+    int mapMsgState = MapMsg_Draw(mapMsgIdx);
     if (mapMsgState == MapMsgState_SelectEntry1)
     {
         SysWork_StateStepIncrement(0);

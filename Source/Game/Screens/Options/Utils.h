@@ -83,7 +83,6 @@ namespace Silent::Game
     {
         std::string      EntryStringKey = {};
         MenuEntryBinding Binding        = {};
-        Button           Region         = Button();
 
         std::function<void()> OnUpdate  = nullptr;
         std::function<bool()> CanUpdate = nullptr;

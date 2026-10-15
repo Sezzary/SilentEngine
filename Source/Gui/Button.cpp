@@ -81,16 +81,6 @@ namespace Silent::Gui
         Update(bounds.Intersects(pos), SELECT_ACTION_IDS); 
     }
 
-    void Button::SetCenter(const Vector2& center)
-    {
-        Center = center;
-    }
-
-    void Button::SetExtents(const Vector2& extents)
-    {
-        Extents = extents;
-    }
-
     void Button::Debug() const
     {
         // @todo Visualise button.

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Psx.h"
 #include "Game/Bodyprog/Anim.h"
 #include "Game/Bodyprog/Chara/Chara.h"
 #include "Game/Bodyprog/Collision/Collision.h"
@@ -245,7 +246,6 @@ namespace Silent::Game
     struct s_SpeedZone
     {
         s8   type; /** `e_SpeedZoneType` */
-        // 1 byte of padding.
         q11_4 minX;
         q11_4 maxX;
         q11_4 minZ;
@@ -256,7 +256,6 @@ namespace Silent::Game
     struct s_WaterZone
     {
         u8    isEnabled; /** `bool` */
-        // 1 byte of padding.
         q11_4 illumination;
         q11_4 minX;
         q11_4 maxX;
@@ -270,7 +269,6 @@ namespace Silent::Game
         s16                plmFileIdx;
         char               tag[4];
         u8                 flags; /** `e_MapFlags` */
-        // 1 byte of padding.
         s_WaterZone* waterZones;
         s_SpeedZone* speedZones;
     };
@@ -405,7 +403,7 @@ namespace Silent::Game
      */
     struct s_MapOverlayHdr
     {
-        s_MapInfo*             mapInfo;
+        const s_MapInfo*       mapInfo;
         u8                     (*mapRoomIdxGet)(q19_12 posX, q19_12 posY); // Called by `Game_MapRoomIdxUpdate`.
         s8                     unused_8;
         s32                    (*func_C)();
@@ -521,12 +519,10 @@ namespace Silent::Game
         s32*                   data_190;
         void                   (*charaUpdateFuncs[Chara_Count])(s_SubCharacter* chara, s_AnmHeader* anmHdr, GsCOORDINATE2* coords); /** Guessed params. Funcptrs for each `e_CharaId`, set to 0 for IDs not included in the map overlay. Called by `Game_NpcUpdate`. */
         s8                     charaGroupIds[CHARA_GROUP_COUNT]; /** `e_CharaId` values where if `s_SpawnInfo::charaId == Chara_None`, `charaGroupIds[0]` is used for `charaSpawnInfos[0]` and `charaGroupIds[1]` for `charaSpawnInfos[1]`. */
-        s_SpawnInfo            charaSpawnInfos[2][16];           /** Array of character type/position/flags. `flags == SpawnFlags_None` are unused slots? Read by `Game_NpcRoomInitSpawn`. */
-        VC_ROAD_DATA           cameraPaths[CAMERA_PATH_COUNT_MAX];
+        s_SpawnInfo            (*charaSpawnInfos)[16];           /** Array of character type/position/flags. `flags == SpawnFlags_None` are unused slots? Read by `Game_NpcRoomInitSpawn`. */
+        VC_ROAD_DATA*          cameraPaths[CAMERA_PATH_COUNT_MAX];
         s_CollisionTrigger     collisionTriggers[COLLISION_TRIGGER_COUNT_MAX];
     };
-
-    extern const s_MapInfo MAP_INFOS[MapType_Count];
 
     /** @brief Checks if a paper map has been collected.
      *

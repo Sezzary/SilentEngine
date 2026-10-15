@@ -381,21 +381,24 @@ namespace Silent::Game
     /** @brief Map effects info. */
     struct s_MapEffectsInfo
     {
-        u_Unk0  field_0;
-        q3_12   field_4; // Alpha.
-        q3_12   field_6; // World tint color intensity.
+        union
+        {
+            s32 field_0;     // }
+            u8  field_00[4]; // } Index 0 `e_SpecialEnvEventFlags` | Index 2 `e_UnkGfxEnum`.
+        } flags;
+        q3_12   spotLightIntensity;
+        q3_12   worldLightIntensity;
         q3_12   worldTintR;
         q3_12   worldTintG;
         q3_12   worldTintB;
-        u8      field_E; // Fog enabled if not set to 0, `Gfx_FogParametersSet` checks for values 0/1/2/3.
-                         // Sets the transparent grey layer overlaid on characters and the enviroment.
+        u8      field_E; /** Some fog state information.
         q19_12  fogDistance;
         CVECTOR fogColor;
         u8      enableTintLightOverlap; /** `bool` */
         CVECTOR pointLightTint;         /** Volumetric point light color. */
         CVECTOR worldTint;              /** Subtractive. */
-        CVECTOR field_21;               // Particle effect related. Only the first value affects snow transparency.
-        CVECTOR field_25;
+        CVECTOR field_21;               // } Particle effect related. Only the first value affects snow transparency.
+        CVECTOR field_25;               // }
     };
 
     typedef struct
@@ -405,7 +408,6 @@ namespace Silent::Game
         q3_12            brightnessIntensity;
         q19_12           fogDistance;
     } s_StructUnk3;
-    STATIC_ASSERT_SIZEOF(s_StructUnk3, 52);
 
     // Extra effects info?
     typedef struct

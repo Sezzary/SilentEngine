@@ -55,9 +55,9 @@ namespace Silent::Game
         int selectedEntryIdx;
     };
 
-    int Gfx_MapMsg_Draw(int mapMsgIdx);
+    int MapMsg_Draw(int mapMsgIdx);
 
-    MsgSelectArg Gfx_MapMsg_SelectionUpdate(int mapMsgIdx, int* displayLength);
+    MsgSelectArg MapMsg_SelectionUpdate(int mapMsgIdx, int* displayLength);
 
     void func_80037124();
 }

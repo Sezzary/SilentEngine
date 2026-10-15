@@ -161,7 +161,7 @@ namespace Silent::Assets
                 .BindTranslation = Vector3((int)bindTranslationX << translationShift,
                                            (int)bindTranslationY << translationShift,
                                            (int)bindTranslationZ << translationShift) /
-                                   translationScale
+                                   translationScale // @todo is this Q12 now? Neet to convert to proper float??
             });
         }
 

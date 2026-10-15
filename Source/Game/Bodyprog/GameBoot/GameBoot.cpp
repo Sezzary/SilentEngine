@@ -41,7 +41,7 @@ namespace Silent::Game
         //WorldGfx_MapInit();
         //CharaModel_AllModelsFree();
         //Item_HeldItemModelFree();
-        //Anim_BoneInit(FS_BUFFER_0, g_SysWork.playerBoneCoords); // Load player anim file?
+        //Anim_BonesInit(FS_BUFFER_0, g_SysWork.playerBoneCoords); // Load player anim file?
         //WorldGfx_PlayerModelProcessLoad();
 
         g_SysWork.unused_229C = NO_VALUE;

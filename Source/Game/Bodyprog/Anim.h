@@ -1,11 +1,14 @@
 #pragma once
 
-#include "Psx.h"
+namespace Silent::Assets{ struct Asset; }
+
+using namespace Silent::Assets;
 
 namespace Silent::Game
 {
-    struct s_AnmHeader;
     struct s_Model;
+    struct s_ModelAnim;
+    struct s_SubCharacter;
 
     /** @brief Character animation flags. */
     enum e_AnimFlags
@@ -24,10 +27,18 @@ namespace Silent::Game
         AnimPlaybackState_End     = 1
     };
 
+    /** @brief Bone transform node. */
+    struct BoneTransform
+    {
+        int         ParentIdx   = 0;
+        Vector3     Translation = Vector3::Zero;
+        EulerAngles Rotation    = EulerAngles::Identity;
+    };
+
     /** @brief Constant character animation info passed to `Anim_Update` functions. */
     struct s_AnimInfo
     {
-        void (*playbackFunc)(s_Model* model, s_AnmHeader* anmHdr, GsCOORDINATE2* boneCoords, s_AnimInfo* animInfo);
+        void (*playbackFunc)(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo);
         int  status;                      /** Packed anim status. Init base? See `s_ModelAnimData::status`. */
         bool hasVariableDuration;         /** Use `duration.variableFunc`: `true`, Use `duration.constant`: `false`. */
         int  linkStatus;                  /** Packed anim status link target. See `s_ModelAnim::status`. */
@@ -95,4 +106,74 @@ namespace Silent::Game
     {
         return FP_FROM(animTime, Q12_SHIFT) - baseOffset;
     }
+
+    void Anim_BonesInit(const Asset& anmAsset, std::vector<BoneTransform>& transforms);
+
+    void Anim_BonesUpdate(const Asset& anmAsset, std::vector<BoneTransform>& transforms,
+                          int keyframe0, int keyframe1, q19_12 alpha);
+
+    /** @brief Gets the active animation info of a model, accounting for overflow map animations.
+     *
+     * @param anim Model animation data.
+     */
+    const s_AnimInfo& Anim_InfoGet(const s_ModelAnim& anim);
+
+    /** @brief Updates a character's animation using the callback function of its active animation.
+     *
+     * @param chara Character to update.
+     * @param anmAsset Character animation asset.
+     * @param animInfo Character animation info.
+     */
+    void Anim_CharaUpdate(s_SubCharacter& chara, const Asset& anmAsset, const s_AnimInfo& animInfo);
+
+    /** @brief Gets the duration of an animation. A duration can be constant or variable.
+     *
+     * @param animInfo Animation info from which to get the duration.
+     * @return Animation duration.
+     */
+    q19_12 Anim_DurationGet(const s_AnimInfo& animInfo);
+
+    /** @brief Plays an animation once and clamps to the end keyframe, triggering a status transition to the linked
+     * animation upon completion.
+     *
+     * @note Used for one-shot actions such as stopping and attacking.
+     *
+     * @param model Character model to animate.
+     * @param anmAsset Character animation asset.
+     * @param animInfo Active character animation info.
+     */
+    void Anim_PlayOnce(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo);
+
+    /** @brief Loops an animation continuously, wrapping the time around to the start and end keyframes without
+     * triggering a status transition.
+     *
+     * @note Used for looped actions such as running and walking.
+     *
+     * @param model Character model to animate.
+     * @param anmAsset Character animation asset.
+     * @param animInfo Character animation info.
+     */
+    void Anim_PlayLoop(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo);
+
+    /** @brief Linearly interpolates between the current pose into a new target animation, triggering a status transition
+     * to the linked animation when complete.
+     *
+     * @note Used as the entry transition for almost every new animation status.
+     *
+     * @param model Character model to animate.
+     * @param anmAsset Character animation asset.
+     * @param animInfo Character animation info.
+     */
+    void Anim_BlendLinear(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo);
+
+    /** @brief Smoothly blends between the current pose into a new target animation using a sine-based ease-out
+     * without triggering a status transition.
+     *
+     * @unused?
+     *
+     * @param model Character model to animate.
+     * @param anmAsset Character animation asset.
+     * @param animInfo Character animation info.
+     */
+    void Anim_BlendEaseOut(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo);
 }

@@ -89,8 +89,7 @@ namespace Silent::Utils
 
     void Stream::Skip(int size)
     {
-        auto buffer = std::vector<byte>(size);
-        _stream.read((byte*)buffer.data(), size);
+        _stream.ignore(size);
     }
 
     void Stream::Read(void* buffer, int size)

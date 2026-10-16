@@ -66,18 +66,18 @@ namespace Silent::Game
         const auto& keyframeData0 = anmData->Keyframes[keyframe0];
         const auto& keyframeData1 = anmData->Keyframes[keyframe1];
 
-        bool isPlayer = &transforms == &g_SysWork.playerWork.player.model.anim.BoneTransforms;
+        bool  isPlayer = &transforms == &g_SysWork.playerWork.player.model.anim.BoneTransforms;
+        float fltAlpha = Q12_TO_FLT(alpha);
 
-        // For player, use inverted mask of `extra.disabledAnimBones` to facilitate masking of upper and lower body.
-        int activeBoneIdxs = 0;
+        // For player, use inverted mask of `extra.disabledAnimBoneFlags` to facilitate masking of upper and lower body.
+        int activeBoneFlags = 0;
         if (isPlayer)
         {
-            activeBoneIdxs = ~g_SysWork.playerWork.extra.disabledAnimBones;
+            activeBoneFlags = ~g_SysWork.playerWork.extra.disabledAnimBoneFlags;
         }
         else
         {
-            // @todo
-            //activeBoneIdxs = anmHdr->activeBones;
+            activeBoneFlags = anmData->ActiveBoneFlags;
         }
 
         // Run through bones.
@@ -86,15 +86,15 @@ namespace Silent::Game
             const auto& bone      = anmData->Bones[i];
             auto&       transform = transforms[i];
 
-            // Process bones marked as active.
-            if (activeBoneIdxs & (1 << i))
+            // Process bones flagged active.
+            if (activeBoneFlags & (1 << i))
             {
                 if (bone.TranslationIdx >= 0)
                 {
                     const auto& translation0 = keyframeData0.BoneTranslations[bone.TranslationIdx];
                     const auto& translation1 = keyframeData1.BoneTranslations[bone.TranslationIdx];
 
-                    transform.Translation = Vector3::Lerp(translation0, translation1, Q12_TO_FLT(alpha));
+                    transform.Translation = Vector3::Lerp(translation0, translation1, fltAlpha);
                     if (bone.TranslationIdx == 0)
                     {
                         // @todo Is this right? Previously used `anmHdr->rootYOffset`, which doesn't exist in parsed data.
@@ -108,7 +108,7 @@ namespace Silent::Game
                     const auto& rot1 = keyframeData1.BoneRotationMats[bone.RotationIdx];
 
                     // @todo Using matrix here.
-                    transform.Rotation = EulerAngles::Lerp(rot0.ToEulerAngles(), rot1.ToEulerAngles(), Q12_TO_FLT(alpha));
+                    transform.Rotation = EulerAngles::Lerp(rot0.ToEulerAngles(), rot1.ToEulerAngles(), fltAlpha);
                 }
             }
         }
@@ -259,8 +259,8 @@ namespace Silent::Game
     void Anim_BlendLinear(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo)
     {
         bool setNewAnimStatus = false;
-        int startKeyframeIdx  = animInfo.startKeyframeIdx;
-        int endKeyframeIdx    = animInfo.endKeyframeIdx;
+        int  startKeyframeIdx = animInfo.startKeyframeIdx;
+        int  endKeyframeIdx   = animInfo.endKeyframeIdx;
 
         // If no start keyframe exists, default to active keyframe.
         if (startKeyframeIdx == NO_VALUE)

@@ -552,22 +552,22 @@ namespace Silent::Game
         static auto videoName = std::string();
         
         // Handle FMV state step.
-        static int  fmvStateStep = 0;
-        switch (fmvStateStep)
+        switch (g_SysWork.sysStateSteps[0])
         {
             case 0:
             {
-                switch (g_SysWork.sysStateSteps[0])
+                switch (g_SysWork.sysStateSteps[1])
                 {
                     case 0:
+                        g_IsLoadingFinished = false;
+
                         ScreenFade_Start(false, false, false);
-                        g_IsLoadingFinished        = false;
-                        g_SysWork.sysStateSteps[0] = 1;
+                        SysWork_StateStepIncrement(1);
 
                     case 1:
                         /*if (WorldGfx_ChunkInitCheck() != 0)
                         {
-                            g_SysWork.sysStateSteps[0]++;
+                            SysWork_StateStepIncrement(1);
                         }*/
                         break;
                 }
@@ -580,7 +580,7 @@ namespace Silent::Game
                 //func_800892A4(0);
                 //func_80089128();
 
-                fmvStateStep++;
+                SysWork_StateStepIncrement(0);
                 break;
             }
             case 1:
@@ -597,41 +597,41 @@ namespace Silent::Game
                 }
                 Sort(videoFiles);
 
-                // Set FMV video name.
                 videoName = videoFiles[assets.GetIdx("Psx/XA/ZC_14392.STR") - g_MapEventParam].filename();
-
-                fmvStateStep++;
+                SysWork_StateStepIncrement(0);
                 break;
             }
             case 2:
             {
-                if (!PlayFmv(videoName))
+                if (PlayFmv(videoName))
+                {
+                    break;
+                }
+
+                // Intro cutscene exit.
+                if (videoName == "C1_20670.MPG")
                 {
                     Game_StateSetNext(GameState_MainMenu);
-                    g_ScreenFadeTimestep = Q12(1.0f);
-
-                    fmvStateStep++;
                 }
-                break;
-            }
-            case 3:
-            {
-                //func_800892A4(1);
-
-                // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
-                Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
-
-                // Return to game.
-                Game_StateSetNext(GameState_InGame);
-
-                // If flag is set, returns to `GameState_InGame` with `gameStateStep[0]` = 1.
-                if (g_MapEventData->transitionFlags & AreaTransitionFlag_SkipFadeIn)
+                // Game cutscene exit.
+                else
                 {
-                    g_GameWork.gameStateSteps[0] = 1;
+                    //func_800892A4(1);
+
+                    // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
+                    Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+
+                    // If flag is set, returns to `GameState_InGame` with `gameStateStep[0]` = 1.
+                    if (g_MapEventData->transitionFlags & AreaTransitionFlag_SkipFadeIn)
+                    {
+                        g_GameWork.gameStateSteps[0] = 1;
+                    }
+
+                    Game_StateSetNext(GameState_InGame);
                 }
 
-                fmvStateStep = 0;
-                videoName    = {};
+                g_ScreenFadeTimestep = Q12(1.0f);
+                videoName = {};
                 break;
             }
         }
@@ -639,7 +639,6 @@ namespace Silent::Game
 
     void SysState_LoadArea_Update() // 0x80039C40
     {
-        g_SysWork.unused_229C         = 0;
         g_SysWork.loadingScreenIdx    = D_800BCDB0.loadingScreenId;
         g_SysWork.sfxPairIdx          = g_MapEventData->sfxPairIdx_8_19;
         g_SysWork.areaTransitionFlags = g_MapEventData->transitionFlags;

@@ -80,6 +80,7 @@ namespace Silent::Math
         return (std::max(a, b) - std::min(a, b)) <= epsilon;
     }
 
+    // @todo Not `short`.
     short GetSurfaceSlopeAngle(const Vector3& normal, const Vector3& axis)
     {
         if (normal == -axis)
@@ -91,6 +92,7 @@ namespace Silent::Math
         return Q12_ANGLE_FROM_RAD(rad);
     }
 
+    // @todo Not `short`.
     short GetSurfaceAspectAngle(const Vector3& normal, const Vector3& axis)
     {
         if (normal == -axis)

@@ -221,7 +221,7 @@ namespace Silent::Math
 
     q19_12 Math_Lerp(q19_12 a, q19_12 b, q19_12 alpha)
     {
-        return Q12(std::lerp(Q12_TO_FLT(a), Q12_TO_FLT(b), Q12_TO_FLT(alpha)));
+        return a + Q12_MULT(b - a, alpha);
     }
 
     q19_12 Math_Smoothstep(q19_12 a, q19_12 b, q19_12 alpha)
@@ -236,7 +236,11 @@ namespace Silent::Math
 
     q19_12 Math_EaseOutSine(q19_12 a, q19_12 b, q19_12 alpha)
     {
-        return Q12(EaseOutSine(Q12_TO_FLT(a), Q12_TO_FLT(b), Q12_TO_FLT(alpha)));
+        alpha = CLAMP(alpha, Q12(0.0f), Q12(1.0f));
+
+        q19_12 sinVal    = Math_Sin((alpha / 2) - Q12(0.25f));
+        q19_12 lerpAlpha = (sinVal / 2) + Q12(0.5f);
+        return Math_Lerp(a, b, lerpAlpha);
     }
 
     q19_12 Math_EaseInOutSine(q19_12 a, q19_12 b, q19_12 alpha)

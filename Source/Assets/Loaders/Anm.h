@@ -14,8 +14,8 @@ namespace Silent::Assets
     /** @brief ANM keyframe. */
     struct AnmKeyframe
     {
-        std::vector<Vector3> BoneTranslations = {};
-        std::vector<Matrix>  BoneRotationMats = {};
+        std::vector<Vector3>    BoneTranslations = {};
+        std::vector<Quaternion> BoneRotation     = {};
     };
 
     /** @brief ANM asset data. */

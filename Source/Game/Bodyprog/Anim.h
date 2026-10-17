@@ -30,9 +30,9 @@ namespace Silent::Game
     /** @brief Bone transform node. */
     struct BoneTransform
     {
-        int         ParentIdx   = 0;
-        Vector3     Translation = Vector3::Zero;
-        EulerAngles Rotation    = EulerAngles::Identity;
+        int        ParentIdx   = NO_VALUE;
+        Vector3    Translation = Vector3::Zero;
+        Quaternion Rotation    = Quaternion::Identity;
     };
 
     /** @brief Constant character animation info passed to `Anim_Update` functions. */

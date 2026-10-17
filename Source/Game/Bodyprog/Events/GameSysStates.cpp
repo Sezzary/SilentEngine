@@ -50,7 +50,7 @@ namespace Silent::Game
         SysState_OptionsMenu_Update,    // @todo
         SysState_StatusMenu_Update,     // @todo
         SysState_MapScreen_Update,      // @todo
-        SysState_Fmv_Update,            // @todo
+        SysState_Fmv_Update,
         SysState_LoadArea_Update,       // @todo
         SysState_LoadArea_Update,       // @todo
         SysState_ReadMessage_Update,    // @todo
@@ -192,12 +192,12 @@ namespace Silent::Game
     {
         const auto& input = g_App.GetInput();
 
-        auto* player = &g_SysWork.playerWork.player;
+        const auto& player = g_SysWork.playerWork.player;
 
-        Event_Update(player->attackReceived != NO_VALUE);
+        Event_Update(player.attackReceived != NO_VALUE);
         //Savegame_MapRoomIdxUpdate();
 
-        switch (FP_ROUND_SCALED(player->health, 10, Q12_SHIFT))
+        switch (FP_ROUND_SCALED(player.health, 10, Q12_SHIFT))
         {
             case 0:
                 //func_800892A4(17);
@@ -225,7 +225,7 @@ namespace Silent::Game
                 break;
         }
 
-        if (g_SysWork.playerWork.player.health <= Q12(0.0f))
+        if (player.health <= Q12(0.0f))
         {
             return;
         }
@@ -263,7 +263,7 @@ namespace Silent::Game
         }
 
         if (g_SysWork.sysState == SysState_OptionsMenu ||
-            g_SysWork.sysState == SysState_StatusMenu ||
+            g_SysWork.sysState == SysState_StatusMenu  ||
             g_SysWork.sysState == SysState_MapScreen)
         {
             g_SysWork.sysState |= SysFlag_MenuActive;
@@ -307,6 +307,7 @@ namespace Silent::Game
             D_800A9A68 = 0;
             SD_Call(4);
             g_MapEventParam = 0;
+
             SysWork_StateSetNext(SysState_SaveMenu1);
             return;
         }
@@ -617,21 +618,19 @@ namespace Silent::Game
                 else
                 {
                     //func_800892A4(1);
-
-                    // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
                     Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
 
-                    // If flag is set, returns to `GameState_InGame` with `gameStateStep[0]` = 1.
+                    Game_StateSetNext(GameState_InGame);
+
+                    // If fade-in skip flag is set, return to `GameState_InGame` with `gameStateStep[0]` = 1.
                     if (g_MapEventData->transitionFlags & AreaTransitionFlag_SkipFadeIn)
                     {
                         g_GameWork.gameStateSteps[0] = 1;
                     }
-
-                    Game_StateSetNext(GameState_InGame);
                 }
 
                 g_ScreenFadeTimestep = Q12(1.0f);
-                videoName = {};
+                videoName            = {};
                 break;
             }
         }
@@ -647,18 +646,18 @@ namespace Silent::Game
 
         if (g_SysWork.sfxPairIdx == SfxPairIdx_7)
         {
-            g_MapAreaLoadCounter          = 0;
-            g_SysWork.sysState |= SysFlag_LoadActive;
+            g_MapAreaLoadCounter = 0;
+            g_SysWork.sysState  |= SysFlag_LoadActive;
         }
 
         D_800BCDB0 = g_MapOverlayHdr.mapPoints[g_MapEventData->eventParam];
 
         if (D_800BCDB0.triggerParam1 == 1)
         {
-            const auto* mapPoint  = &g_MapOverlayHdr.mapPoints[g_MapEventData->mapPointIdx];
-            q20_12 offsetZ        = g_SysWork.playerWork.player.position.vz - mapPoint->positionZ;
-            D_800BCDB0.positionX += g_SysWork.playerWork.player.position.vx - mapPoint->positionX;
-            D_800BCDB0.positionZ += offsetZ;
+            const auto& mapPoint = g_MapOverlayHdr.mapPoints[g_MapEventData->mapPointIdx];
+
+            D_800BCDB0.positionX += g_SysWork.playerWork.player.position.vx - mapPoint.positionX;
+            D_800BCDB0.positionZ += g_SysWork.playerWork.player.position.vz - mapPoint.positionZ;
         }
 
         if (g_SysWork.sysState == SysState_LoadOverlay)
@@ -790,10 +789,12 @@ namespace Silent::Game
 
     void SysWork_SavegameReadPlayer() // 0x8003A1F4
     {
-        g_SysWork.playerWork.player.position.vx = g_SavegamePtr->playerPositionX;
-        g_SysWork.playerWork.player.position.vz = g_SavegamePtr->playerPositionZ;
-        g_SysWork.playerWork.player.rotation.vy = g_SavegamePtr->playerRotationY;
-        g_SysWork.playerWork.player.health      = g_SavegamePtr->playerHealth;
+        auto& player = g_SysWork.playerWork.player;
+
+        player.position.vx = g_SavegamePtr->playerPositionX;
+        player.position.vz = g_SavegamePtr->playerPositionZ;
+        player.rotation.vy = g_SavegamePtr->playerRotationY;
+        player.health      = g_SavegamePtr->playerHealth;
     }
 
     void SysState_SaveMenu_Update() // 0x8003A230
@@ -920,8 +921,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2u) ||
-                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2u))
+                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2) ||
+                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2))
                         {
                             randTipVal += 3;
                         }
@@ -940,8 +941,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2u) ||
-                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2u))
+                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2) ||
+                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2))
                         {
                             if (randTipVal < 3)
                             {
@@ -1063,7 +1064,8 @@ namespace Silent::Game
     {
         if (g_GameWork.gameStateSteps[0] == 0)
         {
-            g_IntervalVBlanks            = 1;
+            g_IntervalVBlanks = 1;
+
             ScreenFade_Start(true, true, false);
             g_GameWork.gameStateSteps[0] = 1;
         }

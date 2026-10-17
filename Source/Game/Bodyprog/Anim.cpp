@@ -33,7 +33,7 @@ namespace Silent::Game
     {
         const auto anmData = anmAsset.GetData<AnmAsset>();
 
-        // @todo Maybe resize `transforms` here? Depends if they're already initialised elsewhere, will have to do that.
+        // @todo `transforms` must be resized beforehand elsewhere.
 
         // Run through bones.
         for (int i = 1; i < anmData->Bones.size(); i++)
@@ -46,14 +46,13 @@ namespace Silent::Game
             // If no translation for this bone, copy over `BindTranslation`.
             if (bone.TranslationIdx < 0)
             {
-                // @todo Check conversion to float in loader.
                 transform.Translation = bone.BindTranslation;
             }
 
-            // If no rotation for this bone, create identity matrix.
+            // If no rotation for this bone, set to identity.
             if (bone.RotationIdx < 0)
             {
-                transform.Rotation = EulerAngles::Identity;
+                transform.Rotation = Quaternion::Identity;
             }
         }
     }
@@ -104,11 +103,10 @@ namespace Silent::Game
 
                 if (bone.RotationIdx >= 0)
                 {
-                    const auto& rot0 = keyframeData0.BoneRotationMats[bone.RotationIdx];
-                    const auto& rot1 = keyframeData1.BoneRotationMats[bone.RotationIdx];
+                    const auto& rot0 = keyframeData0.BoneRotation[bone.RotationIdx];
+                    const auto& rot1 = keyframeData1.BoneRotation[bone.RotationIdx];
 
-                    // @todo Using matrix here.
-                    transform.Rotation = EulerAngles::Lerp(rot0.ToEulerAngles(), rot1.ToEulerAngles(), fltAlpha);
+                    transform.Rotation = Quaternion::Slerp(rot0, rot1, fltAlpha);
                 }
             }
         }
@@ -118,18 +116,19 @@ namespace Silent::Game
         {
             auto& player = g_SysWork.playerWork.player;
 
-            auto& torsoTranslation = player.model.anim.BoneTransforms[HarryBone_Torso].Translation;
-            auto& hipTranslation   = player.model.anim.BoneTransforms[HarryBone_Hips].Translation;
-            torsoTranslation       = hipTranslation;
+            const auto& hipTranslation   = player.model.anim.BoneTransforms[HarryBone_Hips].Translation;
+            auto&       torsoTranslation = player.model.anim.BoneTransforms[HarryBone_Torso].Translation;
+
+            torsoTranslation = hipTranslation;
         }
     }
 
     const s_AnimInfo& Anim_InfoGet(const s_ModelAnim& anim)
     {
-        auto* animInfos          = anim.baseAnimInfos;
-        auto* mapAnimInfos       = anim.mapAnimInfos;
-        int   animStatus         = anim.status;
-        int   mapAnimStatusStart = anim.mapAnimStatusStart;
+        const auto* animInfos          = anim.baseAnimInfos;
+        const auto* mapAnimInfos       = anim.mapAnimInfos;
+        int         animStatus         = anim.status;
+        int         mapAnimStatusStart = anim.mapAnimStatusStart;
 
         if (mapAnimInfos != nullptr && animStatus >= mapAnimStatusStart)
         {
@@ -317,12 +316,11 @@ namespace Silent::Game
 
         // Update alpha.
         q19_12 newAlpha  = model.anim.alpha;
-        q19_12 alpha     = newAlpha + timestep;
-        model.anim.alpha = alpha;
+        q19_12 alpha     =
+        model.anim.alpha = newAlpha + timestep;
 
         // Compute ease-out alpha.
-        q19_12 sinVal = Math_Sin((alpha / 2) - Q12(0.25f));
-        newAlpha      = (sinVal / 2) + Q12(0.5f);
+        newAlpha = Math_EaseOutSine(Q12(0.0f), Q12(1.0f), alpha);
 
         // Update time to start or end keyframe, whichever is closest.
         q19_12 newTime = Q12(0.0f);

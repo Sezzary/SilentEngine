@@ -23,7 +23,7 @@ namespace Silent::Game
     /** @brief Disables the camera system. */
     void vcEndCameraSystem();
 
-    s32 func_80080A10();
+    s32 Vc_LensFlareTypeGet();
 
     /** @brief Sets the camera's look-at Y position.
      *

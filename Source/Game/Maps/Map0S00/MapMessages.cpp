@@ -1,4 +1,5 @@
-#pragma once
+#include "Framework.h"
+#include "Game/Maps/Map0S00/MapMessages.h"
 
 #include "Assets/TranslationKeys.h"
 
@@ -6,7 +7,7 @@ using namespace Silent::Assets;
 
 namespace Silent::Game
 {
-    constexpr const char* M0S00_MESSAGES[] =
+    const char* MAP_MESSAGES[] =
     {
         #include "Game/Maps/Common/MapMessages.h.inc"
         /* 15 */ KEY_M0S00_MSG_1,

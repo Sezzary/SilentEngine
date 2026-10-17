@@ -14,7 +14,6 @@
 #include "Game/Bodyprog/Events/Utils.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
 //#include "Game/Bodyprog/item_screens.h"
-//#include "Game/Bodyprog/memcard.h"
 #include "Game/Bodyprog/Savegame.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/CutsceneBorder.h"
@@ -232,7 +231,7 @@ namespace Silent::Game
         }
 
         if (input.GetAction(In::Light).IsClicked() &&
-            g_SysWork.field_2388.field_154.effectsInfo.field_0.s_field_0.field_0 & (1 << 1))
+            g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & (1 << 1))
         {
             //Game_FlashlightToggle();
         }
@@ -331,7 +330,7 @@ namespace Silent::Game
                 g_SysWork.sysStateSteps[0] = 1;
 
             case 1:
-                //if (Ipd_ChunkInitCheck() != 0)
+                //if (WorldGfx_ChunkInitCheck() != 0)
                 {
                     SD_Call(19);
                     //GameFs_OptionBinLoad();
@@ -479,17 +478,17 @@ namespace Silent::Game
         if (!HAS_PAPER_MAP(g_SavegamePtr->paperMapIdx))
         {
             if (input.GetAction(In::Map).IsClicked() ||
-                Gfx_MapMsg_Draw(MapMsgIdx_NoMap) > MapMsgState_Idle)
+                MapMsg_Draw(MapMsgIdx_NoMap) > MapMsgState_Idle)
             {
                 SysWork_StateSetNext(SysState_Gameplay);
             }
         }
-        else if ((g_SysWork.field_2388.field_154.effectsInfo.field_0.s_field_0.field_0 & (1 << 1)) && !g_SysWork.field_2388.isFlashlightOn &&
-                ((g_SysWork.field_2388.field_1C[0].effectsInfo.field_0.s_field_0.field_0 & (1 << 0)) ||
-                (g_SysWork.field_2388.field_1C[1].effectsInfo.field_0.s_field_0.field_0 & (1 << 0))))
+        else if ((g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & (1 << 1)) && !g_SysWork.field_2388.isFlashlightOn &&
+                ((g_SysWork.field_2388.field_1C[0].effectsInfo.flags.field_00[0] & (1 << 0)) ||
+                (g_SysWork.field_2388.field_1C[1].effectsInfo.flags.field_00[0] & (1 << 0))))
         {
             if (input.GetAction(In::Map).IsClicked() ||
-                Gfx_MapMsg_Draw(MapMsgIdx_TooDarkForMap) > MapMsgState_Idle)
+                MapMsg_Draw(MapMsgIdx_TooDarkForMap) > MapMsgState_Idle)
             {
                 SysWork_StateSetNext(SysState_Gameplay);
             }
@@ -553,22 +552,22 @@ namespace Silent::Game
         static auto videoName = std::string();
         
         // Handle FMV state step.
-        static int  fmvStateStep = 0;
-        switch (fmvStateStep)
+        switch (g_SysWork.sysStateSteps[0])
         {
             case 0:
             {
-                switch (g_SysWork.sysStateSteps[0])
+                switch (g_SysWork.sysStateSteps[1])
                 {
                     case 0:
+                        g_IsLoadingFinished = false;
+
                         ScreenFade_Start(false, false, false);
-                        g_IsLoadingFinished        = false;
-                        g_SysWork.sysStateSteps[0] = 1;
+                        SysWork_StateStepIncrement(1);
 
                     case 1:
-                        /*if (Ipd_ChunkInitCheck() != 0)
+                        /*if (WorldGfx_ChunkInitCheck() != 0)
                         {
-                            g_SysWork.sysStateSteps[0]++;
+                            SysWork_StateStepIncrement(1);
                         }*/
                         break;
                 }
@@ -581,7 +580,7 @@ namespace Silent::Game
                 //func_800892A4(0);
                 //func_80089128();
 
-                fmvStateStep++;
+                SysWork_StateStepIncrement(0);
                 break;
             }
             case 1:
@@ -598,41 +597,41 @@ namespace Silent::Game
                 }
                 Sort(videoFiles);
 
-                // Set FMV video name.
                 videoName = videoFiles[assets.GetIdx("Psx/XA/ZC_14392.STR") - g_MapEventParam].filename();
-
-                fmvStateStep++;
+                SysWork_StateStepIncrement(0);
                 break;
             }
             case 2:
             {
-                if (!PlayFmv(videoName))
+                if (PlayFmv(videoName))
+                {
+                    break;
+                }
+
+                // Intro cutscene exit.
+                if (videoName == "C1_20670.MPG")
                 {
                     Game_StateSetNext(GameState_MainMenu);
-                    g_ScreenFadeTimestep = Q12(1.0f);
-
-                    fmvStateStep++;
                 }
-                break;
-            }
-            case 3:
-            {
-                //func_800892A4(1);
-
-                // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
-                Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
-
-                // Return to game.
-                Game_StateSetNext(GameState_InGame);
-
-                // If flag is set, returns to `GameState_InGame` with `gameStateStep[0]` = 1.
-                if (g_MapEventData->transitionFlags & AreaTransitionFlag_SkipFadeIn)
+                // Game cutscene exit.
+                else
                 {
-                    g_GameWork.gameStateSteps[0] = 1;
+                    //func_800892A4(1);
+
+                    // Set savegame flag based on `g_MapEventData->completeEventFlag` flag ID.
+                    Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+
+                    // If flag is set, returns to `GameState_InGame` with `gameStateStep[0]` = 1.
+                    if (g_MapEventData->transitionFlags & AreaTransitionFlag_SkipFadeIn)
+                    {
+                        g_GameWork.gameStateSteps[0] = 1;
+                    }
+
+                    Game_StateSetNext(GameState_InGame);
                 }
 
-                fmvStateStep = 0;
-                videoName    = {};
+                g_ScreenFadeTimestep = Q12(1.0f);
+                videoName = {};
                 break;
             }
         }
@@ -640,10 +639,6 @@ namespace Silent::Game
 
     void SysState_LoadArea_Update() // 0x80039C40
     {
-        u32           offsetZ;
-        s_MapPoint2d* mapPoint;
-
-        g_SysWork.unused_229C         = 0;
         g_SysWork.loadingScreenIdx    = D_800BCDB0.loadingScreenId;
         g_SysWork.sfxPairIdx          = g_MapEventData->sfxPairIdx_8_19;
         g_SysWork.areaTransitionFlags = g_MapEventData->transitionFlags;
@@ -660,8 +655,8 @@ namespace Silent::Game
 
         if (D_800BCDB0.triggerParam1 == 1)
         {
-            mapPoint              = &g_MapOverlayHdr.mapPoints[g_MapEventData->mapPointIdx];
-            offsetZ               = g_SysWork.playerWork.player.position.vz - mapPoint->positionZ;
+            const auto* mapPoint  = &g_MapOverlayHdr.mapPoints[g_MapEventData->mapPointIdx];
+            q20_12 offsetZ        = g_SysWork.playerWork.player.position.vz - mapPoint->positionZ;
             D_800BCDB0.positionX += g_SysWork.playerWork.player.position.vx - mapPoint->positionX;
             D_800BCDB0.positionZ += offsetZ;
         }
@@ -753,7 +748,7 @@ namespace Silent::Game
             g_MapOverlayHdr.playerControlFreeze();
         }
 
-        switch (Gfx_MapMsg_Draw(g_MapEventParam))
+        switch (MapMsg_Draw(g_MapEventParam))
         {
             case MapMsgState_Finish:
                 break;
@@ -818,7 +813,7 @@ namespace Silent::Game
                     ScreenFade_Start(true, false, false);
                     SysWork_StateStepIncrement(0);
                 }
-                /*else if (Gfx_MapMsg_Draw(MapMsgIdx_SaveGame) == MapMsgState_SelectEntry1)
+                /*else if (MapMsg_Draw(MapMsgIdx_SaveGame) == MapMsgState_SelectEntry1)
                 {
                     Savegame_EventFlagSet(EventFlag_SeenSaveScreen);
 
@@ -925,8 +920,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.field_0.field_0 & 0x3) && (tipIdx - 13) >= 2u) ||
-                            ( (g_SysWork.field_2388.field_154.effectsInfo.field_0.field_0 & 0x3) && (tipIdx - 13) <  2u))
+                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2u) ||
+                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2u))
                         {
                             randTipVal += 3;
                         }
@@ -945,8 +940,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.field_0.field_0 & 0x3) && (tipIdx - 13) >= 2u) ||
-                            ( (g_SysWork.field_2388.field_154.effectsInfo.field_0.field_0 & 0x3) && (tipIdx - 13) <  2u))
+                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2u) ||
+                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2u))
                         {
                             if (randTipVal < 3)
                             {

@@ -1,18 +1,22 @@
 #pragma once
 
 #include "Application.h"
+#include "Gui/Button.h"
+#include "Gui/Cursor.h"
 #include "Services/Options.h"
 
+using namespace Silent::Gui;
 using namespace Silent::Services;
 
 namespace Silent::Game
 {
-    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(1.0f / 8.0f);
+    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(GUI_PULSE_DELAY_SEC);
     constexpr int    BAR_NOTCH_COUNT       = 16;
 
     /** @brief Submenu entry options binding. */
     struct MenuEntrySubmenuBinding
     {
+        int MenuState = 0;
     };
 
     /** @brief Boolean entry options binding. */
@@ -77,10 +81,15 @@ namespace Silent::Game
     /** @brief Menu entry data. */
     struct MenuEntry
     {
-        std::string           EntryStringKey = {};
-        MenuEntryBinding      Binding        = {};
-        std::function<void()> OnUpdate       = nullptr;
+        std::string      EntryStringKey = {};
+        MenuEntryBinding Binding        = {};
+
+        std::function<void()> OnUpdate  = nullptr;
+        std::function<bool()> CanUpdate = nullptr;
+        std::function<bool()> IsEnabled = nullptr;
     };
+
+    extern Cursor g_Options_Cursor;
 
     template <typename EnumT>
     MenuEntryEnumBinding MenuEntryEnumBinding::Bind(EnumT Options::* field, std::vector<std::string> configStrKeys)
@@ -103,7 +112,11 @@ namespace Silent::Game
 
     void Options_UpdateConfig(const std::vector<MenuEntry>& entries);
 
-    void Options_UpdateSelection(int entryCount);
+    void Options_UpdateSelection(const std::vector<MenuEntry>& entries);
 
     void Options_ResetSelection(int selectedEntryIdx = 0);
+
+    void Options_ControlSubmenu(const std::string& headingKey, const std::vector<MenuEntry>& entries, int menuStateStep,
+                                int menuState, int leaveMenuState,
+                                int prevMenuEntryIdx);
 }

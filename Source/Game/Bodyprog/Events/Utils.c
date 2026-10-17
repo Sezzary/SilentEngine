@@ -178,7 +178,7 @@ void Event_SysStateBranchOnFlag(e_EventFlag eventFlagIdx, int stepTrue, int step
 
 void Event_DisplayMapMsg(bool hasSelection, int mapMsgIdx, int step0, int step1, int step2, bool incSubStep)
 {
-    int mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
+    int mapMsgState = MapMsg_Draw(mapMsgIdx);
     if (mapMsgState <= MapMsgState_Idle)
     {
         return;
@@ -206,7 +206,8 @@ void Event_DisplayMapMsg(bool hasSelection, int mapMsgIdx, int step0, int step1,
 
 void Event_ScreenFadeCmd(e_ScreenFadeCmd cmd, bool fadeOut, e_ScreenFadeType fadeType, q19_12 fadeTimestep, bool incSubStep)
 {
-    // If `cmd == ScreenFadeCmd_Auto`, `sysStateSteps[2]` dictates the command. This field is manipulated often in map event functions.
+    // If `cmd == ScreenFadeCmd_Auto`, `sysStateSteps[2]` dictates the command.
+    // This field is manipulated often in map event functions.
     auto activeCmd = ScreenFadeCmd_Start;
     if (cmd != ScreenFadeCmd_Auto)
     {
@@ -272,14 +273,14 @@ void Event_ScreenFadeCmd(e_ScreenFadeCmd cmd, bool fadeOut, e_ScreenFadeType fad
             if (fadeType == ScreenFadeType_Black ||
                 fadeType == ScreenFadeType_White)
             {
-                if ((fadeOut == false && ScreenFade_IsNone()) ||
-                    (fadeOut == true  && ScreenFade_IsFinished()))
+                if ((!fadeOut && ScreenFade_IsNone()) ||
+                    (fadeOut  && ScreenFade_IsFinished()))
                 {
                     Event_SysStateStepIncrement(incSubStep);
                 }
             }
-            else if ((fadeOut == false && g_SysWork.cutsceneBorderState == CutsceneBorderState_None) ||
-                     (fadeOut == true  && g_SysWork.cutsceneBorderState == CutsceneBorderState_Shown))
+            else if ((!fadeOut && g_SysWork.cutsceneBorderState == CutsceneBorderState_None) ||
+                     (fadeOut  && g_SysWork.cutsceneBorderState == CutsceneBorderState_Shown))
             {
                 Event_SysStateStepIncrement(incSubStep);
             }
@@ -442,11 +443,13 @@ void Event_InvItemCmd(e_InvItemCmd cmd, e_InvItemId itemId, int itemCount, bool 
 
 void Event_PathWaypointSet(bool isAbs, int charaSlotIdx, int waypointIdx, q3_12 headingAngle, q19_12 posX, q19_12 posZ)
 {
-    if (isAbs == false)
+    auto& player = g_SysWork.playerWork.player;
+
+    if (!isAbs)
     {
-        g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vx = g_SysWork.playerWork.player.position.vx + posX;
-        g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vy = g_SysWork.playerWork.player.position.vy;
-        g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vz = g_SysWork.playerWork.player.position.vz + posZ;
+        g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vx = player.position.vx + posX;
+        g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vy = player.position.vy;
+        g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vz = player.position.vz + posZ;
 
         // @bug `headingAngle` is stored per `charaSlotIdx`, not per waypoint.
         // Event code often calls `Event_PathWaypointSet` multiple times in a single tick
@@ -456,10 +459,10 @@ void Event_PathWaypointSet(bool isAbs, int charaSlotIdx, int waypointIdx, q3_12 
         // Maybe pathfinding code doesn't rely on this angle value that much?
         g_Event_PathWaypointHeadingAngles[charaSlotIdx] = headingAngle;
     }
-    else if (isAbs == true)
+    else if (isAbs)
     {
         g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vx = posX;
-        g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vy = g_SysWork.playerWork.player.position.vy;
+        g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vy = player.position.vy;
         g_Event_PathWaypoints[charaSlotIdx][waypointIdx].vz = posZ;
 
         g_Event_PathWaypointHeadingAngles[charaSlotIdx] = headingAngle;
@@ -468,7 +471,8 @@ void Event_PathWaypointSet(bool isAbs, int charaSlotIdx, int waypointIdx, q3_12 
 
 void Event_PathWaypointExecutePlayer(int animId, int waypointCount, bool incSubStep)
 {
-    if (g_MapOverlayHdr.playerPathWaypointExecute(animId, &g_Event_PathWaypoints[0][0], g_Event_PathWaypointHeadingAngles[0], waypointCount) == true)
+    if (g_MapOverlayHdr.playerPathWaypointExecute(animId, &g_Event_PathWaypoints[0][0],
+                                                  g_Event_PathWaypointHeadingAngles[0], waypointCount))
     {
         Event_SysStateStepIncrement(incSubStep);
     }
@@ -476,7 +480,8 @@ void Event_PathWaypointExecutePlayer(int animId, int waypointCount, bool incSubS
 
 void Event_PathWaypointExecuteChara(s_SubCharacter* chara, int animId, int waypointCount, bool incSubStep)
 {
-    if (g_MapOverlayHdr.charaPathWaypointExecute(chara, animId, &g_Event_PathWaypoints[1][0], g_Event_PathWaypointHeadingAngles[1], waypointCount) == true)
+    if (g_MapOverlayHdr.charaPathWaypointExecute(chara, animId, &g_Event_PathWaypoints[1][0],
+                                                 g_Event_PathWaypointHeadingAngles[1], waypointCount))
     {
         Event_SysStateStepIncrement(incSubStep);
     }
@@ -484,7 +489,8 @@ void Event_PathWaypointExecuteChara(s_SubCharacter* chara, int animId, int waypo
 
 void Event_PathWaypointExecuteCharaNoWait(s_SubCharacter* chara, int animId, int waypointCount)
 {
-    g_MapOverlayHdr.charaPathWaypointExecute(chara, animId, &g_Event_PathWaypoints[1][0], g_Event_PathWaypointHeadingAngles[1], waypointCount);
+    g_MapOverlayHdr.charaPathWaypointExecute(chara, animId, &g_Event_PathWaypoints[1][0],
+                                             g_Event_PathWaypointHeadingAngles[1], waypointCount);
 }
 
 void Event_PaperMapCmd(e_PaperMapCmd cmd, int paperMapIdx)
@@ -540,7 +546,7 @@ void Event_DisplayMapMsgWithAudio(int mapMsgIdx, u8* audioIdx, const u16* audioC
 {
     g_SysWork.bgmStatusFlags |= BgmStatusFlag_VoiceDialog;
 
-    int mapMsgState = Gfx_MapMsg_Draw(mapMsgIdx);
+    int mapMsgState = MapMsg_Draw(mapMsgIdx);
     if (mapMsgState == MapMsgState_SelectEntry1)
     {
         SysWork_StateStepIncrement(0);
@@ -561,7 +567,7 @@ void Event_CameraPositionSet(VECTOR3* pos,
     VC_CAM_MV_PARAM camMoveParams;
 
     // Set position target.
-    if (pos != NULL)
+    if (pos != nullptr)
     {
         posTarget.vx = pos->vx + offsetOrPosX;
         posTarget.vy = pos->vy + offsetOrPosY;
@@ -625,7 +631,7 @@ void Event_CameraLookAtSet(VECTOR3* lookAt,
 {
     // Set look-at target.
     auto lookAtTarget = VECTOR3{};
-    if (lookAt != NULL)
+    if (lookAt != nullptr)
     {
         lookAtTarget.vx = lookAt->vx + lookAtOffsetOrPosX;
         lookAtTarget.vy = lookAt->vy + lookAtOffsetOrPosY;
@@ -638,7 +644,7 @@ void Event_CameraLookAtSet(VECTOR3* lookAt,
         lookAtTarget.vz = lookAtOffsetOrPosZ;
     }
 
-    autot camLookAtMoveParams = VC_WATCH_MV_PARAM{};
+    auto camLookAtMoveParams = VC_WATCH_MV_PARAM{};
 
     // Set angular acceleration on X axis.
     if (angularAccelX == Q12_ANGLE(0.0f))
@@ -968,7 +974,7 @@ void Event_DisplayMapMsgWithDimmedBg(e_FsFile texFileIdx, q19_12 fadeTimestep0, 
 
             // Check for "continue" input.
             if (g_Controller0->buttonFlags.clicked & (g_GameWorkPtr->config.controllerConfig.enter |
-                                                  g_GameWorkPtr->config.controllerConfig.cancel))
+                                                      g_GameWorkPtr->config.controllerConfig.cancel))
             {
                 SysWork_StateStepIncrement(1);
             }
@@ -1012,9 +1018,11 @@ void Event_ItemTake(e_InvItemId itemId, int itemCount, e_EventFlag eventFlagIdx,
         // Run through NPCs.
         for (int i = itemId; i < ARRAY_SIZE(g_SysWork.npcs); i++)
         {
-            if (g_SysWork.npcs[i].model.charaId >= Chara_Harry        &&
-                g_SysWork.npcs[i].model.charaId <= Chara_MonsterCybil &&
-                g_SysWork.npcs[i].health > Q12(0.0f))
+            const auto& npc = g_SysWork.npcs[i];
+
+            if (npc.model.charaId >= Chara_Harry        &&
+                npc.model.charaId <= Chara_MonsterCybil &&
+                npc.health > Q12(0.0f))
             {
                 if (i != ARRAY_SIZE(g_SysWork.npcs))
                 {
@@ -1040,7 +1048,8 @@ void Event_ItemTake(e_InvItemId itemId, int itemCount, e_EventFlag eventFlagIdx,
             break;
 
         case EventState_SelectionDialog:
-            // `Gfx_PickupItemAnimate` increases model scale and returns `false`, then starts rotating it and returns `true`.
+            // `Gfx_PickupItemAnimate` increases model scale and returns `false`,
+            // then starts rotating it and returns `true`.
             if (Gfx_PickupItemAnimate(itemId))
             {
                 Event_DisplayMapMsg(true, mapMsgIdx, 3, NO_VALUE, 0, true); // 3 is "Yes", `NO_VALUE` is "No".
@@ -1069,7 +1078,7 @@ void Event_ItemTake(e_InvItemId itemId, int itemCount, e_EventFlag eventFlagIdx,
     }
 }
 
-void Event_CommonItemTake(u32 pickupType, e_EventFlag eventFlagIdx)
+void Event_CommonItemTake(e_CommonPickupItemId pickupType, e_EventFlag eventFlagIdx)
 {
     constexpr int EASY_DIFFICULTY_AMMO_COUNT_MULT_MIN = 2;
 

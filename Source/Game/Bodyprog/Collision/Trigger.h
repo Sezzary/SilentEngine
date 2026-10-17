@@ -31,12 +31,12 @@ namespace Silent::Game
     /** @brief World-space collision trigger used to inform uneven terrain such as walls and stairs. */
     struct s_CollisionTrigger
     {
-        u8  isEndOfArray : 1;  /** `bool` | Marks last entry. */
-        s32 positionX    : 10; /** Meter steps. */
-        s32 positionZ    : 10; /** Meter steps. */
-        u32 sizeX        : 4;  /** Meter steps. */
-        u32 sizeZ        : 4;  /** Meter steps. */
-        u32 height       : 3;  /** Half-meter steps. Used to set `s_func_8006F338::field_2C` which is then copied by `func_8006F250`. */
+        bool isEndOfArray;   /** `bool` | Marks last entry. */
+        int  positionX : 10; /** Meter steps. */
+        int  positionZ : 10; /** Meter steps. */
+        int  sizeX     : 4;  /** Meter steps. */
+        int  sizeZ     : 4;  /** Meter steps. */
+        int  height    : 3;  /** Half-meter steps. Used to set `s_func_8006F338::field_2C` which is then copied by `func_8006F250`. */
     };
 
     /** @brief Collection of nearby collision triggers. */

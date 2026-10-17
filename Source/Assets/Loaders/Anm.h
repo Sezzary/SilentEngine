@@ -21,9 +21,9 @@ namespace Silent::Assets
     /** @brief ANM asset data. */
     struct AnmAsset
     {
-        std::vector<AnmBone>     Bones     = {};
-        std::vector<AnmKeyframe> Keyframes = {};
-        int                      Flags     = 0;
+        std::vector<AnmBone>     Bones           = {};
+        std::vector<AnmKeyframe> Keyframes       = {};
+        int                      ActiveBoneFlags = 0;
     };
 
     /** @brief Parses an ANM asset file.

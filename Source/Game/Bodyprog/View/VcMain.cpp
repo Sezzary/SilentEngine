@@ -2,12 +2,16 @@
 #include "Psx.h"
 #include "Game/Bodyprog/View/VcMain.h"
 
+#include "Application.h"
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 //#include "bodyprog/player.h"
 #include "Game/Bodyprog/View/VwSystem.h"
 #include "Game/Maps/Characters/Harry.h"
+#include "Input/Input.h"
+
+using namespace Silent::Input;
 
 namespace Silent::Game
 {
@@ -106,9 +110,9 @@ namespace Silent::Game
         vcWork.view_cam_active_f = false;
     }
 
-    s32 func_80080A10() // 0x80080A10
+    s32 Vc_LensFlareTypeGet() // 0x80080A10
     {
-        return vcWork.cur_near_road.road_p->field_15;
+        return vcWork.cur_near_road.road_p->lens_flare;
     }
 
     void Vc_LookAtPositionYSet(q19_12 lookAtPosY) // 0x80080A30
@@ -299,7 +303,7 @@ namespace Silent::Game
         s32                self_view_eff_rate;
         bool               warp_f;
         s32                far_watch_rate;
-        VC_ROAD_FLAGS      cur_rd_flags;
+        int                cur_rd_flags; // `VC_ROAD_FLAGS`
 
         sv_old_cam_pos     = vcWork.cam_pos;
         sv_old_cam_mat_ang = vcWork.cam_mat_ang;
@@ -335,7 +339,7 @@ namespace Silent::Game
 
         if (!(vcWork.flags & VC_USER_CAM_F))
         {
-            vcAutoRenewalCamTgtPos(&vcWork, cur_cam_mv_type, cam_mv_prm_p, cur_rd_flags, cur_rd_area_size, far_watch_rate);
+            vcAutoRenewalCamTgtPos(&vcWork, cur_cam_mv_type, cam_mv_prm_p, (VC_ROAD_FLAGS)cur_rd_flags, cur_rd_area_size, far_watch_rate);
         }
 
         vcRenewalCamData(&vcWork, cam_mv_prm_p);
@@ -351,8 +355,7 @@ namespace Silent::Game
             }
         }
 
-        vcRenewalCamMatAng(&vcWork, watch_mv_prm_p, cur_cam_mv_type,
-                           vcWork.flags & VC_VISIBLE_CHARA_F);
+        vcRenewalCamMatAng(&vcWork, watch_mv_prm_p, cur_cam_mv_type, vcWork.flags & VC_VISIBLE_CHARA_F);
         vcSetDataToVwSystem(&vcWork, cur_cam_mv_type);
 
         vcWork.through_door_activate_init_f = false;
@@ -788,6 +791,8 @@ namespace Silent::Game
 
     void vcPreSetDataInVC_WORK(VC_WORK* w_p, VC_ROAD_DATA* vc_road_ary_list) // 0x80081B6C
     {
+        const auto& input = g_App.GetInput();
+
         if (g_DeltaTime != Q12(0.0f))
         {
             if (vcWork.flags & VC_PRS_F_VIEW_F)
@@ -799,7 +804,7 @@ namespace Silent::Game
                 vcWork.flags &= ~VC_OLD_PRS_F_VIEW_F;
             }
 
-            if (g_Controller0->buttonFlags.held & g_GameWorkPtr->config.controllerConfig.view)
+            if (input.GetAction(In::View).IsHeld())
             {
                 vcWork.flags |= VC_PRS_F_VIEW_F;
             }

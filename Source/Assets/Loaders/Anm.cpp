@@ -54,8 +54,7 @@ namespace Silent::Assets
                 // Collect bone translation.
                 keyframe.BoneTranslations.push_back(Vector3((int)x << translationShift,
                                                             (int)y << translationShift,
-                                                            (int)z << translationShift) /
-                                                    translationScale);
+                                                            (int)z << translationShift) / translationScale);
             }
 
             // Read bone rotations.
@@ -125,7 +124,7 @@ namespace Silent::Assets
         uint8  translationCount = stream.ReadUint8();
         int16  keyframeSize     = stream.ReadInt16();
         int16  boneCount        = stream.ReadInt16();
-        int32  flags            = stream.ReadInt32();
+        int32  activeBoneFlags  = stream.ReadInt32();
         int32  endOffset        = stream.ReadInt32();
         uint16 keyframeCount    = stream.ReadUint16();
         uint8  translationShift = stream.ReadUint8();
@@ -160,8 +159,7 @@ namespace Silent::Assets
                 .RotationIdx     = rotIdx,
                 .BindTranslation = Vector3((int)bindTranslationX << translationShift,
                                            (int)bindTranslationY << translationShift,
-                                           (int)bindTranslationZ << translationShift) /
-                                   translationScale
+                                           (int)bindTranslationZ << translationShift) / translationScale
             });
         }
 
@@ -173,9 +171,9 @@ namespace Silent::Assets
 
         return std::make_shared<AnmAsset>(AnmAsset
         {
-            .Bones     = std::move(bones),
-            .Keyframes = std::move(keyframes),
-            .Flags     = flags
+            .Bones           = std::move(bones),
+            .Keyframes       = std::move(keyframes),
+            .ActiveBoneFlags = activeBoneFlags
         });
     }
 }

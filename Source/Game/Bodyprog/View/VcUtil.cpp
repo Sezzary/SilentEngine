@@ -4,14 +4,18 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
+#include "Application.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/View/VwSystem.h"
+#include "Input/Input.h"
+
+using namespace Silent::Input;
 
 namespace Silent::Game
 {
     constexpr int V_BLANKS_MULT = 11;
 
-    void vcInitCamera(s_MapOverlayHdr* mapoverlay_ptr, const VECTOR3* chr_pos) // 0x8004004C
+    void vcInitCamera(s_MapOverlayHdr* map_overlay_ptr, const VECTOR3* chr_pos) // 0x8004004C
     {
         g_WorldGfxWork.vcCameraInternalInfo.mv_smooth   = VC_MV_CHASE;
         g_WorldGfxWork.vcCameraInternalInfo.ev_cam_rate = Q12(0.0f);
@@ -20,7 +24,7 @@ namespace Silent::Game
         vcSetCameraUseWarp(chr_pos, g_SysWork.cameraAngleY);
         //SetGeomScreen(g_GameWork.gsScreenHeight);
         vwInitViewInfo();
-        vcInitVCSystem(mapoverlay_ptr->cameraPaths);
+        vcInitVCSystem(map_overlay_ptr->cameraPaths[0]);
         vcStartCameraSystem();
 
         g_SysWork.cameraAngleZ   = Q12_ANGLE(0.0f);
@@ -237,6 +241,8 @@ namespace Silent::Game
     {
         constexpr q23_8 MOVE_DIST = Q8(0.1f);
 
+        const auto& input = g_App.GetInput();
+
         SVECTOR cam_ang;   // Q3.12
         VECTOR3 newCamPos; // Q23.8
         VECTOR3 cam_pos;   // Q19.12
@@ -251,36 +257,37 @@ namespace Silent::Game
 
         vwGetViewAngle(&cam_ang);
 
-        if (!(g_Controller1->buttonFlags.held & ControllerFlag_Circle))
+        if (!input.GetRawEventState(EventId::GamepadEast))
         {
-            if (g_Controller1->buttonFlags.held & ControllerFlag_LStickHighDown)
+            if (input.GetAction(In::Down).IsHeld(ACTION_HALF_STATE))
             {
                 cam_ang.vx = cam_ang.vx - (g_VBlanks * V_BLANKS_MULT);
             }
 
-            if (g_Controller1->buttonFlags.held & ControllerFlag_LStickHighUp)
+            if (input.GetAction(In::Up).IsHeld(ACTION_HALF_STATE))
             {
                 cam_ang.vx = cam_ang.vx + (g_VBlanks * V_BLANKS_MULT);
             }
 
-            if (g_Controller1->buttonFlags.held & ControllerFlag_LStickHighRight)
+            if (input.GetAction(In::Right).IsHeld(ACTION_HALF_STATE))
             {
                 cam_ang.vy = cam_ang.vy + (g_VBlanks * V_BLANKS_MULT);
             }
 
-            if (g_Controller1->buttonFlags.held & ControllerFlag_LStickHighLeft)
+            if (input.GetAction(In::Left).IsHeld(ACTION_HALF_STATE))
             {
                 cam_ang.vy = cam_ang.vy - (g_VBlanks * V_BLANKS_MULT);
             }
 
-            if (g_Controller1->buttonFlags.held & (ControllerFlag_Triangle | ControllerFlag_Cross))
+            if (input.GetRawEventState(EventId::GamepadNorth) ||
+                input.GetRawEventState(EventId::GamepadSouth))
             {
                 moveStep = Q8(0.0f);
-                if (g_Controller1->buttonFlags.held & ControllerFlag_Triangle)
+                if (input.GetRawEventState(EventId::GamepadNorth))
                 {
                     moveStep = MOVE_DIST;
                 }
-                if (g_Controller1->buttonFlags.held & ControllerFlag_Cross)
+                if (input.GetRawEventState(EventId::GamepadSouth))
                 {
                     moveStep = -MOVE_DIST - 1; // TODO: `- 1` enforces a rounded down result, but `Q8` truncates toward 0.
                 }
@@ -292,23 +299,24 @@ namespace Silent::Game
         }
         else
         {
-            if (g_Controller1->buttonFlags.held & ControllerFlag_LStickHighUp)
+            if (input.GetAction(In::Up).IsHeld(ACTION_HALF_STATE))
             {
                 newCamPos.vy -= MOVE_DIST;
             }
-            if (g_Controller1->buttonFlags.held & ControllerFlag_LStickHighDown)
+            if (input.GetAction(In::Down).IsHeld(ACTION_HALF_STATE))
             {
                 newCamPos.vy += MOVE_DIST;
             }
 
-            if (g_Controller1->buttonFlags.held & (ControllerFlag_LStickHighRight | ControllerFlag_LStickHighLeft))
+            if (input.GetAction(In::Left).IsHeld(ACTION_HALF_STATE) ||
+                input.GetAction(In::Right).IsHeld(ACTION_HALF_STATE))
             {
                 moveStep = Q8(0.0f);
-                if (g_Controller1->buttonFlags.held & ControllerFlag_LStickHighRight)
+                if (input.GetAction(In::Right).IsHeld(ACTION_HALF_STATE))
                 {
                     moveStep = MOVE_DIST;
                 }
-                if (g_Controller1->buttonFlags.held & ControllerFlag_LStickHighLeft)
+                if (input.GetAction(In::Left).IsHeld(ACTION_HALF_STATE))
                 {
                     moveStep = -MOVE_DIST - 1; // TODO: `- 1` enforces a rounded down result, but `Q8` truncates toward 0.
                 }

@@ -38,16 +38,12 @@ namespace Silent::Game
 
     void func_80037E78(s_SubCharacter* chara) // 0x80037E78
     {
-        s8  idx;
-        s32 cond;
-
-        // TODO: Strange `chara->headingAngle` access.
-        if (chara->health <= Q12(0.0f) && (*(s32*)&chara->headingAngle & 0x600000) == 0x200000)
+        if (chara->health <= Q12(0.0f) && (chara->flags & (CharaFlag_Damaged | CharaFlag_Dead)) == CharaFlag_Damaged)
         {
-            idx = chara->attackReceived;
+            int idx = chara->attackReceived;
             if (idx < 39) // TODO: What weapon attack?
             {
-                cond = D_800AD4C8[idx].field_10 == 3;
+                bool cond = D_800AD4C8[idx].field_10 == 3;
                 //func_800914C4(cond, func_8009146C(cond) + 1);
             }
 
@@ -58,14 +54,14 @@ namespace Silent::Game
     void Game_NpcRoomInitSpawn(bool cond) // 0x80037F24
     {
         s_CollisionSurface surface;
-        s32             charaId0;
-        s32             charaId1;
-        s32             npcIdx;
-        s32             i;
-        s32*            ovlEnemiesStatePtr;
-        s_SpawnInfo*    curCharaSpawn;
-        s_SubCharacter* chara;
-        VECTOR3*        pos;
+        s32                charaId0;
+        s32                charaId1;
+        s32                npcIdx;
+        s32                i;
+        s32*               ovlEnemiesStatePtr;
+        s_SpawnInfo*       curCharaSpawn;
+        s_SubCharacter*    chara;
+        VECTOR3*           pos;
 
         npcIdx             = 0;
         curCharaSpawn      = g_MapOverlayHdr.charaSpawnInfos[0];
@@ -75,7 +71,7 @@ namespace Silent::Game
         {
             //func_80037154();
 
-            if (g_MapOverlayHdr.npcSpawnEvent != NULL)
+            if (g_MapOverlayHdr.npcSpawnEvent != nullptr)
             {
                 g_MapOverlayHdr.npcSpawnEvent();
             }
@@ -116,11 +112,11 @@ namespace Silent::Game
                     g_SysWork.npcs[npcIdx].model.charaId = (i < 16) ? charaId0 : charaId1;
                 }
 
-                g_SysWork.npcs[npcIdx].field_40               = i;
+                g_SysWork.npcs[npcIdx].field_40           = i;
                 g_SysWork.npcs[npcIdx].model.controlState = 0;
                 g_SysWork.npcs[npcIdx].model.stateStep    = curCharaSpawn->flags;
-                g_SysWork.npcs[npcIdx].position.vx         = curCharaSpawn->positionX;
-                g_SysWork.npcs[npcIdx].position.vz         = curCharaSpawn->positionZ;
+                g_SysWork.npcs[npcIdx].position.vx        = curCharaSpawn->positionX;
+                g_SysWork.npcs[npcIdx].position.vz        = curCharaSpawn->positionZ;
 
                 //Collision_SurfaceGet(&surface, curCharaSpawn->positionX, curCharaSpawn->positionZ);
 
@@ -244,8 +240,8 @@ namespace Silent::Game
 
         // Run through NPCs.
         for (k = 0, curNpc = g_SysWork.npcs;
-            k < ARRAY_SIZE(g_SysWork.npcs);
-            k++, curNpc++)
+             k < ARRAY_SIZE(g_SysWork.npcs);
+             k++, curNpc++)
         {
             // Ignore invalid or special NPC.
             if (curNpc->model.charaId == Chara_None ||
@@ -259,14 +255,14 @@ namespace Silent::Game
             {
                 // Compute distance from player to NPC.
                 curDistToNpc = Q12_SQUARE_PRECISE(Q12_TO_Q6(curNpc->position.vx) - posXShift6) +
-                            Q12_SQUARE_PRECISE(Q12_TO_Q6(curNpc->position.vz) - posZShift6);
+                               Q12_SQUARE_PRECISE(Q12_TO_Q6(curNpc->position.vz) - posZShift6);
 
                 // Check if map is low-visibility interior.
                 isLowVisInterior = false;
                 if (g_MapOverlayHdr.mapInfo->flags & MapFlag_Interior)
                 {
                     isLowVisInterior = (g_MapOverlayHdr.mapInfo->flags & (MapFlag_OneActiveChunk |
-                                                                            MapFlag_TwoActiveChunks)) > 0;
+                                                                          MapFlag_TwoActiveChunks)) > 0;
                 }
 
                 // Run through ???
@@ -284,8 +280,8 @@ namespace Silent::Game
                     if (isLowVisInterior)
                     {
                         // Check X axis.
-                        s32 playerCell = (g_SysWork.playerWork.player.position.vx + (Q12(CHUNK_SIZE) * 4)) / Q12(CHUNK_SIZE);
-                        s32 npcCell    = (curNpc->position.vx                     + (Q12(CHUNK_SIZE) * 4)) / Q12(CHUNK_SIZE);
+                        int playerCell = (g_SysWork.playerWork.player.position.vx + (Q12(CHUNK_SIZE) * 4)) / Q12(CHUNK_SIZE);
+                        int npcCell    = (curNpc->position.vx                     + (Q12(CHUNK_SIZE) * 4)) / Q12(CHUNK_SIZE);
                         if (npcCell != playerCell)
                         {
                             continue;
@@ -334,8 +330,8 @@ namespace Silent::Game
                 }
 
                 // Set NPC visibility.
-                if ((g_SysWork.field_2388.field_154.effectsInfo.field_0.s_field_0.field_0 & 0x2 && curDistToNpc > SQUARE(15)) || // Approx. `Q12(0.055f)`.
-                    (!(g_SysWork.field_2388.field_154.effectsInfo.field_0.s_field_0.field_0 & 0x2) &&
+                if ((g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x2 && curDistToNpc > SQUARE(15)) || // Approx. `Q12(0.055f)`.
+                    (!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x2) &&
                         Camera_Distance2dGet(&curNpc->position) > SQUARE(15))) // Approx. `Q12(0.055f)`.
                 {
                     curNpc->model.anim.flags &= ~AnimFlag_Visible;

@@ -37,7 +37,7 @@ namespace Silent::Game
         if (Fs_QueueGetLength() == 0)
         {
             // @todo
-            //result = Ipd_ChunkInitCheck() != false;
+            //result = WorldGfx_ChunkInitCheck() != false;
         }
 
         return result;

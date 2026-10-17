@@ -20,8 +20,8 @@ namespace Silent::Game
     /** @brief Debug camera info. */
     struct VC_CAMERA_INTINFO
     {
-        u32   mode;        /** Mode state step. */
-        u8    mv_smooth;   /** `VC_CAM_MV_TYPE` */
+        int   mode;        /** Mode state step. */
+        int   mv_smooth;   /** `VC_CAM_MV_TYPE` */
         q3_12 ev_cam_rate; /** Camera elevation rate. */
     };
 
@@ -53,15 +53,15 @@ namespace Silent::Game
     {
         VC_LIMIT_AREA     lim_sw;
         VC_LIMIT_AREA     lim_rd;
-        VC_ROAD_FLAGS     flags          : 8; /** `VC_ROAD_FLAGS` | Camera path flags. */
+        int               flags          : 8; /** `VC_ROAD_FLAGS` | Camera path flags. */
         VC_AREA_SIZE_TYPE area_size_type : 2;
         VC_ROAD_TYPE      rd_type        : 3; /** Path type. */
-        u32               mv_y_type      : 3; /** `VC_CAM_MV_TYPE` */
+        int               mv_y_type      : 3; /** `VC_CAM_MV_TYPE` */
         q27_4             lim_rd_max_hy  : 8; /** In SH2, `max_hy` and `min_hy` are part of `VC_LIMIT_AREA`.In SH1, these are separate for some reason. */
         q27_4             lim_rd_min_hy  : 8;
         q27_4             ofs_watch_hy   : 8;
-        u32               field_15       : 4; // TODO: Should be `_14`.
-        s16               cam_mv_type    : 4; /** `VC_CAM_MV_TYPE` */
+        int               lens_flare     : 4; /** `e_LensFlareType` | TODO: Unsure, rough name. */
+        int               cam_mv_type    : 4; /** `VC_CAM_MV_TYPE` */
         q0_7              fix_ang_x;          /** @note Part of union in SH2 `VC_ROAD_DATA`. */
         q0_7              fix_ang_y;
     };
@@ -69,7 +69,7 @@ namespace Silent::Game
     /** @brief Rail camera parementers. */
     struct VC_THROUGH_DOOR_CAM_PARAM
     {
-        u8      active_f;               /** `bool` | Active flag. */
+        bool    active_f;               /** Active flag. */
         q19_12  timer;
         q3_12   rail_ang_y;             /** Rail Y angle. */
         VECTOR3 rail_sta_pos;           /** Rail start position. */
@@ -80,8 +80,8 @@ namespace Silent::Game
     struct VC_NEAR_ROAD_DATA
     {
         VC_ROAD_DATA* road_p;              /** Path associated with the collision. */
-        u8            rd_dir_type;         /** `VC_ROAD_DIR_TYPE` */
-        u8            use_priority;        /** Usage priority in case of overlap. Higher values take precedence. */
+        int           rd_dir_type;         /** `VC_ROAD_DIR_TYPE` */
+        int           use_priority;        /** Usage priority in case of overlap. Higher values take precedence. */
         q19_12        chara2road_sum_dist; /** Character to path distance. */
         q19_12        chara2road_vec_x;    /** Character to path distance on X axis. */
         q19_12        chara2road_vec_z;    /** Character to path distance on Z axis. */
@@ -92,10 +92,10 @@ namespace Silent::Game
     /** @brief Camera workspace. */
     struct VC_WORK
     {
-        u8                        view_cam_active_f;            /** `bool` */
+        bool                      view_cam_active_f;
         VC_ROAD_DATA*             vc_road_ary_list;             /** Camera paths for the active map. */
-        u32                       flags;                        /** `VC_FLAGS` */
-        u8                        through_door_activate_init_f; /** `bool` */
+        int                       flags;                        /** `VC_FLAGS` */
+        bool                      through_door_activate_init_f; /** `bool` */
         VC_THROUGH_DOOR_CAM_PARAM through_door;                 /** Active rail camera data? */
         q3_12                     scr_half_ang_wy;
         q3_12                     scr_half_ang_wx;
@@ -116,12 +116,12 @@ namespace Silent::Game
         SVECTOR                   ofs_cam_ang_spd;              /** Offset rotational speed. */
         SVECTOR                   base_cam_ang;                 /** Base rotation. */
         s8                        unk[8];                       // TODO: Possibly unused or debug data?
-        u8                        updateLookAtPoint;            /** `bool` */
+        bool                      updateLookAtPoint;
         MATRIX                    lookAtMat;
-        u8                        updateLookAtMat;              /** `bool` */
+        bool                      updateLookAtMat;
         q3_12                     cam_chara2ideal_ang_y;
-        VECTOR3                   cam_tgt_velo;                 /** Target velocity. */
-        q3_12                     cam_tgt_mv_ang_y;             /** Target Y angles. */
+        VECTOR3                   cam_tgt_velo;                              /** Target velocity. */
+        q3_12                     cam_tgt_mv_ang_y;                          /** Target Y angles. */
         q19_12                    cam_tgt_spd;                               /** Target speed. */
         VECTOR3                   chara_pos;                                 /** Locked-on character position. */
         q19_12                    chara_bottom_y;                            /** Locked-on character bottom height. */
@@ -148,7 +148,7 @@ namespace Silent::Game
     {
         VECTOR3        vp;
         VECTOR3        vr;
-        s32            rz;
+        int            rz;
         GsCOORDINATE2* super;
     };
 
@@ -167,11 +167,11 @@ namespace Silent::Game
         MATRIX  modelMat;
         SVECTOR field_20[8];
         VECTOR3 field_60[8];
-        s32     field_C0;
+        int     field_C0;
         SVECTOR field_C4[10];
-        s32     field_114;
+        int     field_114;
         DVECTOR field_118[24];
-        s32     field_178;
+        int     field_178;
     };
 
     /** @brief 3x3 screen region occupancy flags. */

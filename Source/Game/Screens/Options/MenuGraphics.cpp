@@ -131,7 +131,8 @@ namespace Silent::Game
     /** @brief Submits gold bullet points next to the listed entries and a highlight indicating the selected entry to
      * draw in options menus.
      *
-     * @param @todo
+     * @param curWidth Current selected entry width.
+     * @param prevWidth Previous selected entry width.
      */
     static void Options_DrawSelectionHighlight(int curWidth, int prevWidth)
     {
@@ -171,14 +172,15 @@ namespace Silent::Game
     {
         constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
         constexpr auto LINE_BASE       = Vector2i(56, 70);
+        constexpr int  LINE_HEIGHT     = 16;
+        constexpr auto UP_ARROW_POS    = Vector2i(SCREEN_WIDTH / 2, (LINE_BASE.y - LINE_HEIGHT) - 4);
+        constexpr auto DOWN_ARROW_POS  = Vector2i(SCREEN_WIDTH / 2,
+                                                  (LINE_BASE.y + (LINE_HEIGHT * (VISIBLE_ENTRY_COUNT_MAX - 1))) + 6);
         constexpr auto BULLET_OFFSET   = Vector2i(-25, 2);
-        constexpr auto LINE_HEIGHT     = 16;
         constexpr auto CONFIG_OFFSET   = Vector2i(194, 0);
 
         const auto& input      = g_App.GetInput();
         const auto& translator = g_App.GetTranslator();
-
-        Gfx_StringColorSet(StringColorId_White);
 
         // Submit heading string.
         Gfx_StringPositionSet(HEADING_STR_POS.x, HEADING_STR_POS.y);
@@ -187,24 +189,52 @@ namespace Silent::Game
         int visibleEntriesEndIdx = std::min(g_OptionsMenu_VisibleEntriesStartIdx + VISIBLE_ENTRY_COUNT_MAX,
                                             (int)entries.size());
 
+        // Submit scroll arrows.
+        if (g_OptionsMenu_VisibleEntriesStartIdx > 0)
+        {
+            Options_DrawArrow(UP_ARROW_POS, SelectionArrowType::Up, false);
+        }
+        if (visibleEntriesEndIdx < entries.size())
+        {
+            Options_DrawArrow(DOWN_ARROW_POS, SelectionArrowType::Down, false);
+        }
+
         // Run through entries.
+        int idxOffset = 0;
         int curWidth  = 0;
         int prevWidth = 0;
         for (int i = g_OptionsMenu_VisibleEntriesStartIdx; i < visibleEntriesEndIdx; i++)
         {
             const auto& entry = entries[i];
 
+            // Check if entry is enabled.
+            if (entry.IsEnabled && !entry.IsEnabled())
+            {
+                idxOffset++;
+                continue;
+            }
+
             // Compute parameters.
             bool isSelected = i == g_OptionsMenu_SelectedEntry;
-            int  relIdx     = i - g_OptionsMenu_VisibleEntriesStartIdx;
+            int  relIdx     = (i - idxOffset) - g_OptionsMenu_VisibleEntriesStartIdx;
             auto pos        = LINE_BASE + Vector2i(0, relIdx * LINE_HEIGHT);
             auto configPos  = pos + CONFIG_OFFSET;
 
             // Submit bullet point.
             auto bulletPos = (LINE_BASE + BULLET_OFFSET) +
-                             Vector2i(0, (i - g_OptionsMenu_VisibleEntriesStartIdx) * LINE_HEIGHT);
+                             Vector2i(0, ((i - idxOffset) - g_OptionsMenu_VisibleEntriesStartIdx) * LINE_HEIGHT);
             bool isActive  = i == g_OptionsMenu_SelectedEntry;
             Options_DrawBulletPoint(bulletPos, isActive);
+
+            // Set string color.
+            if (entry.CanUpdate ? entry.CanUpdate() : true)
+            {
+                Gfx_StringColorSet(StringColorId_White);
+            }
+            else
+            {
+                Gfx_StringColorSet(StringColorId_DarkGrey);
+            }
 
             // Submit string.
             Gfx_StringPositionSet(pos.x, pos.y);

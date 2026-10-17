@@ -7,23 +7,26 @@ namespace Silent::Game
     /** @brief Character model animation. */
     struct s_ModelAnim
     {
-        u8          status;             /** Is active: bit 0, Anim index: bits 1-7. */
-        u8          mapAnimStatusStart; /** Start anim status of map-specific anim infos. Only used for Harry. */
-        u16         flags;              /** `e_AnimFlags` */
-        q19_12      time;               /** Time on timeline. */
-        s16         keyframeIdx;        /** Active keyframe index. */
-        q3_12       alpha;              /** Keyframe progress alpha. */
-        s_AnimInfo* baseAnimInfos;      /** Anim infos. For Harry, used for base anims. */
-        s_AnimInfo* mapAnimInfos;       /** Map-specific anim infos. Only used for Harry. */
+        int    status;             /** Is active: bit 0, Anim index: bits 1-7. */
+        int    mapAnimStatusStart; /** Start anim status of map-specific anim infos. Only used for Harry. */
+        int    flags;              /** `e_AnimFlags` */
+        q19_12 time;               /** Time on timeline. */
+        int    keyframeIdx;        /** Active keyframe index. */
+        q3_12  alpha;              /** Keyframe progress alpha. */
+
+        std::vector<BoneTransform> BoneTransforms = {};
+
+        s_AnimInfo* baseAnimInfos; /** Anim infos. For Harry, used for base anims. */
+        s_AnimInfo* mapAnimInfos;  /** Map-specific anim infos. Only used for Harry. */
     };
 
     /** @brief Character model. */
     struct s_Model
     {
-        s8          charaId;      /** `e_CharaId` */
-        u8          paletteIdx;   /** Changes the texture palette index for this model. */
-        u8          controlState; /** Active character control state. */
-        u8          stateStep;    /** Step for the current `controlState`. */ 
+        int         charaId;      /** `e_CharaId` */
+        int         paletteIdx;   /** Changes the texture palette index for this model. */
+        int         controlState; /** Active character control state. */
+        int         stateStep;    /** Step for the current `controlState`. */ 
                                   // In `s_PlayerExtra` always 1, set to 0 for 1 tick when anim state appears to change.
                                   // Used differently in player's `s_SubCharacter`. 0: anim transitioning(?), bit 1: animated, bit 2: turning.
                                   // Sometimes holds actual anim index?

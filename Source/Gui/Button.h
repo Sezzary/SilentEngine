@@ -41,6 +41,9 @@ namespace Silent::Gui
         // Constructors
         // =============
 
+        /** @brief Constructs and uninitialized default instance. */
+        Button() = default;
+
         /** @brief Creates an instance from a center and extents in screen percent with callbacks.
          *
          * @param center Center in screen percent.

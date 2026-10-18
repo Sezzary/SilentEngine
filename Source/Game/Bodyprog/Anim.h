@@ -35,20 +35,24 @@ namespace Silent::Game
         Quaternion Rotation    = Quaternion::Identity;
     };
 
-    /** @brief Constant character animation info passed to `Anim_Update` functions. */
+    /** @brief Constant character animation info passed to animation playback functions. */
     struct s_AnimInfo
     {
-        void (*playbackFunc)(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo);
-        int  status;                      /** Packed anim status. Init base? See `s_ModelAnimData::status`. */
-        bool hasVariableDuration;         /** Use `duration.variableFunc`: `true`, Use `duration.constant`: `false`. */
-        int  linkStatus;                  /** Packed anim status link target. See `s_ModelAnim::status`. */
+        using AnimPlaybackFunc = std::function<void(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo)>;
+
+        AnimPlaybackFunc playbackFunc = nullptr;
+
+        int  status              = 0;     /** Packed anim status. Init base? See `s_ModelAnimData::status`. */
+        bool hasVariableDuration = false; /** Use `duration.variableFunc`: `true`, Use `duration.constant`: `false`. */
+        int  linkStatus          = 0;     /** Packed anim status link target. See `s_ModelAnim::status`. */
         union
         {
             q19_12 constant;              /** Constant duration at 30 FPS. */
             q19_12 (*variableFunc)(void); /** Variable duration at 30 FPS via a function. Allows animations to be sped up or slowed down. */
         } duration;
-        int startKeyframeIdx;             /** Start keyframe index. Sometimes `NO_VALUE`, unknown why. */
-        int endKeyframeIdx;               /** End keyframe index. */
+
+        int startKeyframeIdx = 0; /** Start keyframe index. Sometimes `NO_VALUE`, unknown why. */
+        int endKeyframeIdx   = 0; /** End keyframe index. */
     };
 
     /** @brief Packs an animation status containing an animation index and active flag.

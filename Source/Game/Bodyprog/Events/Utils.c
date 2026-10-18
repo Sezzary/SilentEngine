@@ -339,7 +339,7 @@ void Event_BgTextureCmd(e_BgTextureCmd cmd, e_FsFile texFileIdx, bool incSubStep
             break;
 
         case BgTextureCmd_Draw:
-            Screen_BackgroundImgDrawAlt(&g_ItemInspectionImg);
+            Screen_BackgroundImgDrawBlackFadeIn(&g_ItemInspectionImg);
             break;
 
         case BgTextureCmd_StoreVram:
@@ -356,7 +356,7 @@ void Event_BgTextureCmd(e_BgTextureCmd cmd, e_FsFile texFileIdx, bool incSubStep
             break;
 
         case BgTextureCmd_DrawSecondary:
-            Screen_BackgroundImgDrawAlt(&D_800A9A04);
+            Screen_BackgroundImgDrawBlackFadeIn(&D_800A9A04);
             break;
 
         case BgTextureCmd_RestoreVram:

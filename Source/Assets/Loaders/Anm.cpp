@@ -85,8 +85,8 @@ namespace Silent::Assets
                 stream.ReadArray(ToSpan(rotMat));
 
                 // Collect bone rotation.
-                auto quat = ConvertRotation(rotMat);
-                keyframe.BoneRotation.push_back(quat);
+                auto rot = ConvertRotation(rotMat);
+                keyframe.BoneRotation.push_back(rot);
             }
 
             // Collect keyframe.

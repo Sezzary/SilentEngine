@@ -68,13 +68,13 @@ namespace Silent::Game
         }
     };
 
-    static q19_12 g_BlackBorderShade = Q12(0.0f);
+    static q19_12 g_Screen_BlackBorderShade = Q12(0.0f);
 
     static void Screen_BlackBorderDraw(POLY_G4* poly, s32 color)
     {
-        s32 i;
-        s32 color0;
-        s32 color1;
+        s32    i;
+        q19_12 color0;
+        q19_12 color1;
 
         color0 = color >> 4;
         color1 = color >> 5;
@@ -110,7 +110,7 @@ namespace Silent::Game
         //drMode = &D_800A8E98[g_ActiveBufferIdx];
         //poly   = &D_800A8EB0[g_ActiveBufferIdx];
 
-        vcSetEvCamRate(g_BlackBorderShade);
+        vcSetEvCamRate(g_Screen_BlackBorderShade);
 
         if (g_SysWork.bgmStatusFlags & BgmStatusFlag_Pause)
         {
@@ -123,39 +123,39 @@ namespace Silent::Game
                 g_SysWork.cutsceneBorderState++;
 
             case 19:
-                g_BlackBorderShade += Q12_MULT_FLOAT_PRECISE(g_DeltaTime, 1.0f);
-                if (g_BlackBorderShade >= Q12_CLAMPED(1.0f))
+                g_Screen_BlackBorderShade += Q12_MULT_FLOAT_PRECISE(g_DeltaTime, 1.0f);
+                if (g_Screen_BlackBorderShade >= Q12_CLAMPED(1.0f))
                 {
-                    g_BlackBorderShade = Q12_CLAMPED(1.0f);
+                    g_Screen_BlackBorderShade = Q12_CLAMPED(1.0f);
                     g_SysWork.cutsceneBorderState++;
                 }
 
-                Screen_BlackBorderDraw(poly, g_BlackBorderShade);
+                Screen_BlackBorderDraw(poly, g_Screen_BlackBorderShade);
                 break;
 
             case 20:
             case 22:
-                g_BlackBorderShade = Q12_CLAMPED(1.0f);
+                g_Screen_BlackBorderShade = Q12_CLAMPED(1.0f);
                 g_SysWork.cutsceneBorderState++;
 
             case 21:
-                Screen_BlackBorderDraw(poly, g_BlackBorderShade);
+                Screen_BlackBorderDraw(poly, g_Screen_BlackBorderShade);
                 break;
 
             case 23:
-                g_BlackBorderShade -= Q12_MULT_FLOAT_PRECISE(g_DeltaTime, 1.0f);
-                if (g_BlackBorderShade <= Q12(0.0f))
+                g_Screen_BlackBorderShade -= Q12_MULT_FLOAT_PRECISE(g_DeltaTime, 1.0f);
+                if (g_Screen_BlackBorderShade <= Q12(0.0f))
                 {
-                    g_BlackBorderShade            = Q12(0.0f);
+                    g_Screen_BlackBorderShade            = Q12(0.0f);
                     g_SysWork.cutsceneBorderState = 0;
                     return;
                 }
 
-                Screen_BlackBorderDraw(poly, g_BlackBorderShade);
+                Screen_BlackBorderDraw(poly, g_Screen_BlackBorderShade);
                 break;
 
             case 0:
-                g_BlackBorderShade            = Q12(0.0f);
+                g_Screen_BlackBorderShade            = Q12(0.0f);
                 g_SysWork.cutsceneBorderState = 1;
                 g_SysWork.sysState           &= ~SysFlag_CutsceneActive;
                 return;
@@ -171,7 +171,7 @@ namespace Silent::Game
 
         if (!(g_SysWork.sysState & SysFlag_CutsceneActive))
         {
-            vcChangeProjectionValue(g_GameWork.gsScreenHeight + Q12_MULT(377 - g_GameWork.gsScreenHeight, g_BlackBorderShade));
+            vcChangeProjectionValue(g_GameWork.gsScreenHeight + Q12_MULT(377 - g_GameWork.gsScreenHeight, g_Screen_BlackBorderShade));
         }
     }
 }

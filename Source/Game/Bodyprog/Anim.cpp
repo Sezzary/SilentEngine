@@ -17,7 +17,7 @@ namespace Silent::Game
      * @param animInfo Animation info.
      * @return Animation timestep for the current tick.
      */
-    static inline q19_12 Anim_TimestepGet(const s_Model& model, const s_AnimInfo& animInfo)
+    static q19_12 Anim_TimestepGet(const s_Model& model, const s_AnimInfo& animInfo)
     {
         // Check if animation is unlocked.
         if (model.anim.flags & AnimFlag_Unlocked)

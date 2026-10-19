@@ -19,14 +19,25 @@ using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
+    constexpr int LINE_HEIGHT = 16;
+
     static void Options_DrawConfigString(const Vector2i& pos, const std::string& str, bool isSelectedEntry)
     {
         constexpr int ARROW_SPACE = 4;
 
         const auto& input = g_App.GetInput();
 
+        // Define height offset if half-height tag is present.
+        // @todo Maybe a more dynamic centring system would be better.
+        // @todo Widest line width isn't computed correctly with multiple lines present?
+        int heightOffset = 0;
+        if (str.find("{H}") != std::string::npos)
+        {
+            heightOffset -= LINE_HEIGHT / 2;
+        }
+
         // Submit string.
-        Gfx_StringPositionSet(pos.x, pos.y);
+        Gfx_StringPositionSet(pos.x, pos.y + heightOffset);
         float width = Gfx_StringDraw("{M}" + str) * (RETRO_SCREEN_SPACE_RES.y / SCREEN_SPACE_RES.y);
 
         // Submit arrows.
@@ -138,7 +149,6 @@ namespace Silent::Game
     {
         constexpr int  ENTRY_OFFSET_X = 25;
         constexpr auto LINE_BASE      = Vector2i(31, 72);
-        constexpr int  LINE_HEIGHT    = 16;
 
         static auto selectionHighlightFrom = Vector2i::Zero;
         static auto selectionHighlightTo   = Vector2i::Zero;
@@ -172,7 +182,6 @@ namespace Silent::Game
     {
         constexpr auto HEADING_STR_POS = Vector2i(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 7);
         constexpr auto LINE_BASE       = Vector2i(56, 70);
-        constexpr int  LINE_HEIGHT     = 16;
         constexpr auto UP_ARROW_POS    = Vector2i(SCREEN_WIDTH / 2, (LINE_BASE.y - LINE_HEIGHT) - 4);
         constexpr auto DOWN_ARROW_POS  = Vector2i(SCREEN_WIDTH / 2,
                                                   (LINE_BASE.y + (LINE_HEIGHT * (VISIBLE_ENTRY_COUNT_MAX - 1))) + 6);

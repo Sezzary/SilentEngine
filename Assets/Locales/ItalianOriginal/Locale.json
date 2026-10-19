@@ -1,6 +1,4 @@
 {
-    "_locale_comment": "Original Italian translation by Konami.",
-
     "Sys_FullscreenHintGeneric": "Press Alt+Return or F11 to toggle fullscreen.",
     "Sys_FullscreenHintMac":     "Press Option+Return or F11 to toggle fullscreen.",
     "Sys_GamepadConnected":      "Controller connected.",

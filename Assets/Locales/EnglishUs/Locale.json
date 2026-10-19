@@ -871,6 +871,8 @@
 
     "M1S04Msg_1": "{L0}NO STAGE!{E}",
 
+    "M1S05Msg_1": "{L0}NO STAGE!{E}",
+
     "M1S06Msg_1":  "{L0}{J0(1.3)}",
     "M1S06Msg_2":  "{L0}{J2(1.5)}What was that...?{E}",
     "M1S06Msg_3":  "{L0}{J0(2.4)}Who in the hell was that?{E}",
@@ -1219,6 +1221,8 @@
     "M3S06Msg_31": "{L0}Nothing helpful.{E}",
     "M3S06Msg_32": "{L0}The phone's out.{N}Can't get a dial tone.{E}",
 
+    "M4S00Msg_1": "{L0}NO STAGE!{E}",
+
     "M4S01Msg_1":   "{L0}{J0(1.6)}What's this?{E}",
     "M4S01Msg_2":   "{L0}{J0(1.0)}Harry!",
     "M4S01Msg_3":   "{L0}{J0(1.0)}Cybil?{E}",
@@ -1405,6 +1409,8 @@
     "M4S05Msg_2": "{L0}{J0(2.5)}That light!?{E}",
     "M4S05Msg_3": "{L0}The stairs are wrecked!{E}",
     "M4S05Msg_4": "{L0}{C3}Alchemilla Hospital{E}",
+
+    "M4S06Msg_1": "{L0}NO STAGE!{E}",
 
     "M5S00Msg_1": "{L0}Used the {C2}Sewer key{C7}.{E}",
     "M5S00Msg_2": "{L0}Used the {C2}Sewer exit key{C7}.{E}",
@@ -1675,6 +1681,8 @@
     "M6S04Msg_59": "{L0}{J0(5.1)}Everything is ready.{N}Let's go home now.{E}",
     "M6S04Msg_60": "{L0}{J0(1.7)}What's going on here!?{E}",
     "M6S04Msg_61": "{L0}{J0(1.2)}{E}",
+
+    "M6S05Msg_1": "{L0}NO STAGE!{E}",
 
     "M7S00Msg_1":  "{L0}{J0(1.2)}{E}",
     "M7S00Msg_2":  "{L0}{J1(1.2)}Lisa?",

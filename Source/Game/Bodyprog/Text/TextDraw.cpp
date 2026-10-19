@@ -20,6 +20,7 @@ namespace Silent::Game
     constexpr int TEXT_DEPTH = 6;
 
     /** @brief Message line position override types for `MSG_CODE_LINE_POSITION` arguments. */
+    // @todo All ported map message strings must replace L4 with L1.
     enum class MsgLinePositionType
     {
         Subtitle    = 0,
@@ -369,7 +370,6 @@ namespace Silent::Game
                     }
                     case MSG_CODE_LINE_POSITION:
                     {
-                        // @todo All ported map message strings must replace L4 with L1.
                         switch ((MsgLinePositionType)node.GetIntArg())
                         {
                             case MsgLinePositionType::Subtitle:

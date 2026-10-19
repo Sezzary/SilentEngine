@@ -2,6 +2,30 @@
 
 namespace Silent::Utils
 {
+    /** @brief Gets the UTF-8 code points in a string.
+     *
+     * @param str String to parse.
+     * @return UTF-8 code points.
+     */
+    std::vector<char32> GetUtf8CodePoints(const std::string& str);
+
+    /** @brief Slices a UTF-8 string.
+     *
+     * @param str String to slice.
+     * @param pos Index of the first code point.
+     * @param count Number of code points to slice.
+     * @return Sliced UTF-8 string.
+     */
+    std::string GetUtf8Substring(const std::string& str, int pos, int count);
+
+    /** @brief Checks if a chunk exists in a string.
+     *
+     * @param str String to search.
+     * @param chunk Chunk to find.
+     * @return `true` if the string contains the chunk, `false` otherwise.
+     */
+    bool FindString(const std::string& str, const std::string& chunk);
+
     /** @brief Converts a string to upper case.
      *
      * @param str String to convert
@@ -23,22 +47,6 @@ namespace Silent::Utils
      * @return String copy.
      */
     char* CopyString(const char src[], int size);
-
-    /** @brief Gets the UTF-8 code points in a string.
-     *
-     * @param str String to parse.
-     * @return UTF-8 code points.
-     */
-    std::vector<char32> GetUtf8CodePoints(const std::string& str);
-
-    /** @brief Slices a UTF-8 string.
-     *
-     * @param str String to slice.
-     * @param pos Index of the first code point.
-     * @param count Number of code points to slice.
-     * @return Sliced UTF-8 string.
-     */
-    std::string GetUtf8Substring(const std::string& str, int pos, int count);
 
     /** @brief Finds a read-only value associated with a given key in a hash map.
      *

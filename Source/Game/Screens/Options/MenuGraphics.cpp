@@ -13,9 +13,11 @@
 #include "Game/Screens/Options/Utils.h"
 #include "Renderer/Renderer.h"
 #include "Utils/Translator.h"
+#include "Utils/Utils.h"
 
 using namespace Silent::Assets;
 using namespace Silent::Renderer;
+using namespace Silent::Utils;
 
 namespace Silent::Game
 {
@@ -31,7 +33,7 @@ namespace Silent::Game
         // @todo Maybe a more dynamic centring system would be better.
         // @todo Widest line width isn't computed correctly with multiple lines present?
         int heightOffset = 0;
-        if (str.find("{H}") != std::string::npos)
+        if (FindString(str, "{H}"))
         {
             heightOffset -= LINE_HEIGHT / 2;
         }

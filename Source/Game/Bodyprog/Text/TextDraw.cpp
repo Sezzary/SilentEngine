@@ -58,6 +58,11 @@ namespace Silent::Game
         auto intStr = std::string();
         for (char c : Value.substr(1, Value.size() - 1))
         {
+            if (c < '0' || c > '9')
+            {
+                break;
+            }
+
             intStr += c;
         }
 
@@ -364,6 +369,7 @@ namespace Silent::Game
                     }
                     case MSG_CODE_LINE_POSITION:
                     {
+                        // @todo All ported map message strings must replace L4 with L1.
                         switch ((MsgLinePositionType)node.GetIntArg())
                         {
                             case MsgLinePositionType::Subtitle:

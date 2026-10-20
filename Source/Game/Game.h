@@ -8,7 +8,7 @@
 #include "Game/Bodyprog/Events/Bgm.h"
 #include "Game/Bodyprog/Formats/Anm.h"
 #include "Game/Bodyprog/Items.h"
-#include "Game/Bodyprog/Model.h"
+#include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Bodyprog/Savegame.h"
 #include "Game/Bodyprog/Sys/Joy.h"
 #include "Game/Maps/Characters/Harry.h"

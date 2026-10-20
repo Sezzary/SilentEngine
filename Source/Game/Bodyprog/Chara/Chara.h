@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Game/Bodyprog/Chara/Anim.h"
-#include "Game/Bodyprog/Model.h"
+#include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Main/FsQueue.h"
 
 namespace Silent::Game

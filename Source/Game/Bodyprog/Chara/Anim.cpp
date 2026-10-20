@@ -3,7 +3,7 @@
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
-#include "Game/Bodyprog/Model.h"
+#include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Game.h"
 

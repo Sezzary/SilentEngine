@@ -315,39 +315,39 @@ namespace Silent::Game
         vbSetWorldScreenMatrix(&coord);
     }
 
-    void Vw_CoordHierarchyMatrixCompute(GsCOORDINATE2* rootCoord, MATRIX* viewMat) // 0x80049984
+    void Vw_CoordHierarchyMatrixCompute(GsCOORDINATE2* boneCoords, MATRIX* viewMat) // 0x80049984
     {
-        GsCOORDINATE2* prevCoord;
-        GsCOORDINATE2* parentCoord;
-        GsCOORDINATE2* curCoord;
+        GsCOORDINATE2* prevBoneCoord;
+        GsCOORDINATE2* parentBoneCoord;
+        GsCOORDINATE2* curBoneCoord;
 
         // If no root coord provided, set output matrix to identity.
-        if (rootCoord == nullptr)
+        if (boneCoords == nullptr)
         {
             //*outMat = GsIDMATRIX;
         }
 
-        curCoord  = rootCoord;
-        prevCoord = nullptr;
+        curBoneCoord  = boneCoords;
+        prevBoneCoord = nullptr;
 
         // Traverse coord parent hierarchy upward.
         while (true)
         {
-            parentCoord = curCoord->super;
+            parentBoneCoord = curBoneCoord->super;
 
             // Stop if node has already been processed.
-            if (curCoord->flg)
+            if (curBoneCoord->flg)
             {
                 break;
             }
 
-            prevCoord = curCoord;
+            prevBoneCoord = curBoneCoord;
 
             // If parent node exists, link it downward for later traversal.
-            if (parentCoord != nullptr)
+            if (parentBoneCoord != nullptr)
             {
-                parentCoord->sub = curCoord;
-                curCoord         = parentCoord;
+                parentBoneCoord->sub = curBoneCoord;
+                curBoneCoord         = parentBoneCoord;
             }
             else
             {
@@ -356,48 +356,48 @@ namespace Silent::Game
         }
 
         // If at least one unprocessed node found, process coord hierarchy downward.
-        if (prevCoord != nullptr)
+        if (prevBoneCoord != nullptr)
         {
-            curCoord       = prevCoord;
-            rootCoord->sub = nullptr; // Detach child link to prevent cycles.
+            curBoneCoord    = prevBoneCoord;
+            boneCoords->sub = nullptr; // Detach child link to prevent cycles.
             do
             {
-                prevCoord = curCoord->super;
-                curCoord->flg++; // Mark node as processed.
+                prevBoneCoord = curBoneCoord->super;
+                curBoneCoord->flg++; // Mark node as processed.
 
                 // Compute cumulative transformation matrix.
-                if (prevCoord == nullptr)
+                if (prevBoneCoord == nullptr)
                 {
-                    curCoord->workm = curCoord->coord;
+                    curBoneCoord->workm = curBoneCoord->coord;
                 }
                 else
                 {
-                    Vw_MultiplyAndTransformMatrix(&prevCoord->workm, &curCoord->coord, &curCoord->workm);
+                    Vw_MultiplyAndTransformMatrix(&prevBoneCoord->workm, &curBoneCoord->coord, &curBoneCoord->workm);
                 }
 
-                curCoord = curCoord->sub;
+                curBoneCoord = curBoneCoord->sub;
             }
-            while (curCoord != nullptr);
+            while (curBoneCoord != nullptr);
         }
 
         // Set output.
-        *viewMat = rootCoord->workm;
+        *viewMat = boneCoords->workm;
     }
 
-    void Vw_CoordToViewSpaceMatrix(GsCOORDINATE2* rootCoord, MATRIX* viewMat) // 0x80049AF8
+    void Vw_CoordToViewSpaceMatrix(GsCOORDINATE2* boneCoords, MATRIX* viewMat) // 0x80049AF8
     {
         MATRIX localMat;
 
-        Vw_CoordHierarchyMatrixCompute(rootCoord, &localMat);
+        Vw_CoordHierarchyMatrixCompute(boneCoords, &localMat);
         localMat.t[0] -= D_800C3868.t[0];
         localMat.t[1] -= D_800C3868.t[1];
         localMat.t[2] -= D_800C3868.t[2];
         Vw_MultiplyAndTransformMatrix(&VbWvsMatrix, &localMat, viewMat);
     }
 
-    void Vw_CoordToWorldAndViewMatrices(GsCOORDINATE2* rootCoord, MATRIX* worldMat, MATRIX* viewMat) // 0x80049B6C
+    void Vw_CoordToWorldAndViewMatrices(GsCOORDINATE2* boneCoords, MATRIX* worldMat, MATRIX* viewMat) // 0x80049B6C
     {
-        Vw_CoordHierarchyMatrixCompute(rootCoord, worldMat);
+        Vw_CoordHierarchyMatrixCompute(boneCoords, worldMat);
         worldMat->t[0] -= D_800C3868.t[0];
         worldMat->t[1] -= D_800C3868.t[1];
         worldMat->t[2] -= D_800C3868.t[2];

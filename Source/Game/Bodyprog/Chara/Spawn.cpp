@@ -90,7 +90,7 @@ namespace Silent::Game
             g_SysWork.npcs[i].model.charaId = charaId;
             g_SysWork.npcs[i].field_40 = activeSpawnFlags;
 
-            if (charaId <= Chara_MonsterCybil && spawnFlags < 64)
+            if (charaId <= Chara_MonsterCybil && spawnFlags < (1 << 6))
             {
                 SET_FLAG(g_SysWork.field_228C, activeSpawnFlags);
             }

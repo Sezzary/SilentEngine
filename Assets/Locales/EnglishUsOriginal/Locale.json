@@ -4,7 +4,7 @@
     "Sys_GamepadConnected":      "Controller connected.",
     "Sys_GamepadDisonnected":    "Controller disconnected.",
     "Sys_GamepadBatteryIsLow":   "Controller battery is low.",
-    
+
     "Intro_Warning":     "{M}There are violent and disturbing{N}images in this game.",
     "Intro_FearOfBlood": "",
 

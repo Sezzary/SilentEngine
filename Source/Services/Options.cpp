@@ -207,7 +207,7 @@ namespace Silent::Services
         auto stream = Stream(GetFilePath(), false, true);
         if (stream.WriteJson(optionsJson))
         {
-            Debug::Log("Saved user options.");
+            Debug::Log("Saved user options.", Debug::LogLevel::Info, Debug::LogMode::All, true);
             return;
         }
 

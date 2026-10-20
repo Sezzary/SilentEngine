@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Game/Maps/Characters/Harry.h"
 
-#include "Game/Bodyprog/Anim.h"
+#include "Game/Bodyprog/Chara/Anim.h"
 
 namespace Silent::Game
 {

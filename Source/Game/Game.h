@@ -3,7 +3,7 @@
 #include "Psx.h"
 #include "Game/libkpad.h"
 
-#include "Game/Bodyprog/Anim.h"
+#include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/Chara/Chara.h"
 #include "Game/Bodyprog/Events/Bgm.h"
 #include "Game/Bodyprog/Formats/Anm.h"

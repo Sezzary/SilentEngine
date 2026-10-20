@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Psx.h"
-#include "Game/Bodyprog/Anim.h"
+#include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/Chara/Chara.h"
 #include "Game/Bodyprog/Collision/Collision.h"
 #include "Game/Bodyprog/Formats/Anm.h"

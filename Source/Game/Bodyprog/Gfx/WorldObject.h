@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/Bodyprog/Chara/CharaModel.h"
+#include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Bodyprog/Formats/Model.h"
 #include "Game/Main/FsQueue.h"
 

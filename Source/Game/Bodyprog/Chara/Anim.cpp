@@ -1,5 +1,5 @@
 #include "Framework.h"
-#include "Game/Bodyprog/Anim.h"
+#include "Game/Bodyprog/Chara/Anim.h"
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"

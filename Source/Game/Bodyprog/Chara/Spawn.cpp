@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Psx.h"
 #include "Game/Bodyprog/Bodyprog.h"
-#include "Game/Bodyprog/CharaSpawn.h"
+#include "Game/Bodyprog/Chara/Spawn.h"
 
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 //#include "Game/Bodyprog/item_screens.h"
@@ -10,7 +10,8 @@
 
 namespace Silent::Game
 {
-    bool Chara_Load(s32 modelIdx, s8 charaId, GsCOORDINATE2* coords, s8 forceFree, s_LmHeader* lmHdr, s_FsImageDesc* tex) // 0x80088C7C
+    bool Chara_Load(s32 modelIdx, s8 charaId, GsCOORDINATE2* coords, s8 forceFree,
+                    s_LmHeader* lmHdr, s_FsImageDesc* tex) // 0x80088C7C
     {
         //Fs_CharaAnimDataAlloc(modelIdx + 1, charaId, nullptr, coords);
         //WorldGfx_CharaLmBufferAssign(forceFree);
@@ -33,13 +34,8 @@ namespace Silent::Game
 
     s32 Chara_Spawn(e_CharaId charaId, s32 spawnFlags, q19_12 posX, q19_12 posZ, q3_12 rotY, u32 stateStep) // 0x80088D78
     {
-        s_CollisionSurface surface;
-        s32                i;
-        s32                npcFlagsId;
-        s32                activeSpawnFlags;
-        s_SubCharacter*    chara;
-
         // TODO: Weird code, check.
+        int activeSpawnFlags = 0;
         if (charaId <= Chara_MonsterCybil && spawnFlags < (1 << 6))
         {
             activeSpawnFlags = SpawnFlag_0 | SpawnFlag_1 | SpawnFlag_2 | SpawnFlag_3 | SpawnFlag_4;
@@ -54,7 +50,7 @@ namespace Silent::Game
         {
             if (HAS_FLAG(g_SysWork.field_228C, activeSpawnFlags))
             {
-                for (i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
+                for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
                 {
                     if (g_SysWork.npcs[i].field_40 == activeSpawnFlags)
                     {
@@ -65,8 +61,8 @@ namespace Silent::Game
                 return ARRAY_SIZE(g_SysWork.npcs);
             }
 
-            npcFlagsId = 0;
-            for (i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
+            int npcFlagsId = 0;
+            for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
             {
                 if (g_SysWork.npcs[i].model.charaId != Chara_None)
                 {
@@ -81,7 +77,7 @@ namespace Silent::Game
         }
 
         // Run through NPC slots.
-        for (i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
+        for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
         {
             // Skip occupied slot.
             if (g_SysWork.npcs[i].model.charaId != Chara_None)
@@ -105,13 +101,14 @@ namespace Silent::Game
             g_SysWork.npcs[i].model.stateStep    = stateStep;
             g_SysWork.npcs[i].position.vx        = posX;
 
+            auto surface = s_CollisionSurface{};
             //Collision_SurfaceGet(&surface, posX, posZ);
             g_SysWork.npcs[i].position.vy = surface.groundHeight;
             g_SysWork.npcs[i].position.vz = posZ;
             g_SysWork.npcs[i].rotation.vy = rotY;
 
-            chara                    = &g_SysWork.npcs[i];
-            chara->model.anim.flags |= AnimFlag_Visible;
+            auto& chara             = g_SysWork.npcs[i];
+            chara.model.anim.flags |= AnimFlag_Visible;
 
             return i;
         }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/Bodyprog/Anim.h"
+#include "Game/Bodyprog/Chara/Anim.h"
 
 namespace Silent::Game
 {

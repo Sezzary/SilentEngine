@@ -137,7 +137,7 @@ namespace Silent::Renderer::SdlGpu
         auto* copyPass        = SDL_BeginGPUCopyPass(uploadCmdBuffer);
 
         // @temp
-        GetMeshes().Upload(*copyPass, "Psx/CHARA/HERO.ILM");
+        //GetMeshes().Upload(*copyPass, "Psx/CHARA/HERO.ILM");
         //GetMeshes().Upload(*copyPass, "Psx/CHARA/PRSD.ILM");
         //GetTextures().Upload(*copyPass, "Psx/CHARA/PRSD.TIM");
         GetTextures().Upload(*copyPass, "Psx/CHARA/HERO.TIM");

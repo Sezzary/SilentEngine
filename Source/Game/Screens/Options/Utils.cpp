@@ -332,9 +332,6 @@ namespace Silent::Game
             return;
         }
 
-        Options_UpdateSelection(entries);
-        Options_UpdateConfig(entries);
-
         // Handle menu state.
         switch (g_GameWork.gameStateSteps[menuStateStep])
         {
@@ -354,6 +351,11 @@ namespace Silent::Game
 
                     ScreenFade_Start(true, false, false);
                     Game_StateStepIncrement(menuStateStep);
+                }
+                else
+                {
+                    Options_UpdateSelection(entries);
+                    Options_UpdateConfig(entries);
                 }
                 break;
             }

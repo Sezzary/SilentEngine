@@ -112,11 +112,7 @@ namespace Silent::Game
      * @param model Model to update.
      * @param flag Flags to set.
      */
-<<<<<<< Updated upstream
     inline void Model_AnimFlagsSet(s_Model* model, int setFlags)
-=======
-    static inline void Model_AnimFlagsSet(s_Model* model, int setFlags)
->>>>>>> Stashed changes
     {
         model->anim.flags |= setFlags;
     }
@@ -126,11 +122,7 @@ namespace Silent::Game
      * @param model Model to update.
      * @param clearFlags Flags to clear.
      */
-<<<<<<< Updated upstream
     inline void Model_AnimFlagsClear(s_Model* model, int clearFlags)
-=======
-    static inline void Model_AnimFlagsClear(s_Model* model, int clearFlags)
->>>>>>> Stashed changes
     {
         model->anim.flags &= ~clearFlags;
     }
@@ -150,8 +142,8 @@ namespace Silent::Game
         {
             model.anim.status = ANIM_STATUS(animIdx, isActive);
             model.stateStep++;
-            model.anim.time        = Q12(animInfos[ANIM_STATUS(animIdx, isActive) + animInfosOffset].startKeyframeIdx);
-            model.anim.keyframeIdx = animInfos[ANIM_STATUS(animIdx, isActive + animInfosOffset)].startKeyframeIdx;
+            model.anim.time        = Q12((animInfos)[ANIM_STATUS(animIdx, isActive) + animInfosOffset].startKeyframeIdx);
+            model.anim.keyframeIdx = (animInfos)[ANIM_STATUS(animIdx, isActive + animInfosOffset)].startKeyframeIdx;
         }
     }
 

@@ -112,7 +112,7 @@ namespace Silent::Game
      * @param model Model to update.
      * @param flag Flags to set.
      */
-    void Model_AnimFlagsSet(s_Model* model, int setFlags)
+    inline void Model_AnimFlagsSet(s_Model* model, int setFlags)
     {
         model->anim.flags |= setFlags;
     }
@@ -122,7 +122,7 @@ namespace Silent::Game
      * @param model Model to update.
      * @param clearFlags Flags to clear.
      */
-    void Model_AnimFlagsClear(s_Model* model, int clearFlags)
+    inline void Model_AnimFlagsClear(s_Model* model, int clearFlags)
     {
         model->anim.flags &= ~clearFlags;
     }
@@ -136,7 +136,7 @@ namespace Silent::Game
      * @param animInfos Reference anim infos.
      * @param animInfosOffset Anim infos offset.
      */
-    static inline void Model_AnimStatusKeyframeSet(s_Model& model, int animIdx, bool isActive, s_AnimInfo* animInfos, int animInfosOffset)
+    inline void Model_AnimStatusKeyframeSet(s_Model& model, int animIdx, bool isActive, s_AnimInfo* animInfos, int animInfosOffset)
     {
         if (model.stateStep == 0)
         {
@@ -153,7 +153,7 @@ namespace Silent::Game
      * @param animIdx Anim index to set.
      * @param isActive Active status to set.
      */
-    static inline void Model_AnimStatusSet(s_Model* model, int animIdx, bool isActive)
+    inline void Model_AnimStatusSet(s_Model* model, int animIdx, bool isActive)
     {
         if (model->stateStep == 0)
         {
@@ -166,7 +166,7 @@ namespace Silent::Game
      *
      * @param anim Anim to update.
      */
-    static inline void ModelAnim_StatusIncrement(s_ModelAnim* anim)
+    inline void ModelAnim_StatusIncrement(s_ModelAnim* anim)
     {
         anim->status++;
     }
@@ -175,7 +175,7 @@ namespace Silent::Game
      *
      * @param anim Anim to update.
      */
-    static inline void ModelAnim_StatusDecrement(s_ModelAnim* anim)
+    inline void ModelAnim_StatusDecrement(s_ModelAnim* anim)
     {
         anim->status--;
     }

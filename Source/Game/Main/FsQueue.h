@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Psx.h"
 #include "Game/Main/FileInfo.h"
 
 namespace Silent::Game

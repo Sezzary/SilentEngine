@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Game/Bodyprog/Chara/Chara.h"
-
 namespace Silent::Game
 {
+    struct s_CharaKeyframe;
+    struct s_SubCharacter;
+
     bool func_80070320(void);
 
     /** TODO: Return type uncertain. */
@@ -15,7 +16,7 @@ namespace Silent::Game
      * @param keyframe0 First keyframe.
      * @param keyframe1 Second keyframe.
      */
-    void Collision_CharaCollisionSet(s_SubCharacter* chara, s_Keyframe* keyframe0, s_Keyframe* keyframe1);
+    void Collision_CharaCollisionSet(s_SubCharacter* chara, s_CharaKeyframe* keyframe0, s_CharaKeyframe* keyframe1);
 
     /** @brief Sets the scale of a character's model bone.
      *

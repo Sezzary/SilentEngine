@@ -11,24 +11,6 @@ using namespace Silent::Assets;
 
 namespace Silent::Game
 {
-    /** @brief Computes the timestep of the target animation for the current tick.
-     *
-     * @param model Character model.
-     * @param animInfo Animation info.
-     * @return Animation timestep for the current tick.
-     */
-    static q19_12 Anim_TimestepGet(const s_Model& model, const s_AnimInfo& animInfo)
-    {
-        // Check if animation is unlocked.
-        if (model.anim.flags & AnimFlag_Unlocked)
-        {
-            q19_12 duration = Anim_DurationGet(animInfo);
-            return Q12_MULT_PRECISE(duration, g_DeltaTime);
-        }
-
-        return Q12(0.0f);
-    }
-
     void Anim_BonesInit(const Asset& anmAsset, std::vector<BoneTransform>& transforms)
     {
         const auto anmData = anmAsset.GetData<AnmAsset>();
@@ -152,6 +134,24 @@ namespace Silent::Game
         }
 
         return animInfo.duration.variableFunc();
+    }
+
+    /** @brief Computes the timestep of the target animation for the current tick.
+     *
+     * @param model Character model.
+     * @param animInfo Animation info.
+     * @return Animation timestep for the current tick.
+     */
+    static q19_12 Anim_TimestepGet(const s_Model& model, const s_AnimInfo& animInfo)
+    {
+        // Check if animation is unlocked.
+        if (model.anim.flags & AnimFlag_Unlocked)
+        {
+            q19_12 duration = Anim_DurationGet(animInfo);
+            return Q12_MULT_PRECISE(duration, g_DeltaTime);
+        }
+
+        return Q12(0.0f);
     }
 
     void Anim_PlayOnce(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo)

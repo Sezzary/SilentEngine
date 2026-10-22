@@ -4,6 +4,8 @@
 
 namespace Silent::Game
 {
+    struct s_SubCharacter;
+
     // Returns angle.
     q19_12 func_8006F99C(s_SubCharacter* chara, q19_12 dist, q3_12 headingAngle);
 

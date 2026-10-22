@@ -9,7 +9,7 @@ namespace Silent::Game
         q3_12   bottom;
         q3_12   top;
         q3_12   radius;
-        s8      collisionState; /** `e_CharaCollisionState` */
+        int     collisionState; /** `e_CharaCollisionState` */
     };
 
     typedef struct
@@ -42,14 +42,14 @@ namespace Silent::Game
     /** @brief Collection of nearby collision triggers. */
     struct s_ActiveCollisionTriggers
     {
-        u16                 flags; /** `e_CollisionTriggerFlags` */
-        u8                  collisionTriggerCount;
-        s_CollisionTrigger* collisionTriggers[20]; // Guessed size.
+        u16                       flags;                 /** `e_CollisionTriggerFlags` */
+        u8                        collisionTriggerCount;
+        const s_CollisionTrigger* collisionTriggers[20]; // @todo Guessed size.
     };
 
-    void func_8006F250(q19_12* arg0, q19_12 posX, q19_12 posZ, q19_12 posDeltaX, q19_12 posDeltaZ);
+    void func_8006F250(q19_12* arg0, q19_12 posX, q19_12 posZ, q19_12 offsetX, q19_12 offsetZ);
 
-    void func_8006F338(s_func_8006F338* arg0, q19_12 posX, q19_12 posZ, q19_12 posDeltaX, q19_12 posDeltaZ);
+    void func_8006F338(s_func_8006F338* arg0, q19_12 posX, q19_12 posZ, q19_12 offsetX, q19_12 offsetZ);
 
     bool func_8006F3C4(s_func_8006F338* arg0, const s_CollisionTrigger* trigger);
 

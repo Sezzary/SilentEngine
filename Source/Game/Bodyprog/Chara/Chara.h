@@ -548,7 +548,7 @@ namespace Silent::Game
     };
 
     /** @brief Character keyframe collision info. */
-    struct s_Keyframe
+    struct s_CharaKeyframe
     {
         s_CharaBox          box;
         s_CharaShapeOffsets shapeOffsets;
@@ -559,10 +559,10 @@ namespace Silent::Game
     {
         s_CharaBox          box;
         s_CharaCylinder     cylinder;
-        s_CharaShapeOffsets shapeOffsets;   // Translation data?
-        u8                  field_E0;       // Related to collision. If the player collides with the only enemy in memory and the enemy is knocked down, this is set to 1.
-        s8                  state      : 4; /** `e_CharaCollisionState` */
-        u8                  field_E1_4 : 4; // Index for array of `s_func_8006CF18`.
+        s_CharaShapeOffsets shapeOffsets; // Translation data?
+        int                 field_E0;     // Related to collision. If the player collides with the only enemy in memory and the enemy is knocked down, this is set to 1.
+        int                 state;        /** `e_CharaCollisionState` */
+        int                 field_E1_4;   // Index for array of `s_func_8006CF18`.
         s_func_8006CF18*    field_E4;
     };
 
@@ -640,7 +640,7 @@ namespace Silent::Game
      * @param chara Character to update.
      * @param keyframe Keyframe collision data.
      */
-    static inline void Chara_CollisionSet(s_SubCharacter* chara, const s_Keyframe* keyframe)
+    static inline void Chara_CollisionSet(s_SubCharacter* chara, const s_CharaKeyframe* keyframe)
     {
         chara->collision.box.top                  = keyframe->box.top;
         chara->collision.box.bottom               = keyframe->box.bottom;

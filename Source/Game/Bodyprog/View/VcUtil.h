@@ -5,6 +5,12 @@ namespace Silent::Game
     struct s_MapOverlayHdr;
     struct s_SysWork;
 
+    #define MIN_OFFSET(x, neg, pos) \
+        ((((x) + (-neg)) <= ((x) + (pos))) ? ((x) - (neg)) : ((x) + (pos)))
+
+    #define MAX_OFFSET(x, neg, pos) \
+        ((((x) - (neg)) > ((x) + (pos))) ? ((x) - (neg)) : ((x) + (pos)))
+
     /** @brief Initializes the camera subsystem.
      *
      * @param map_overlay_ptr Active map overlay header.

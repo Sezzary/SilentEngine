@@ -5,11 +5,15 @@ namespace Silent::Game
     struct s_MapOverlayHdr;
     struct s_SysWork;
 
-    #define MIN_OFFSET(x, neg, pos) \
-        ((((x) + (-neg)) <= ((x) + (pos))) ? ((x) - (neg)) : ((x) + (pos)))
+    constexpr q19_12 MIN_OFFSET(q19_12 x, q19_12 neg, q19_12 pos)
+    {
+        return ((x + -neg) <= (x + pos)) ? (x - neg) : (x) + (pos);
+    }
 
-    #define MAX_OFFSET(x, neg, pos) \
-        ((((x) - (neg)) > ((x) + (pos))) ? ((x) - (neg)) : ((x) + (pos)))
+    constexpr q19_12 MAX_OFFSET(q19_12 x, q19_12 neg, q19_12 pos)
+    {
+        return ((x - neg) > (x + pos)) ? (x - neg) : (x + pos);
+    }
 
     /** @brief Initializes the camera subsystem.
      *

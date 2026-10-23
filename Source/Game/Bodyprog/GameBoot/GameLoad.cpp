@@ -105,7 +105,7 @@ namespace Silent::Game
                 break;
 
             case 1:
-                if (g_SysWork.gameStateStepCounter > SECONDS_60_FPS(20) &&
+                if (g_SysWork.gameStateStepCounter > SECONDS_TO_FRAMES(20) &&
                     Fs_QueueGetLength() == 0/* && !Sd_AudioStreamingCheck()*/)
                 {
                     Demo_DemoFileSavegameUpdate();
@@ -218,7 +218,7 @@ namespace Silent::Game
                 break;
 
             case 11:
-                if (g_SysWork.gameStateCounter >= SECONDS_60_FPS(1))
+                if (g_SysWork.gameStateCounter >= SECONDS_TO_FRAMES(1))
                 {
                     if (g_SysWork.processFlags == ProcessFlag_RoomTransition)
                     {

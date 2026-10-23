@@ -30,7 +30,7 @@ namespace Silent::Game
      * @param sec Seconds to convert.
      * @return Frames at 60 FPS.
      */
-    #define SECONDS_60_FPS(sec) \
+    #define SECONDS_TO_FRAMES(sec) \
         (s32)((sec) * 30)
 
     /** @brief Converts a floating-point Y screen position in percent to a fixed-point Y screen coodinate. */

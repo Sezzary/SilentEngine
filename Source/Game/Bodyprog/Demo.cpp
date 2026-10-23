@@ -262,9 +262,9 @@ namespace Silent::Game
 
     void Demo_ExitDemo() // 0x8008F4E4
     {
-        g_Demo_FrameCount     = SECONDS_60_FPS(999);
-        g_Demo_CurFrameData   = nullptr;
-        g_Demo_DemoStep       = 0;
+        g_Demo_FrameCount   = SECONDS_TO_FRAMES(999);
+        g_Demo_CurFrameData = nullptr;
+        g_Demo_DemoStep     = 0;
         g_SysWork.sysFlags |= SysFlag_DoWarmReset;
     }
 

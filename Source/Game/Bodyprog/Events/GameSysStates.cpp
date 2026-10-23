@@ -983,7 +983,7 @@ namespace Silent::Game
                 g_SysWork.sysStateStepData[0]++;
                 if (input.GetAction(In::Enter).IsClicked()  ||
                     input.GetAction(In::Cancel).IsClicked() ||
-                    g_SysWork.sysStateStepData[0] > SECONDS_60_FPS(4))
+                    g_SysWork.sysStateStepData[0] > SECONDS_TO_FRAMES(4))
                 {
                     SysWork_StateStepIncrement(0);
                 }
@@ -1028,7 +1028,7 @@ namespace Silent::Game
                 if (!input.GetAction(In::Enter).IsClicked() &&
                     !input.GetAction(In::Cancel).IsClicked())
                 {
-                    if (g_SysWork.sysStateStepData[0] <= SECONDS_60_FPS(8))
+                    if (g_SysWork.sysStateStepData[0] <= SECONDS_TO_FRAMES(8))
                     {
                         break;
                     }

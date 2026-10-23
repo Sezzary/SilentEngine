@@ -463,7 +463,7 @@ namespace Silent::Game
             switch (g_GameWork.gameStateSteps[0])
             {
                 case 1:
-                    if (g_SysWork.gameStateStepCounter > SECONDS_60_FPS(29))
+                    if (g_SysWork.gameStateStepCounter > SECONDS_TO_FRAMES(29))
                     {
                         g_GameWork.gameStateSteps[0]++;
                     }

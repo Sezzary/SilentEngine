@@ -4,6 +4,17 @@
 
 namespace Silent::Game
 {
+    /** @brief @deprecated Sync modes used by `DrawSync` and `VSync`. */
+    enum e_SyncMode
+    {
+        SyncMode_Count     = -1,
+        SyncMode_Wait      = 0,
+        SyncMode_Immediate = 1,
+        SyncMode_Wait2     = 2,
+        SyncMode_Wait3     = 3,
+        SyncMode_Wait8     = 8
+    };
+
     extern s32  g_ActiveBufferIdx;
     extern GsOT g_OrderingTable0[2];
     extern GsOT g_OrderingTable1[2];

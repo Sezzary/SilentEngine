@@ -38,12 +38,12 @@ namespace Silent::Game
         int activeSpawnFlags = 0;
         if (charaId <= Chara_MonsterCybil && spawnFlags < (1 << 6))
         {
-            activeSpawnFlags = SpawnFlag_0 | SpawnFlag_1 | SpawnFlag_2 | SpawnFlag_3 | SpawnFlag_4;
+            activeSpawnFlags = CharaSpawnFlag_0 | CharaSpawnFlag_1 | CharaSpawnFlag_2 | CharaSpawnFlag_3 | CharaSpawnFlag_4;
             activeSpawnFlags = spawnFlags & activeSpawnFlags;
         }
         else
         {
-            activeSpawnFlags = SpawnFlag_None;
+            activeSpawnFlags = CharaSpawnFlag_None;
         }
 
         if (charaId <= Chara_MonsterCybil)

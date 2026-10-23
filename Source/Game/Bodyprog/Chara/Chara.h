@@ -36,6 +36,17 @@ namespace Silent::Game
         CharaGroupFlag_1    = 1 << 1
     };
 
+    /** @brief Character spawn flags. */
+    enum e_CharaSpawnFlags
+    {
+        CharaSpawnFlag_None = 0,
+        CharaSpawnFlag_0    = 1 << 0,
+        CharaSpawnFlag_1    = 1 << 1,
+        CharaSpawnFlag_2    = 1 << 2,
+        CharaSpawnFlag_3    = 1 << 3,
+        CharaSpawnFlag_4    = 1 << 4
+    };
+
     /** @brief Character collision states. */
     enum e_CharaCollisionState
     {

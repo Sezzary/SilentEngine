@@ -2,10 +2,10 @@
 
 namespace Silent::Game
 {
-    /** @brief Global variable storing the current random seed for the `Rng_Rand32`
-     * function. The value is updated with each call to the RNG functions.
+    /** @brief Global variable storing the current random seed for the `Rng_Rand32` function. The value is updated with
+     * each call to the RNG functions.
      */
-    extern u32 g_RngSeed;
+    extern uint g_RngSeed;
 
     /** @brief Tests if a probability is met.
      *
@@ -43,114 +43,105 @@ namespace Silent::Game
     #define Rng_TestProbabilityBits(bits) \
         (Rng_Rand16() & ((1 << (bits)) - 1))
 
-    /** @brief Tests if a normalized fixed-point Q*.12, integer range `[0, 4096]` probability is met.
+    /** @brief Tests if a normalized fixed-point Q19.12, integer range `[0, 4096]` probability is met.
      *
-     * @param chance Normalized probability value, integer range `[0, 4096]`.
+     * @param chance Normalized Q19.12 probability value.
      * @return `true` if the probability is met, `false` otherwise.
      */
-    #define Rng_TestProbability(chance) \
-        (Rng_RandQ12() < (chance))
+    bool Rng_TestProbability(q19_12 chance);
 
     /** @brief Generates an integer in the range `[low, high]` from a random input.
      *
      * @param rand Random base value.
-     * @param low Lower range (inclusive).
-     * @param high Upper range (inclusive).
-     * @return Random integer in the range `[low, high]` (`s32`).
+     * @param low Inclusive lower bound.
+     * @param high Inclusive upper bound.
+     * @return Random integer in the range `[low, high]`.
     */
-    #define Rng_GenerateIntFromInput(rand, low, high) \
-        ((s32)((rand) % (((high) - (low)) + 1)) + (low))
+    int Rng_GenerateIntFromInput(int rand, int low, int high);
 
     /** @brief Generates an integer in the range `[low, high]` from an unsigned random input.
      *
      * @param rand Random base value.
-     * @param low Lower range (inclusive).
-     * @param high Upper range (inclusive).
-     * @return Random integer in the range `[low, high]` (`s32`).
+     * @param low Inclusive lower bound.
+     * @param high Inclusive upper bound.
+     * @return Random integer in the range `[low, high]`.
     */
-    #define Rng_GenerateUIntFromInput(rand, low, high) \
-        ((s32)((u32)(rand) % (((high) - (low)) + 1)) + (low))
+    int Rng_GenerateUIntFromInput(int rand, int low, int high);
 
     /** @brief Shorthand of `Rng_GenerateIntFromInput(Rng_Rand16(), low, high)` .
      *
-     * @param low Lower range (inclusive).
-     * @param high Upper range (inclusive).
-     * @return Random integer in the range `[low, high]` (`s32`).
+     * @param low Inclusive lower bound.
+     * @param high Inclusive upper bound.
+     * @return Random integer in the range `[low, high]`.
     */
-    #define Rng_GenerateInt(low, high) \
-        Rng_GenerateIntFromInput(Rng_Rand16(), low, high)
+    int Rng_GenerateInt(int low, int high);
 
     /** @brief Shorthand of `Rng_GenerateUIntFromInput(Rng_Rand16(), low, high)` .
      *
-     * @param low Lower range (inclusive).
-     * @param high Upper range (inclusive).
-     * @return Random integer in the range `[low, high]` (`s32`).
+     * @param low Inclusive lower bound.
+     * @param high Inclusive upper bound.
+     * @return Random integer in the range `[low, high]`.
     */
-    #define Rng_GenerateUInt(low, high) \
-        Rng_GenerateUIntFromInput(Rng_Rand16(), low, high)
+    int Rng_GenerateUInt(int low, int high);
 
     /** @brief Adds a generated integer in the range `[low, high]` from an unsigned random input to `base`.
      *
-     * @hack Needed to fix issue with wrong instruction order when `n + Rng_GenerateUInt(low, high)` is used with non-zero `low` value.
-     * More info: https://decomp.me/scratch/UlgCi
-     *
      * @param base Base number to be added to.
-     * @param low Lower range (inclusive).
-     * @param high Upper range (inclusive).
-     * @return Random integer in the range `[base + low, base + high]` (`s32`).
+     * @param low Inclusive lower bound.
+     * @param high Inclusive upper bound.
+     * @return Random integer in the range `[base + low, base + high]`.
     */
-    #define Rng_AddGeneratedUInt(base, low, high) \
-        (base + (s32)((u32)Rng_Rand16() % (((high) - (low)) + 1)) + (low))
+    int Rng_AddGeneratedUInt(int base, int low, int high);
+
+    /** @brief Generates a random normaalized Q19.12 fixed-point number, integer range `[0, 4096)`.
+     * Used for angles and multipliers.
+     *
+     * @return Random Q19.12 fixed-point number.
+     */
+    q19_12 Rng_RandQ12();
 
     /** @brief Generates a new random 32-bit unsigned integer and updates
      * `g_RngSeed`.
      *
-     * Implements a Linear Congruential Generator (LCG) Random Number
-     * Generator (RNG) algorithm, as outlined in "Numerical Recipes" (Second
-     * Edition, Chapter 7.1, An Even Quicker Generator). It produces a pseudo-random
-     * 32-bit unsigned integer value.
+     * Implements a Linear Congruential Generator (LCG) Random Number Generator (RNG) algorithm, as outlined in
+     * "Numerical Recipes" (Second Edition, Chapter 7.1, An Even Quicker Generator).
+     * It produces a pseudo-random 32-bit unsigned integer value.
      *
-     * @return New pseudo-random 32-bit unsigned integer (`u32`).
+     * @return New pseudo-random 32-bit unsigned integer.
      */
-    u32 Rng_Rand32();
+    uint Rng_Rand32();
 
     /** @brief Generates a new random 16-bit unsigned integer.
      *
-     * Calls `Rng_Rand32` to generate a random number, then
-     * shifts the result right to produce a value within the range
+     * Calls `Rng_Rand32` to generate a random number, then shifts the result right to produce a value within the range
      * of `[0, 0x7FFF]`.
      *
-     * @return Random positive 16-bit unsigned integer as a 32-bit signed
-     * integer (`s32`).
+     * @return Random positive 16-bit unsigned integer as a 32-bit signed integer.
      */
-    s32 Rng_Rand16();
+    int Rng_Rand16();
 
     /** @brief Returns the current random seed value.
      *
-     * Retrieves and returns the current value of the global variable
-     * `g_RngSeed`.
+     * Retrieves and returns the current value of the global variable `g_RngSeed`.
      *
-     * @return Current random seed as a 32-bit unsigned integer (`u32`).
+     * @return Current random seed as a 32-bit unsigned integer.
      */
-    u32 Rng_GetSeed();
+    uint Rng_GetSeed();
 
     /** @brief Sets the random seed to a specified value.
      *
-     * Updates the global variable `g_RngSeed` with the given
-     * seed value.
+     * Updates the global variable `g_RngSeed` with the given seed value.
      *
-     * @param newSeed New seed value to be set, as a 32-bit unsigned integer
-     * (`u32`).
+     * @param newSeed New seed value to be set, as a 32-bit unsigned integer.
      */
-    void Rng_SetSeed(u32 newSeed);
+    void Rng_SetSeed(uint newSeed);
 
     /** @brief Generates a new random 12-bit short integer.
      *
-     * Calls `Rng_Rand32` to generate a random number, then
-     * shifts the result right to produce a value within the range
-     * of `0` to `0xFFF` (12-bit).
+     * Calls `Rng_Rand32` to generate a random number, then * shifts the result right to produce a value within the
+     * range of `0` to `0xFFF` (12-bit).
      *
      * @return Random 12-bit short integer in the range `[0, 0xFFF]`.
      */
-    u16 Rng_Rand12();
+    ushort Rng_Rand12();
 }

@@ -122,6 +122,7 @@ namespace Silent::Assets
     
     constexpr char KEY_ENHANCEMENTS_MENU_HEADING[]                  = "EnhancementsMenu_Heading";
     constexpr char KEY_ENHANCEMENTS_MENU_SKIP_LOGOS[]               = "EnhancementsMenu_SkipLogos";
+    constexpr char KEY_ENHANCEMENTS_MENU_CHILD_CENSORSHIP[]         = "EnhancementsMenu_ChildCensorship";
     constexpr char KEY_ENHANCEMENTS_MENU_PAPER_MAP_QUALITY[]        = "EnhancementsMenu_PaperMapQuality";
     constexpr char KEY_ENHANCEMENTS_MENU_PAPER_MAP_QUALITY_RETRO[]  = "EnhancementsMenu_PaperMapQuality_Retro";
     constexpr char KEY_ENHANCEMENTS_MENU_PAPER_MAP_QUALITY_MODERN[] = "EnhancementsMenu_PaperMapQuality_Modern";

@@ -107,6 +107,7 @@
 
     "EnhancementsMenu_Heading":                "ENHANCEMENTS OPTIONS",
     "EnhancementsMenu_SkipLogos":              "Skip Logos",
+    "EnhancementsMenu_ChildCensorship":        "Child Censorship",
     "EnhancementsMenu_PaperMapQuality":        "Paper Map Quality",
     "EnhancementsMenu_PaperMapQuality_Retro":  "Retro",
     "EnhancementsMenu_PaperMapQuality_Modern": "Modern",

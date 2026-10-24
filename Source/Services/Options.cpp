@@ -61,6 +61,7 @@ namespace Silent::Services
     constexpr char KEY_DISABLE_AUTO_AIMING[]                      = "DisableAutoAiming";
     constexpr char KEY_VIEW_MODE[]                                = "ViewMode";
     constexpr char KEY_SKIP_LOGOS[]                               = "SkipLogos";
+    constexpr char KEY_CHILD_CENSORSHIP[]                         = "ChildCensorship";
     constexpr char KEY_PAPER_MAP_QUALITY[]                        = "PaperMapQuality";
     constexpr char KEY_DIALOG_PAUSE[]                             = "DialogPause";
     constexpr char KEY_ENABLE_TOASTS[]                            = "EnableToasts";
@@ -101,6 +102,7 @@ namespace Silent::Services
     constexpr auto DEFAULT_WALK_RUN_CONTROL                         = ControlInversionType::Normal;
     constexpr bool DEFAULT_DISABLE_AUTO_AIMING                      = false;
     constexpr bool DEFAULT_SKIP_LOGOS                               = false;
+    constexpr bool DEFAULT_CHILD_CENSORSHIP                         = false;
     constexpr auto DEFAULT_PAPER_MAP_QUALITY                        = PaperMapQualityType::Retro;
     constexpr auto DEFAULT_DIALOG_PAUSE                             = DialogPauseType::Retro;
     constexpr auto DEFAULT_VIEW_MODE                                = ViewMode::Normal;
@@ -177,6 +179,7 @@ namespace Silent::Services
     void OptionsManager::SetDefaultEnhancementsOptions()
     {
         _options.Front.SkipLogos       = DEFAULT_SKIP_LOGOS;
+        _options.Front.ChildCensorship = DEFAULT_CHILD_CENSORSHIP;
         _options.Front.PaperMapQuality = DEFAULT_PAPER_MAP_QUALITY;
         _options.Front.DialogPause     = DEFAULT_DIALOG_PAUSE;
     }
@@ -357,6 +360,7 @@ namespace Silent::Services
         // Load enhancements options.
         const auto& enhancementsJson = optionsJson[KEY_ENHANCEMENTS];
         options.SkipLogos            = enhancementsJson.value(KEY_SKIP_LOGOS,        DEFAULT_SKIP_LOGOS);
+        options.ChildCensorship      = enhancementsJson.value(KEY_CHILD_CENSORSHIP,  DEFAULT_CHILD_CENSORSHIP);
         options.PaperMapQuality      = enhancementsJson.value(KEY_PAPER_MAP_QUALITY, DEFAULT_PAPER_MAP_QUALITY);
         options.DialogPause          = enhancementsJson.value(KEY_DIALOG_PAUSE,      DEFAULT_DIALOG_PAUSE);
 
@@ -453,7 +457,8 @@ namespace Silent::Services
             {
                 KEY_ENHANCEMENTS,
                 {
-                    { KEY_SKIP_LOGOS,        options.SkipLogos },
+                    { KEY_SKIP_LOGOS,        options.SkipLogos       },
+                    { KEY_CHILD_CENSORSHIP,  options.ChildCensorship },
                     { KEY_PAPER_MAP_QUALITY, options.PaperMapQuality },
                     { KEY_DIALOG_PAUSE,      options.DialogPause     }
                 }

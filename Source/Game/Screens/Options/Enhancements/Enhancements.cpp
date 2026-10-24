@@ -21,6 +21,11 @@ namespace Silent::Game
         },
         MenuEntry
         {
+            .EntryStringKey = KEY_ENHANCEMENTS_MENU_CHILD_CENSORSHIP,
+            .Binding        = MenuEntryBoolBinding::Bind(&Options::ChildCensorship)
+        },
+        MenuEntry
+        {
             .EntryStringKey = KEY_ENHANCEMENTS_MENU_PAPER_MAP_QUALITY,
             .Binding        = MenuEntryEnumBinding::Bind(&Options::PaperMapQuality,
             {

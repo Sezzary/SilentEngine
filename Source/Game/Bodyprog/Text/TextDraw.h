@@ -154,7 +154,7 @@ namespace Silent::Game
     void Gfx_StringColorSet(e_StringColorId colorId);
 
     /** @brief Resets global map message parameters to defaults. */
-    void Gfx_MapMsg_Reset();
+    void MapMsg_Reset();
 
     /** @brief Submits a simple tagged message to draw in screen space using the serif font.
      * The position and color must be set by * `Gfx_StringPositionSet` and `Gfx_StringColorSet` before calling this

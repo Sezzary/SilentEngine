@@ -3,12 +3,12 @@
 #include "Psx.h"
 #include "Game/libkpad.h"
 
-#include "Game/Bodyprog/Anim.h"
+#include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/Chara/Chara.h"
 #include "Game/Bodyprog/Events/Bgm.h"
 #include "Game/Bodyprog/Formats/Anm.h"
 #include "Game/Bodyprog/Items.h"
-#include "Game/Bodyprog/Model.h"
+#include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Bodyprog/Savegame.h"
 #include "Game/Bodyprog/Sys/Joy.h"
 #include "Game/Maps/Characters/Harry.h"
@@ -30,12 +30,8 @@ namespace Silent::Game
      * @param sec Seconds to convert.
      * @return Frames at 60 FPS.
      */
-    #define SECONDS_60_FPS(sec) \
+    #define SECONDS_TO_FRAMES(sec) \
         (s32)((sec) * 30)
-
-    /** @brief Converts a floating-point Y screen position in percent to a fixed-point Y screen coodinate. */
-    #define SCREEN_POSITION_Y(percent) \
-        (s32)(SCREEN_HEIGHT * ((percent) / 100.0f))
 
     /** @brief Packs a weapon attack containing a weapon ID and attack input type.
      *
@@ -55,7 +51,7 @@ namespace Silent::Game
         ((weaponAttack) % 10)
 
     /** @brief Creates a bitmask with a contiguous range of bits set.
-     * For use with `s_PlayerExtra::disabledAnimBones`.
+     * For use with `s_PlayerExtra::disabledAnimBoneFlags`.
      *
      * Generates an `unsigned int` mask with all bits in the range `[fromInclusive, toInclusive]` set.
      *
@@ -124,21 +120,6 @@ namespace Silent::Game
         (((g_SysWork.playerWork.player.position.comp - Q12(base)) >= Q12(0.0f)) ? ((g_SysWork.playerWork.player.position.comp - Q12(base)) < Q12(tol)) : \
                                                                                   ((Q12(base) - g_SysWork.playerWork.player.position.comp) < Q12(tol)))
 
-    #define MIN_OFFSET(x, neg, pos) \
-        ((((x) + (-neg)) <= ((x) + (pos))) ? ((x) - (neg)) : ((x) + (pos)))
-
-    #define MAX_OFFSET(x, neg, pos) \
-        ((((x) - (neg)) > ((x) + (pos))) ? ((x) - (neg)) : ((x) + (pos)))
-
-    /** @brief Packs XZ cell coordinates in a single value.
-     *
-     * @param x X cell coordinate.
-     * @param z Z cell coordinate.
-     * @return Packed XZ cell coordinates.
-     */
-    #define CELL_XZ(x, z) \
-        ((x) + ((z) << 8))
-
     #define HAS_FLAG(ptr, idx) \
         ((((u32*)ptr)[(idx) >> 5] >> ((idx) & 0x1F)) & (1 << 0))
 
@@ -147,47 +128,6 @@ namespace Silent::Game
 
     #define CLEAR_FLAG(ptr, idx) \
         ((((u32*)ptr)[(idx) >> 5] &= ~((1 << 0) << ((idx) & 0x1F))))
-
-    /** @brief @deprecated Sync modes used by `DrawSync` and `VSync`. */
-    enum e_SyncMode
-    {
-        SyncMode_Count     = -1,
-        SyncMode_Wait      = 0,
-        SyncMode_Immediate = 1,
-        SyncMode_Wait2     = 2,
-        SyncMode_Wait3     = 3,
-        SyncMode_Wait8     = 8
-    };
-
-    /** @brief Paper map indices. Used for the navigation map screen. */
-    enum e_PaperMapIdx
-    {
-        PaperMapIdx_OtherPlaces    = 0,
-        PaperMapIdx_OldTown        = 1,
-        PaperMapIdx_FogCentralTown = 2,
-        PaperMapIdx_AltCentralTown = 3,
-        PaperMapIdx_ResortTown     = 4,
-        PaperMapIdx_FogSchoolBF    = 5,
-        PaperMapIdx_FogSchool1F    = 6,
-        PaperMapIdx_FogSchool2F    = 7,
-        PaperMapIdx_FogSchoolRF    = 8,
-        PaperMapIdx_AltSchoolBF    = 9,
-        PaperMapIdx_AltSchool1F    = 10,
-        PaperMapIdx_AltSchool2F    = 11,
-        PaperMapIdx_AltSchoolRF    = 12,
-        PaperMapIdx_FogSewer1F     = 13,
-        PaperMapIdx_FogSewer2F     = 14,
-        PaperMapIdx_AltSewer       = 15,
-        PaperMapIdx_FogHospitalBF  = 16,
-        PaperMapIdx_FogHospital1F  = 17,
-        PaperMapIdx_FogHospital2F  = 18,
-        PaperMapIdx_FogHospital3F  = 19,
-        PaperMapIdx_AltHospitalBF  = 20,
-        PaperMapIdx_AltHospital1F  = 21,
-        PaperMapIdx_AltHospital2F  = 22,
-        PaperMapIdx_AltHospital3F  = 23,
-        PaperMapIdx_24             = 24
-    };
 
     /** @brief System flags. TODO: Give this a more specific name. */
     enum e_SysFlags
@@ -321,27 +261,24 @@ namespace Silent::Game
         s_PrimColor        background2dColor;
         e_GameState        gameStatePrev;
         e_GameState        gameState;
-        s32                gameStateSteps[3]; /** Sub-state steps used by the current `gameState`. Can be other state IDs or data. */
-        s8                 unk_5A4[4];        // @unused?
+        int                gameStateSteps[3]; /** Sub-state steps used by the current `gameState`. Can be other state IDs or data. */
         s32                field_5A8;
         s32                field_5AC;
-        s8                 __pad_5B0;
-        s8                 mapAnimIdx;
-        s8                 bgmIdx;            /** `BgmTrackIdx` | Currently player background music track. */
-        s8                 ambientIdx;        /** Index of `g_AmbientVabTaskLoadCmds`. */
+        int                mapAnimIdx;
+        int                bgmIdx;            /** `BgmTrackIdx` | Currently player background music track. */
+        int                ambientIdx;        /** Index of `g_AmbientVabTaskLoadCmds`. */
         s_AnalogController rawController;
-        s8                 unused_5BC[28];    // @unused Debug data?
     };
 
     /** @brief Extra player character info. */
     struct s_PlayerExtra
     {
-        s_Model     model;             /** Manages upper half body's animations (torso, arms, head). */
-        s32         disabledAnimBones; /** Bitfield of disabled animation bones. Can be created using the `BITMASK_RANGE` macro. */
-        s32         state;             /** `e_PlayerState` */
-        s32         upperBodyState;    /** `e_PlayerUpperBodyState` */
-        s32         lowerBodyState;    /** `e_PlayerLowerBodyState` */
-        e_InvItemId lastUsedItem;      /** Holds the last item ID used from inventory when the player is inside an item trigger area. */
+        s_Model     model;                 /** Manages upper half body's animations (torso, arms, head). */
+        int         disabledAnimBoneFlags; /** Created using `BITMASK_RANGE`. */
+        int         state;                 /** `e_PlayerState` */
+        int         upperBodyState;        /** `e_PlayerUpperBodyState` */
+        int         lowerBodyState;        /** `e_PlayerLowerBodyState` */
+        e_InvItemId lastUsedItem;          /** Holds the last item ID used from inventory when the player is inside an item trigger area. */
     };
 
     /** @brief Player workspace.
@@ -357,13 +294,12 @@ namespace Silent::Game
     /** @brief Player combat info. */
     struct s_PlayerCombat
     {
-        VECTOR3 attackPosition; /** Q19.12 */
-        s8      __pad_C[3];
-        s8      weaponAttack; /** Packed weapon attack. See `WEAPON_ATTACK`. */
-        u8      currentWeaponAmmo;
-        u8      totalWeaponAmmo;
-        s8      weaponInventoryIdx; /** Index of the currently equipped weapon in the inventory. */
-        u8      isAiming;           /** `bool` */
+        VECTOR3 attackPosition;     /** Q19.12 */
+        int     weaponAttack;       /** Packed weapon attack. See `WEAPON_ATTACK`. */
+        int     currentWeaponAmmo;
+        int     totalWeaponAmmo;
+        int     weaponInventoryIdx; /** Index of the currently equipped weapon in the inventory. */
+        bool    isAiming;
     };
 
     typedef union
@@ -381,21 +317,24 @@ namespace Silent::Game
     /** @brief Map effects info. */
     struct s_MapEffectsInfo
     {
-        u_Unk0  field_0;
-        q3_12   field_4; // Alpha.
-        q3_12   field_6; // World tint color intensity.
+        union
+        {
+            s32 field_0;     // }
+            u8  field_00[4]; // } Index 0 `e_SpecialEnvEventFlags` | Index 2 `e_UnkGfxEnum`.
+        } flags;
+        q3_12   spotLightIntensity;
+        q3_12   worldLightIntensity;
         q3_12   worldTintR;
         q3_12   worldTintG;
         q3_12   worldTintB;
-        u8      field_E; // Fog enabled if not set to 0, `Gfx_FogParametersSet` checks for values 0/1/2/3.
-                         // Sets the transparent grey layer overlaid on characters and the enviroment.
+        u8      field_E; /** Some fog state information.
         q19_12  fogDistance;
         CVECTOR fogColor;
         u8      enableTintLightOverlap; /** `bool` */
         CVECTOR pointLightTint;         /** Volumetric point light color. */
         CVECTOR worldTint;              /** Subtractive. */
-        CVECTOR field_21;               // Particle effect related. Only the first value affects snow transparency.
-        CVECTOR field_25;
+        CVECTOR field_21;               // } Particle effect related. Only the first value affects snow transparency.
+        CVECTOR field_25;               // }
     };
 
     typedef struct
@@ -405,25 +344,24 @@ namespace Silent::Game
         q3_12            brightnessIntensity;
         q19_12           fogDistance;
     } s_StructUnk3;
-    STATIC_ASSERT_SIZEOF(s_StructUnk3, 52);
 
     // Extra effects info?
     typedef struct
     {
-        s32             primitiveType; /** `e_PrimitiveType` */
-        s8*             field_4;       /** Points to different types of data depending on `field_0`. */
-        s32             field_8;       // } Q19.12?
-        s32             field_C;       // }
-        s32             field_10;
-        u8              field_14;                /** `bool` */
-        u8              isFlashlightOn;          /** `bool` */
-        u8              isFlashlightUnavailable; /** `bool` */
-        q3_12           flashlightIntensity;
-        u16             field_1A;
-        s_StructUnk3    field_1C[2];
-        s_StructUnk3    field_84[2];
-        s_StructUnk3    field_EC[2];
-        s_StructUnk3    field_154;
+        s32          primitiveType; /** `e_PrimitiveType` */
+        s8*          field_4;       /** Points to different types of data depending on `field_0`. */
+        s32          field_8;       // } Q19.12?
+        s32          field_C;       // }
+        s32          field_10;
+        bool         field_14;
+        bool         isFlashlightOn;
+        bool         isFlashlightUnavailable;
+        q3_12        flashlightIntensity;
+        u16          field_1A;
+        s_StructUnk3 field_1C[2];
+        s_StructUnk3 field_84[2];
+        s_StructUnk3 field_EC[2];
+        s_StructUnk3 field_154;
     } s_SysWork_2388;
 
     /** @brief Main system workspace. Stores key engine data. */
@@ -441,56 +379,65 @@ namespace Silent::Game
         s_PlayerCombat playerCombat;
         s_PlayerWork   playerWork;
         s_SubCharacter npcs[NPC_COUNT_MAX];
+
+        // @deprecated Using `s_SubCharacter::model.anim.BoneTransforms` in new code.
         GsCOORDINATE2  playerBoneCoords[HarryBone_Count];
         GsCOORDINATE2  unkCoords_E30[5];                       // Might be part of previous array for 5 extra coords which go unused.
         GsCOORDINATE2  npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
-        s8             npcFlagsId;                             // 1-based NPC ID for `npcFlags`.
 
-        s8               loadingScreenIdx;
-        s8               areaTransitionFlags;                /** `e_AreaTransitionFlags` */
-        s8               sfxPairIdx;                         /** `e_SfxPairIdx` | Index into `SFX_PAIRS`. */
-        u16              charaGroupFlags[CHARA_GROUP_COUNT]; /** `e_CharaGroupFlags` */
-                                                             // Enabling a flag for Larval Stalkers causes them to die.
-        s32              field_228C[1];
-        s32              npcFlags;         // Flags related to NPCs. Each bit corresponds to an `npcs` array entry.
-        s32              processFlags;     /** `e_ProcessFlags` */
-        s32              unused_229C;      /** @unused Set to `NO_VALUE` when the player has been initalized and 0 when the player changes areas. Beyond that it's dead code. */
-        s32              bgmStatusFlags;   /** `e_BgmStatusFlags` */
-        s32              sysFlags;         // `e_SysFlags` | `SysFlag_OnCameraRail` passed as "use through door cam" flag in `vcSetFirstCamWork`.
-        GsCOORDINATE2    coord_22A8;       // For particles only?
-        GsCOORDINATE2    coord_22F8;       // Likely related to above.
-        s8               field_2348   : 8; // Related to particles.
-        s8               field_2349   : 8; // Particle spawn multiplier?
-        u8               field_234A   : 8; /** `bool` */
-        u8               field_234B_0 : 4; /** `bool` | Related to particles. Used to trigger SFX? */
-        u8               field_234B_4 : 4; // Related to particles.
-        q19_12           mapMsgTimer;
-        bool             enableHalfHeightGlyphs;
-        u8               silentYesSelection : 4; /** `bool` */
-        u32              invItemSelectedIdx : 8;
-        u32              invItemLoadFlags   : 8; /** `e_InvItemLoadFlags` */
-        s8               targetNpcIdx;           /** Index of the NPC in `npcs` being targeted by the player. */
-        s8               npcIdxs[CHARA_GROUP_COUNT];
-        u8               enablePlayerMatchAnim; /** `bool` | Activates the animation performed by Harry when lighting a match at the beginning of the game. */
-        u8               playerStopFlags;       /** `e_PlayerStopFlags` */
-        GsCOORDINATE2*   lightBoneCoord;
-        VECTOR3          lightPosition;      // } Often set to DMS cutscene data.
-        GsCOORDINATE2*   lensFlareBoneCoord; // }
-        SVECTOR          lightRotation;      // }
-        q3_12            lightIntensity;
-        q3_12            cameraAngleY;
-        q3_12            cameraAngleZ;
-        s16              field_237E;
-        q19_12           cameraRadiusXz;
-        q19_12           cameraY;
-        s_SysWork_2388   field_2388;
-        s32              field_2510;                       // } Related to libkpad.
-        s_SysWork_2514   field_2514;                       // }
-        s8               field_254C[508];                  /** Used through indirect pointer calls. Tied to `libkpad`.*/
-        q3_12            bgmLayerVolumes[BGM_LAYER_COUNT]; // Last index value is not a layer, but some sort of timer. See `Bgm_LayersUpdate`.
-        q23_8            field_275C; // } SFX volumes?
-        q23_8            field_2760; // }
-        q23_8            field_2764; // }
+        int npcFlagsId; // 1-based NPC ID for `npcFlags`.
+
+        int loadingScreenIdx;
+        int areaTransitionFlags;                /** `e_AreaTransitionFlags` */
+        int sfxPairIdx;                         /** `e_SfxPairIdx` | Index into `SFX_PAIRS`. */
+        int charaGroupFlags[CHARA_GROUP_COUNT]; /** `e_CharaGroupFlags` */ // Enabling a flag for Larval Stalkers causes them to die.
+        s32 field_228C[1];
+        int npcFlags;       // Flags related to NPCs. Each bit corresponds to an `npcs` array entry.
+        int processFlags;   /** `e_ProcessFlags` */
+        int bgmStatusFlags; /** `e_BgmStatusFlags` */
+        int sysFlags;       // `e_SysFlags` | `SysFlag_OnCameraRail` passed as "use through door cam" flag in `vcSetFirstCamWork`.
+
+        GsCOORDINATE2 coord_22A8;   // For particles only?
+        GsCOORDINATE2 coord_22F8;   // Likely related to above.
+        s8            field_2348;   // Related to particles.
+        s8            field_2349;   // Particle spawn multiplier?
+        bool          field_234A;
+        bool          field_234B_0; /** Related to particles. Used to trigger SFX? */
+        u8            field_234B_4; // Related to particles.
+
+        q19_12 mapMsgTimer;
+        bool   enableHalfHeightGlyphs;
+        bool   silentYesSelection;
+        int    invItemSelectedIdx;
+        int    invItemLoadFlags; /** `e_InvItemLoadFlags` */
+
+        int  targetNpcIdx;     /** Index of the NPC in `npcs` being targeted by the player. */
+        int  npcIdxs[CHARA_GROUP_COUNT];
+        bool enablePlayerMatchAnim; /** `bool` | Activates the animation performed by Harry when lighting a match at the beginning of the game. */
+        int  playerStopFlags;       /** `e_PlayerStopFlags` */
+
+        GsCOORDINATE2* lightBoneCoord;
+        VECTOR3        lightPosition;      // } Often set to DMS cutscene data.
+        GsCOORDINATE2* lensFlareBoneCoord; // }
+        SVECTOR        lightRotation;      // }
+        q3_12          lightIntensity;
+
+        q3_12  cameraAngleY;
+        q3_12  cameraAngleZ;
+        s16    field_237E;
+        q19_12 cameraRadiusXz;
+        q19_12 cameraY;
+
+        s_SysWork_2388 field_2388;
+
+        s32            field_2510;      // } Related to libkpad.
+        s_SysWork_2514 field_2514;      // }
+        s8             field_254C[508]; /** Used through indirect pointer calls. Tied to `libkpad`.*/
+
+        q3_12 bgmLayerVolumes[BGM_LAYER_COUNT]; // Last index value is not a layer, but some sort of timer. See `Bgm_LayersUpdate`.
+        q23_8 field_275C;                       // } SFX volumes?
+        q23_8 field_2760;                       // }
+        q23_8 field_2764;                       // }
     };
 
     extern void* g_OvlBodyprog;

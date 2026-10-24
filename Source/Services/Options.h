@@ -223,6 +223,7 @@ namespace Silent::Services
         // =============
 
         bool                SkipLogos       = false;
+        bool                ChildCensorship = false;
         PaperMapQualityType PaperMapQuality = PaperMapQualityType::Retro;
         DialogPauseType     DialogPause     = DialogPauseType::Retro;
 

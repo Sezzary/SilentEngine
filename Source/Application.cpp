@@ -135,6 +135,7 @@ namespace Silent
         Debug::Initialize();
         Debug::Log(Fmt("Starting {} {}...", APP_NAME, APP_VERSION));
         Debug::Log(Fmt("Platform: {}", GetPlatformName()));
+        Debug::Log(Fmt("Compiler: {} {}", SILENT_COMPILER_ID, SILENT_COMPILER_VERSION));
         Debug::Log(Fmt("Repository: {}", SILENT_GIT_REPO));
         Debug::Log(Fmt("Branch: {}", SILENT_GIT_BRANCH));
         Debug::Log(Fmt("Commit: {}", SILENT_GIT_COMMIT));

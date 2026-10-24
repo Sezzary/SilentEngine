@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Psx.h"
+
 namespace Silent::Game
 {
     /** @brief Geometry primitive. */

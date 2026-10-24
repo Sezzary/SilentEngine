@@ -1,11 +1,13 @@
 #pragma once
 
-#include "Game/Bodyprog/Chara/Chara.h"
-#include "Game/Bodyprog/Formats/Lm.h"
-#include "Game/Main/FsQueue.h"
-
 namespace Silent::Game
 {
+    enum   e_CharaId;
+    struct s_LmHeader;
+    struct s_FsImageDesc;
+    struct s_MapOverlayHdr;
+    struct s_SubCharacter;
+
     /** @brief Loads a character model.
      *
      * @param modelIdx Slot index of the moddel array to load into.

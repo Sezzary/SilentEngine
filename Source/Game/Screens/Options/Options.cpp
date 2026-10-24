@@ -43,32 +43,50 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_EXIT,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_Leave
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_GRAPHICS,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterGraphics
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_GAMEPLAY,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterGameplay
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_INPUT,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterInput
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_ENHANCEMENTS,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterEnhancements
+            }
         },
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_SYSTEM,
-            .Binding        = MenuEntrySubmenuBinding{}
+            .Binding        = MenuEntrySubmenuBinding
+            {
+                .MenuState = OptionsMenuState_EnterSystem
+            }
         },
     };
 
@@ -86,102 +104,37 @@ namespace Silent::Game
             return;
         }
 
-        // Leave to gameplay (if options menu was accessed with `Option` input action).
+        // Return to gameplay if options menu was accessed with `Option` input action.
         if (g_GameWork.gameStatePrev == GameState_InGame &&
-            !input.GetAction(In::Enter).IsClicked() && input.GetAction(In::Option).IsClicked())
+            input.GetAction(In::Option).IsClicked(ACTION_HALF_STATE))
         {
             Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
+
+            ScreenFade_Start(true, false, false);
             Game_StateStepSet(0, OptionsMenuState_Leave);
             return;
         }
 
-        Options_UpdateSelection(MainOptionsMenuEntry_Count);
-
-        switch (g_OptionsMenu_SelectedEntry)
-        {
-            case MainOptionsMenuEntry_Exit:
-            {
-                // Exit to gameplay.
-                if (input.GetAction(In::Enter).IsClicked() || input.GetAction(In::Cancel).IsClicked())
-                {
-                    Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
-
-                    Game_StateStepSet(0, OptionsMenuState_Leave);
-                }
-                break;
-            }
-            case MainOptionsMenuEntry_Graphics:
-            {
-                // Enter submenu.
-                if (input.GetAction(In::Enter).IsClicked())
-                {
-                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-
-                    ScreenFade_Start(true, false, false);
-                    Game_StateStepSet(0, OptionsMenuState_EnterGraphics);
-                }
-                break;
-            }
-            case MainOptionsMenuEntry_Gameplay:
-            {
-                // Enter submenu.
-                if (input.GetAction(In::Enter).IsClicked())
-                {
-                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-
-                    ScreenFade_Start(true, false, false);
-                    Game_StateStepSet(0, OptionsMenuState_EnterGameplay);
-                }
-                break;
-            }
-            case MainOptionsMenuEntry_Input:
-            {
-                // Enter submenu.
-                if (input.GetAction(In::Enter).IsClicked())
-                {
-                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-
-                    ScreenFade_Start(true, false, false);
-                    Game_StateStepSet(0, OptionsMenuState_EnterInput);
-                }
-                break;
-            }
-            case MainOptionsMenuEntry_Enhancements:
-            {
-                // Enter submenu.
-                if (input.GetAction(In::Enter).IsClicked())
-                {
-                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-
-                    ScreenFade_Start(true, false, false);
-                    Game_StateStepSet(0, OptionsMenuState_EnterEnhancements);
-                }
-                break;
-            }
-            case MainOptionsMenuEntry_System:
-            {
-                // Enter submenu.
-                if (input.GetAction(In::Enter).IsClicked())
-                {
-                    Sd_SfxPlay(Sfx_MenuConfirm, 0, 64);
-
-                    ScreenFade_Start(true, false, false);
-                    Game_StateStepSet(0, OptionsMenuState_EnterSystem);
-                }
-                break;
-            }
-        }
-
-        // Reset selection cursor.
-        if ((g_OptionsMenu_SelectedEntry != OptionsMenuEntry_Exit &&
-            !input.GetAction(In::Enter).IsClicked()) &&
-            input.GetAction(In::Cancel).IsClicked())
+        // Handle reset to `Exit` entry.
+        if (input.GetAction(In::Cancel).IsClicked(ACTION_HALF_STATE))
         {
             Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
 
-            g_OptionsMenu_SelectedEntry           = OptionsMenuEntry_Exit;
-            g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
+            if (g_OptionsMenu_SelectedEntry == OptionsMenuEntry_Exit)
+            {
+                ScreenFade_Start(true, false, false);
+                Game_StateStepSet(0, OptionsMenuState_Leave);
+            }
+            else
+            {
+                g_OptionsMenu_SelectedEntry           = OptionsMenuEntry_Exit;
+                g_OptionsMenu_SelectionHighlightTimer = Q12(0.0f);
+            }
+
+            return;
         }
+
+        Options_UpdateSelection(ENTRIES);
     }
 
     void GameState_Options_Update()
@@ -194,6 +147,12 @@ namespace Silent::Game
         if (g_GameWork.gameStatePrev != GameState_MainMenu)
         {
             //Game_TimerUpdate();
+        }
+
+        // Draw cursor.
+        if (g_Options_Cursor.IsEnabled())
+        {
+            g_Options_Cursor.Draw();
         }
 
         // Handle options menu state.

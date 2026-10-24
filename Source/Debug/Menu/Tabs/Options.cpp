@@ -338,6 +338,12 @@ namespace Silent::Debug
                     isOptChanged = true;
                 }
 
+                // `Child censorship` checkbox.
+                if (ImGui::Checkbox("Child censorship", &options->ChildCensorship))
+                {
+                    isOptChanged = true;
+                }
+
                 // `Paper map quality` combo.
                 int paperMapQuality = (int)options->PaperMapQuality;
                 if (ImGui::Combo("Paper map quality", &paperMapQuality, PAPER_MAP_QUALITY_ITEMS, IM_ARRAYSIZE(PAPER_MAP_QUALITY_ITEMS)))

@@ -24,13 +24,11 @@ namespace Silent::Game
 
     void Event_Update(bool disableButtonEvents) // 0x800373CC
     {
-        s_MapPoint2d* mapPoint;
-        s_EventData*  mapEvent;
-        q19_12        pointPosX;
-        q19_12        pointPosZ;
-        q19_12        pointRadiusX;
-        q19_12        pointRadiusZ;
-        s32           i;
+        q19_12 pointPosX;
+        q19_12 pointPosZ;
+        q19_12 pointRadiusX;
+        q19_12 pointRadiusZ;
+        s32    i;
 
         // `lastUsedItem` is set by `Inventory_ItemUse` when player uses an item that matches one of the item trigger events.
         // If it's set, find its index in `g_ItemTriggerItemIds` and use that to get the corresponding `s_EventData` from `g_ItemTriggerEvents`.
@@ -54,7 +52,7 @@ namespace Silent::Game
 
         g_MapEventLastUsedItem = InvItemId_Unequipped;
 
-        mapEvent = &g_MapOverlayHdr.mapEvents[-1];
+        auto* mapEvent = &g_MapOverlayHdr.mapEvents[-1];
 
         while (true)
         {
@@ -108,7 +106,7 @@ namespace Silent::Game
                 continue;
             }
 
-            mapPoint = &g_MapOverlayHdr.mapPoints[mapEvent->mapPointIdx];
+            auto* mapPoint = &g_MapOverlayHdr.mapPoints[mapEvent->mapPointIdx];
 
             switch (mapEvent->triggerType)
             {
@@ -177,8 +175,8 @@ namespace Silent::Game
             // `TriggerActivationType_Button`: Only allow button activated events when area is lit up?
             if (mapEvent->activationType == TriggerActivationType_Button)
             {
-                if ((g_SysWork.field_2388.field_154.effectsInfo.field_0.s_field_0.field_0 & 2) && !g_SysWork.field_2388.isFlashlightOn &&
-                    ((g_SysWork.field_2388.field_1C[0].effectsInfo.field_0.s_field_0.field_0 & 1) || (g_SysWork.field_2388.field_1C[1].effectsInfo.field_0.s_field_0.field_0 & 1)))
+                if ((g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 2) && !g_SysWork.field_2388.isFlashlightOn &&
+                    ((g_SysWork.field_2388.field_1C[0].effectsInfo.flags.field_00[0] & 1) || (g_SysWork.field_2388.field_1C[1].effectsInfo.flags.field_00[0] & 1)))
                 {
                     if (mapEvent->sysState != SysState_LoadOverlay &&
                         (mapEvent->sysState != SysState_LoadRoom && mapEvent->eventParam > 1))

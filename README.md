@@ -92,18 +92,19 @@ git lfs install
 
 Clone https://github.com/Sezzary/SilentEngine to your desired directory. Cloning recursively will include submodules in the process.
 ```
-git clone --recursive https://github.com/Sezzary/SilentEngine
+git clone --recursive https://github.com/Sezzary/SilentEngine && \
 git submodule update --init --recursive
 ```
 
 Build the LuaJIT dependency locally.
 ```
-cd Libraries/LuaJIT && make && cd ../..
+cd Libraries/LuaJIT && make && \
+cd ../..
 ```
 
 Set up a Python virtual environment and activate it.
 ```
-python3 -m venv .venv
+python3 -m venv .venv && \
 source .venv/bin/activate
 ```
 

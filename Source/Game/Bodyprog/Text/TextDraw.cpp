@@ -20,6 +20,7 @@ namespace Silent::Game
     constexpr int TEXT_DEPTH = 6;
 
     /** @brief Message line position override types for `MSG_CODE_LINE_POSITION` arguments. */
+    // @todo All ported map message strings must replace L4 with L1.
     enum class MsgLinePositionType
     {
         Subtitle    = 0,
@@ -58,6 +59,11 @@ namespace Silent::Game
         auto intStr = std::string();
         for (char c : Value.substr(1, Value.size() - 1))
         {
+            if (c < '0' || c > '9')
+            {
+                break;
+            }
+
             intStr += c;
         }
 
@@ -460,7 +466,7 @@ namespace Silent::Game
         g_StringColorId = colorId;
     }
 
-    void Gfx_MapMsg_Reset()
+    void MapMsg_Reset()
     {
         g_StringColorId                  = StringColorId_White;
         g_SysWork.enableHalfHeightGlyphs = false;

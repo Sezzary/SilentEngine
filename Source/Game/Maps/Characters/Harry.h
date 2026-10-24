@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Game/Bodyprog/Chara/Anim.h"
+
 namespace Silent::Game
 {
     /** @brief Harry character animation indices. */
@@ -111,4 +113,7 @@ namespace Silent::Game
         HarryHandMesh_4 = 4,
         HarryHandMesh_5 = 5
     };
+
+    extern s_AnimInfo HARRY_BASE_ANIM_INFOS[];
+    extern s_AnimInfo HARRY_M0S00_ANIM_INFOS[];
 }

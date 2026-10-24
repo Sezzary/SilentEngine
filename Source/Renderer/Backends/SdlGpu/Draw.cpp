@@ -100,12 +100,12 @@ namespace Silent::Renderer::SdlGpu
             PushFragmentUniform(uniFrag0, 0);
 
             // Draw.
-            const auto* mesh = GetMeshes()["Psx/CHARA/HERO.ILM_02HEAD1"];
-            if (mesh != nullptr)
-            {
-                SDL_DrawGPUIndexedPrimitives(&renderPass, mesh->IdxCount, 1, mesh->IdxOffset, mesh->VertexOffset, 0);
-                _scene.Frame.Back.DrawCallCount++;
-            }
+            //const auto* mesh = GetMeshes()["Psx/CHARA/HERO.ILM_02HEAD1"];
+            //if (mesh != nullptr)
+            //{
+            //    SDL_DrawGPUIndexedPrimitives(&renderPass, mesh->IdxCount, 1, mesh->IdxOffset, mesh->VertexOffset, 0);
+            //    _scene.Frame.Back.DrawCallCount++;
+            //}
         }
 
         //---------------------------

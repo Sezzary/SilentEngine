@@ -5,9 +5,6 @@
 
 namespace Silent::Game
 {
-    // TODO: Need to decide on clearer terminology. Right now we have "chunk cells", "cells", and "subcells", which are
-    // kind of confusing.
-
     constexpr float CHUNK_SIZE                        = 40.0f;
     constexpr int   ACTIVE_CHUNK_COUNT_MAX            = 4;
     constexpr int   ACTIVE_CHUNK_TEXTURE_COUNT_MAX    = 10;
@@ -82,4 +79,15 @@ namespace Silent::Game
         s32                cellZ;
         bool               isExterior;
     };
+
+    /** @brief Packs XZ cell coordinates in a single value.
+     *
+     * @param x X cell coordinate.
+     * @param z Z cell coordinate.
+     * @return Packed XZ cell coordinates.
+     */
+    constexpr int CELL_XZ(uchar x, uchar z)
+    {
+        return x + (z << 8);
+    }
 }

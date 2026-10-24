@@ -18,13 +18,13 @@ using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    static s32   g_MapMsg_CurrentIdx       = 0;
-    static int   g_MapMsg_CurrentPageIdx   = 0;
-    static q3_12 g_MapMsg_SelectFlashTimer = 0;
-    static auto  g_MapMsg_Cached           = ParsedMsg{};
+    static s32   ActiveIdx        = 0;
+    static int   ActivePageIdx    = 0;
+    static q3_12 SelectFlashTimer = Q12(0.0f);
+    static auto  CachedMsg        = ParsedMsg{};
 
-    static s_MapMsgSelect g_MapMsg_Select;
-    static int            g_MapMsg_SelectCancelIdx;
+    static s_MapMsgSelect Select;
+    static int            SelectCancelIdx;
 
     /** @brief Draws map message strings in screen space.
      *
@@ -33,16 +33,16 @@ namespace Silent::Game
      * @param pageIdx Message page index.
      * @return Message return result.
      */
-    static MsgReturnResult Gfx_MapMsg_StringDraw(const std::string& mapMsg, int displayLength, int pageIdx)
+    static MsgReturnResult MapMsg_StringDraw(const std::string& mapMsg, int displayLength, int pageIdx)
     {
         int styleFlags = (int)TextStyleFlags::Gradient |
                          (int)TextStyleFlags::Shadow   |
                          g_SysWork.enableHalfHeightGlyphs ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None;
-        return DrawParsedMsg(g_MapMsg_Cached, ConvertRetroScreenPixelsToPercent(g_SerifStringPosition), SERIF_FONT_SCALE,
+        return DrawParsedMsg(CachedMsg, ConvertRetroScreenPixelsToPercent(g_SerifStringPosition), SERIF_FONT_SCALE,
                              styleFlags, displayLength, pageIdx);
     }
 
-    int Gfx_MapMsg_Draw(int mapMsgIdx)
+    int MapMsg_Draw(int mapMsgIdx)
     {
         constexpr int ROLLOUT_ADVANCE = 2;
 
@@ -69,9 +69,9 @@ namespace Silent::Game
 
         // Cache new message.
         auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
-        if (activeMapMsgIdx != mapMsgIdx || fontName != g_MapMsg_Cached.FontName)
+        if (activeMapMsgIdx != mapMsgIdx || fontName != CachedMsg.FontName)
         {
-            g_MapMsg_Cached = GetParsedMsg(g_MapOverlayHdr.mapMessages[mapMsgIdx], fontName, SERIF_FONT_SCALE);
+            CachedMsg = GetParsedMsg(g_MapOverlayHdr.mapMessages[mapMsgIdx], fontName, SERIF_FONT_SCALE);
 
             if (activeMapMsgIdx != mapMsgIdx)
             {
@@ -125,7 +125,7 @@ namespace Silent::Game
 
                     if (menuSelection == MsgSelectArg::None && rolloutState == NO_VALUE)
                     {
-                        if (g_MapMsg_Select.maxIdx == (int)menuSelection)
+                        if (Select.maxIdx == (int)menuSelection)
                         {
                             if (!(isAudioUnskippable || !skip) ||
                                 (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer == Q12(0.0f)))
@@ -142,8 +142,8 @@ namespace Silent::Game
                         // Cancel selection.
                         else if (input.GetAction(In::Cancel).IsClicked())
                         {
-                            g_MapMsg_Select.maxIdx           = (int)menuSelection;
-                            g_MapMsg_Select.selectedEntryIdx = g_MapMsg_SelectCancelIdx;
+                            Select.maxIdx           = (int)menuSelection;
+                            Select.selectedEntryIdx = SelectCancelIdx;
 
                             //Sd_SfxPlay(Sfx_MenuCancel, 0, Q8(0.25f));
 
@@ -158,9 +158,9 @@ namespace Silent::Game
                         // Enter selection.
                         else if (input.GetAction(In::Enter).IsClicked())
                         {
-                            g_MapMsg_Select.maxIdx = (int)menuSelection;
+                            Select.maxIdx = (int)menuSelection;
 
-                            if (g_MapMsg_Select.selectedEntryIdx == g_MapMsg_SelectCancelIdx)
+                            if (Select.selectedEntryIdx == SelectCancelIdx)
                             {
                                 //Sd_SfxPlay(Sfx_MenuCancel, 0, Q8(0.25f));
                             }
@@ -178,18 +178,18 @@ namespace Silent::Game
                             break;
                         }
                     }
-                    else if ((!isAudioUnskippable && skip && g_MapMsg_Select.maxIdx != 0) ||
+                    else if ((!isAudioUnskippable && skip && Select.maxIdx != 0) ||
                             (g_MapMsg_AudioType != MapMsgAudioType_None && g_SysWork.mapMsgTimer == Q12(0.0f)))
                     {
-                        if (g_MapMsg_Select.maxIdx != NO_VALUE)
+                        if (Select.maxIdx != NO_VALUE)
                         {
-                            g_MapMsg_Select.maxIdx = NO_VALUE;
+                            Select.maxIdx = NO_VALUE;
                             menuSelection          = MsgSelectArg::None;
                             break;
                         }
 
-                        g_MapMsg_CurrentIdx++;
-                        g_SysWork.mapMsgTimer = g_MapMsg_Select.maxIdx;
+                        ActiveIdx++;
+                        g_SysWork.mapMsgTimer = Select.maxIdx;
 
                         displayLength = 0;
                         rolloutState  = 0;
@@ -218,9 +218,10 @@ namespace Silent::Game
                 }
 
                 rolloutState = 0;
-                menuSelection = Gfx_MapMsg_SelectionUpdate(g_MapMsg_CurrentIdx, &displayLength);
+                menuSelection = MapMsg_SelectionUpdate(ActiveIdx, &displayLength);
 
-                if (menuSelection == MsgSelectArg::Select2 || menuSelection == MsgSelectArg::Select3)
+                if (menuSelection == MsgSelectArg::Select2 ||
+                    menuSelection == MsgSelectArg::Select3)
                 {
                     rolloutState = NO_VALUE;
                 }
@@ -228,17 +229,17 @@ namespace Silent::Game
             case false:
             {
                 g_SysWork.mapMsgTimer            = NO_VALUE;
-                g_MapMsg_Select.maxIdx           = NO_VALUE;
-                g_MapMsg_Select.selectedEntryIdx = 0;
+                Select.maxIdx           = NO_VALUE;
+                Select.selectedEntryIdx = 0;
                 g_MapMsg_AudioType               = MapMsgAudioType_None;
-                g_MapMsg_CurrentIdx              = mapMsgIdx;
+                ActiveIdx              = mapMsgIdx;
                 rolloutState                     = 0;
                 menuSelection                    = MsgSelectArg::None;
                 activeMapMsgIdx                  = mapMsgIdx;
                 displayLength                    = 0;
                 displayLengthInc                 = ROLLOUT_ADVANCE;
 
-                Gfx_MapMsg_Reset();
+                MapMsg_Reset();
 
                 loadAudio                = true;
                 g_SysWork.isMgsStringSet = true;
@@ -259,45 +260,45 @@ namespace Silent::Game
             loadAudio = true;
         }
 
-        return g_MapMsg_Select.selectedEntryIdx + 1;
+        return Select.selectedEntryIdx + 1;
     }
 
-    MsgSelectArg Gfx_MapMsg_SelectionUpdate(int mapMsgIdx, int* displayLength)
+    MsgSelectArg MapMsg_SelectionUpdate(int mapMsgIdx, int* displayLength)
     {
         constexpr int STRING_LINE_OFFSET = 16;
 
         const auto& input = g_App.GetInput();
 
-        auto result = Gfx_MapMsg_StringDraw(g_MapOverlayHdr.mapMessages[mapMsgIdx], *displayLength,
-                                            g_MapMsg_CurrentPageIdx);
+        auto result = MapMsg_StringDraw(g_MapOverlayHdr.mapMessages[mapMsgIdx], *displayLength,
+                                        ActivePageIdx);
 
-        g_MapMsg_SelectFlashTimer += g_DeltaTimeRaw;
-        if (g_MapMsg_SelectFlashTimer >= Q12(0.5f))
+        SelectFlashTimer += g_DeltaTimeRaw;
+        if (SelectFlashTimer >= Q12(0.5f))
         {
-            g_MapMsg_SelectFlashTimer -= Q12(0.5f);
+            SelectFlashTimer -= Q12(0.5f);
         }
 
         // Handle return code.
         switch (result.Code)
         {
             case MsgReturnCode::None:
-                g_MapMsg_SelectFlashTimer = Q12(0.0f);
+                SelectFlashTimer = Q12(0.0f);
                 break;
 
             case MsgReturnCode::EndPage:
-                g_MapMsg_CurrentPageIdx++;
+                ActivePageIdx++;
                 break;
 
             case MsgReturnCode::End:
-                g_MapMsg_CurrentPageIdx = 0;
+                ActivePageIdx = 0;
                 break;
         }
 
         // Handle selection prompt.
         if (result.Select != MsgSelectArg::None)
         {
-            g_MapMsg_Select.maxIdx   = 1;
-            g_MapMsg_SelectCancelIdx = (int)result.Select - 1;
+            Select.maxIdx   = 1;
+            SelectCancelIdx = (int)result.Select - 1;
 
             int entryCount = 0;
 
@@ -308,9 +309,9 @@ namespace Silent::Game
                 // @note All maps have "Yes" and "No" as messages 0 and 1, respectively.
                 for (int i = 0; i < 2; i++)
                 {
-                    if (g_MapMsg_Select.selectedEntryIdx == i)
+                    if (Select.selectedEntryIdx == i)
                     {
-                        Gfx_StringColorSet((e_StringColorId)(((g_MapMsg_SelectFlashTimer >> 10) * 3) + 4));
+                        Gfx_StringColorSet((e_StringColorId)(((SelectFlashTimer >> 10) * 3) + 4));
                     }
                     else
                     {
@@ -336,9 +337,9 @@ namespace Silent::Game
                 entryCount = (int)result.Select;
                 for (int i = 0; i < entryCount; i++)
                 {
-                    if (g_MapMsg_Select.selectedEntryIdx == i)
+                    if (Select.selectedEntryIdx == i)
                     {
-                        Gfx_StringColorSet((e_StringColorId)(((g_MapMsg_SelectFlashTimer >> 10) * 3) + 4));
+                        Gfx_StringColorSet((e_StringColorId)(((SelectFlashTimer >> 10) * 3) + 4));
                     }
                     else
                     {
@@ -352,18 +353,18 @@ namespace Silent::Game
 
             // Move cursor.
             if (input.GetAction(In::Up).IsClicked(ACTION_HALF_STATE) &&
-                g_MapMsg_Select.selectedEntryIdx != 0)
+                Select.selectedEntryIdx != 0)
             {
-                g_MapMsg_SelectFlashTimer = Q12(0.0f);
-                g_MapMsg_Select.selectedEntryIdx--;
+                SelectFlashTimer = Q12(0.0f);
+                Select.selectedEntryIdx--;
 
                 //Sd_SfxPlay(Sfx_MenuMove, 0, Q8(0.25f));
             }
             if (input.GetAction(In::Down).IsClicked(ACTION_HALF_STATE) &&
-                g_MapMsg_Select.selectedEntryIdx != (entryCount - 1))
+                Select.selectedEntryIdx != (entryCount - 1))
             {
-                g_MapMsg_SelectFlashTimer = Q12(0.0f);
-                g_MapMsg_Select.selectedEntryIdx++;
+                SelectFlashTimer = Q12(0.0f);
+                Select.selectedEntryIdx++;
 
                 //Sd_SfxPlay(Sfx_MenuMove, 0, Q8(0.25f));
             }
@@ -381,7 +382,7 @@ namespace Silent::Game
 
     void func_80037124() // 0x80037124
     {
-        g_MapMsg_Select.maxIdx = NO_VALUE;
+        Select.maxIdx = NO_VALUE;
         //func_8003652C();
     }
 }

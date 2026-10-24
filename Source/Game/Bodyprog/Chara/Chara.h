@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Game/Bodyprog/Anim.h"
-#include "Game/Bodyprog/Model.h"
+#include "Game/Bodyprog/Chara/Anim.h"
+#include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Main/FsQueue.h"
 
 namespace Silent::Game
@@ -34,6 +34,17 @@ namespace Silent::Game
         CharaGroupFlag_None = 0,
         CharaGroupFlag_0    = 1 << 0,
         CharaGroupFlag_1    = 1 << 1
+    };
+
+    /** @brief Character spawn flags. */
+    enum e_CharaSpawnFlags
+    {
+        CharaSpawnFlag_None = 0,
+        CharaSpawnFlag_0    = 1 << 0,
+        CharaSpawnFlag_1    = 1 << 1,
+        CharaSpawnFlag_2    = 1 << 2,
+        CharaSpawnFlag_3    = 1 << 3,
+        CharaSpawnFlag_4    = 1 << 4
     };
 
     /** @brief Character collision states. */

@@ -38,7 +38,7 @@ namespace Silent::Utils
             return;
         }
 
-        // Sort locales by system preference, priority, language code, country code, and variant.
+        // Sort locales by system preference, priority, language code, country code, and name.
         auto sysCodes = GetSystemLocaleCodes();
         Sort(_locales, [&](const LocaleMetadata& locale0, const LocaleMetadata& locale1)
         {
@@ -84,7 +84,7 @@ namespace Silent::Utils
                 return locale0.Code.Country < locale1.Code.Country;
             }
 
-            return locale0.Variant < locale1.Variant;
+            return locale0.Name < locale1.Name;
         });
 
         // Set first locale as default.
@@ -176,7 +176,6 @@ namespace Silent::Utils
         constexpr char KEY_COMMENT[]      = "Comment";
         constexpr char KEY_LANG_CODE[]    = "LanguageCode";
         constexpr char KEY_COUNTRY_CODE[] = "CountryCode";
-        constexpr char KEY_VARIANT[]      = "Variant";
         constexpr char KEY_PRIORITY[]     = "Priority";
 
         auto localeName   = localeFolder.filename().string();
@@ -198,14 +197,13 @@ namespace Silent::Utils
         _locales.push_back(LocaleMetadata
         {
             .Name    = localeName,
-            .Label   = metadataJson.value(KEY_LABEL,   ""),
+            .Label   = metadataJson.value(KEY_LABEL, ""),
             .Comment = metadataJson.value(KEY_COMMENT, ""),
             .Code    = LocaleCode
             {
-                .Language = metadataJson.value(KEY_LANG_CODE,    ""),
+                .Language = metadataJson.value(KEY_LANG_CODE, ""),
                 .Country  = metadataJson.value(KEY_COUNTRY_CODE, "")
             },
-            .Variant  = metadataJson.value(KEY_VARIANT,  ""),
             .Priority = metadataJson.value(KEY_PRIORITY, INT_MAX)
         });
     }

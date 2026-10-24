@@ -5,12 +5,22 @@ namespace Silent::Game
     struct s_MapOverlayHdr;
     struct s_SysWork;
 
+    constexpr q19_12 MIN_OFFSET(q19_12 x, q19_12 neg, q19_12 pos)
+    {
+        return ((x + -neg) <= (x + pos)) ? (x - neg) : (x) + (pos);
+    }
+
+    constexpr q19_12 MAX_OFFSET(q19_12 x, q19_12 neg, q19_12 pos)
+    {
+        return ((x - neg) > (x + pos)) ? (x - neg) : (x + pos);
+    }
+
     /** @brief Initializes the camera subsystem.
      *
-     * @param mapoverlay_ptr Active map overlay header.
+     * @param map_overlay_ptr Active map overlay header.
      * @param chr_pos Character position.
      */
-    void vcInitCamera(s_MapOverlayHdr* mapoverlay_ptr, const VECTOR3* chr_pos);
+    void vcInitCamera(s_MapOverlayHdr* map_overlay_ptr, const VECTOR3* chr_pos);
 
     /** @brief Warps the camera in relation to a character position.
      *

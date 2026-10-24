@@ -16,18 +16,27 @@ namespace Silent::Game
      */
     void Screen_BackgroundImgDraw(s_FsImageDesc* image);
 
-    /** @brief Draws a background image.
+    /** @brief Sets a black background and slowly fades in a background image.
      *
-     * @note Only applies to background images of notes or puzzles images.
+     * @param image Image to draw.
      */
-    void Screen_BackgroundImgDrawAlt(s_FsImageDesc* image);
+    void Screen_BackgroundImgDrawBlackFadeIn(s_FsImageDesc* image);
 
+    /** @brief Draws a transition between images.
+     *
+     * @param assetName0 Previous image to transition from.
+     * @param assetName1 Image to transition into.
+     * @param alpha Blend alpha to the second image.
+     * @param fit `true` for letterboxed screen fit, `false` for fullscreen fill.
+     */
     void Screen_BackgroundImgTransition(const std::string& assetName0, const std::string& assetName1, q3_12 alpha,
                                         bool fit);
 
-    /** @brief Applies motion blur to the scene.
+    /** @brief Applies motion blur to the background from the scene.
      *
      * @note Used only in the loading screen.
+     *
+     * @return Always returns `false`.
      */
     bool Screen_BackgroundMotionBlur(s32 vBlanks);
 }

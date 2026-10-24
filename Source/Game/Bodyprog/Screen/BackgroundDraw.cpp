@@ -65,8 +65,9 @@ namespace Silent::Game
         g_Screen_BackgroundImgGamma = Q8(0.5f);
     }
 
-    void Screen_BackgroundImgDrawAlt(s_FsImageDesc* image)
+    void Screen_BackgroundImgDrawBlackFadeIn(s_FsImageDesc* image)
     {
+        // @todo Need to check, original had slightly different logic.
         Screen_BackgroundImgDraw(image);
     }
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Game/Bodyprog/Anim.h"
+#include "Psx.h"
+#include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/Chara/Chara.h"
 #include "Game/Bodyprog/Collision/Collision.h"
 #include "Game/Bodyprog/Formats/Anm.h"
@@ -21,17 +22,6 @@ namespace Silent::Game
         MapFlag_TwoActiveChunks  = 1 << 1,
         MapFlag_Interior         = 1 << 2,
         MapFlag_3                = 1 << 3  /** @unused Unused map type `XXX` has this flag. */
-    };
-
-    /** @brief Character spawn flags. */
-    enum e_SpawnFlags
-    {
-        SpawnFlag_None = 0,
-        SpawnFlag_0    = 1 << 0,
-        SpawnFlag_1    = 1 << 1,
-        SpawnFlag_2    = 1 << 2,
-        SpawnFlag_3    = 1 << 3,
-        SpawnFlag_4    = 1 << 4
     };
 
     /** @brief Playable map indices. Used for binary overlays. */
@@ -82,6 +72,36 @@ namespace Silent::Game
         MapIdx_MAP7_S03 = 42,
         MapIdx_MAPT_S00 = 43, // } @unused Empty test maps. Only some code references remain and `HB_MTS00.ANM`/`HB_MTX00.ANM` anim files.
         MapIdx_MAPX_S00 = 44  // }
+    };
+
+    /** @brief Paper map indices. Used for the navigation map screen. */
+    enum e_PaperMapIdx
+    {
+        PaperMapIdx_OtherPlaces    = 0,
+        PaperMapIdx_OldTown        = 1,
+        PaperMapIdx_FogCentralTown = 2,
+        PaperMapIdx_AltCentralTown = 3,
+        PaperMapIdx_ResortTown     = 4,
+        PaperMapIdx_FogSchoolBF    = 5,
+        PaperMapIdx_FogSchool1F    = 6,
+        PaperMapIdx_FogSchool2F    = 7,
+        PaperMapIdx_FogSchoolRF    = 8,
+        PaperMapIdx_AltSchoolBF    = 9,
+        PaperMapIdx_AltSchool1F    = 10,
+        PaperMapIdx_AltSchool2F    = 11,
+        PaperMapIdx_AltSchoolRF    = 12,
+        PaperMapIdx_FogSewer1F     = 13,
+        PaperMapIdx_FogSewer2F     = 14,
+        PaperMapIdx_AltSewer       = 15,
+        PaperMapIdx_FogHospitalBF  = 16,
+        PaperMapIdx_FogHospital1F  = 17,
+        PaperMapIdx_FogHospital2F  = 18,
+        PaperMapIdx_FogHospital3F  = 19,
+        PaperMapIdx_AltHospitalBF  = 20,
+        PaperMapIdx_AltHospital1F  = 21,
+        PaperMapIdx_AltHospital2F  = 22,
+        PaperMapIdx_AltHospital3F  = 23,
+        PaperMapIdx_24             = 24
     };
 
     /** @brief Used as index into `MAP_INFOS` array. 
@@ -245,7 +265,6 @@ namespace Silent::Game
     struct s_SpeedZone
     {
         s8   type; /** `e_SpeedZoneType` */
-        // 1 byte of padding.
         q11_4 minX;
         q11_4 maxX;
         q11_4 minZ;
@@ -256,7 +275,6 @@ namespace Silent::Game
     struct s_WaterZone
     {
         u8    isEnabled; /** `bool` */
-        // 1 byte of padding.
         q11_4 illumination;
         q11_4 minX;
         q11_4 maxX;
@@ -270,7 +288,6 @@ namespace Silent::Game
         s16                plmFileIdx;
         char               tag[4];
         u8                 flags; /** `e_MapFlags` */
-        // 1 byte of padding.
         s_WaterZone* waterZones;
         s_SpeedZone* speedZones;
     };
@@ -405,7 +422,7 @@ namespace Silent::Game
      */
     struct s_MapOverlayHdr
     {
-        s_MapInfo*             mapInfo;
+        const s_MapInfo*       mapInfo;
         u8                     (*mapRoomIdxGet)(q19_12 posX, q19_12 posY); // Called by `Game_MapRoomIdxUpdate`.
         s8                     unused_8;
         s32                    (*func_C)();
@@ -521,12 +538,10 @@ namespace Silent::Game
         s32*                   data_190;
         void                   (*charaUpdateFuncs[Chara_Count])(s_SubCharacter* chara, s_AnmHeader* anmHdr, GsCOORDINATE2* coords); /** Guessed params. Funcptrs for each `e_CharaId`, set to 0 for IDs not included in the map overlay. Called by `Game_NpcUpdate`. */
         s8                     charaGroupIds[CHARA_GROUP_COUNT]; /** `e_CharaId` values where if `s_SpawnInfo::charaId == Chara_None`, `charaGroupIds[0]` is used for `charaSpawnInfos[0]` and `charaGroupIds[1]` for `charaSpawnInfos[1]`. */
-        s_SpawnInfo            charaSpawnInfos[2][16];           /** Array of character type/position/flags. `flags == SpawnFlags_None` are unused slots? Read by `Game_NpcRoomInitSpawn`. */
-        VC_ROAD_DATA           cameraPaths[CAMERA_PATH_COUNT_MAX];
+        s_SpawnInfo            (*charaSpawnInfos)[16];           /** Array of character type/position/flags. `flags == SpawnFlags_None` are unused slots? Read by `Game_NpcRoomInitSpawn`. */
+        VC_ROAD_DATA*          cameraPaths[CAMERA_PATH_COUNT_MAX];
         s_CollisionTrigger     collisionTriggers[COLLISION_TRIGGER_COUNT_MAX];
     };
-
-    extern const s_MapInfo MAP_INFOS[MapType_Count];
 
     /** @brief Checks if a paper map has been collected.
      *

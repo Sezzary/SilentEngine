@@ -16,9 +16,8 @@ namespace Silent::Utils
         std::string Label   = {};
         std::string Comment = {};
 
-        LocaleCode  Code     = {};
-        std::string Variant  = {};
-        int         Priority = 0;
+        LocaleCode Code     = {};
+        int        Priority = 0;
     };
 
     /** @brief Translator for internationalized text. */

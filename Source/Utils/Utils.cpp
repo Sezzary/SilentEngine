@@ -8,39 +8,6 @@ using namespace Silent::Renderer;
 
 namespace Silent::Utils
 {
-    std::string ToUpper(const std::string& str)
-    {
-        auto transformedStr = str;
-        std::transform(transformedStr.begin(), transformedStr.end(), transformedStr.begin(), [](uchar c)
-        {
-            return std::toupper(c);
-        });
-
-        return transformedStr;
-    }
-
-    std::string ToLower(const std::string& str)
-    {
-        auto transformedStr = str;
-        std::transform(transformedStr.begin(), transformedStr.end(), transformedStr.begin(), [](uchar c)
-        {
-            return std::tolower(c);
-        });
-
-        return transformedStr;
-    }
-
-    char* CopyString(const char src[], int size)
-    {
-        char* dest = (char*)malloc((size + 1) * sizeof(char));
-        if (dest != nullptr)
-        {
-            strcpy(dest, src);
-        }
-
-        return (char*)dest;
-    }
-
     std::vector<char32> GetUtf8CodePoints(const std::string& str)
     {
         if (str.empty())
@@ -73,5 +40,43 @@ namespace Silent::Utils
         utf8::advance(itSubEnd, count, str.end());
 
         return std::string(itSubStart, itSubEnd);
+    }
+
+    bool FindString(const std::string& str, const std::string& chunk)
+    {
+        return str.find(chunk) != std::string::npos;
+    }
+
+    std::string ToUpper(const std::string& str)
+    {
+        auto transformedStr = str;
+        std::transform(transformedStr.begin(), transformedStr.end(), transformedStr.begin(), [](uchar c)
+        {
+            return std::toupper(c);
+        });
+
+        return transformedStr;
+    }
+
+    std::string ToLower(const std::string& str)
+    {
+        auto transformedStr = str;
+        std::transform(transformedStr.begin(), transformedStr.end(), transformedStr.begin(), [](uchar c)
+        {
+            return std::tolower(c);
+        });
+
+        return transformedStr;
+    }
+
+    char* CopyString(const char src[], int size)
+    {
+        char* dest = (char*)malloc((size + 1) * sizeof(char));
+        if (dest != nullptr)
+        {
+            strcpy(dest, src);
+        }
+
+        return (char*)dest;
     }
 }

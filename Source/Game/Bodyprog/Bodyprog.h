@@ -4,7 +4,7 @@
 
 #include "Game/Bodyprog/Sound/Sfx.h"
 #include "Game/Bodyprog/Collision/Collision.h"
-#include "Game/Bodyprog/Chara/CharaModel.h"
+#include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Bodyprog/Chara/Spawn.h"
 #include "Game/Bodyprog/Events/Bgm.h"
 #include "Game/Bodyprog/Events/Utils.h"

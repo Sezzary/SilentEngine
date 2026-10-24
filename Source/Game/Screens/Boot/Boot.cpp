@@ -241,7 +241,7 @@ namespace Silent::Game
 
     void GameState_SplashScreen_Update()
     {
-        constexpr float DISPLAY_SEC = 3.0f;
+        constexpr float DISPLAY_SEC = 6.0f;
         constexpr float FADE_SEC    = 1.0f;
 
         const auto& input      = g_App.GetInput();

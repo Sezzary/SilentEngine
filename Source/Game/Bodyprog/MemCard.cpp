@@ -30,7 +30,7 @@ namespace Silent::Game
     s8   g_SelectedSaveSlotIdx                            = 0;
     u8   D_800A97D7                                       = 0;
     bool g_SaveScreen_IsInSaveScreen                      = true;
-    s8   D_800A97D9                                       = 0; // @unused Dead code. Only used for a check which ask if this is 0.
+    s8   D_800A97D9                                       = 0; // Dead code. Only used for a check which asks if this is 0.
 
     static inline void MemCard_DirectoryFileClear(s32 idx)
     {
@@ -1757,12 +1757,12 @@ namespace Silent::Game
                 switch (g_MemCard_Work.MemCardIoMode)
                 {
                     case MemCardIoMode_Read:
-                        ioResult = read(g_MemCard_Work.fileHandle, g_MemCard_Work.dataBuffer, g_MemCard_Work.dataSize);
+                        //ioResult = read(g_MemCard_Work.fileHandle, g_MemCard_Work.dataBuffer, g_MemCard_Work.dataSize);
                         break;
 
                     case MemCardIoMode_Write:
                     case MemCardIoMode_Create:
-                        ioResult = write(g_MemCard_Work.fileHandle, g_MemCard_Work.dataBuffer, g_MemCard_Work.dataSize);
+                        //ioResult = write(g_MemCard_Work.fileHandle, g_MemCard_Work.dataBuffer, g_MemCard_Work.dataSize);
                         break;
 
                     default:

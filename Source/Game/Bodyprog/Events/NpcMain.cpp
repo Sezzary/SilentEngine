@@ -126,7 +126,7 @@ namespace Silent::Game
                 SET_FLAG(&g_SysWork.npcFlags, npcIdx);
                 SET_FLAG(g_SysWork.field_228C, i);
 
-                chara                          = &g_SysWork.npcs[npcIdx];
+                chara                    = &g_SysWork.npcs[npcIdx];
                 chara->model.anim.flags |= AnimFlag_Visible;
             }
         }

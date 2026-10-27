@@ -92,17 +92,6 @@ namespace Silent::Game
         s16                   field_36;
     } s_CollisionState_44;
 
-    typedef struct
-    {
-        DVECTOR_XZ charaVertDiff;
-        DVECTOR_XZ charaMoveVertDiff;
-        u32        subChunkTransDir;   /** `e_SubChunkTransitionDirection` */
-        q23_8      radiusCollDiffDist; // Radius?
-        q7_8       collDiffDist;
-        s8         __pad[2];
-        DVECTOR_XZ charaMoveOffset;
-    } s_CollisionState_CC_20;
-
     typedef union
     {
         q7_8 field_0; // Something related to character radius???
@@ -128,24 +117,6 @@ namespace Silent::Game
         SVECTOR3               splitVertex0;          /** Q23.8 | Data from `s_IpdCollisionData::splitVertices` */
         SVECTOR3               splitVertex1;          /** Q23.8 | Data from `s_IpdCollisionData::splitVertices` */
         s_CollisionState_CC_20 field_20;
-    };
-
-    /** @brief Character collision state. */
-    struct s_CollisionCharaState
-    {
-        s32        collisionState; /** `e_CharaCollisionState` */
-        bool       field_4;        // Flag set when the character collisions being check is any of the ones being
-                                 // in the of `Collision_CharaCollisionSetup`.
-        q19_12     distance;
-        SVECTOR    offset; /** Q23.8 | Character movement offset. */
-        DVECTOR_XZ direction;
-        q23_8      positionFromX;
-        q23_8      positionFromZ;
-        q23_8      positionToX;
-        q23_8      positionToZ;
-        q7_8       radius;
-        q7_8       topPos;
-        q7_8       bottomPos;
     };
 
     struct s_CollisionState

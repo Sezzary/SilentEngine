@@ -167,7 +167,7 @@ namespace Silent::Game
      * @param msg Tagged message to draw.
      * @param displayLength Number of consecutive glyphs to draw from the string.
      * @param isHalfHeight Use half-height glyphs.
-     * @return String width in screen percent.
+     * @return Longest string width in screen percent.
      */
     float Gfx_StringDraw(const std::string& msg, int displayLength = INT_MAX, bool isHalfHeight = false);
 
@@ -193,6 +193,7 @@ namespace Silent::Game
      * @note The message must contain a single page.
      *
      * @param msg Tagged message to draw.
+     * @return Longest string width in screen percent.
      */
     float Text_Debug_Draw(const std::string& msg);
 

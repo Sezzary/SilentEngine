@@ -430,9 +430,10 @@ namespace Silent::Game
 
         s_SysWork_2388 field_2388;
 
-        s32            field_2510;      // } Related to libkpad.
-        s_SysWork_2514 field_2514;      // }
-        s8             field_254C[508]; /** Used through indirect pointer calls. Tied to `libkpad`.*/
+        //s_KPad_Handler* kpadHandlers_2510; // Head of the kpad handler list from `KPad_HandlerList_Init`.
+        //s_KPadWork      kpad_2514;
+        //s_KPad_Channel  kpadChannels_2534[2];
+        //s_KPad_Effect   kpadEffects_2544[16];
 
         q3_12 bgmLayerVolumes[BGM_LAYER_COUNT]; // Last index value is not a layer, but some sort of timer. See `Bgm_LayersUpdate`.
         q23_8 field_275C;                       // } SFX volumes?

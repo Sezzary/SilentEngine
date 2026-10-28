@@ -7,14 +7,14 @@
 
 namespace Silent::Game
 {
-    constexpr q19_12 DEFAULT_TRIGGER_HEIGHT= SHRT_MIN * 2;
+    constexpr q19_12 DEFAULT_TRIGGER_HEIGHT = SHRT_MIN * 2;
 
     /** @brief Computes a trigger height from half-meter height steps.
      *
-     * @note The trigger height has a default offset of `Q12(-1.5f)`.
+     * @note The trigger height has a starting offset of `Q12(-1.5f)`.
      *
      * @param steps Half-meter height steps.
-     * @return Trigger height (Q19.12).
+     * @return Trigger height.
      */
     constexpr q19_12 TRIGGER_HEIGHT_GET(int steps)
     {
@@ -169,7 +169,7 @@ namespace Silent::Game
     }
 
     q19_12 Collision_TriggerCeilingHeightGet(VECTOR3* moveOffset,
-                                             const s_CollisionCylinder* cylinder, q19_12 cylinderRadius, q19_12 cylinderHeight)
+                                             const s_CollisionCylinder* cylinder, q19_12 cylinderRadius, q19_12 cylinderTopExtent)
     {
         q19_12 ceilHeight  = Q12(DEFAULT_CEILING_HEIGHT);
         q19_12 pushOffsetX = Q12(0.0f);
@@ -178,7 +178,7 @@ namespace Silent::Game
         // Compute start parameters.
         q19_12 moveOffsetX     = moveOffset->vx;
         q19_12 moveOffsetZ     = moveOffset->vz;
-        q19_12 cylinderTop     = cylinder->position.vy + cylinderHeight;
+        q19_12 cylinderTop     = cylinder->position.vy + cylinderTopExtent;
         q19_12 projCylinderTop = cylinderTop + moveOffset->vy;
 
         // Run through active triggers.

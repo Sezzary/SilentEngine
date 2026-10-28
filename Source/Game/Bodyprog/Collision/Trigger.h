@@ -85,11 +85,11 @@ namespace Silent::Game
      * @param moveOffset Output movement offset.
      * @param cylinder Collision cylinder.
      * @param cylinderRadius Cylinder radius.
-     * @param cylinderHeight Cylinder height.
+     * @param cylinderTopExtent Cylinder top extent.
      * @return Trigger ceiling height, or `DEFAULT_CEILING_HEIGHT` if no ceiling exists.
      */
     q19_12 Collision_TriggerCeilingHeightGet(VECTOR3* moveOffset,
-                                             const s_CollisionCylinder* cylinder, q19_12 cylinderRadius, q19_12 cylinderHeight);
+                                             const s_CollisionCylinder* cylinder, q19_12 cylinderRadius, q19_12 cylinderTopExtent);
 
     /** @brief Gets the offset from a world position to the edge of a collision trigger.
      * If the position is inside the trigger, the offset is (0, 0).

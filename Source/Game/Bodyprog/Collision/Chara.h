@@ -5,14 +5,14 @@
 namespace Silent::Game
 {
     /** @brief Character collision cylinder. */
-    typedef struct _CollisionCylinder
+    struct s_CollisionCylinder
     {
         /* 0x0  */ VECTOR3 position; /** Q19.12 */
         /* 0xC  */ q3_12   bottom;
         /* 0xE  */ q3_12   top;
         /* 0x10 */ q3_12   radius;
         /* 0x14 */ s8      collisionState; /** `e_CharaCollisionState` */
-    } s_CollisionCylinder;
+    };
 
     /** @brief Character collision state. TODO: Name clash with `e_CharaCollisionState`. */
     typedef struct _CollisionCharaState

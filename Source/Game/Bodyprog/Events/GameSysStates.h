@@ -6,7 +6,7 @@ namespace Silent::Game
     struct s_MapPoint2d;
     struct s_RadioNpcInfo;
 
-    extern s_EventData* g_ItemTriggerEvents[];
+    extern s_EventData* g_ItemEvents[];
 
     extern s_RadioNpcInfo g_RadioNpcInfos[2];
 

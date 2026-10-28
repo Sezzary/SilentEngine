@@ -24,7 +24,7 @@ namespace Silent::Game
     {
         /* 0x0 */ q23_8 positionX;
         /* 0x4 */ q23_8 positionZ;
-        /* 0x8 */ q7_8  groundHeight;
+        /* 0x8 */ q7_8  floorHeight;
         /* 0xA */ q7_8  topHeight; // Ceiling height?
         /* 0xC */ q7_8  field_C;   // Collision cylinder radius?
         /* 0xE */ s16   field_E;
@@ -47,12 +47,12 @@ namespace Silent::Game
         s8               __pad_A[2];
         VECTOR3          field_C; // Q19.12
         s8               unk_18[4];
-        q7_8             groundHeight;
+        q7_8             floorHeight;
         s8               __pad_1E[2];
         s_SubCharacter*  field_20;
         q7_8             field_24;   // X offset.
         q7_8             field_26;   // Z offset.
-        s32              groundType; /** `e_GroundType` */
+        s32              floorType; /** `e_FloorType` */
         VECTOR3          from;       // Q23.8
         s8               unk_38[4];
         s32              field_3C; // X  } Q23.8 `VECTOR3`?
@@ -83,12 +83,12 @@ namespace Silent::Game
     struct s_RayTrace
     {
         s8              hasHit;     /** `bool` */
-        u8              groundType; /** `e_GroundType` */
+        u8              floorType; /** `e_FloorType` */
         s8              __pad_2[2];
         VECTOR3         target; /** Q19.12 */
         s_SubCharacter* character;
         q19_12          hitDistance;
-        q19_12          groundHeight;
+        q19_12          floorHeight;
         q3_12           field_1C; // Angle.
     };
 
@@ -111,7 +111,7 @@ namespace Silent::Game
 
     bool func_8006DC18(s_RayTrace* trace, const VECTOR3* from, const VECTOR3* offset);
 
-    bool Ray_TraceSetup(s_RayState* state, bool useCylinder, q7_8 arg2, const VECTOR3* from, const VECTOR3* offset, q19_12 arg5, q19_12 arg6,
+    bool Ray_TraceSetup(s_RayState* state, bool useCylinder, q7_8 radiusOffset, const VECTOR3* from, const VECTOR3* offset, q19_12 arg5, q19_12 arg6,
                         s_SubCharacter** collCharas, s32 collCharaCount);
 
     bool Ray_TraceRun(s_RayTrace* trace, s_RayState* state);
@@ -123,14 +123,15 @@ namespace Silent::Game
 
     void func_8006E490(s_func_8006E490* arg0, u32 flags, q19_12 posX, q19_12 posZ);
 
-    void func_8006E53C(s_RayState* state, s_IpdCollSubcellRange* subcellRanges, s_IpdCollisionData* collData);
+    void func_8006E53C(s_RayState* state, s_IpdShapeRange* shapeRangePair, s_IpdCollisionData* collData);
 
-    void func_8006E78C(s_RayState* state, s_IpdCollSubcell* subcell, SVECTOR3* splitVerts, s_IpdCollSurface* surfaces, bool hasSurface);
+    void func_8006E78C(s_RayState* state, s_IpdPolygon* polygon, SVECTOR3* splitVerts, s_IpdSurface* surfaces, bool hasSurface);
 
-    void func_8006EB8C(s_RayState* state, s_IpdCollisionData_18* arg1);
+    void func_8006EB8C(s_RayState* state, s_IpdCylinder* cylinder);
 
     // Fills ray hit data?
     void func_8006EE0C(s_RayState_6C* arg0, bool useCylinder, const s_SubCharacter* chara);
 
+    // Sets hit character ray state?
     void func_8006EEB8(s_RayState* state, s_SubCharacter* chara);
 }

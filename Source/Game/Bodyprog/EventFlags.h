@@ -793,7 +793,7 @@ namespace Silent::Game
         EventFlag_M6S03_HandgunBullets = 726,
         EventFlag_M6S03_HealthDrink1   = 727,
 
-        // Formerly `MapMarkFlag_` values, seems a lot of events make use of these as `requiredEventFlags` / `disableEventFlags`
+        // Formerly `MapMarkFlag_` values, seems a lot of events make use of these as `requiredFlags` / `disableEventFlags`
         // Maybe these are actually tied to progression instead of strictly being map marker related?
 
         EventFlag_MapMark_OldTown_BachmanRdTopCross = 868,

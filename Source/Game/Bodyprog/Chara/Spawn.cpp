@@ -103,7 +103,7 @@ namespace Silent::Game
 
             auto surface = s_CollisionSurface{};
             //Collision_SurfaceGet(&surface, posX, posZ);
-            g_SysWork.npcs[i].position.vy = surface.groundHeight;
+            g_SysWork.npcs[i].position.vy = surface.floorHeight;
             g_SysWork.npcs[i].position.vz = posZ;
             g_SysWork.npcs[i].rotation.vy = rotY;
 

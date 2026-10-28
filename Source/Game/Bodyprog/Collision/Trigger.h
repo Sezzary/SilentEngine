@@ -48,7 +48,7 @@ namespace Silent::Game
     {
         int                       flags;                  /** `e_CollisionTriggerFlags` */
         int                       collisionTriggerCount;  /** `collisionTrigger` array size. */
-        const s_CollisionTrigger* collisionTriggers[256]; // @todo Store in `std::vector`.
+        const s_CollisionTrigger* collisionTriggers[256]; // @todo Store in `std::vector` and let it resize itself.
     };
 
     /** @brief Queries a line intersection with the first collided active collision trigger.

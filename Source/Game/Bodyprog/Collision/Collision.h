@@ -10,174 +10,179 @@
 
 namespace Silent::Game
 {
-    constexpr q19_12 INTERSECTION_BUFFER    = Q12(0.1f);
+    constexpr float  DEFAULT_FLOOR_HEIGHT   = 30.0f;
     constexpr float  DEFAULT_CEILING_HEIGHT = -16.0f;
-
-    /** @brief Global collision flags.
-     * Applies for both NPCs and the player.
-     */
-    enum e_CollisionTriggerFlags
-    {
-        CollisionTriggerFlag_None = 0,
-        CollisionTriggerFlag_0    = 1 << 0, // Enables map collisions.
-        CollisionTriggerFlag_1    = 1 << 1, // Enables objects collisions.
-        CollisionTriggerFlag_2    = 1 << 2, // Enables alternative objects collisions?
-        CollisionTriggerFlag_3    = 1 << 3, /** @unused Only ever called in `MAP6_S05`. */
-        CollisionTriggerFlag_All  = 0xFFFF
-    };
+    constexpr q19_12 INTERSECTION_BUFFER    = Q12(0.1f);
 
     /** @brief Collision types. */
-    enum e_CollisionType
+    typedef enum _CollisionType
     {
-        CollisionType_None = 0,
-        CollisionType_Wall = 1,
-        CollisionType_Unk2 = 2
-    };
+        CollisionType_None  = 0,
+        CollisionType_Wall  = 1,
+        CollisionType_Floor = 2 // TODO: Unsure.
+    } e_CollisionType;
 
-    enum e_SubChunkTransitionDirection
+    /** @brief Collision push types. */
+    typedef enum _CollisionPushType
+    {
+        CollisionPushType_Hard  = 0, /** Hard inner shape proximity. */
+        CollisionPushType_Soft  = 1, /** Soft outer shape proximity. */
+        CollisionPushType_Chara = 2  /** Character-to-character cylinder. */
+    } s_CollisionPushType;
+
+    // TODO: "Subchunk" term may be misused here, need to check.
+    typedef enum _SubChunkTransitionDirection
     {
         SubChunkTransitionDirection_None = 0,
         SubChunkTransitionDirection_Z    = 1,
         SubChunkTransitionDirection_X    = 2
-    };
+    } e_SubChunkTransitionDirection;
 
     /** @brief Collision point surface data. */
-    struct s_CollisionSurface
+    typedef struct _CollisionSurface
     {
-        q19_12 groundHeight;
-        q3_12  tiltAngleX;
-        q3_12  tiltAngleZ;
-        s8     groundType; /** `e_GroundType` */
-        // 3 bytes of padding.
-    };
+        /* 0x0 */ q19_12 floorHeight;
+        /* 0x4 */ q7_8   slopeGradientX;
+        /* 0x6 */ q7_8   slopeGradientZ;
+        /* 0x8 */ s8     floorType; /** `e_FloorType` */
+                // 3 bytes of padding.
+    } s_CollisionSurface;
 
     /** @brief Collision point data. */
-    struct s_CollisionPoint
+    typedef struct _CollisionPoint
     {
-        VECTOR3            position;   /** Q19.12 */
-        s_CollisionSurface surface;
-        s32                groundType; /** `e_GroundType` */
-    };
+        /* 0x0  */ VECTOR3            position;   /** Q19.12 */
+        /* 0xC  */ s_CollisionSurface surface;
+        /* 0x18 */ s32                floorType; /** `e_FloorType` */
+    } s_CollisionPoint;
 
     /** @brief Collision point probe result. */
-    struct s_CollisionResult
+    typedef struct _CollisionResult
     {
-        VECTOR3            offset; /** Q19.12 */
-        s_CollisionSurface surface;
-        q19_12             ceilingHeight;
-    };
+        /* 0x0  */ VECTOR3            offset; /** Q19.12 */
+        /* 0xC  */ s_CollisionSurface surface;
+        /* 0x18 */ q19_12             ceilingHeight;
+    } s_CollisionResult;
 
-    typedef struct
+    /** @brief Cached collision surface. */
+    typedef struct _CollisionCachedSurface
     {
-        u8    subChunkTransDir; /**`e_SubChunkTransitionDirection` */
-        u8    surfaceIdx;       // Index for `s_IpdCollisionData::surfaces`.
-        q7_8  collDiffDist;
-        q23_8 radiusCollDiffDist;
-    } s_CollisionState_A8;
+        /* 0x0 */ u8    subChunkTransDir; /**`e_SubChunkTransitionDirection` */
+        /* 0x1 */ u8    surfaceIdx;       // Index for `s_IpdCollisionData::polygonSurfaces`.
+        /* 0x2 */ q7_8  collDiffDist;
+        /* 0x4 */ q23_8 radiusCollDiffDist;
+    } s_CollisionCachedSurface;
 
-    typedef struct
+    /** @brief Collision push constraint. */
+    typedef struct _CollisionPushConstraint
     {
-        s8      field_0;
-        DVECTOR field_2; // Q3.12 | Angle constraint. X is min, Y is max. TODO: Don't use `DVECTOR` for this anymore.
-    } s_CollisionState_44_0;
+        /* 0x0 */ s8    shapeCount;
+        /* 0x2 */ q3_12 angleMin;
+        /* 0x4 */ q3_12 angleMax;
+    } s_CollisionPushConstraint;
 
-    typedef struct
+    /** @brief CollisionObstacleContext */
+    typedef struct _CollisionObstacleContext
     {
-        s_CollisionState_44_0 field_0;
-        s16                   field_6;
-        s_CollisionState_44_0 field_8;
-        s16                   field_E;
-        s8*                   field_10[8];
-        s_CollisionState_44_0 field_30;
-        s16                   field_36;
-    } s_CollisionState_44;
+        /* 0x0  */ s_CollisionPushConstraint hardPushConstraint;
+        /* 0x6  */ q7_8                      hardIntersectDepth;
+        /* 0x8  */ s_CollisionPushConstraint softPushConstraint;
+        /* 0xE  */ s8                        __pad_E[2];
+        /* 0x10 */ s8*                       shapePassStamps[8];
+        /* 0x30 */ s_CollisionPushConstraint charaPushConstraint;
+        /* 0x36 */ q7_8                      charaIntersectDepth;
+    } s_CollisionObstacleContext;
 
-    typedef union
+    /** @brief Copied collision polygon or cylinder attributes. */
+    typedef union _CollisionShapeAttribs
     {
-        q7_8 field_0; // Something related to character radius???
-        struct
-        {
-            u8 surfaceIdx0;
-            u8 surfaceIdx1;
-        } cellSurfaces;
-    } s_CollisionState_CC_C;
+                struct
+                {
+                    /* 0x0 */ q7_8 radius;
+        /* 0x0 */ } cylinder;
+                struct
+                {
+                    /* 0x0 */ u8       surfaceIdx0;
+                    /* 0x1 */ u8       surfaceIdx1;
+                    /* 0x2 */ u8       surfaceCacheIdx0;
+                    /* 0x3 */ u8       surfaceCacheIdx1;
+                    /* 0x4 */ u8       disableSurfaceHeight0; /** `bool` */
+                    /* 0x5 */ u8       disableSurfaceHeight1; /** `bool` */
+                    /* 0x8 */ SVECTOR3 polygonSplitVertex0;   /** Q7.8 | Vertex from `s_IpdCollisionData::polygonSplitVertices`. */
+                    /* 0xE */ SVECTOR3 polygonSplitVertex1;   /** Q7.8 | Vertex from `s_IpdCollisionData::polygonSplitVertices`. */
+        /* 0x0 */ } polygon;
+    } s_CollisionShapeAttribs;
 
-    /** @brief Collision cell point data. */
-    struct s_CollisionCellPoint
+    /** @brief Collision shape point data. TODO: Come up with better naame. */
+    typedef struct _CollisionShapePoint
     {
-        s_IpdCollisionData*    ipdCollisionData;
-        u8                     subcellIdx; // `s_IpdCollisionData::subcells` index.
-        u8                     heightDisabled;
-        SVECTOR3               field_6; // Q7.8 | Probe position inside cell/subcell?
-        s_CollisionState_CC_C  field_C;
-        u8                     field_E;               // } Index from `s_IpdCollisionData::field_6_8`.
-        u8                     field_F;               // }
-        u8                     disableSurface0Height; /** `bool` */
-        u8                     disableSurface1Height; /** `bool` */
-        SVECTOR3               splitVertex0;          /** Q23.8 | Data from `s_IpdCollisionData::splitVertices` */
-        SVECTOR3               splitVertex1;          /** Q23.8 | Data from `s_IpdCollisionData::splitVertices` */
-        s_CollisionState_CC_20 field_20;
-    };
+        /* 0x0  */ s_IpdCollisionData*     ipdCollisionData;
+        /* 0x4  */ u8                      shapeIdx; // `s_IpdCollisionData::polygons` index.
+        /* 0x5  */ u8                      disableHeight;
+        /* 0x6  */ SVECTOR3                offset; // Q7.8 | Probe position inside cell/cell? Wrong struct? Y is maybe Z.
+        /* 0xC  */ s_CollisionShapeAttribs shapeAttribs;
+        /* 0x20 */ s_CharaCollisionDeltas  charaDeltas;
+    } s_CollisionShapePoint;
 
-    struct s_CollisionState
+    typedef struct _CollisionState
     {
-        u8                    field_0_0     : 8;  /** `bool` TODO: Check, code only assigns 0 or 1. */
-        s8                    isCharaMoving : 1;  /** `bool` */
-        s8                    field_0_9     : 1;  /** `bool` */
-        s8                    field_0_10    : 1;  /** `bool` */
-        u16                   flags         : 16; /** `e_CollisionTriggerFlags` */
-        s_CollisionCharaState charaState;
-        s32                   field_34;
-        s16                   field_38;
-        q11_4                 field_3A;
-        s16                   field_3C; // X?
-        s16                   field_3E; // Z?
-        s8*                   field_40;
-        s_CollisionState_44   field_44;
-        q23_8                 slopedGroundHeight; // TODO: How is `groundHeight` different?
-        q23_8                 charaCellOffsetX; // } Character position in cell.
-        q23_8                 charaCellOffsetZ; // } 
-        q19_12                tiltAngleX;
-        q19_12                tiltAngleZ;
-        bool                  heightDisabled; /** `bool` | TODO: Does disabled height indicate a wall or pit? */
-        s32                   groundType;     /** `e_GroundType` */
+        /* 0x0+0  */ u8                         offsetX       : 8;  /** `bool` | Related to `Collision_ShapePassReset`. Maybe name `hasCellChecks`? */
+        /* 0x0+8  */ s8                         isCharaMoving : 1;  /** `bool` */
+        /* 0x0+9  */ s8                         field_0_9     : 1;  /** `bool` */
+        /* 0x0+10 */ s8                         field_0_10    : 1;  /** `bool` */
+        /* 0x2    */ u16                        triggerFlags  : 16; /** `e_CollisionTriggerFlags` */
+        /* 0x4    */ s_CollisionCharaState      charaState;
+        /* 0x34   */ s32                        field_34;
+        /* 0x38   */ s16                        field_38; // `distanceAlpha` for something.
+        /* 0x3A   */ q11_4                      field_3A;
+        /* 0x3C   */ q7_8                       field_3C; // X?
+        /* 0x3E   */ q7_8                       field_3E; // Z?
+        /* 0x40   */ u8*                        passStamp; /** Tracks visited shapes/characters per query pass. */
+        /* 0x44   */ s_CollisionObstacleContext obstacleContext;
+        /* 0x7C   */ q23_8                      slopedFloorHeight; // TODO: How is `floorHeight` different?
+        /* 0x80   */ q23_8                      charaCellOffsetX; // } Character position in cell.
+        /* 0x84   */ q23_8                      charaCellOffsetZ; // } 
+        /* 0x88   */ q23_8                      slopeGradientX;
+        /* 0x8C   */ q23_8                      slopeGradientZ;
+        /* 0x90   */ bool                       disableHeight; /** `bool` | TODO: Does disabled height indicate a wall or pit? */
+        /* 0x94   */ s32                        floorType;      /** `e_FloorType` */
 
-        union
-        {
-            //DVECTOR_XZ offset; /** Q23.8 */
-            s32        field_0;
-        } charaPositionFrom;
-        union
-        {
-            //DVECTOR_XZ offset; /** Q23.8 */
-            s32        field_0;
-        } charaPositionTo;
-         union
-         {
-            struct
-            {
-                u8                     closestXSubcellIdx;
-                u8                     closestZSubcellIdx;
-                u8                     closeFarXSubcellIdxDiff;
-                u8                     closeFarZSubcellIdxDiff;
-                s_IpdCollSubcellRange* subcellRange;
-                s_CollisionState_A8    field_8[4];
-            } s_0;
-            struct
-            {
-                q7_8 field_0; // Set to absolute character bottom height.
-                q7_8 field_2; // Set to absolute character top height.
-                s16  field_4;
-                u8   collisionState; /** `e_CharaCollisionState` */
-                u8*  field_8;
-            } s_1;
-        } field_A0;
+                    union
+                    {
+                        DVECTOR_XZ offset; /** Q23.8 */
+                        q23_8      vx;
+        /* 0x98   */ } charaPositionFrom;
+                    union
+                    {
+                        DVECTOR_XZ offset; /** Q23.8 */
+                        q23_8      vz;
+        /* 0x9C   */ } charaPositionTo;
+                    union
+                    {
+                        struct
+                        {
+                            /* 0x0 */ u8                       closestXCellIdx;
+                            /* 0x1 */ u8                       closestZCellIdx;
+                            /* 0x2 */ u8                       cellSpanX;
+                            /* 0x3 */ u8                       cellSpanZ;
+                            /* 0x4 */ s_IpdShapeRange*         shapeRangePair;
+                            /* 0x8 */ s_CollisionCachedSurface surfaceCache[4];
+                        } s_0;
+                        struct
+                        {
+                            /* 0x0 */ q7_8 bottom; // Set to absolute character bottom height.
+                            /* 0x2 */ q7_8 top;    // Set to absolute character top height.
+                            /* 0x4 */ q7_8 radius;
+                            /* 0x6 */ u8   collisionState; /** `e_CharaCollisionState` */
+                            /* 0x8 */ u8*  passStamp; /** Tracks visited characters per query pass. */
+                        } chara;
+        /* 0xA0   */ } field_A0; // Floor info? Cell info? Cell state?
 
-        u8                   subcellIdx; /** Secondary. Used only if detecting a subcell after not finding one. */
-        q7_8                 groundHeight; // TODO: Base ground height with slope unaccounted for?
-        s_CollisionCellPoint point;
+        /* 0xC8   */ u8                    shapeIdx; /** Secondary. Used only if detecting a cell after not finding one. */
+        /* 0xCA   */ q7_8                  floorHeight; // TODO: Base floor height with slope unaccounted for?
+        /* 0xCC   */ s_CollisionShapePoint point;
         // TODO: Maybe incomplete. Maybe not, added the final padding based on `Collision_SurfaceGet`.
-    };
+    } s_CollisionState;
 
     // emoose: Also works: `extern u16 g_ActiveCollisionTriggers[];`, `arg0->field_4 = g_ActiveCollisionTriggers[0];`.
     // Didn't see any array accesses in Ghidra though, struct might be more likely.
@@ -284,9 +289,9 @@ namespace Silent::Game
      * @param offsetX X offset.
      * @param offsetY Y offset.
      * @param offsetZ Z offset.
-     * @param groundHeight Ground height.
+     * @param floorHeight Floorh height.
      */
-    void Collision_DefaultResultSet(s_CollisionResult* collResult, q19_12 offsetX, q19_12 offsetY, q19_12 offsetZ, q19_12 groundHeight);
+    void Collision_DefaultResultSet(s_CollisionResult* collResult, q19_12 offsetX, q19_12 offsetY, q19_12 offsetZ, q19_12 floorHeight);
 
     /** @brief Gets an array of collidable characters for collision testing.
      *

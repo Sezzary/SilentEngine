@@ -743,7 +743,7 @@ namespace Silent::Game
 
     extern u8 D_800AE186;
 
-    extern s_EventData* g_ItemTriggerEvents[];
+    extern s_EventData* g_ItemEvents[];
 
     /** Radio SFX data. */
     extern s_RadioNpcInfo g_RadioNpcInfos[2];

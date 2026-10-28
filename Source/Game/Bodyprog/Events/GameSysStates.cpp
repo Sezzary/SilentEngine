@@ -68,7 +68,7 @@ namespace Silent::Game
      */
     static q19_12 g_DeltaTimeCpy;
 
-    s_EventData*   g_ItemTriggerEvents[5]; // Guessed size. Check decomp later.
+    s_EventData*   g_ItemEvents[5]; // Guessed size. Check decomp later.
     s_RadioNpcInfo g_RadioNpcInfos[2];
     s_MapPoint2d   D_800BCDB0;
     s32            g_ItemTriggerItemIds[5];
@@ -618,7 +618,7 @@ namespace Silent::Game
                 else
                 {
                     //func_800892A4(1);
-                    Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+                    Savegame_EventFlagSet(g_MapEventData->completeFlag);
 
                     Game_StateSetNext(GameState_InGame);
 
@@ -639,7 +639,7 @@ namespace Silent::Game
     void SysState_LoadArea_Update() // 0x80039C40
     {
         g_SysWork.loadingScreenIdx    = D_800BCDB0.loadingScreenId;
-        g_SysWork.sfxPairIdx          = g_MapEventData->sfxPairIdx_8_19;
+        g_SysWork.sfxPairIdx          = g_MapEventData->sfxPairIdx     ;
         g_SysWork.areaTransitionFlags = g_MapEventData->transitionFlags;
 
         SD_Call(SFX_PAIRS[g_SysWork.sfxPairIdx].sfx_0);
@@ -677,9 +677,9 @@ namespace Silent::Game
             }
         }
 
-        Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+        Savegame_EventFlagSet(g_MapEventData->completeFlag);
 
-        if (g_MapEventData->field_8_24)
+        if (g_MapEventData->setCameraRail)
         {
             g_SysWork.sysState |= SysFlag_OnCameraRail;
         }
@@ -756,7 +756,7 @@ namespace Silent::Game
                 break;
 
             case MapMsgState_SelectEntry1:
-                Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+                Savegame_EventFlagSet(g_MapEventData->completeFlag);
                 SysWork_StateSetNext(SysState_Gameplay);
                 g_MapOverlayHdr.playerControlUnfreeze(false);
                 break;
@@ -840,7 +840,7 @@ namespace Silent::Game
     {
         if (g_MapEventData->transitionFlags != AreaTransitionFlag_None)
         {
-            Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+            Savegame_EventFlagSet(g_MapEventData->completeFlag);
         }
 
         g_DeltaTime = g_DeltaTimeCpy;
@@ -850,7 +850,7 @@ namespace Silent::Game
     void SysState_EventSetFlag_Update() // 0x8003A460
     {
         g_DeltaTime = g_DeltaTimeCpy;
-        Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+        Savegame_EventFlagSet(g_MapEventData->completeFlag);
         g_SysWork.sysState = SysState_Gameplay;
     }
 
@@ -860,7 +860,7 @@ namespace Silent::Game
 
         SD_Call(((u16)g_MapEventParam + Sfx_Base) & 0xFFFF);
 
-        Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+        Savegame_EventFlagSet(g_MapEventData->completeFlag);
         g_SysWork.sysState = SysState_Gameplay;
     }
 
@@ -1072,7 +1072,7 @@ namespace Silent::Game
 
         g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
 
-        Savegame_EventFlagSet(g_MapEventData->completeEventFlag);
+        Savegame_EventFlagSet(g_MapEventData->completeFlag);
         g_MapOverlayHdr.mapEventFuncs[g_MapEventParam]();
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
     }

@@ -19,7 +19,7 @@ namespace Silent::Game
     {
         /* 0x0  */ s32        collisionState; /** `e_CharaCollisionState` */
         /* 0x4  */ bool       field_4;        // `allowDefaultCeilHeight`? Set when the character collision being checked is any of the ones in
-                                            // `Collision_CharaCollisionSetup`.
+                                              // `Collision_CharaCollisionSetup`.
         /* 0x8  */ q19_12     distance;
         /* 0xC  */ SVECTOR    offset; /** Q23.8 | Character movement offset. */
         /* 0x14 */ DVECTOR_XZ direction;

@@ -181,6 +181,20 @@ namespace Silent::Utils
         std::reverse(cont.begin(), cont.end());
     }
 
+    /** @brief Extracts a packed value from a bitfield.
+     *
+     * @param bitfield Bitfield containing the value.
+     * @param idx Value start bit index.
+     * @param size Value size in bits.
+     * @return Unpacked value.
+     */
+    template <typename T>
+    T GetPackedValue(T bitfield, int idx, int size)
+    {
+        T mask = ((T)1 << size) - 1;
+        return (bitfield >> idx) & mask;
+    }
+
     /** @brief Finds the index for an entry in a given lookup map.
      * If the entry doesn't exist, it is inserted and a new index is created.
      *

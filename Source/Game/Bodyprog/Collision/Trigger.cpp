@@ -9,6 +9,8 @@ namespace Silent::Game
 {
     constexpr q19_12 DEFAULT_TRIGGER_HEIGHT = SHRT_MIN * 2;
 
+    static auto g_TriggerIntersectCache = s_CollisionTriggerIntersect{};
+
     /** @brief Computes a trigger height from half-meter height steps.
      *
      * @note The trigger height has a starting offset of `Q12(-1.5f)`.
@@ -23,31 +25,32 @@ namespace Silent::Game
 
     void Collision_TriggerQuery(q19_12* result, q19_12 posX, q19_12 posZ, q19_12 offsetX, q19_12 offsetZ)
     {
+        auto* intersect = &g_TriggerIntersectCache;
+
         // Initialize line intersection.
-        auto intersect = s_CollisionTriggerIntersect{};
-        Collision_TriggerIntersectInit(&intersect, posX, posZ, offsetX, offsetZ);
+        Collision_TriggerIntersectInit(intersect, posX, posZ, offsetX, offsetZ);
 
         // Collide active triggers.
         for (int i = 0; i < g_ActiveCollisionTriggers.collisionTriggerCount; i++)
         {
-            if (Collision_TriggerIntersectGet(&intersect, g_ActiveCollisionTriggers.collisionTriggers[i]))
+            if (Collision_TriggerIntersectGet(intersect, g_ActiveCollisionTriggers.collisionTriggers[i]))
             {
                 break;
             }
         }
 
         // Set result.
-        if (intersect.intersectAlpha == Q12(1.0f))
+        if (intersect->intersectAlpha == Q12(1.0f))
         {
             result[0] = Q12(32.0f);
             result[1] = Q12(DEFAULT_CEILING_HEIGHT);
         }
         else
         {
-            result[0] = Math_MulFixed(Vc_VectorMagnitudeCalc(intersect.offsetX, Q12(0.0f), intersect.offsetZ),
-                                      intersect.intersectAlpha,
-                                      Q12_SHIFT);
-            result[1] = intersect.triggerHeight;
+            result[0] = Math_MulFixed(Vc_VectorMagnitudeCalc(intersect->offsetX, Q12(0.0f), intersect->offsetZ),
+                                    intersect->intersectAlpha,
+                                    Q12_SHIFT);
+            result[1] = intersect->triggerHeight;
         }
     }
 

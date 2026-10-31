@@ -10,6 +10,102 @@ using namespace Silent::Utils;
 
 namespace Silent::Assets
 {
+    struct IpdMatrix
+    {
+        std::array<std::array<int16, 3>, 3> Rotation    = {};
+        Vector3i                            Translation = Vector3i::Zero;
+    };
+
+    /** @brief Normalizes the UVs of meshes according to an IPD model's associated texture resolution.
+     *
+     * @param name Model name.
+     * @param meshes Model meshes with UVs to normalize.
+     */
+    static void NormalizeUvs(const std::string& name, std::vector<LmMesh>& meshes)
+    {
+        constexpr int RES_STEP = 128;
+
+        static const auto IPD_TEX_RES_MAP = std::unordered_map<std::string, Vector2i>
+        {
+            // @todo Account for some exceptions. Most textures are either 128x256 or 256x256, but some are thin strips
+            // or the UVs don't span far enough.
+        };
+
+        auto texRes = Vector2i::Zero;
+
+        // Get texture resolution.
+        const auto* obtuseTexRes = Find(IPD_TEX_RES_MAP, name);
+        if (obtuseTexRes != nullptr)
+        {
+            texRes = *obtuseTexRes;
+        }
+        else
+        {
+            // Derive resolution from pixel UV layout.
+            for (const auto& mesh : meshes)
+            {
+                for (const auto& vert : mesh.Linear.Vertices)
+                {
+                    texRes = Vector2i(std::max(texRes.x, (int)CeilToStep(vert.Uv.x, RES_STEP)),
+                                      std::max(texRes.y, (int)CeilToStep(vert.Uv.y, RES_STEP)));
+                }
+            }
+        }
+
+        // Normalize UVs.
+        for (auto& mesh : meshes)
+        {
+            for (auto& vert : mesh.Linear.Vertices)
+            {
+                vert.Uv /= texRes.ToVector2();
+            }
+        }
+    }
+
+    /** @brief Gets an IPD PLM model's corresponding texture asset name.
+     *
+     * @param name Model name.
+     * @return Texture asset name.
+     */
+    static std::string GetTextureAssetName(const std::string& name)
+    {
+        // Retrieve directly corresponding TIM.
+        auto texName = "BG/" + name + ".TIM";
+        return texName; 
+    }
+
+    // @todo Check what the format is actually supposed to be.
+    /** @brief Converts an IPD matrix rotation to a quaternion.
+     *
+     * @param transformMat IPD transform matrix.
+     * @return Converted rotation.
+     */
+    static Quaternion ConvertRotation(const IpdMatrix& transformMat)
+    {
+        return Matrix(transformMat.Rotation[0][0] / 256.0f,
+                      transformMat.Rotation[1][0] / 256.0f,
+                      transformMat.Rotation[2][0] / 256.0f,
+                      transformMat.Rotation[0][1] / 256.0f,
+                      transformMat.Rotation[1][1] / 256.0f,
+                      transformMat.Rotation[2][1] / 256.0f,
+                      transformMat.Rotation[0][2] / 256.0f,
+                      transformMat.Rotation[1][2] / 256.0f,
+                      transformMat.Rotation[2][2] / 256.0f).ToQuaternion();
+    }
+
+    // @todo Check if Q12 is actually the format.
+    /** @brief Converts an IPD matrix translation to a `Vector3`.
+     *
+     * @param transformMat IPD transform matrix.
+     * @return Translation rotation.
+     */
+    static Vector3 ConvertTranslation(const IpdMatrix& transformMat)
+    {
+        return Vector3(Q12_TO_FLT(transformMat.Translation.x),
+                       Q12_TO_FLT(transformMat.Translation.y),
+                       Q12_TO_FLT(transformMat.Translation.z));
+    }
+    
     /** @brief Parses the collision chunk from an IPD asset file.
      *
      * @param stream Output file stream.
@@ -229,60 +325,12 @@ namespace Silent::Assets
         };
     }
 
-    /** @brief Normalizes the UVs of meshes according to an IPD model's associated texture resolution.
-     *
-     * @param name Model name.
-     * @param meshes Model meshes with UVs to normalize.
-     */
-    static void NormalizeUvs(const std::string& name, std::vector<LmMesh>& meshes)
-    {
-        constexpr int RES_STEP = 128;
-
-        static const auto IPD_TEX_RES_MAP = std::unordered_map<std::string, Vector2i>
-        {
-            // @todo Account for some exceptions. Most textures are either 128x256 or 256x256, but some are thin strips
-            // or the UVs don't span far enough.
-        };
-
-        auto texRes = Vector2i::Zero;
-
-        // Get texture resolution.
-        const auto* obtuseTexRes = Find(IPD_TEX_RES_MAP, name);
-        if (obtuseTexRes != nullptr)
-        {
-            texRes = *obtuseTexRes;
-        }
-        else
-        {
-            // Derive resolution from pixel UV layout.
-            for (const auto& mesh : meshes)
-            {
-                for (const auto& vert : mesh.Linear.Vertices)
-                {
-                    texRes = Vector2i(std::max(texRes.x, (int)CeilToStep(vert.Uv.x, RES_STEP)),
-                                      std::max(texRes.y, (int)CeilToStep(vert.Uv.y, RES_STEP)));
-                }
-            }
-        }
-
-        // Normalize UVs.
-        for (auto& mesh : meshes)
-        {
-            for (auto& vert : mesh.Linear.Vertices)
-            {
-                vert.Uv /= texRes.ToVector2();
-            }
-        }
-    }
-
     std::shared_ptr<void> ParseIpd(const stdfs::path& filename)
     {
         constexpr uint8 MAGIC            = 0x14;
         constexpr int   COLLISION_OFFSET = 0x54;
 
         const auto& fs = g_App.GetFilesystem();
-
-        auto asset = IpdAsset{};
 
         // Read file.
         auto stream = Stream(filename, true, false);
@@ -313,9 +361,9 @@ namespace Silent::Assets
 
         uint32 modelInfosOffset   = stream.ReadUint32();
         uint32 modelBuffersOffset = stream.ReadUint32();
-        uint8  textureCount       = stream.ReadUint8();
 
-        stream.Skip(51); // @todo Actual texture data array? Decompilation needs work.
+        uint8 textureCount = stream.ReadUint8();
+        stream.Skip(51); // @todo Actual texture data array? Decompilation needs more work.
 
         uint32 modelOrderListOffset = stream.ReadUint32();
 
@@ -336,15 +384,6 @@ namespace Silent::Assets
         // Normalize IPD UVs.
         NormalizeUvs(name, meshes);
 
-        // Set LM chunk.
-        asset.Lm = LmChunk
-        {
-            .Name        = name,
-            //.TextureName = GetTextureAssetName(name),// @todo
-            .Meshes      = std::move(meshes),
-            .MeshIds     = std::move(meshIds)
-        };
-
         // Set stream position to model infos.
         stream.SetPosition(modelInfosOffset);
 
@@ -353,38 +392,159 @@ namespace Silent::Assets
         modelInfos.reserve(modelCount);
         for (int i = 0; i < modelCount; i++)
         {
-            auto modelInfo        = IpdModelInfo{};
-            modelInfo.IsGlobalPlm = stream.ReadUint8();
+            uint8 isGlobalPlm = stream.ReadUint8();
 
             stream.Skip(3);
 
-            modelInfo.Name              = stream.ReadCString(8);
-            modelInfo.ModelHeaderOffset = stream.ReadUint32();
-            modelInfos.push_back(std::move(modelInfo));
+            auto   name              = stream.ReadCString(8);
+            uint32 modelHeaderOffset = stream.ReadUint32();
+
+            // Collect model info.
+            modelInfos.push_back(IpdModelInfo
+            {
+                .IsGlobalPlm = isGlobalPlm,
+                .Name        = name
+            });
         }
 
         // Set stream position to model buffers.
         stream.SetPosition(modelBuffersOffset);
 
-        // @todo
         // Read model buffers.
+        auto modelBuffers = std::vector<IpdModelBuffer>{};
+        modelBuffers.reserve(modelBufferCount);
         for (int i = 0; i < modelBufferCount; i++)
         {
-            uint8 modelInstCount = stream.ReadUint8();
-            uint8 field_1        = stream.ReadUint8();
+            // Read array counts.
+            uint8 modelInstCount     = stream.ReadUint8();
+            uint8 billboardInstCount = stream.ReadUint8();
+            uint8 subchunkRangeCount = stream.ReadUint8();
 
             stream.Skip(1);
 
-            int16  minX                   = stream.ReadInt16();
-            int16  maxX                   = stream.ReadInt16();
-            int16  minZ                   = stream.ReadInt16();
-            int16  maxZ                   = stream.ReadInt16();
-            uint32 modelInstsOffset       = stream.ReadUint32();
-            uint32 field_10Offset         = stream.ReadUint32();
-            uint32 subcellPositionsOffset = stream.ReadUint32();
+            // Read visibility AABB.
+            int16 minX = stream.ReadInt16();
+            int16 maxX = stream.ReadInt16();
+            int16 minZ = stream.ReadInt16();
+            int16 maxZ = stream.ReadInt16();
+
+            // Read array offsets.
+            uint32 modelInstsOffset     = stream.ReadUint32();
+            uint32 billboardInstsOffset = stream.ReadUint32();
+            uint32 subcellRangesOffset  = stream.ReadUint32();
+
+            // Set stream position to model instances.
+            stream.SetPosition(modelInstsOffset);
+
+            // Read model instances.
+            auto modelInsts = std::vector<IpdModelInstance>{};
+            modelInsts.reserve(modelInstCount);
+            for (int j = 0; j < modelInstCount; j++)
+            {
+                uint32 modelInfoIdx = stream.ReadInt32();
+
+                // Read transform matrix.
+                auto ipdTransformMat = IpdMatrix{};
+
+                ipdTransformMat.Rotation[0][0] = stream.ReadInt16();
+                ipdTransformMat.Rotation[0][1] = stream.ReadInt16();
+                ipdTransformMat.Rotation[0][2] = stream.ReadInt16();
+                ipdTransformMat.Rotation[1][0] = stream.ReadInt16();
+                ipdTransformMat.Rotation[1][1] = stream.ReadInt16();
+                ipdTransformMat.Rotation[1][2] = stream.ReadInt16();
+                ipdTransformMat.Rotation[2][0] = stream.ReadInt16();
+                ipdTransformMat.Rotation[2][1] = stream.ReadInt16();
+                ipdTransformMat.Rotation[2][2] = stream.ReadInt16();
+
+                stream.Skip(2);
+
+                ipdTransformMat.Translation.x = stream.ReadInt32();
+                ipdTransformMat.Translation.y = stream.ReadInt32();
+                ipdTransformMat.Translation.z = stream.ReadInt32();
+
+                // @todo Convert. What are the formats?
+                auto transformMat = Matrix::Identity;
+                transformMat.Translate(ConvertTranslation(ipdTransformMat));
+                //transformMat.Rotate(ConvertRotation(ipdTransformMat)); // @todo Work on conversion.
+
+                // Collect model instance.
+                modelInsts.push_back(IpdModelInstance
+                {
+                    .ModelInfoIdx = modelInfoIdx,
+                    .TransformMat = transformMat
+                });
+            }
+
+            // Set stream position to billboard sprite instances.
+            stream.SetPosition(billboardInstsOffset);
+
+            // Read billboard sprite instances.
+            auto billboardInsts = std::vector<IpdBillboardInstance>{};
+            billboardInsts.reserve(billboardInstCount);
+            for (int j = 0; j < billboardInstCount; j++)
+            {
+                q7_8   offsetX      = stream.ReadInt16();
+                q7_8   offsetY      = stream.ReadInt16();
+                q7_8   offsetZ      = stream.ReadInt16();
+                uint32 modelInfoIdx = stream.ReadInt32();
+
+                // Collect billboard sprite instance.
+                billboardInsts.push_back(IpdBillboardInstance
+                {
+                    .Offset = Vector3(Q8_TO_FLT(offsetX), Q8_TO_FLT(offsetY), Q8_TO_FLT(offsetZ)),
+                    .Idx    = modelInfoIdx
+                });
+            }
+
+            // Set stream position to subchunk ranges.
+            stream.SetPosition(subcellRangesOffset);
+
+            // Read subchunk ranges.
+            auto subchunkRanges = std::vector<IpdSubchunkRange>{};
+            subchunkRanges.reserve(subchunkRangeCount);
+            for (int j = 0; j < subchunkRangeCount; j++)
+            {
+                q7_8 minX = stream.ReadInt16();
+                q7_8 maxX = stream.ReadInt16();
+                q7_8 minZ = stream.ReadInt16();
+                q7_8 maxZ = stream.ReadInt16();
+
+                // Collect subchunk range.
+                subchunkRanges.push_back(IpdSubchunkRange
+                {
+                    .MinX = minX,
+                    .MaxX = maxX,
+                    .MinZ = minZ,
+                    .MaxZ = maxZ
+                });
+            }
+
+            // Collect model buffer.
+            modelBuffers.push_back(IpdModelBuffer
+            {
+                .MinX               = minX,
+                .MaxX               = maxX,
+                .MinZ               = minZ,
+                .MaxZ               = maxZ,
+                .ModelInstances     = std::move(modelInsts),
+                .BillboardInstances = std::move(billboardInsts),
+                .SubchunkInstances  = std::move(subchunkRanges)
+            });
         }
 
-        return std::make_shared<IpdAsset>(std::move(asset));
+        return std::make_shared<IpdAsset>(IpdAsset
+        {
+            .Lm = LmChunk
+            {
+                .Name        = name,
+                .TextureName = GetTextureAssetName(name),
+                .Meshes      = std::move(meshes),
+                .MeshIds     = std::move(meshIds)
+            },
+            .ModelInfos   = std::move(modelInfos),
+            .ModelBuffers = std::move(modelBuffers),
+            .Collision    = std::move(coll)
+        });
     }
 
     void QueueIpdGpuUpload(const Asset& asset)

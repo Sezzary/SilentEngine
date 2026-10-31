@@ -9,15 +9,42 @@ namespace Silent::Assets
     /** @brief IPD model info. */
     struct IpdModelInfo
     {
-        uint8       IsGlobalPlm       = false;
-        std::string Name              = {};
-        uint32      ModelHeaderOffset = 0;
+        uint8       IsGlobalPlm = false;
+        std::string Name        = {}; // @todo Name in LM. Need to work out how to manage this.
+    };
+
+    struct IpdModelInstance
+    {
+        int    ModelInfoIdx = 0;
+        Matrix TransformMat = Matrix::Identity; /** Translation is relative to the chunk. */
+    };
+
+    /** @brief IPD transformed billboard sprite instance. */
+    struct IpdBillboardInstance
+    {
+        Vector3 Offset = Vector3::Zero; /** Offset in chunk. */
+        int     Idx    = 0;
+    };
+
+    struct IpdSubchunkRange
+    {
+        q7_8 MinX = Q8(0.0f);
+        q7_8 MaxX = Q8(0.0f);
+        q7_8 MinZ = Q8(0.0f);
+        q7_8 MaxZ = Q8(0.0f);
     };
 
     /** @brief IPD model buffer. */
     struct IpdModelBuffer
     {
+        q7_8 MinX = Q8(0.0f);
+        q7_8 MaxX = Q8(0.0f);
+        q7_8 MinZ = Q8(0.0f);
+        q7_8 MaxZ = Q8(0.0f);
 
+        std::vector<IpdModelInstance>     ModelInstances     = {};
+        std::vector<IpdBillboardInstance> BillboardInstances = {};
+        std::vector<IpdSubchunkRange>     SubchunkInstances  = {};
     };
 
     // TODO: Move to Collision.h when ready. This replaces fields originally modified in loaded IPDs themselves.
@@ -87,10 +114,10 @@ namespace Silent::Assets
     /** @brief IPD asset data. */
     struct IpdAsset
     {
-        LmChunk        Lm           = {};
-        IpdModelInfo   ModelInfos   = {};
-        IpdModelBuffer ModelBuffers = {};
-        IpdCollision   Collision    = {};
+        LmChunk                     Lm           = {};
+        std::vector<IpdModelInfo>   ModelInfos   = {};
+        std::vector<IpdModelBuffer> ModelBuffers = {};
+        IpdCollision                Collision    = {};
     };
 
     /** @brief Parses an IPD asset file.

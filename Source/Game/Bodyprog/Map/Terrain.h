@@ -5,7 +5,6 @@
 
 namespace Silent::Game
 {
-    constexpr float CHUNK_SIZE                        = 40.0f;
     constexpr int   ACTIVE_CHUNK_COUNT_MAX            = 4;
     constexpr int   ACTIVE_CHUNK_TEXTURE_COUNT_MAX    = 10;
     constexpr int   HALF_PAGE_CHUNK_TEXTURE_COUNT_MAX = 2;

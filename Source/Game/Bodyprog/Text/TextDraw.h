@@ -110,9 +110,11 @@ namespace Silent::Game
      * @param msg Tagged message.
      * @param fontName Name of the font to use.
      * @param lineHeight Height per line in screen percent.
+     * @param extraTags Extra tags to prepend to each page.
      * @return Parsed message.
      */
-    ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight);
+    ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight,
+                           const std::string& extraTags = {});
 
     /** @brief Submits a string to draw in screen space.
      *
@@ -165,7 +167,7 @@ namespace Silent::Game
      * @param msg Tagged message to draw.
      * @param displayLength Number of consecutive glyphs to draw from the string.
      * @param isHalfHeight Use half-height glyphs.
-     * @return String width in screen percent.
+     * @return Longest string width in screen percent.
      */
     float Gfx_StringDraw(const std::string& msg, int displayLength = INT_MAX, bool isHalfHeight = false);
 
@@ -191,6 +193,7 @@ namespace Silent::Game
      * @note The message must contain a single page.
      *
      * @param msg Tagged message to draw.
+     * @return Longest string width in screen percent.
      */
     float Text_Debug_Draw(const std::string& msg);
 

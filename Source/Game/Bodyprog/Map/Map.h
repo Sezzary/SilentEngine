@@ -141,26 +141,26 @@ namespace Silent::Game
     };
 
     /** @brief Event trigger activation types. */
-    enum e_TriggerActivationType
+    enum e_EventTriggerActivationType
     {
-        TriggerActivationType_None      = 0, /** No activation conditions other than event flag/trigger checks. */
-        TriggerActivationType_Exclusive = 1, /** Prevents other events from being triggered while the event is active. */
-        TriggerActivationType_Button    = 2, /** Requires a button press. */
-        TriggerActivationType_Item      = 3  /** Requires an inventory item. */
+        MapTriggerActivationType_None      = 0, /** No activation conditions other than event flag/trigger checks. */
+        MapTriggerActivationType_Exclusive = 1, /** Prevents other events from being triggered while the event is active. */
+        MapTriggerActivationType_Button    = 2, /** Requires a button press. */
+        MapTriggerActivationType_Item      = 3  /** Requires an inventory item. */
     };
 
     /** @brief Event trigger types. */
-    enum e_TriggerType
+    enum e_EventTriggerType
     {
-        TriggerType_EndOfArray     = NO_VALUE,
-        TriggerType_Tick           = 0, /** Skips trigger/activation type checks.
-                                         * Always activates if required event flags are set.
-                                         * Skips processing later events until flags deactivate it.
-                                         */ 
-        TriggerType_TouchAabb      = 1, /** Player has collided with an AABB. */
-        TriggerType_TouchFacing    = 2, /** Player collided with a trigger is facing toward it. */
-        TriggerType_TouchObbFacing = 3, /** Player collided with an OBB and is facing toward it. */
-        TriggerType_TouchObb       = 4  /** Player collided with an OBB. No facing requirement. */
+        MapTriggerType_EndOfArray     = NO_VALUE,
+        MapTriggerType_Tick           = 0, /** Skips trigger/activation type checks.
+                                            * Always activates if required event flags are set.
+                                            * Skips processing later events until flags deactivate it.
+                                            */ 
+        MapTriggerType_TouchAabb      = 1, /** Player has collided with an AABB. */
+        MapTriggerType_TouchFacing    = 2, /** Player collided with a trigger is facing toward it. */
+        MapTriggerType_TouchObbFacing = 3, /** Player collided with an OBB and is facing toward it. */
+        MapTriggerType_TouchObb       = 4  /** Player collided with an OBB. No facing requirement. */
     };
 
     /** @brief Area transition flags. Used by some events to indicate specific cutscene behavior. */
@@ -172,6 +172,7 @@ namespace Silent::Game
         AreaTransitionFlag_SkipAmbientSfxInit = 1 << 2  /** TODO: Skips the `Sd_AmbientSfxInit` call in `GameBoot_InGameStartup`? */
     };
 
+    /** @brief World map model data locations. */
     enum e_WorldModelLocation
     {
         WorldModelLocation_None   = 0,
@@ -368,23 +369,21 @@ namespace Silent::Game
         q19_12 positionZ;
     };
 
-    /** TODO: Known as `Trigger` in SilentHillMapExaminer: https://github.com/ItEndsWithTens/SilentHillMapExaminer/blob/master/src/SHME.ExternalTool.Guts/Trigger.cs */
+    /** @brief Event data. */
     struct s_EventData
     {
-        s16 requiredEventFlag;  /** `e_EventFlag` | Must be set for an event to trigger (or `EventFlag_None`). */
-        s16 completeEventFlag;  /** `e_EventFlag` | Set on event completion. The event is skipped if this flag is already set. */
-        s8  triggerType    : 4; /** `e_TriggerType` */
-        u8  activationType : 4; /** `e_TriggerActivationType` */
-        u8  mapPointIdx;        /** Index into `g_MapOverlayHdr.mapPoints`. */
-        u8  requiredItemId;     /** `e_InvItemId` that player must use from item screen. */
-        u8  __pad_7;
-        u32 sysState        : 5; /** `e_SysState` used by the event. */
+        s16 requiredFlag;        /** `e_EventFlag` | Must be set for an event to trigger (or `EventFlag_None`). */
+        s16 completeFlag;        /** `e_EventFlag` | Set on event completion. The event is skipped if this flag is already set. */
+        s8  triggerType    : 4;  /** `e_EventTriggerType` */
+        u8  activationType : 4;  /** `e_EventActivationType` */
+        u8  mapPointIdx;         /** Index into `g_MapOverlayHdr.mapPoints`. */
+        u8  requiredItemId;      /** `e_InvItemId` | ID of the item the player must use from the item screen. */
+        u32 sysState        : 5; /** `e_SysState` | System state used by the event. */
         u32 eventParam      : 8; /** Can be an ID of a `MapMsg`, sound effect, index into `mapEventFuncs`, or index into `mapPoints` for `areaLoad` events. */
         u32 transitionFlags : 6; /** `e_AreaTransitionFlags` */
-        u32 sfxPairIdx_8_19 : 5; /** `e_SfxPairIdx` | Index into `SFX_PAIRS`. */
-        u32 field_8_24      : 1; // `bool` | "Is on camera rail?"
+        u32 sfxPairIdx      : 5; /** `e_SfxPairIdx` | Index into `SFX_PAIRS`. */
+        u32 setCameraRail   : 1; /** `bool` | Always `true`. */
         u32 mapIdx          : 6;
-        u32 field_8_31      : 1;
     };
 
     /** @brief Special map-specific Harry anim data. */

@@ -179,35 +179,6 @@ namespace Silent::Game
         return 0;
     }
 
-    s32 Fs_FindNextFileOfType(s32 fileType, s32 startIdx, s32 dir)
-    {
-        s32 i;
-        u32 currentIdx;
-        s32 inc;
-
-        inc = (dir < 0) ? -1 : 1;
-
-        i = 0;
-        currentIdx = startIdx + inc;
-        while (i < FS_FILE_COUNT)
-        {
-            if (currentIdx >= FS_FILE_COUNT)
-            {
-                currentIdx = (dir < 0) ? (FS_FILE_COUNT - 1) : 0;
-            }
-
-            if (g_FileTable[currentIdx].type == fileType)
-            {
-                return currentIdx;
-            }
-
-            currentIdx += inc;
-            i++;
-        }
-
-        return NO_VALUE;
-    }
-
     s32 Fs_FindNextFile(const char* name, s32 fileType, s32 startIdx)
     {
         s_FileInfo* fileEntry;

@@ -821,8 +821,8 @@ namespace Silent::Game
         {
             vcSetTHROUGH_DOOR_CAM_PARAM_in_VC_WORK(&vcWork, VC_TDSC_START);
         }
-
         vcSetTHROUGH_DOOR_CAM_PARAM_in_VC_WORK(&vcWork, VC_TDSC_MAIN);
+
         vcSetNearestEnemyDataInVC_WORK(w_p);
         vcSetNearRoadAryByCharaPos(w_p, vc_road_ary_list, Q12(20.0f), 0, w_p->nearest_enemy != nullptr);
     }
@@ -1747,14 +1747,14 @@ namespace Silent::Game
                     //Collision_SurfaceGet(&coll, sc_p->position.vx, sc_p->position.vz);
 
                     // If no valid ground, fall back on character Y position.
-                    if (surface.groundType == GroundType_Default)
+                    if (surface.floorType == FloorType_Default)
                     {
                         watch_y = sc_p->position.vy + ofs_y;
                     }
                     // Otherwise, use ground height.
                     else
                     {
-                        watch_y = surface.groundHeight + ofs_y;
+                        watch_y = surface.floorHeight + ofs_y;
                     }
                     break;
 

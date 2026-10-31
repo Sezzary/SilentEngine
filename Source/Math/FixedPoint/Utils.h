@@ -66,17 +66,27 @@ namespace Silent::Math
      * @return Packed RGB + code color.
      */
     #define COLOR_RGBC(r, g, b, code) \
-        (((r) & 0xFF) | ((g) & 0xFF) << 8 | ((b) & 0xFF) << 16) | ((code) << 24))
+        (((r) & 0xFF) | (((g) & 0xFF) << 8) | (((b) & 0xFF) << 16) | ((code) << 24))
 
-    /** @brief Checks if a flag in a bitfield is set to a required status.
+    /** @brief Checks if a flag in a flags bitfield is set to a required status.
      *
-     * @param bitfield Bitfield to check.
-     * @param flag Flag to check in the bitfield.
+     * @param flags Flags bitfield to check.
+     * @param flag Flag to check.
      * @param isSet Required status to check for.
      * @return `true` if the flag is set to the required status, `false` otherwise.
      */
     #define CHECK_FLAG(bitfield, flag, isSet) \
         (!((bitfield) & (flag)) == !(isSet))
+
+    /** @brief Checks if a flag in a flags bitfield is set to a required status.
+     *
+     * @param flags Flags bitfield to check.
+     * @param flagIdx Index of the flag to check.
+     * @param isSet Required status to check for.
+     * @return `true` if the flag is set to the required status, `false` otherwise.
+     */
+    #define CHECK_FLAG_IDX(flags, flagIdx, isSet) \
+        (!(((flags) >> (flagIdx)) & (1 << 0)) == !(isSet))
 
     /** @brief Scales a Q19.12 fixed-point value by a delta time relative to a 30 FPS timestep.
      *

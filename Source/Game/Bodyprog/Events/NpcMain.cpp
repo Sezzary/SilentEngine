@@ -120,13 +120,13 @@ namespace Silent::Game
 
                 //Collision_SurfaceGet(&surface, curCharaSpawn->positionX, curCharaSpawn->positionZ);
 
-                g_SysWork.npcs[npcIdx].position.vy = surface.groundHeight;
+                g_SysWork.npcs[npcIdx].position.vy = surface.floorHeight;
                 g_SysWork.npcs[npcIdx].rotation.vy = curCharaSpawn->rotationY * 16;
 
                 SET_FLAG(&g_SysWork.npcFlags, npcIdx);
                 SET_FLAG(g_SysWork.field_228C, i);
 
-                chara                          = &g_SysWork.npcs[npcIdx];
+                chara                    = &g_SysWork.npcs[npcIdx];
                 chara->model.anim.flags |= AnimFlag_Visible;
             }
         }

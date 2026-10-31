@@ -159,7 +159,7 @@ namespace Silent::Game
     struct s_PropsPlayer
     {
         q19_12        afkTimer; // Increments every tick for 10 seconds before AFK anim starts.
-        q19_12        groundHeight;
+        q19_12        floorHeight;
         q19_12        field_F0;
         q19_12        field_F4; // Angle related to X axis flex rotation.
         s32           runStepSfxCount;
@@ -245,7 +245,7 @@ namespace Silent::Game
         VECTOR3 position_110;
         s32     flags; /** `e_AirScreamerFlags` */
         q19_12  timer_120;
-        q19_12  groundHeight;
+        q19_12  floorHeight;
     };
 
     /** @brief Bloodsucker character properties. */

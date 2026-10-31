@@ -14,11 +14,7 @@ namespace Silent::Game
      */
     enum e_FsFile
     {
-    //#if defined(VER_USA)
         #include "FileEnum.h.USA.inc"
-    //#elif defined(VER_JAP0)
-    //    #include "FileEnum.h.JAP0.inc"
-    //#endif
         FS_FILE_COUNT /** Number of files in `g_FileTable`. 2074 in USA/JAP0. */
     };
 
@@ -190,21 +186,6 @@ namespace Silent::Game
      * @return The size of the specified file entry in bytes rounded up to CD sector boundary.
      */
     s32 Fs_GetFileSectorAlignedSize(s32 fileIdx);
-
-    /** @brief Finds a file of the specified type in the file table.
-     *
-     * Starts a linear search from the file table index `startIdx`,
-     * going forwards if `direction` is positive, or backwards if it's negative.
-     * Returns the index of the first file it encounters whose `type` field is `fileType`,
-     * or -1 if it reaches the end of the table without finding anything.
-     *
-     * @param fileType The file type to search for.
-     * @param startIdx The table index from which to start the search.
-     * @param dir The direction of the search: positive for incrementing,
-     * negative for decrementing.
-     * @return The index of the first matching file entry, or -1 if not found.
-     */
-    s32 Fs_FindNextFileOfType(s32 fileType, s32 startIdx, s32 dir);
 
     /** @brief Finds a file with the specified name and type in the file table.
      *

@@ -9,7 +9,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Assets
 {
-    using LegacyMatrix = std::array<std::array<q0_7, 3>, 3>;
+    using AnmMatrix = std::array<std::array<q0_7, 3>, 3>;
 
     /** @brief Converts a scaled translation to model space.
      *
@@ -26,12 +26,12 @@ namespace Silent::Assets
                        z << shift) / 128.0f;
     }
 
-    /** @brief Converts a legacy matrix rotation to a quaternion.
+    /** @brief Converts an ANM rotation matrix to a quaternion.
      *
-     * @param rotMat Legacy matrix rotation.
+     * @param rotMat ANM rotation matrix.
      * @return Converted rotation.
      */
-    static Quaternion ConvertRotation(const LegacyMatrix& rotMat)
+    static Quaternion ConvertRotation(const AnmMatrix& rotMat)
     {
         return Matrix(rotMat[0][0] / 128.0f,
                       rotMat[1][0] / 128.0f,
@@ -81,7 +81,7 @@ namespace Silent::Assets
             keyframe.BoneRotation.reserve(rotCount);
             for (int j = 0; j < rotCount; j++)
             {
-                auto rotMat = LegacyMatrix{};
+                auto rotMat = AnmMatrix{};
                 stream.ReadArray(ToSpan(rotMat));
 
                 // Collect bone rotation.
@@ -143,7 +143,7 @@ namespace Silent::Assets
         stream.Skip(1);
 
         int translationsSize = translationCount * Vector3i::AXIS_COUNT;
-        int rotsSize         = rotCount * sizeof(LegacyMatrix);
+        int rotsSize         = rotCount * sizeof(AnmMatrix);
         Debug::Assert((translationsSize + rotsSize) == keyframeSize,
                       Fmt("Attempted to parse ANM `{}` with incongruent number of translations and rotations.",
                           stdfs::relative(filename, fs.GetAssetsDirectory()).string()));

@@ -297,7 +297,7 @@ namespace Silent::Assets
             {
                 mesh.Linear.Vertices[vertIdx] = BufferVertex3d
                 {
-                    .Position   = mesh.Native.Positions[keyVert.PositionIdx].ToVector3() / (float)Q7(1.0f),
+                    .Position   = mesh.Native.Positions[keyVert.PositionIdx].ToVector3(Q7_SHIFT),
                     .Normal     = Vector3::Normalize(mesh.Native.Normals[keyVert.NormalIdx].ToVector3()),
                     .Uv         = mesh.Native.Uvs[keyVert.UvIdx].ToVector2(), // @note Unnormalized pixel coordinates.
                     .PaletteIdx = keyVert.PaletteIdx
@@ -345,14 +345,14 @@ namespace Silent::Assets
     std::string GetTextureAssetName(const std::string& name, const std::string& parentDirName,
                                     const std::unordered_map<std::string, std::string>& lmTimMap)
     {
-        // Retrieve hardcoded TIM.
+        // Retrieve hardcoded corresponding TIM.
         const auto* hardcodedTexName = Find(lmTimMap, name);
         if (hardcodedTexName != nullptr)
         {
             return *hardcodedTexName;
         }
 
-        // Retrieve directly corresponding TIM.
+        // Retrieve plainly corresponding TIM.
         auto texName = parentDirName + "/" + name + ".TIM";
         return texName; 
     }

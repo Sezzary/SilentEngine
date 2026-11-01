@@ -64,9 +64,10 @@ namespace Silent::Assets
     /** @brief Parses the collision chunk from an IPD asset file.
      *
      * @param stream Output file stream.
+     * @param baseOffset Base stream offset.
      * @return Collision data.
      */
-    static IpdCollision ParseCollisionChunk(Stream& stream)
+    static IpdCollision ParseCollisionChunk(Stream& stream, int baseOffset)
     {
         // Read position.
         q23_8 posX = stream.ReadInt32();
@@ -106,7 +107,7 @@ namespace Silent::Assets
         stream.ReadArray(ToSpan(shapePassStampBuffer)); // Unused.
 
         // Set stream position to polygon split vertices.
-        stream.SetPosition(polySplitVertsOffset);
+        stream.SetPosition(baseOffset + polySplitVertsOffset);
 
         // Read polygon split vertices.
         auto polySplitVerts = std::vector<Vector3i>{};
@@ -123,7 +124,7 @@ namespace Silent::Assets
         }
 
         // Set stream position to polygon surfaces.
-        stream.SetPosition(polySurfacesOffset);
+        stream.SetPosition(baseOffset + polySurfacesOffset);
 
         // Read polygon surfaces.
         auto polySurfaces = std::vector<IpdSurface>{};
@@ -136,7 +137,11 @@ namespace Silent::Assets
             q7_8 offsetZ = stream.ReadInt16();
 
             // Read packed attributes.
-            uint16 attribsPack = stream.ReadInt16();
+            uint16 attribsPack     = stream.ReadInt16();
+            int    floorType       = GetPackedValue(attribsPack, 0, 5);
+            int    disableHeight   = GetPackedValue(attribsPack, 5, 3);
+            int    surfaceCacheIdx = GetPackedValue(attribsPack, 8, 3);
+            int    triggerFlagIdx  = GetPackedValue(attribsPack, 11, 4);
 
             // Read gradient.
             q7_8 slopeGradientX = stream.ReadInt16();
@@ -146,30 +151,35 @@ namespace Silent::Assets
             polySurfaces.push_back(IpdSurface
             {
                 .Offset          = Vector3i(offsetX, offsetY, offsetZ),
-                .FloorType       = GetPackedValue(attribsPack, 0, 5),
-                .DisableHeight   = GetPackedValue(attribsPack, 5, 3),
-                .SurfaceCacheIdx = GetPackedValue(attribsPack, 8, 3),
-                .TriggerFlagIdx  = GetPackedValue(attribsPack, 11, 4),
+                .FloorType       = floorType,
+                .DisableHeight   = disableHeight,
+                .SurfaceCacheIdx = surfaceCacheIdx,
+                .TriggerFlagIdx  = triggerFlagIdx,
                 .SlopeGradientX  = slopeGradientX,
                 .SlopeGradientZ  = slopeGradientZ
             });
         }
 
         // Set stream position to polygons.
-        stream.SetPosition(polysOffset);
+        stream.SetPosition(baseOffset + polysOffset);
 
         // Read polygons.
         auto polys = std::vector<IpdPolygon>{};
         polys.reserve(polyCount);
         for (int i = 0; i < polyCount; i++)
         {
-            // Read packed offset and trigger flag index.
-            uint16 dataPack = stream.ReadUint16();
-            q7_8   offsetZ  = stream.ReadInt16();
+            // Read packed XY offset and trigger flag index.
+            uint32 dataPack       = stream.ReadUint32();
+            q7_8   offsetX        = GetPackedValue(dataPack, 0, 14);
+            q7_8   offsetY        = GetPackedValue(dataPack, 16, 14);
+            int    triggerFlagIdx = (GetPackedValue(dataPack, 14, 2) << 2) | GetPackedValue(dataPack, 30, 2);
+
+            // Read Z offset.
+            q7_8 offsetZ = stream.ReadInt16();
 
             // Read split vertex indices.
             uint8 splitVertIdx0 = stream.ReadUint8();
-            uint8 splitVertIdxz = stream.ReadUint8();
+            uint8 splitVertIdx1 = stream.ReadUint8();
 
             // Read surface indices.
             uint8 surfaceIdx0 = stream.ReadUint8();
@@ -180,17 +190,17 @@ namespace Silent::Assets
             // Collect polygon.
             polys.push_back(IpdPolygon
             {
-                .Offset          = Vector3i(GetPackedValue(dataPack, 0, 14), GetPackedValue(dataPack, 16, 14), offsetZ),
-                .TriggerFlagIdx  = (GetPackedValue(dataPack, 14, 2) << 2) | GetPackedValue(dataPack, 30, 2),
+                .Offset          = Vector3i(offsetX, offsetY, offsetZ),
+                .TriggerFlagIdx  = triggerFlagIdx,
                 .SplitVertexIdx0 = splitVertIdx0,
-                .SplitVertexIdx1 = splitVertIdxz,
+                .SplitVertexIdx1 = splitVertIdx1,
                 .SurfaceIdx0     = surfaceIdx0,
                 .SurfaceIdx1     = surfaceIdxz
             });
         }
 
         // Set stream position to cylinders.
-        stream.SetPosition(cylindersOffset);
+        stream.SetPosition(baseOffset + cylindersOffset);
 
         // Read cylinders.
         auto cylinders = std::vector<IpdCylinder>{};
@@ -220,7 +230,7 @@ namespace Silent::Assets
         }
 
         // Set stream position to shape allocations.
-        stream.SetPosition(shapeAllocsOffset);
+        stream.SetPosition(baseOffset + shapeAllocsOffset);
 
         // Read shape allocations.
         auto shapeAllocs = std::vector<IpdShapeAlloc>{};
@@ -240,7 +250,7 @@ namespace Silent::Assets
         }
 
         // Set stream position to shape LUT.
-        stream.SetPosition(shapeLutOffset);
+        stream.SetPosition(baseOffset + shapeLutOffset);
 
         // Read shape LUT entries.
         auto shapeLut = std::vector<int>{};
@@ -252,7 +262,7 @@ namespace Silent::Assets
         }
 
         // Set stream position to polygon surface LUT.
-        stream.SetPosition(surfaceLutOffset);
+        stream.SetPosition(baseOffset + surfaceLutOffset);
 
         // Read polygon surface LUT entries.
         auto surfaceLut = std::vector<int>{};
@@ -308,7 +318,7 @@ namespace Silent::Assets
         int8   chunkX           = stream.ReadInt8();
         int8   chunkZ           = stream.ReadInt8();
         uint32 lmOffset         = stream.ReadUint32();
-        uint8  modelCount       = stream.ReadUint8();
+        uint8  modelInfoCount   = stream.ReadUint8();
         uint8  modelBufferCount = stream.ReadUint8();
         uint8  modelOrderSize   = stream.ReadUint8();
 
@@ -326,7 +336,7 @@ namespace Silent::Assets
         stream.SetPosition(COLLISION_OFFSET);
 
         // Parse collision chunk.
-        auto coll = ParseCollisionChunk(stream);
+        auto coll = ParseCollisionChunk(stream, COLLISION_OFFSET);
         
         // Set stream position to LM chunk.
         stream.SetPosition(lmOffset);
@@ -344,8 +354,8 @@ namespace Silent::Assets
 
         // Read model infos.
         auto modelInfos = std::vector<IpdModelInfo>{};
-        modelInfos.reserve(modelCount);
-        for (int i = 0; i < modelCount; i++)
+        modelInfos.reserve(modelInfoCount);
+        for (int i = 0; i < modelInfoCount; i++)
         {
             uint8 isGlobalPlm = stream.ReadUint8();
 
@@ -365,7 +375,7 @@ namespace Silent::Assets
         // Set stream position to model buffers.
         stream.SetPosition(modelBuffersOffset);
 
-        // Read model buffers.
+        // Read model buffers. @todo Bugged?
         auto modelBuffers = std::vector<IpdModelBuffer>{};
         modelBuffers.reserve(modelBufferCount);
         for (int i = 0; i < modelBufferCount; i++)
@@ -378,15 +388,18 @@ namespace Silent::Assets
             stream.Skip(1);
 
             // Read visibility AABB.
-            int16 minX = stream.ReadInt16();
-            int16 maxX = stream.ReadInt16();
-            int16 minZ = stream.ReadInt16();
-            int16 maxZ = stream.ReadInt16();
+            q7_8 minX = stream.ReadInt16();
+            q7_8 maxX = stream.ReadInt16();
+            q7_8 minZ = stream.ReadInt16();
+            q7_8 maxZ = stream.ReadInt16();
 
             // Read array offsets.
             uint32 modelInstsOffset     = stream.ReadUint32();
             uint32 billboardInstsOffset = stream.ReadUint32();
             uint32 subcellRangesOffset  = stream.ReadUint32();
+
+            // Store next model buffer offset.
+            int nextModelBufferOffset = stream.GetPosition();
 
             // Set stream position to model instances.
             stream.SetPosition(modelInstsOffset);
@@ -438,15 +451,17 @@ namespace Silent::Assets
             billboardInsts.reserve(billboardInstCount);
             for (int j = 0; j < billboardInstCount; j++)
             {
-                q7_8   offsetX      = stream.ReadInt16();
-                q7_8   offsetY      = stream.ReadInt16();
-                q7_8   offsetZ      = stream.ReadInt16();
-                uint32 modelInfoIdx = stream.ReadInt32();
+                q7_8 offsetX = stream.ReadInt16();
+                q7_8 offsetY = stream.ReadInt16();
+                q7_8 offsetZ = stream.ReadInt16();
+                int8 idx     = stream.ReadInt8();
+
+                stream.Skip(1);
 
                 // Collect billboard sprite instance.
                 billboardInsts.push_back(IpdBillboardInstance
                 {
-                    .Idx    = modelInfoIdx,
+                    .Idx    = idx,
                     .Offset = Vector3(Q8_TO_FLT(offsetX), Q8_TO_FLT(offsetY), Q8_TO_FLT(offsetZ))
                 });
             }
@@ -485,6 +500,9 @@ namespace Silent::Assets
                 .BillboardInstances = std::move(billboardInsts),
                 .SubchunkInstances  = std::move(subchunkRanges)
             });
+
+            // Set stream position to next model buffer.
+            stream.SetPosition(nextModelBufferOffset);
         }
 
         return std::make_shared<IpdAsset>(IpdAsset

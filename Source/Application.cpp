@@ -169,9 +169,10 @@ namespace Silent
         _work.Video.Initialize(_work.Filesystem.GetAssetsDirectory() / ASSETS_VIDEO_DIR_NAME);
 
         // Fonts.
+        auto fontsPath = _work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME;
         for (const auto& fontMetadata : FONTS_METADATA)
         {
-            _work.Fonts.LoadFont(fontMetadata, _work.Filesystem.GetAssetsDirectory() / ASSETS_FONTS_DIR_NAME, GLYPH_PRECACHE);
+            _work.Fonts.LoadFont(fontMetadata, fontsPath, GLYPH_PRECACHE);
         }
 
         // Set ImGui DPI scale.

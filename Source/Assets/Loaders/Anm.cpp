@@ -9,7 +9,30 @@ using namespace Silent::Utils;
 
 namespace Silent::Assets
 {
-    using AnmMatrix = std::array<std::array<q0_7, 3>, 3>;
+    /** @brief ANM rotation matrix. */
+    struct AnmMatrix
+    {
+        std::array<std::array<q0_7, 3>, 3> Rotation = {};
+
+        /** @brief Converts the ANM rotation matrix to a `Quaternion`.
+         *
+         * @return Converted rotation.
+         */
+        Quaternion ToQuaternion();
+    };
+
+    Quaternion AnmMatrix::ToQuaternion()
+    {
+        return Matrix(Q7_TO_FLT(Rotation[0][0]),
+                      Q7_TO_FLT(Rotation[1][0]),
+                      Q7_TO_FLT(Rotation[2][0]),
+                      Q7_TO_FLT(Rotation[0][1]),
+                      Q7_TO_FLT(Rotation[1][1]),
+                      Q7_TO_FLT(Rotation[2][1]),
+                      Q7_TO_FLT(Rotation[0][2]),
+                      Q7_TO_FLT(Rotation[1][2]),
+                      Q7_TO_FLT(Rotation[2][2])).ToQuaternion();
+    }
 
     /** @brief Converts a scaled translation to model space.
      *
@@ -24,24 +47,6 @@ namespace Silent::Assets
         return Vector3(Q7_TO_FLT(x << shift),
                        Q7_TO_FLT(y << shift),
                        Q7_TO_FLT(z << shift));
-    }
-
-    /** @brief Converts an ANM rotation matrix to a quaternion.
-     *
-     * @param rotMat ANM rotation matrix.
-     * @return Converted rotation.
-     */
-    static Quaternion ConvertRotation(const AnmMatrix& rotMat)
-    {
-        return Matrix(Q7_TO_FLT(rotMat[0][0]),
-                      Q7_TO_FLT(rotMat[1][0]),
-                      Q7_TO_FLT(rotMat[2][0]),
-                      Q7_TO_FLT(rotMat[0][1]),
-                      Q7_TO_FLT(rotMat[1][1]),
-                      Q7_TO_FLT(rotMat[2][1]),
-                      Q7_TO_FLT(rotMat[0][2]),
-                      Q7_TO_FLT(rotMat[1][2]),
-                      Q7_TO_FLT(rotMat[2][2])).ToQuaternion();
     }
 
     /** @brief Parses the keyframes from an ANM file.
@@ -68,6 +73,7 @@ namespace Silent::Assets
             keyframe.BoneTranslations.reserve(translationCount);
             for (int j = 0; j < translationCount; j++)
             {
+                // Read translation components.
                 q0_7 x = stream.ReadInt8();
                 q0_7 y = stream.ReadInt8();
                 q0_7 z = stream.ReadInt8();
@@ -81,12 +87,12 @@ namespace Silent::Assets
             keyframe.BoneRotation.reserve(rotCount);
             for (int j = 0; j < rotCount; j++)
             {
+                // Read matrix.
                 auto rotMat = AnmMatrix{};
-                stream.ReadArray(ToSpan(rotMat));
+                stream.ReadArray(ToSpan(rotMat.Rotation));
 
                 // Collect bone rotation.
-                auto rot = ConvertRotation(rotMat);
-                keyframe.BoneRotation.push_back(rot);
+                keyframe.BoneRotation.push_back(rotMat.ToQuaternion());
             }
 
             // Collect keyframe.

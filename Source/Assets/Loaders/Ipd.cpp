@@ -23,44 +23,39 @@ namespace Silent::Assets
         // @todo
     };
 
+    /** @brief IPD transform matrix. */
     struct IpdMatrix
     {
-        std::array<std::array<q7_8, 3>, 3> Rotation    = {};
-        Vector3i                           Translation = Vector3i::Zero;
+        std::array<std::array<q3_12, 3>, 3> Rotation    = {};
+        Vector3i                            Translation = Vector3i::Zero; /** Q19.12 */
+
+        /** @brief Converts the IPD transform matrix to a `Matrix`.
+         *
+         * @return Converted transformation.
+         */
+        Matrix ToMatrix();
     };
 
-    // @todo Check what the format is actually supposed to be.
-    /** @brief Converts an IPD matrix rotation to a quaternion.
-     *
-     * @param transformMat IPD transform matrix.
-     * @return Converted rotation.
-     */
-    static Quaternion ConvertRotation(const IpdMatrix& transformMat)
+    Matrix IpdMatrix::ToMatrix()
     {
-        return Matrix(Q8_TO_FLT(transformMat.Rotation[0][0]),
-                      Q8_TO_FLT(transformMat.Rotation[1][0]),
-                      Q8_TO_FLT(transformMat.Rotation[2][0]),
-                      Q8_TO_FLT(transformMat.Rotation[0][1]),
-                      Q8_TO_FLT(transformMat.Rotation[1][1]),
-                      Q8_TO_FLT(transformMat.Rotation[2][1]),
-                      Q8_TO_FLT(transformMat.Rotation[0][2]),
-                      Q8_TO_FLT(transformMat.Rotation[1][2]),
-                      Q8_TO_FLT(transformMat.Rotation[2][2])).ToQuaternion();
+        auto mat = Matrix(Q12_TO_FLT(Rotation[0][0]),
+                          Q12_TO_FLT(Rotation[1][0]),
+                          Q12_TO_FLT(Rotation[2][0]),
+                          Q12_TO_FLT(Rotation[0][1]),
+                          Q12_TO_FLT(Rotation[1][1]),
+                          Q12_TO_FLT(Rotation[2][1]),
+                          Q12_TO_FLT(Rotation[0][2]),
+                          Q12_TO_FLT(Rotation[1][2]),
+                          Q12_TO_FLT(Rotation[2][2]));
+
+        auto translation = Vector3(Q12_TO_FLT(Translation.x),
+                                   Q12_TO_FLT(Translation.y),
+                                   Q12_TO_FLT(Translation.z));
+        mat.Translate(translation);
+
+        return mat;
     }
 
-    // @todo Check if Q12 is actually the format.
-    /** @brief Converts an IPD matrix translation to a `Vector3`.
-     *
-     * @param transformMat IPD transform matrix.
-     * @return Translation rotation.
-     */
-    static Vector3 ConvertTranslation(const IpdMatrix& transformMat)
-    {
-        return Vector3(Q12_TO_FLT(transformMat.Translation.x),
-                       Q12_TO_FLT(transformMat.Translation.y),
-                       Q12_TO_FLT(transformMat.Translation.z));
-    }
-    
     /** @brief Parses the collision chunk from an IPD asset file.
      *
      * @param stream Output file stream.
@@ -375,7 +370,7 @@ namespace Silent::Assets
         // Set stream position to model buffers.
         stream.SetPosition(modelBuffersOffset);
 
-        // Read model buffers. @todo Bugged?
+        // Read model buffers.
         auto modelBuffers = std::vector<IpdModelBuffer>{};
         modelBuffers.reserve(modelBufferCount);
         for (int i = 0; i < modelBufferCount; i++)
@@ -409,37 +404,31 @@ namespace Silent::Assets
             modelInsts.reserve(modelInstCount);
             for (int j = 0; j < modelInstCount; j++)
             {
-                uint32 modelInfoIdx = stream.ReadInt32();
+                uint32 modelInfoIdx = stream.ReadUint32();
 
-                // Read transform matrix.
-                auto ipdTransformMat = IpdMatrix{};
+                auto transformMat = IpdMatrix{};
 
-                ipdTransformMat.Rotation[0][0] = stream.ReadInt16();
-                ipdTransformMat.Rotation[0][1] = stream.ReadInt16();
-                ipdTransformMat.Rotation[0][2] = stream.ReadInt16();
-                ipdTransformMat.Rotation[1][0] = stream.ReadInt16();
-                ipdTransformMat.Rotation[1][1] = stream.ReadInt16();
-                ipdTransformMat.Rotation[1][2] = stream.ReadInt16();
-                ipdTransformMat.Rotation[2][0] = stream.ReadInt16();
-                ipdTransformMat.Rotation[2][1] = stream.ReadInt16();
-                ipdTransformMat.Rotation[2][2] = stream.ReadInt16();
+                transformMat.Rotation[0][0] = stream.ReadInt16();
+                transformMat.Rotation[0][1] = stream.ReadInt16();
+                transformMat.Rotation[0][2] = stream.ReadInt16();
+                transformMat.Rotation[1][0] = stream.ReadInt16();
+                transformMat.Rotation[1][1] = stream.ReadInt16();
+                transformMat.Rotation[1][2] = stream.ReadInt16();
+                transformMat.Rotation[2][0] = stream.ReadInt16();
+                transformMat.Rotation[2][1] = stream.ReadInt16();
+                transformMat.Rotation[2][2] = stream.ReadInt16();
 
                 stream.Skip(2);
 
-                ipdTransformMat.Translation.x = stream.ReadInt32();
-                ipdTransformMat.Translation.y = stream.ReadInt32();
-                ipdTransformMat.Translation.z = stream.ReadInt32();
-
-                // @todo Convert. What are the formats?
-                auto transformMat = Matrix::Identity;
-                transformMat.Translate(ConvertTranslation(ipdTransformMat));
-                //transformMat.Rotate(ConvertRotation(ipdTransformMat)); // @todo Work on conversion.
+                transformMat.Translation.x = stream.ReadInt32();
+                transformMat.Translation.y = stream.ReadInt32();
+                transformMat.Translation.z = stream.ReadInt32();
 
                 // Collect model instance.
                 modelInsts.push_back(IpdModelInstance
                 {
                     .ModelInfoIdx = modelInfoIdx,
-                    .TransformMat = transformMat
+                    .TransformMat = transformMat.ToMatrix()
                 });
             }
 

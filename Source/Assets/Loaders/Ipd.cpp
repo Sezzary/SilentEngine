@@ -10,69 +10,24 @@ using namespace Silent::Utils;
 
 namespace Silent::Assets
 {
+    constexpr int     TEXTURE_RESOLUTION_STEP = 128;
+    static const auto TEXTURE_RESOLUTION_MAP  = std::unordered_map<std::string, Vector2i>
+    {
+        // @todo Account for some exceptions. Most textures are either 128x256 or 256x256, but some are thin strips
+        // or the UVs don't span far enough.
+    };
+
+    constexpr const char PARENT_TIM_DIR[] = "BG";
+    static const auto    TIM_MAP          = std::unordered_map<std::string, std::string>
+    {
+        // @todo
+    };
+
     struct IpdMatrix
     {
         std::array<std::array<q7_8, 3>, 3> Rotation    = {};
         Vector3i                           Translation = Vector3i::Zero;
     };
-
-    /** @brief Normalizes the UVs of meshes according to an IPD model's associated texture resolution.
-     *
-     * @param name Model name.
-     * @param meshes Model meshes with UVs to normalize.
-     */
-    static void NormalizeUvs(const std::string& name, std::vector<LmMesh>& meshes)
-    {
-        constexpr int RES_STEP = 128;
-
-        static const auto IPD_TEX_RES_MAP = std::unordered_map<std::string, Vector2i>
-        {
-            // @todo Account for some exceptions. Most textures are either 128x256 or 256x256, but some are thin strips
-            // or the UVs don't span far enough.
-        };
-
-        auto texRes = Vector2i::Zero;
-
-        // Get texture resolution.
-        const auto* obtuseTexRes = Find(IPD_TEX_RES_MAP, name);
-        if (obtuseTexRes != nullptr)
-        {
-            texRes = *obtuseTexRes;
-        }
-        else
-        {
-            // Derive resolution from pixel UV layout.
-            for (const auto& mesh : meshes)
-            {
-                for (const auto& vert : mesh.Linear.Vertices)
-                {
-                    texRes = Vector2i(std::max(texRes.x, (int)CeilToStep(vert.Uv.x, RES_STEP)),
-                                      std::max(texRes.y, (int)CeilToStep(vert.Uv.y, RES_STEP)));
-                }
-            }
-        }
-
-        // Normalize UVs.
-        for (auto& mesh : meshes)
-        {
-            for (auto& vert : mesh.Linear.Vertices)
-            {
-                vert.Uv /= texRes.ToVector2();
-            }
-        }
-    }
-
-    /** @brief Gets an IPD PLM model's corresponding texture asset name.
-     *
-     * @param name Model name.
-     * @return Texture asset name.
-     */
-    static std::string GetTextureAssetName(const std::string& name)
-    {
-        // Retrieve directly corresponding TIM.
-        auto texName = "BG/" + name + ".TIM";
-        return texName; 
-    }
 
     // @todo Check what the format is actually supposed to be.
     /** @brief Converts an IPD matrix rotation to a quaternion.
@@ -381,8 +336,8 @@ namespace Silent::Assets
         auto meshIds = std::vector<int>{};
         auto name    = ParseLmChunk(filename, lmOffset, stream, meshes, meshIds);
 
-        // Normalize IPD UVs.
-        NormalizeUvs(name, meshes);
+        // Normalize IPD mesh UVs.
+        NormalizeUvs(meshes, name, TEXTURE_RESOLUTION_STEP, TEXTURE_RESOLUTION_MAP);
 
         // Set stream position to model infos.
         stream.SetPosition(modelInfosOffset);
@@ -537,7 +492,7 @@ namespace Silent::Assets
             .Lm = LmChunk
             {
                 .Name        = name,
-                .TextureName = GetTextureAssetName(name),
+                .TextureName = GetTextureAssetName(name, PARENT_TIM_DIR, TIM_MAP),
                 .Meshes      = std::move(meshes),
                 .MeshIds     = std::move(meshIds)
             },

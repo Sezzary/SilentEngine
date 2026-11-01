@@ -297,7 +297,7 @@ namespace Silent::Assets
             {
                 mesh.Linear.Vertices[vertIdx] = BufferVertex3d
                 {
-                    .Position   = mesh.Native.Positions[keyVert.PositionIdx].ToVector3() / 128.0f,
+                    .Position   = mesh.Native.Positions[keyVert.PositionIdx].ToVector3() / (float)FP_TO(1.0f, 7),
                     .Normal     = Vector3::Normalize(mesh.Native.Normals[keyVert.NormalIdx].ToVector3()),
                     .Uv         = mesh.Native.Uvs[keyVert.UvIdx].ToVector2(), // @note Unnormalized pixel coordinates.
                     .PaletteIdx = keyVert.PaletteIdx
@@ -306,5 +306,54 @@ namespace Silent::Assets
         }
 
         return name;
+    }
+
+    void NormalizeUvs(std::vector<LmMesh>& meshes, const std::string& name,
+                      int texResStep, const std::unordered_map<std::string, Vector2i>& texResMap)
+    {
+        auto texRes = Vector2i::Zero;
+
+        // Get texture resolution.
+        const auto* hardcodedTexRes = Find(texResMap, name);
+        if (hardcodedTexRes != nullptr)
+        {
+            texRes = *hardcodedTexRes;
+        }
+        else
+        {
+            // Derive resolution from pixel UV layout.
+            for (const auto& mesh : meshes)
+            {
+                for (const auto& vert : mesh.Linear.Vertices)
+                {
+                    texRes = Vector2i(std::max(texRes.x, (int)CeilToStep(vert.Uv.x, texResStep)),
+                                      std::max(texRes.y, (int)CeilToStep(vert.Uv.y, texResStep)));
+                }
+            }
+        }
+
+        // Normalize UVs.
+        for (auto& mesh : meshes)
+        {
+            for (auto& vert : mesh.Linear.Vertices)
+            {
+                vert.Uv /= texRes.ToVector2();
+            }
+        }
+    }
+
+    std::string GetTextureAssetName(const std::string& name, const std::string& parentDirName,
+                                    const std::unordered_map<std::string, std::string>& lmTimMap)
+    {
+        // Retrieve hardcoded TIM.
+        const auto* hardcodedTexName = Find(lmTimMap, name);
+        if (hardcodedTexName != nullptr)
+        {
+            return *hardcodedTexName;
+        }
+
+        // Retrieve directly corresponding TIM.
+        auto texName = parentDirName + "/" + name + ".TIM";
+        return texName; 
     }
 }

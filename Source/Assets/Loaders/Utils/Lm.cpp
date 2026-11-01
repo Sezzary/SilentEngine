@@ -297,7 +297,7 @@ namespace Silent::Assets
             {
                 mesh.Linear.Vertices[vertIdx] = BufferVertex3d
                 {
-                    .Position   = mesh.Native.Positions[keyVert.PositionIdx].ToVector3() / (float)FP_TO(1.0f, 7),
+                    .Position   = mesh.Native.Positions[keyVert.PositionIdx].ToVector3() / (float)Q7(1.0f),
                     .Normal     = Vector3::Normalize(mesh.Native.Normals[keyVert.NormalIdx].ToVector3()),
                     .Uv         = mesh.Native.Uvs[keyVert.UvIdx].ToVector2(), // @note Unnormalized pixel coordinates.
                     .PaletteIdx = keyVert.PaletteIdx

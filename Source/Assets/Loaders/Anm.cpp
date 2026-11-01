@@ -21,9 +21,9 @@ namespace Silent::Assets
      */
     static Vector3 ConvertTranslation(int x, int y, int z, int shift)
     {
-        return Vector3(x << shift,
-                       y << shift,
-                       z << shift) / (float)FP_TO(1.0f, 7);
+        return Vector3(Q7_TO_FLT(x << shift),
+                       Q7_TO_FLT(y << shift),
+                       Q7_TO_FLT(z << shift));
     }
 
     /** @brief Converts an ANM rotation matrix to a quaternion.
@@ -33,15 +33,15 @@ namespace Silent::Assets
      */
     static Quaternion ConvertRotation(const AnmMatrix& rotMat)
     {
-        return Matrix(rotMat[0][0] / (float)FP_TO(1.0f, 7),
-                      rotMat[1][0] / (float)FP_TO(1.0f, 7),
-                      rotMat[2][0] / (float)FP_TO(1.0f, 7),
-                      rotMat[0][1] / (float)FP_TO(1.0f, 7),
-                      rotMat[1][1] / (float)FP_TO(1.0f, 7),
-                      rotMat[2][1] / (float)FP_TO(1.0f, 7),
-                      rotMat[0][2] / (float)FP_TO(1.0f, 7),
-                      rotMat[1][2] / (float)FP_TO(1.0f, 7),
-                      rotMat[2][2] / (float)FP_TO(1.0f, 7)).ToQuaternion();
+        return Matrix(Q7_TO_FLT(rotMat[0][0]),
+                      Q7_TO_FLT(rotMat[1][0]),
+                      Q7_TO_FLT(rotMat[2][0]),
+                      Q7_TO_FLT(rotMat[0][1]),
+                      Q7_TO_FLT(rotMat[1][1]),
+                      Q7_TO_FLT(rotMat[2][1]),
+                      Q7_TO_FLT(rotMat[0][2]),
+                      Q7_TO_FLT(rotMat[1][2]),
+                      Q7_TO_FLT(rotMat[2][2])).ToQuaternion();
     }
 
     /** @brief Parses the keyframes from an ANM file.

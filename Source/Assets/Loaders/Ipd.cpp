@@ -37,15 +37,15 @@ namespace Silent::Assets
      */
     static Quaternion ConvertRotation(const IpdMatrix& transformMat)
     {
-        return Matrix(transformMat.Rotation[0][0] / (float)Q8(1.0f),
-                      transformMat.Rotation[1][0] / (float)Q8(1.0f),
-                      transformMat.Rotation[2][0] / (float)Q8(1.0f),
-                      transformMat.Rotation[0][1] / (float)Q8(1.0f),
-                      transformMat.Rotation[1][1] / (float)Q8(1.0f),
-                      transformMat.Rotation[2][1] / (float)Q8(1.0f),
-                      transformMat.Rotation[0][2] / (float)Q8(1.0f),
-                      transformMat.Rotation[1][2] / (float)Q8(1.0f),
-                      transformMat.Rotation[2][2] / (float)Q8(1.0f)).ToQuaternion();
+        return Matrix(Q8_TO_FLT(transformMat.Rotation[0][0]),
+                      Q8_TO_FLT(transformMat.Rotation[1][0]),
+                      Q8_TO_FLT(transformMat.Rotation[2][0]),
+                      Q8_TO_FLT(transformMat.Rotation[0][1]),
+                      Q8_TO_FLT(transformMat.Rotation[1][1]),
+                      Q8_TO_FLT(transformMat.Rotation[2][1]),
+                      Q8_TO_FLT(transformMat.Rotation[0][2]),
+                      Q8_TO_FLT(transformMat.Rotation[1][2]),
+                      Q8_TO_FLT(transformMat.Rotation[2][2])).ToQuaternion();
     }
 
     // @todo Check if Q12 is actually the format.

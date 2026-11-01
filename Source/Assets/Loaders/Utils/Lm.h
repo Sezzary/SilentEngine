@@ -64,12 +64,13 @@ namespace Silent::Assets
      * the given parent format.
      *
      * @param filename Absolute asset file path.
+     * @param baseOffset Base stream offset.
      * @param stream Output file stream.
      * @param meshes Output meshes.
      * @param meshIDs Output mesh IDs.
      * @return LM chunk name.
      */
-    std::string ParseLmChunk(const stdfs::path& filename,
+    std::string ParseLmChunk(const stdfs::path& filename, int baseOffset,
                              Stream& stream, std::vector<LmMesh>& meshes, std::vector<int>& meshIds);
 }
 

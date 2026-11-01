@@ -13,19 +13,21 @@ namespace Silent::Assets
         std::string Name        = {}; // @todo Name in LM. Need to work out how to manage this.
     };
 
+    /** @brief IPD transformed model instance. */
     struct IpdModelInstance
     {
-        int    ModelInfoIdx = 0;
-        Matrix TransformMat = Matrix::Identity; /** Translation is relative to the chunk. */
+        int    ModelInfoIdx = 0;                /** Index into `IpdAsset::ModelInfos`. */
+        Matrix TransformMat = Matrix::Identity; /** Translation relative to the chunk. */
     };
 
     /** @brief IPD transformed billboard sprite instance. */
     struct IpdBillboardInstance
     {
-        Vector3 Offset = Vector3::Zero; /** Offset in chunk. */
         int     Idx    = 0;
+        Vector3 Offset = Vector3::Zero; /** Offset in chunk. */
     };
 
+    /** @brief IPD subchunk range. */
     struct IpdSubchunkRange
     {
         q7_8 MinX = Q8(0.0f);

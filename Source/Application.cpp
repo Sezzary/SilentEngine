@@ -214,6 +214,8 @@ namespace Silent
         _work.Toaster.Add(_work.Translator((PLATFORM_TYPE == PlatformType::MacOs) ? KEY_SYS_FULLSCREEN_HINT_MAC :
                                                                                     KEY_SYS_FULLSCREEN_HINT_GENERIC));
 
+        const auto* bleh = _work.Assets["Psx/BG/APU0000.IPD"];
+        const auto blah = bleh->GetData<IpdAsset>();
         Debug::Log("Startup complete.");
     }
 

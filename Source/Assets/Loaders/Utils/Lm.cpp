@@ -15,7 +15,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Assets
 {
-    std::string ParseLmChunk(const stdfs::path& filename,
+    std::string ParseLmChunk(const stdfs::path& filename, int baseOffset,
                              Stream& stream, std::vector<LmMesh>& meshes, std::vector<int>& meshIds)
     {
         constexpr int8   MAGIC          = 0x30;
@@ -53,7 +53,7 @@ namespace Silent::Assets
         auto   name          = stream.ReadCString();
 
         // Set stream position to meshes.
-        stream.SetPosition(meshesOffset);
+        stream.SetPosition(baseOffset + meshesOffset);
 
         // Read meshes.
         meshes.reserve(meshCount);
@@ -83,10 +83,10 @@ namespace Silent::Assets
             uint32 bodyOffset = stream.ReadUint32();
 
             // Store next mesh offset.
-            int nextMeshOffset = stream.GetPosition();
+            int nextMeshOffset = stream.GetPosition() - baseOffset;
 
             // Set stream position to current mesh body.
-            stream.SetPosition(bodyOffset);
+            stream.SetPosition(baseOffset + bodyOffset);
 
             // Read mesh component counts.
             uint8 primCount   = stream.ReadUint8();
@@ -103,7 +103,7 @@ namespace Silent::Assets
             uint32 nextBodyOffset = stream.ReadUint32(); // Unused.
 
             // Read primitives.
-            stream.SetPosition(primsOffset);
+            stream.SetPosition(baseOffset + primsOffset);
             mesh.Native.Primitives.reserve(primCount);
             for (int j = 0; j < primCount; j++)
             {
@@ -196,7 +196,7 @@ namespace Silent::Assets
             mesh.Native.Positions.reserve(posCount);
 
             // Read XY vertex position components.
-            stream.SetPosition(posXyOffset);
+            stream.SetPosition(baseOffset + posXyOffset);
             for (int j = 0; j < posCount; j++)
             {
                 q8_7 x = stream.ReadInt16();
@@ -207,7 +207,7 @@ namespace Silent::Assets
             }
 
             // Read Z vertex position components.
-            stream.SetPosition(posZOffset);
+            stream.SetPosition(baseOffset + posZOffset);
             for (int j = 0; j < posCount; j++)
             {
                 q8_7 z = stream.ReadInt16();
@@ -217,7 +217,7 @@ namespace Silent::Assets
             }
 
             // Read vertex normals.
-            stream.SetPosition(normalsOffset);
+            stream.SetPosition(baseOffset + normalsOffset);
             mesh.Native.Normals.reserve(normalCount);
             for (int j = 0; j < normalCount; j++)
             {
@@ -241,11 +241,11 @@ namespace Silent::Assets
             meshes.push_back(std::move(mesh));
 
             // Set stream position to next mesh.
-            stream.SetPosition(nextMeshOffset);
+            stream.SetPosition(baseOffset + nextMeshOffset);
         }
 
         // Set stream position to mesh IDs.
-        stream.SetPosition(meshIdsOffset);
+        stream.SetPosition(baseOffset + meshIdsOffset);
 
         // Read mesh IDs.
         meshIds.reserve(meshCount);

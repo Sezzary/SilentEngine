@@ -105,7 +105,7 @@ namespace Silent::Assets
         // Parse LM chunk.
         auto meshes  = std::vector<LmMesh>{};
         auto meshIds = std::vector<int>{};
-        auto name    = ParseLmChunk(filename, stream, meshes, meshIds);
+        auto name    = ParseLmChunk(filename, 0, stream, meshes, meshIds);
 
         // Normalize ILM UVs.
         NormalizeUvs(name, meshes);

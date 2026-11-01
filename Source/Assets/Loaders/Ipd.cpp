@@ -12,8 +12,8 @@ namespace Silent::Assets
 {
     struct IpdMatrix
     {
-        std::array<std::array<int16, 3>, 3> Rotation    = {};
-        Vector3i                            Translation = Vector3i::Zero;
+        std::array<std::array<q7_8, 3>, 3> Rotation    = {};
+        Vector3i                           Translation = Vector3i::Zero;
     };
 
     /** @brief Normalizes the UVs of meshes according to an IPD model's associated texture resolution.
@@ -82,15 +82,15 @@ namespace Silent::Assets
      */
     static Quaternion ConvertRotation(const IpdMatrix& transformMat)
     {
-        return Matrix(transformMat.Rotation[0][0] / 256.0f,
-                      transformMat.Rotation[1][0] / 256.0f,
-                      transformMat.Rotation[2][0] / 256.0f,
-                      transformMat.Rotation[0][1] / 256.0f,
-                      transformMat.Rotation[1][1] / 256.0f,
-                      transformMat.Rotation[2][1] / 256.0f,
-                      transformMat.Rotation[0][2] / 256.0f,
-                      transformMat.Rotation[1][2] / 256.0f,
-                      transformMat.Rotation[2][2] / 256.0f).ToQuaternion();
+        return Matrix(transformMat.Rotation[0][0] / (float)Q8(1.0f),
+                      transformMat.Rotation[1][0] / (float)Q8(1.0f),
+                      transformMat.Rotation[2][0] / (float)Q8(1.0f),
+                      transformMat.Rotation[0][1] / (float)Q8(1.0f),
+                      transformMat.Rotation[1][1] / (float)Q8(1.0f),
+                      transformMat.Rotation[2][1] / (float)Q8(1.0f),
+                      transformMat.Rotation[0][2] / (float)Q8(1.0f),
+                      transformMat.Rotation[1][2] / (float)Q8(1.0f),
+                      transformMat.Rotation[2][2] / (float)Q8(1.0f)).ToQuaternion();
     }
 
     // @todo Check if Q12 is actually the format.
@@ -355,7 +355,7 @@ namespace Silent::Assets
         uint32 lmOffset         = stream.ReadUint32();
         uint8  modelCount       = stream.ReadUint8();
         uint8  modelBufferCount = stream.ReadUint8();
-        uint8  modelOrderCount  = stream.ReadUint8();
+        uint8  modelOrderSize   = stream.ReadUint8();
 
         stream.Skip(9);
 
@@ -379,7 +379,7 @@ namespace Silent::Assets
         // Read LM chunk.
         auto meshes  = std::vector<LmMesh>{};
         auto meshIds = std::vector<int>{};
-        auto name    = ParseLmChunk(filename, stream, meshes, meshIds);
+        auto name    = ParseLmChunk(filename, lmOffset, stream, meshes, meshIds);
 
         // Normalize IPD UVs.
         NormalizeUvs(name, meshes);
@@ -491,8 +491,8 @@ namespace Silent::Assets
                 // Collect billboard sprite instance.
                 billboardInsts.push_back(IpdBillboardInstance
                 {
-                    .Offset = Vector3(Q8_TO_FLT(offsetX), Q8_TO_FLT(offsetY), Q8_TO_FLT(offsetZ)),
-                    .Idx    = modelInfoIdx
+                    .Idx    = modelInfoIdx,
+                    .Offset = Vector3(Q8_TO_FLT(offsetX), Q8_TO_FLT(offsetY), Q8_TO_FLT(offsetZ))
                 });
             }
 

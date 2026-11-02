@@ -21,6 +21,16 @@ namespace Silent::Game
     static q19_12 PrevScreenFadeProgress = Q12(0.0f);
     static bool   IsWhite                = false;
 
+    bool ScreenFade_IsFinished()
+    {
+        return (g_Screen_FadeStatus & 0x7) == ScreenFadeState_FadeOutComplete;
+    }
+
+    bool ScreenFade_IsNone()
+    {
+        return g_Screen_FadeStatus == ScreenFadeState_None;
+    }
+
     void ScreenFade_Start(bool reset, bool fadeIn, bool isWhite, q19_12 timestep)
     {
         g_Screen_FadeStatus = (((reset) ? ScreenFadeState_FadeOutStart : ScreenFadeState_FadeOutSteps) +
@@ -31,6 +41,16 @@ namespace Silent::Game
         {
             g_ScreenFadeTimestep = timestep;
         }
+    }
+
+    void ScreenFade_Reset()
+    {
+        g_Screen_FadeStatus = ScreenFadeState_Reset;
+    }
+
+    void ScreenFade_ResetTimestep()
+    {
+        g_Screen_FadeStatus = ScreenFadeState_ResetTimestep;
     }
 
     q19_12 Screen_FadeInProgressGet()

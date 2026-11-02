@@ -90,6 +90,6 @@ namespace Silent::Game
         // Update delta time.
         g_DeltaTime    =
         g_DeltaTimeRaw = FIXED_DELTA_TIME;
-        g_GravitySpeed = Q12_MULT(FIXED_DELTA_TIME, GRAVITY_SPEED_PER_SEC);
+        g_GravitySpeed = Q12_MULT(g_DeltaTime, GRAVITY_SPEED_PER_SEC);
     }
 }

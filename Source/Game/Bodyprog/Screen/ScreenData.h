@@ -15,6 +15,7 @@ namespace Silent::Game
         SyncMode_Wait8     = 8
     };
 
+    // @deprecated This is not an emulator.
     extern s32  g_ActiveBufferIdx;
     extern GsOT g_OrderingTable0[2];
     extern GsOT g_OrderingTable1[2];

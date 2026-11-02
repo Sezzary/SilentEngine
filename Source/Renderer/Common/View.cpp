@@ -39,7 +39,7 @@ namespace Silent::Renderer
         }
 
         // Move on 2D plane.
-        if (input.GetAction(In::W).IsHeld())
+        if (input.GetAction(In::MouseScrollDown).IsHeld() || input.GetAction(In::W).IsHeld())
         {
             Position.Translate(Direction, speed);
         }
@@ -47,7 +47,7 @@ namespace Silent::Renderer
         {
             Position.Translate(Vector3::Normalize(Vector3::Cross(Direction, Up)), -speed);
         }
-        if (input.GetAction(In::S).IsHeld())
+        if (input.GetAction(In::MouseScrollUp).IsHeld() || input.GetAction(In::S).IsHeld())
         {
             Position.Translate(Direction, -speed);
         }
@@ -75,13 +75,12 @@ namespace Silent::Renderer
         }
 
         // Rotate.
-        /*const auto& mouseAxis = input.GetAnalogAxis(AnalogAxisId::Mouse);
-        if (mouseAxis != Vector2::Zero)
+        const auto& mouseAxis = input.GetAnalogAxis(AnalogAxisId::Mouse);
+        if (input.GetAction(In::Q).IsHeld())
         {
-            static auto rot = EulerAngles::Identity;
-            rot            += EulerAngles(Q12_ANGLE(mouseAxis.x), Q12_ANGLE(mouseAxis.y), 0);
-            Direction       = rot.ToDirection();
-        }*/
+            auto rot  = EulerAngles(Q12_ANGLE(-mouseAxis.State.y), Q12_ANGLE(mouseAxis.State.x), Q12_ANGLE(0.0f));
+            Direction = Vector3::Transform(Direction, rot.ToRotationMatrix());
+        }
 
         // Change FOV.
         if (input.GetAction(In::MouseScrollDown).IsClicked())

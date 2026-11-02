@@ -63,8 +63,10 @@ namespace Silent::Renderer::SdlGpu
         const auto harryAnmData = harryAnm1->GetData<AnmAsset>();
 
         // @todo How can an optional palette be bound in a clean way?
-        auto* tex             = GetTextures()["Psx/CHARA/HERO.TIM"];
-        auto* paletteAtlasTex = GetTextures()[Fmt("{}{}", "Psx/CHARA/HERO.TIM", PALETTE_ATLAS_SUFFIX)];
+        //auto* tex             = GetTextures()["Psx/CHARA/HERO.TIM"];
+        //auto* paletteAtlasTex = GetTextures()[Fmt("{}{}", "Psx/CHARA/HERO.TIM", PALETTE_ATLAS_SUFFIX)];
+        auto* tex             = GetTextures()["Psx/BG/APUG2F.TIM"];
+        auto* paletteAtlasTex = GetTextures()[Fmt("{}{}", "Psx/BG/APUG2F.TIM", PALETTE_ATLAS_SUFFIX)];
         if (tex != nullptr)
         {
             tex->Bind(renderPass, GetActiveSampler(), 0);
@@ -100,7 +102,8 @@ namespace Silent::Renderer::SdlGpu
             PushFragmentUniform(uniFrag0, 0);
 
             // Draw.
-            const auto* mesh = GetMeshes()["Psx/CHARA/HERO.ILM_02HEAD1"];
+            //const auto* mesh = GetMeshes()["Psx/CHARA/HERO.ILM_02HEAD1"];
+            const auto* mesh = GetMeshes()["Psx/BG/APU0000.IPD_APU01_1"];
             if (mesh != nullptr)
             {
                 SDL_DrawGPUIndexedPrimitives(&renderPass, mesh->IdxCount, 1, mesh->IdxOffset, mesh->VertexOffset, 0);

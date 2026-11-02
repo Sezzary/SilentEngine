@@ -68,22 +68,22 @@ namespace Silent::Assets
         q23_8 posX = stream.ReadInt32();
         q23_8 posZ = stream.ReadInt32();
 
-        // Read array counts.
+        // Read shape data counts.
         uint8 polySplitVertCount = stream.ReadUint8();
         uint8 polySurfaceCount   = stream.ReadUint8();
         uint8 polyCount          = stream.ReadUint8();
         uint8 cylinderCount      = stream.ReadUint8();
 
-        // Read array offsets.
+        // Read shape data offsets.
         uint32 polySplitVertsOffset = stream.ReadUint32();
         uint32 polySurfacesOffset   = stream.ReadUint32();
         uint32 polysOffset          = stream.ReadUint32();
         uint32 cylindersOffset      = stream.ReadUint32();
 
         // Read cell grid attributes.
-        uint16 cellSize   = stream.ReadInt16();
-        uint8  cellCountX = stream.ReadUint8();
-        uint8  cellCountZ = stream.ReadUint8();
+        q7_8  cellSize   = stream.ReadInt16();
+        uint8 cellCountX = stream.ReadUint8();
+        uint8 cellCountZ = stream.ReadUint8();
 
         // Read LUT parameters.
         uint32 shapeAllocsOffset = stream.ReadUint32();
@@ -109,7 +109,6 @@ namespace Silent::Assets
         polySplitVerts.reserve(polySplitVertCount);
         for (int i = 0; i < polySplitVertCount; i++)
         {
-            // Read components.
             q7_8 x = stream.ReadInt16();
             q7_8 y = stream.ReadInt16();
             q7_8 z = stream.ReadInt16();
@@ -132,13 +131,13 @@ namespace Silent::Assets
             q7_8 offsetZ = stream.ReadInt16();
 
             // Read packed attributes.
-            uint16 attribsPack     = stream.ReadInt16();
+            uint16 attribsPack     = stream.ReadUint16();
             int    floorType       = GetPackedValue(attribsPack, 0, 5);
             int    disableHeight   = GetPackedValue(attribsPack, 5, 3);
             int    surfaceCacheIdx = GetPackedValue(attribsPack, 8, 3);
             int    triggerFlagIdx  = GetPackedValue(attribsPack, 11, 4);
 
-            // Read gradient.
+            // Read slope gradient.
             q7_8 slopeGradientX = stream.ReadInt16();
             q7_8 slopeGradientZ = stream.ReadInt16();
 

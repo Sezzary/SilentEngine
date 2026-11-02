@@ -183,6 +183,7 @@ namespace Silent::Utils
 
     /** @brief Extracts a packed value from a bitfield.
      *
+     * @tparam T Bitfield type.
      * @param bitfield Bitfield containing the value.
      * @param idx Value start bit index.
      * @param size Value size in bits.

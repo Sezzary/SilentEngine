@@ -82,7 +82,7 @@ namespace Silent::Game
 
         for (i = 0; i < 32 && g_VBlanks < 4; i++, curCharaSpawn++)
         {
-            if (g_SysWork.npcFlags == ((1 << g_SysWork.npcFlagsId) - 1)) // TODO: Macro for this check?
+            if (g_SysWork.npcFlags == ((1 << g_SysWork.npcFlagId) - 1)) // TODO: Macro for this check?
             {
                 break;
             }

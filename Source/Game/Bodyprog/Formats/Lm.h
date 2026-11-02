@@ -44,12 +44,4 @@ namespace Silent::Game
         s_ModelHeader* modelHdrs;
         u8*            modelOrder;
     };
-
-    /** @brief Global LM model. */
-    struct s_GlobalLm
-    {
-        s_LmHeader* lmHdr;
-        s32         fileIdx;
-        s32         queueIdx;
-    };
 }

@@ -2,7 +2,7 @@
 
 namespace Silent::Game
 {
-    /** @brief Screen fade states used by `g_Screen_FadeStatus`. The flow is not linear. */
+    /** @brief Screen fade states used by `g_ScreenFade_Status`. The flow is not linear. */
     enum e_ScreenFadeState
     {
         ScreenFadeState_Reset           = 0,
@@ -28,13 +28,13 @@ namespace Silent::Game
      * 10-15 - Fades to white and keeps the screen white.
      * 16    - Fades to black.
      */
-    extern int g_Screen_FadeStatus;
+    extern int g_ScreenFade_Status;
 
     extern q19_12 g_ScreenFadeTimestep;
     extern q19_12 g_ScreenFadeProgress;
 
     /** @brief Packs a screen fade status containing a fade state and white flag.
-     * See `g_Screen_FadeStatus` for bit layout.
+     * See `g_ScreenFade_Status` for bit layout.
      *
      * @param state Screen fade state.
      * @param isWhite White status.
@@ -46,7 +46,7 @@ namespace Silent::Game
     }
 
     /** @brief Checks if the screen fade is white.
-     * See `g_Screen_FadeStatus` for bit layout.
+     * See `g_ScreenFade_Status` for bit layout.
      *
      * @param fadeStatus Packed screen fade status containing a fade state and white flag.
      * @return `true` if white, `false` if black.

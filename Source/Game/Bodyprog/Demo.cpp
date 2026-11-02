@@ -311,7 +311,7 @@ namespace Silent::Game
         prevScreenFadeCpy      = prevScreenFade;
         cond                   = g_Demo_IsLoadingChunks;
         g_Demo_IsLoadingChunks = false;
-        prevScreenFade         = g_Screen_FadeStatus;
+        prevScreenFade         = g_ScreenFade_Status;
 
         if (!(g_SysWork.sysFlags & SysFlag_DemoActive))
         {
@@ -334,7 +334,7 @@ namespace Silent::Game
         }
 
         if (!Gfx_ScreenFadeIn_IsInProgress(prevScreenFadeCpy)   ||
-            !Gfx_ScreenFadeIn_IsInProgress(g_Screen_FadeStatus) ||
+            !Gfx_ScreenFadeIn_IsInProgress(g_ScreenFade_Status) ||
             cond)
         {
             g_Demo_CurFrameData = nullptr;

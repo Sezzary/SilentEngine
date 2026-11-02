@@ -385,7 +385,7 @@ namespace Silent::Game
         GsCOORDINATE2  unkCoords_E30[5];                       // Might be part of previous array for 5 extra coords which go unused.
         GsCOORDINATE2  npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
 
-        int npcFlagsId; // 1-based NPC ID for `npcFlags`.
+        int npcFlagId; // 1-based NPC ID for `npcFlags`.
 
         int loadingScreenIdx;
         int areaTransitionFlags;                /** `e_AreaTransitionFlags` */

@@ -16,16 +16,16 @@ As for this project: it's still rather early to ramp up the effort, but you are 
 ## Prospects
 
 - Easy to use.
+- Clean, well-documented codebase.
 - Windows/macOS/Linux support out of the box, with the potential for other platforms later.
-- Modern renderer supporting Vulkan, DX12, and Metal, with the potential for other backends in the future.
+- Modern renderer supporting Vulkan, DX12, and Metal, with the potential for other backends later.
 - Keyboard/mouse and gamepad support.
-- Widescreen and CRT filter support,
+- Widescreen and CRT filter support.
 - Retro and HD font options  (.TTF fonts matching the originals have been found or meticulously recreated, allowing for modern font rendering to take place without relying on the original sprites).
 - Various graphics toggles for a retro or modern look.
-- Clean, well-documented codebase.
 - Lua scripting.
-- Translation support.
-- Modding support.
+- Extensive translation support.
+- Modding support?
 - Custom levels (ambition for the far future).
 
 ## Current foundations
@@ -46,16 +46,15 @@ As for this project: it's still rather early to ramp up the effort, but you are 
 - Font manager
   FMV video player
 - Debug menu
+- Parsers for all game formats.
 - Various utilities pulled from other projects
 
 ### TODOs
 
 - Stability.
 - Switch to GCC as the compiler on Windows with MinGW.
-- Forward renderer.
-- Parsers for all proprietary game file types.
 - Lua scripting.
-- Decompiled code migration.
+- Full migration of decompiled.
 
 ## Building (Windows/macOS/Linux)
 
@@ -148,4 +147,16 @@ libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev
 ### Transfer assets
 
 Copy the `Assets` folder (containing custom supplementary files) from the root of the repository to the `Build` folder. Then, run the `Launcher` utility to extract all required original assets from a 1.1 US release of the game. Note this utility is rather barebones at the moment and works silently in the background when extraction begins.
-Original game assets are not provided and your own ROM must be sourced.
+
+*Original game assets are not provided and your own ROM must be sourced.*
+
+> [!IMPORTANT]
+**AI NOTICE** — Like the decompilation, this ambitious port project is human-driven and **not vibe-coded**. Deep understanding of game systems and code quality are of high importance, and the "document everything" attitude inherited from the decompilation effort will ensure anyone with adequate will and curiosity has the opportunity to read, understand, learn from, and potentially help improve the port themselves. Purely AI-driven workflows for projects such as these have done nothing but empower opportunists with little to no interest in software design who seek attention and instant results, unceremoniously ignoring the wishes of the people whose real work they depend on. Individuals may additionally overstate their involvement by claiming it's merely "AI-assisted" when it's anything but. **This is completely antithetical to the etiquette surrounding small open-source projects**. They completely forego all creative aspects and errode everything that make community-driven pursuits like this one worthwhile. Furthermore, given their hideous and practically illegible code output, contributions to AI repos will forever be out of reach to anyone who cannot afford costly LLM agents. At that point, I think, one might as well work with raw binary. If you have source code, it ought to be workable by a human **on prinicple**.
+
+From my observation, widespread usage of LLMs has truly benefited only two kinds of people:
+1) Those who are already well-off (and can thereby afford throwing agent swarms at whatever they please).
+2) Those with sociopathic tendencies (who lack common decency and remorselessly ignore all ethical concerns).
+
+In trying various workflows and observing how others work, my opinion on the matter is informed by experience: LLMs on their own are an interesting and useful technology, but the prevailing abuse perpetuated by droves of bad actors is likely to endure and cannot be ignored. To the end-user (i.e. the gamer), this might appear as a fair trade-off for quicker turnarounds and more games, but it severely lacks perspective. I encourage you, the user, to carefully consider *who* you really want to support. I want this to be a cool port people can enjoy, but it's about time regular users themselves also started being more high-minded and forward-thinking. **Don't hand the world to the lazy and weak of character.**
+
+For these reasons, **any future forks of this port by opportunistic parties who wish to do away with the implied principles are strongly discouraged and, if created, should never be endorsed by anyone.** A fuzzy line exists: the *best* thing about open-source is it allows anyone to do what they want, but the *worst* thing is people doing literally whatever they want.

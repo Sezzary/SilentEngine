@@ -10,7 +10,7 @@ namespace Silent::Game
 
     extern s_RadioNpcInfo g_RadioNpcInfos[2];
 
-    extern s_MapPoint2d D_800BCDB0;
+    extern s_MapPoint2d g_MapPoint;
 
     /** Related to special item interactions. */
     extern s32 g_ItemTriggerItemIds[5];

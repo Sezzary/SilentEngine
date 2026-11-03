@@ -249,6 +249,8 @@ namespace Silent::Game
         const auto& translator = g_App.GetTranslator();
         auto&       assets     = g_App.GetAssets();
 
+        // @todo Estimate original hardware load times.
+
         switch (g_GameWork.gameStateSteps[0])
         {
             case 0:
@@ -315,6 +317,8 @@ namespace Silent::Game
 
         const auto& input  = g_App.GetInput();
         auto&       assets = g_App.GetAssets();
+
+        // @todo Estimate original hardware load times.
 
         static auto bgTexName = std::string();
         switch (g_GameWork.gameStateSteps[0])

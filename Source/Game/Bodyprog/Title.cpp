@@ -7,6 +7,7 @@
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
 #include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Events/PlayerPosUpdate.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
 #include "Game/Bodyprog/MemCard.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
@@ -150,7 +151,7 @@ namespace Silent::Game
 
         const auto& input = g_App.GetInput();
 
-        auto NEXT_GAME_STATES = std::array<int, MAIN_MENU_GAME_STATE_COUNT>
+        auto NEXT_GAME_STATES = std::array<e_GameState, MAIN_MENU_GAME_STATE_COUNT>
         {
             GameState_LoadSavegameScreen,
             GameState_AutoLoadSavegame,
@@ -306,7 +307,7 @@ namespace Silent::Game
 
                             //Game_PlayerInit();
                             g_SysWork.processFlags = ProcessFlag_Continue;
-                            //GameFs_MapLoad(g_SavegamePtr->mapIdx);
+                            //GameBoot_MapLoad(g_SavegamePtr->mapIdx);
                             break;
 
                         case MainMenuEntry_Load:
@@ -396,7 +397,7 @@ namespace Silent::Game
 
                     g_SysWork.processFlags = ProcessFlag_NewGame;
 
-                    //GameFs_MapLoad(MapIdx_MAP0_S00);
+                    GameBoot_MapLoad(MapIdx_MAP0_S00);
                     SD_Call(Sfx_MenuStartGame);
 
                     ScreenFade_Start(true, false, false);
@@ -424,22 +425,12 @@ namespace Silent::Game
 
                     if (g_MainMenu_SelectedEntry == MainMenuEntry_Start)
                     {
-                        //Chara_PositionSet(&g_MapOverlayHdr.mapPoints[0]);
+                        Game_PlayerMapPositionSet(&g_MapOverlayHdr.mapPoints[0]);
                     }
 
                     //MemCard_SysDisable();
 
-                    auto prevState                 = g_GameWork.gameState;
-                    g_GameWork.gameStateSteps[0]   = prevState;
-                    g_GameWork.gameState           = (e_GameState)NEXT_GAME_STATES[g_MainMenu_SelectedEntry];
-                    g_SysWork.gameStateCounter     = 0;
-                    g_GameWork.gameStatePrev       = prevState;
-                    g_GameWork.gameStateSteps[0]   = 0;
-                    g_SysWork.gameStateStepCounter = 0;
-                    g_GameWork.gameStateSteps[1]   = 0;
-                    g_GameWork.gameStateSteps[2]   = 0;
-
-                    SysWork_StateSetNext(SysState_Gameplay);
+                    Game_StateSetNext(NEXT_GAME_STATES[g_MainMenu_SelectedEntry]);
                 }
                 break;
 

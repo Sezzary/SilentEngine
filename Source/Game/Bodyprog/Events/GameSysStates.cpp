@@ -10,6 +10,7 @@
 #include "Game/Bodyprog/Events/bodyprog_data_800A99B4.h"
 #include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/Events/EventsMain.h"
+#include "Game/Bodyprog/Events/PlayerPosUpdate.h"
 #include "Game/Bodyprog/Events/Radio.h"
 #include "Game/Bodyprog/Events/Utils.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
@@ -70,7 +71,7 @@ namespace Silent::Game
 
     s_EventData*   g_ItemEvents[5]; // Guessed size. Check decomp later.
     s_RadioNpcInfo g_RadioNpcInfos[2];
-    s_MapPoint2d   D_800BCDB0;
+    s_MapPoint2d   g_MapPoint;
     s32            g_ItemTriggerItemIds[5];
     u8             g_MapAreaLoadCounter;
     s_EventData*   g_MapEventData;
@@ -244,7 +245,7 @@ namespace Silent::Game
         {
             SysWork_StateSetNext(SysState_GamePaused);
         }
-        /*else if (Player_IsAttacking() == true)
+        /*else if (Player_IsAttacking())
         {
             return;
         }*/
@@ -638,7 +639,7 @@ namespace Silent::Game
 
     void SysState_LoadArea_Update() // 0x80039C40
     {
-        g_SysWork.loadingScreenIdx    = D_800BCDB0.loadingScreenId;
+        g_SysWork.loadingScreenIdx    = g_MapPoint.loadingScreenId;
         g_SysWork.sfxPairIdx          = g_MapEventData->sfxPairIdx     ;
         g_SysWork.areaTransitionFlags = g_MapEventData->transitionFlags;
 
@@ -650,14 +651,14 @@ namespace Silent::Game
             g_SysWork.sysState  |= SysFlag_LoadActive;
         }
 
-        D_800BCDB0 = g_MapOverlayHdr.mapPoints[g_MapEventData->eventParam];
+        g_MapPoint = g_MapOverlayHdr.mapPoints[g_MapEventData->eventParam];
 
-        if (D_800BCDB0.triggerParam1 == 1)
+        if (g_MapPoint.triggerParam1 == 1)
         {
             const auto& mapPoint = g_MapOverlayHdr.mapPoints[g_MapEventData->mapPointIdx];
 
-            D_800BCDB0.positionX += g_SysWork.playerWork.player.position.vx - mapPoint.positionX;
-            D_800BCDB0.positionZ += g_SysWork.playerWork.player.position.vz - mapPoint.positionZ;
+            g_MapPoint.positionX += g_SysWork.playerWork.player.position.vx - mapPoint.positionX;
+            g_MapPoint.positionZ += g_SysWork.playerWork.player.position.vz - mapPoint.positionZ;
         }
 
         if (g_SysWork.sysState == SysState_LoadOverlay)
@@ -695,7 +696,7 @@ namespace Silent::Game
 
     void AreaLoad_UpdatePlayerPosition() // 0x80039F30
     {
-        //Chara_PositionSet(&D_800BCDB0);
+        Game_PlayerMapPositionSet(&g_MapPoint);
     }
 
     void AreaLoad_TransitionSound() // 0x80039F54

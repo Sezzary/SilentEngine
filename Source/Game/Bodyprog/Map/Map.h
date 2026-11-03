@@ -356,7 +356,8 @@ namespace Silent::Game
     } s_MapOverlayHdr_94;
 
     /** @brief Contains X/Z coordinates and optional 4 bytes of data.
-     * Map headers include an array of these, into which `s_EventData` includes an index. */
+     * Map headers include an array of these, into which `s_EventData` includes an index.
+     */
     struct s_MapPoint2d
     {
         q19_12 positionX;

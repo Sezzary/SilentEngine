@@ -283,7 +283,7 @@ namespace Silent::Game
         //World_CollisionTriggersSet(&g_MapOverlayHdr);
         //GameBoot_WorldEnvInit(0);
         //WorldGfx_CharaModelProcessAllLoads();
-        //Game_FlashlightAttributesFix();
+        //Game_FlashlightAttribSet();
 
         //g_MapOverlayHdr.particleSystemUpdate(0, mapOvlId, NO_VALUE);
 

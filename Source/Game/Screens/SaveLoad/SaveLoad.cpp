@@ -5,6 +5,7 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
+#include "Game/Bodyprog/GameBoot/GameBoot.h"
 #include "Game/Bodyprog/Sys/MemCard.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"

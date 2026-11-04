@@ -425,7 +425,6 @@ namespace Silent::Game
         const s_MapInfo*       mapInfo;
         u8                     (*mapRoomIdxGet)(q19_12 posX, q19_12 posY); // Called by `Game_MapRoomIdxUpdate`.
         s8                     unused_8;
-        s32                    (*func_C)();
         void                   (*bgmEvent)(bool);
         s8                     bgmIdx;
         u8                     ambientAudioIdx; // Ambient file index from `g_AmbientVabTaskLoadCmds`.

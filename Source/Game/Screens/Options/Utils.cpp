@@ -2,9 +2,9 @@
 #include "Game/Screens/Options/Utils.h"
 
 #include "Application.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Background.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Game.h"
 #include "Game/Screens/Options/Options.h"
 #include "Gui/Button.h"

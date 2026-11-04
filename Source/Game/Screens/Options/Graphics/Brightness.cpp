@@ -6,8 +6,8 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Background.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/SelectionGraphics.h"

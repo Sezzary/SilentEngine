@@ -3,7 +3,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Bodyprog/Chara/Spawn.h"
 
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 //#include "Game/Bodyprog/item_screens.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Main/FsQueue.h"

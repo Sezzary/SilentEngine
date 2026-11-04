@@ -17,7 +17,7 @@
 #include "Game/Bodyprog/Gfx/WorldObject.h"
 #include "Game/Bodyprog/Map/Map.h"
 #include "Game/Bodyprog/Map/Terrain.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
+#include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Bodyprog/Sound/SfxIdEnum.h"
 //#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/View/VwSystem.h"

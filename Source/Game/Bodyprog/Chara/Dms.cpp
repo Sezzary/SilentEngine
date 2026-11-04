@@ -5,7 +5,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 //#include "Game/Bodyprog/ItemScreens.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Main/FsQueue.h"
 

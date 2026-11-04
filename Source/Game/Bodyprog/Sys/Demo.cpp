@@ -3,7 +3,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Bodyprog/Sys/Demo.h"
 
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"

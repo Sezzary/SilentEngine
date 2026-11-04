@@ -2,7 +2,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Bodyprog/Sys/SettingsReset.h"
 
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 
 namespace Silent::Game

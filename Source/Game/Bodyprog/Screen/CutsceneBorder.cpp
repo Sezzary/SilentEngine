@@ -4,8 +4,8 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 #include "Game/Bodyprog/View/Structs.h"
 //#include "Game/Bodyprog/View/vc_main.h"
 #include "Game/Bodyprog/View/VcUtil.h"

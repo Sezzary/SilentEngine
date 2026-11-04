@@ -6,9 +6,9 @@
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
 #include "Game/Main/FileInfo.h"
 #include "Input/Input.h"

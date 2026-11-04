@@ -6,7 +6,7 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Sys/SettingsReset.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Screens/Options/Options.h"

@@ -9,8 +9,8 @@
 #include "Game/Bodyprog/Formats/Model.h"
 #include "Game/Bodyprog/Map/Terrain.h"
 #include "Game/Bodyprog/Map/Map.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 #include "Game/Bodyprog/View/VwCalc.h"
 #include "Game/Main/FsQueue.h"
 

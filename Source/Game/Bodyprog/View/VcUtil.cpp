@@ -5,7 +5,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
+#include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Bodyprog/View/VwSystem.h"
 #include "Input/Input.h"
 

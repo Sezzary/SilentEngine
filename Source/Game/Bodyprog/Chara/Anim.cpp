@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
 #include "Game/Bodyprog/Chara/Model.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
+#include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Game.h"
 
 using namespace Silent::Assets;

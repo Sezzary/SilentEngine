@@ -340,7 +340,7 @@ namespace Silent
         //for (int i = 0; i < _work.Clock.GetTicks(); i++)
         {
             _isDrawTick = true;//i == (_work.Clock.GetTicks() - 1);
-            //UpdateGame();
+            UpdateGame();
         }
 
         _work.Audio.Update();

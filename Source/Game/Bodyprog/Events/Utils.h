@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Game/Bodyprog/EventFlags.h"
-
 namespace Silent::Game
 {
+    enum   e_CommonPickupItemId;
+    enum   e_EventFlag;
     struct s_SubCharacter;
 
     /** @brief Background texture commands. */

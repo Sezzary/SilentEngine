@@ -7,7 +7,7 @@
 
 namespace Silent::Game
 {
-    VC_ROAD_DATA CAMERA_PATHS[CAMERA_PATH_COUNT_MAX] =
+    const VC_ROAD_DATA CAMERA_PATHS[CAMERA_PATH_COUNT_MAX] =
     {
         {
             .lim_sw = {

@@ -5,5 +5,5 @@
 
 namespace Silent::Game
 {
-    extern VC_ROAD_DATA CAMERA_PATHS[CAMERA_PATH_COUNT_MAX];
+    extern const VC_ROAD_DATA CAMERA_PATHS[CAMERA_PATH_COUNT_MAX];
 }

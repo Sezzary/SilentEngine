@@ -539,7 +539,7 @@ namespace Silent::Game
         void                   (*charaUpdateFuncs[Chara_Count])(s_SubCharacter* chara, s_AnmHeader* anmHdr, GsCOORDINATE2* coords); /** Guessed params. Funcptrs for each `e_CharaId`, set to 0 for IDs not included in the map overlay. Called by `Game_NpcUpdate`. */
         s8                     charaGroupIds[CHARA_GROUP_COUNT]; /** `e_CharaId` values where if `s_SpawnInfo::charaId == Chara_None`, `charaGroupIds[0]` is used for `charaSpawnInfos[0]` and `charaGroupIds[1]` for `charaSpawnInfos[1]`. */
         s_SpawnInfo            (*charaSpawnInfos)[16];           /** Array of character type/position/flags. `flags == SpawnFlags_None` are unused slots? Read by `Game_NpcRoomInitSpawn`. */
-        VC_ROAD_DATA*          cameraPaths[CAMERA_PATH_COUNT_MAX];
+        const VC_ROAD_DATA*       cameraPaths[CAMERA_PATH_COUNT_MAX];
         const s_CollisionTrigger* collisionTriggers[COLLISION_TRIGGER_COUNT_MAX];
     };
 

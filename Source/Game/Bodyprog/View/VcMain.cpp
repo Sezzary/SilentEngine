@@ -74,7 +74,7 @@ namespace Silent::Game
         Q12(1.3f)
     };
 
-    void vcInitVCSystem(VC_ROAD_DATA* vc_road_ary_list) // 0x80080940
+    void vcInitVCSystem(const VC_ROAD_DATA* vc_road_ary_list) // 0x80080940
     {
         vcWork.view_cam_active_f = false;
 
@@ -789,7 +789,7 @@ namespace Silent::Game
         }
     }
 
-    void vcPreSetDataInVC_WORK(VC_WORK* w_p, VC_ROAD_DATA* vc_road_ary_list) // 0x80081B6C
+    void vcPreSetDataInVC_WORK(VC_WORK* w_p, const VC_ROAD_DATA* vc_road_ary_list) // 0x80081B6C
     {
         const auto& input = g_App.GetInput();
 
@@ -950,25 +950,25 @@ namespace Silent::Game
         }
     }
 
-    void vcSetNearRoadAryByCharaPos(VC_WORK* w_p, VC_ROAD_DATA* road_ary_list, s32 half_w, s32 unused, bool near_enemy_f) // 0x80081FBC
+    void vcSetNearRoadAryByCharaPos(VC_WORK* w_p, const VC_ROAD_DATA* road_ary_list, s32 half_w, s32 unused, bool near_enemy_f) // 0x80081FBC
     {
-        q19_12             diff_pos_x;
-        q19_12             sum_pos_x;
-        q19_12             diff_pos_z;
-        q19_12             sum_pos_z;
-        q19_12             rd_max_hx;
-        q19_12             rd_max_hz;
-        q19_12             sw_min_hx;
-        q19_12             sw_min_hz;
-        q19_12             rd_min_hx;
-        q19_12             rd_min_hz;
-        q19_12             sw_max_hx;
-        q19_12             sw_max_hz;
-        s32                flag;
-        s32                dir_type;
-        s32                unused2;
-        VC_NEAR_ROAD_DATA* ptr;
-        VC_ROAD_DATA*      road_data_ptr;
+        q19_12              diff_pos_x;
+        q19_12              sum_pos_x;
+        q19_12              diff_pos_z;
+        q19_12              sum_pos_z;
+        q19_12              rd_max_hx;
+        q19_12              rd_max_hz;
+        q19_12              sw_min_hx;
+        q19_12              sw_min_hz;
+        q19_12              rd_min_hx;
+        q19_12              rd_min_hz;
+        q19_12              sw_max_hx;
+        q19_12              sw_max_hz;
+        s32                 flag;
+        s32                 dir_type;
+        s32                 unused2;
+        VC_NEAR_ROAD_DATA*  ptr;
+        const VC_ROAD_DATA* road_data_ptr;
 
         road_data_ptr      = road_ary_list;
         w_p->near_road_suu = 0;
@@ -1017,14 +1017,14 @@ namespace Silent::Game
 
                     ptr->rd_dir_type  = dir_type;
                     ptr->use_priority = vcRetRoadUsePriority(road_data_ptr->rd_type, unused2);
-                    ptr->rd.min_hx   = Q12_TO_Q4(rd_min_hx);
-                    ptr->rd.max_hx   = Q12_TO_Q4(rd_max_hx);
-                    ptr->rd.min_hz   = Q12_TO_Q4(rd_min_hz);
-                    ptr->rd.max_hz   = Q12_TO_Q4(rd_max_hz);
-                    ptr->sw.min_hx   = Q12_TO_Q4(sw_min_hx);
-                    ptr->sw.max_hx   = Q12_TO_Q4(sw_max_hx);
-                    ptr->sw.min_hz   = Q12_TO_Q4(sw_min_hz);
-                    ptr->sw.max_hz   = Q12_TO_Q4(sw_max_hz);
+                    ptr->rd.min_hx    = Q12_TO_Q4(rd_min_hx);
+                    ptr->rd.max_hx    = Q12_TO_Q4(rd_max_hx);
+                    ptr->rd.min_hz    = Q12_TO_Q4(rd_min_hz);
+                    ptr->rd.max_hz    = Q12_TO_Q4(rd_max_hz);
+                    ptr->sw.min_hx    = Q12_TO_Q4(sw_min_hx);
+                    ptr->sw.max_hx    = Q12_TO_Q4(sw_max_hx);
+                    ptr->sw.min_hz    = Q12_TO_Q4(sw_min_hz);
+                    ptr->sw.max_hz    = Q12_TO_Q4(sw_max_hz);
                     w_p->near_road_suu++;
                 }
             }
@@ -1938,16 +1938,16 @@ namespace Silent::Game
 
     void vcMakeIdealCamPosForFixAngCam(VECTOR3* ideal_pos, VC_WORK* w_p) // 0x80083ADC
     {
-        SVECTOR3       cam_angle_vec; // Q3.12
-        q19_12         dist_x_to_lim_area;
-        q19_12         dist_z_to_lim_area;
-        q19_12         offset_dist;
-        q19_12         chara_to_cam_dist;
-        q19_12         max_dist_to_lim_area;
-        q19_12         cam_offset_forward;
-        q19_12         abs_dist_z_to_lim_area;
-        q19_12         abs_dist_x_to_lim_area;
-        VC_LIMIT_AREA* limit_area;
+        SVECTOR3             cam_angle_vec; // Q3.12
+        q19_12               dist_x_to_lim_area;
+        q19_12               dist_z_to_lim_area;
+        q19_12               offset_dist;
+        q19_12               chara_to_cam_dist;
+        q19_12               max_dist_to_lim_area;
+        q19_12               cam_offset_forward;
+        q19_12               abs_dist_z_to_lim_area;
+        q19_12               abs_dist_x_to_lim_area;
+        const VC_LIMIT_AREA* limit_area;
 
         cam_angle_vec.vx = Q12_ANGLE_FROM_Q8(w_p->cur_near_road.road_p->fix_ang_x);
         cam_angle_vec.vy = Q12_ANGLE_FROM_Q8(w_p->cur_near_road.road_p->fix_ang_y);
@@ -2085,20 +2085,20 @@ namespace Silent::Game
     {
         constexpr q19_12 ANGLE_DELTA_RANGE = Q12_ANGLE(12.0f);
 
-        q19_12             temp_x;
-        q19_12             temp_z;
-        q3_12              base_angle;
-        q19_12             chara_pos_y;
-        q3_12              delta_angle;
-        q19_12             cam_pos_y;
-        q23_8              horizontal_distance_fp;
-        q23_8              blend_max_dist;
-        q23_8              blend_min_dist;
-        q19_12             delta_y_clamped;
-        q19_12             final_cam_dist;
-        q19_12             default_cam_dist;
-        VC_NEAR_ROAD_DATA* near_road_data;
-        VC_ROAD_DATA*      road_data;
+        q19_12              temp_x;
+        q19_12              temp_z;
+        q3_12               base_angle;
+        q19_12              chara_pos_y;
+        q3_12               delta_angle;
+        q19_12              cam_pos_y;
+        q23_8               horizontal_distance_fp;
+        q23_8               blend_max_dist;
+        q23_8               blend_min_dist;
+        q19_12              delta_y_clamped;
+        q19_12              final_cam_dist;
+        q19_12              default_cam_dist;
+        VC_NEAR_ROAD_DATA*  near_road_data;
+        const VC_ROAD_DATA* road_data;
 
         base_angle  = w_p->chara_eye_ang_y + Q12_ANGLE(180.0f);
         delta_angle = Math_AngleNormalize(w_p->cam_chara2ideal_ang_y - base_angle);
@@ -2206,7 +2206,7 @@ namespace Silent::Game
         vcAdjustXzInLimAreaUsingMIN_IN_ROAD_DIST(&ideal_pos->vx, &ideal_pos->vz, &near_road_data->rd);
     }
 
-    void vcAdjustXzInLimAreaUsingMIN_IN_ROAD_DIST(q19_12* x_p, q19_12* z_p, VC_LIMIT_AREA* lim_p) // 0x80084210
+    void vcAdjustXzInLimAreaUsingMIN_IN_ROAD_DIST(q19_12* x_p, q19_12* z_p, const VC_LIMIT_AREA* lim_p) // 0x80084210
     {
         q19_12 min_z;
         q19_12 min_x;
@@ -2274,14 +2274,14 @@ namespace Silent::Game
 
     void vcAdjTgtMvVecYByCurNearRoad(VECTOR3* tgt_mv_vec, VC_WORK* w_p) // 0x800843F4
     {
-        VC_ROAD_DATA* cur_rd_p;
-        q19_12        tgt_y;
-        q19_12        to_chara_dist;
-        q19_12        abs_ofs_y;
-        q19_12        max_tgt_y;
-        q19_12        min_tgt_y;
-        q19_12        dist;
-        q19_12        near_ratio;
+        const VC_ROAD_DATA* cur_rd_p;
+        q19_12              tgt_y;
+        q19_12              to_chara_dist;
+        q19_12              abs_ofs_y;
+        q19_12              max_tgt_y;
+        q19_12              min_tgt_y;
+        q19_12              dist;
+        q19_12              near_ratio;
 
         cur_rd_p = w_p->cur_near_road.road_p;
 

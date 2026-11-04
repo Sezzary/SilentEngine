@@ -168,9 +168,11 @@ namespace Silent::Game
      *
      * @param nodes Message nodes.
      * @param fontName Font name.
+     * @param extraTags Extra tags of command nodes to prepend to each page.
      * @return Message pages.
      */
-    static std::vector<MsgPage> GetMsgPages(const std::vector<MsgNode>& nodes, const std::string& fontName)
+    static std::vector<MsgPage> GetMsgPages(const std::vector<MsgNode>& nodes, const std::string& fontName,
+                                            const std::string& extraTags)
     {
         auto& fonts = g_App.GetFonts();
 
@@ -182,6 +184,9 @@ namespace Silent::Game
                        Debug::LogLevel::Error);
             return {};
         }
+
+        // Get get extra page nodes.
+        auto extraPageNodes = GetMsgNodes(extraTags);
 
         // Collect nodes into pages.
         auto pages      = std::vector<MsgPage>{};
@@ -214,6 +219,9 @@ namespace Silent::Game
                     }
                     case MSG_CODE_END_PAGE:
                     {
+                        // Prepend extra nodes.
+                        curPage.Nodes.insert(curPage.Nodes.begin(), extraPageNodes.begin(), extraPageNodes.end());
+
                         pages.push_back(curPage);
                         curPage    = {};
                         addNewLine = true;
@@ -231,11 +239,12 @@ namespace Silent::Game
         return pages;
     }
 
-    ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight)
+    ParsedMsg GetParsedMsg(const std::string& msg, const std::string& fontName, float lineHeight,
+                           const std::string& extraTags)
     {
         // Get nodes and pages.
         auto nodes = GetMsgNodes(msg);
-        auto pages = GetMsgPages(nodes, fontName);
+        auto pages = GetMsgPages(nodes, fontName, extraTags);
 
         return ParsedMsg
         {
@@ -487,7 +496,16 @@ namespace Silent::Game
                           (isHalfHeight ? (int)TextStyleFlags::HalfHeight : (int)TextStyleFlags::None);
         auto result     = DrawParsedMsg(parsedMsg, pos, SERIF_FONT_SCALE, styleFlags, displayLength, 0);
 
-        return result.LineWidths.back();
+        // Find longest line width.
+        float longestWidth = 0.0f;
+        for (float width : result.LineWidths)
+        {
+            if (width > longestWidth)
+            {
+                longestWidth = width;
+            }
+        }
+        return longestWidth;
     }
 
     float Gfx_StringDrawInt(int lengthMin, int val)
@@ -527,7 +545,16 @@ namespace Silent::Game
         int  styleFlags = (int)TextStyleFlags::Shadow;
         auto result     = DrawParsedMsg(parsedMsg, pos, SANS_FONT_SCALE, styleFlags, INT_MAX, 0);
 
-        return result.LineWidths.back();
+        // Find longest line width.
+        float longestWidth = 0.0f;
+        for (float width : result.LineWidths)
+        {
+            if (width > longestWidth)
+            {
+                longestWidth = width;
+            }
+        }
+        return longestWidth;
     }
 
     std::string Text_Debug_IntToString(int lengthMin, int val)

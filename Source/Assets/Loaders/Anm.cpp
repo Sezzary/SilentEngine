@@ -9,7 +9,30 @@ using namespace Silent::Utils;
 
 namespace Silent::Assets
 {
-    using LegacyMatrix = std::array<std::array<q0_7, 3>, 3>;
+    /** @brief ANM rotation matrix. */
+    struct AnmMatrix
+    {
+        std::array<std::array<q0_7, 3>, 3> Rotation = {};
+
+        /** @brief Converts the ANM rotation matrix to a `Quaternion`.
+         *
+         * @return Converted rotation.
+         */
+        Quaternion ToQuaternion();
+    };
+
+    Quaternion AnmMatrix::ToQuaternion()
+    {
+        return Matrix(Q7_TO_FLT(Rotation[0][0]),
+                      Q7_TO_FLT(Rotation[1][0]),
+                      Q7_TO_FLT(Rotation[2][0]),
+                      Q7_TO_FLT(Rotation[0][1]),
+                      Q7_TO_FLT(Rotation[1][1]),
+                      Q7_TO_FLT(Rotation[2][1]),
+                      Q7_TO_FLT(Rotation[0][2]),
+                      Q7_TO_FLT(Rotation[1][2]),
+                      Q7_TO_FLT(Rotation[2][2])).ToQuaternion();
+    }
 
     /** @brief Converts a scaled translation to model space.
      *
@@ -21,27 +44,9 @@ namespace Silent::Assets
      */
     static Vector3 ConvertTranslation(int x, int y, int z, int shift)
     {
-        return Vector3(x << shift,
-                       y << shift,
-                       z << shift) / 128.0f;
-    }
-
-    /** @brief Converts a legacy matrix rotation to a quaternion.
-     *
-     * @param rotMat Legacy matrix rotation.
-     * @return Converted rotation.
-     */
-    static Quaternion ConvertRotation(const LegacyMatrix& rotMat)
-    {
-        return Matrix(rotMat[0][0] / 128.0f,
-                      rotMat[1][0] / 128.0f,
-                      rotMat[2][0] / 128.0f,
-                      rotMat[0][1] / 128.0f,
-                      rotMat[1][1] / 128.0f,
-                      rotMat[2][1] / 128.0f,
-                      rotMat[0][2] / 128.0f,
-                      rotMat[1][2] / 128.0f,
-                      rotMat[2][2] / 128.0f).ToQuaternion();
+        return Vector3(Q7_TO_FLT(x << shift),
+                       Q7_TO_FLT(y << shift),
+                       Q7_TO_FLT(z << shift));
     }
 
     /** @brief Parses the keyframes from an ANM file.
@@ -68,6 +73,7 @@ namespace Silent::Assets
             keyframe.BoneTranslations.reserve(translationCount);
             for (int j = 0; j < translationCount; j++)
             {
+                // Read translation components.
                 q0_7 x = stream.ReadInt8();
                 q0_7 y = stream.ReadInt8();
                 q0_7 z = stream.ReadInt8();
@@ -81,12 +87,12 @@ namespace Silent::Assets
             keyframe.BoneRotation.reserve(rotCount);
             for (int j = 0; j < rotCount; j++)
             {
-                auto rotMat = LegacyMatrix{};
-                stream.ReadArray(ToSpan(rotMat));
+                // Read matrix.
+                auto rotMat = AnmMatrix{};
+                stream.ReadArray(ToSpan(rotMat.Rotation));
 
                 // Collect bone rotation.
-                auto rot = ConvertRotation(rotMat);
-                keyframe.BoneRotation.push_back(rot);
+                keyframe.BoneRotation.push_back(rotMat.ToQuaternion());
             }
 
             // Collect keyframe.
@@ -143,7 +149,7 @@ namespace Silent::Assets
         stream.Skip(1);
 
         int translationsSize = translationCount * Vector3i::AXIS_COUNT;
-        int rotsSize         = rotCount * sizeof(LegacyMatrix);
+        int rotsSize         = rotCount * sizeof(AnmMatrix);
         Debug::Assert((translationsSize + rotsSize) == keyframeSize,
                       Fmt("Attempted to parse ANM `{}` with incongruent number of translations and rotations.",
                           stdfs::relative(filename, fs.GetAssetsDirectory()).string()));

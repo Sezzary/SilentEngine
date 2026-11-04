@@ -61,16 +61,16 @@ namespace Silent::Game
                 return ARRAY_SIZE(g_SysWork.npcs);
             }
 
-            int npcFlagsId = 0;
+            int npcFlagId = 0;
             for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
             {
                 if (g_SysWork.npcs[i].model.charaId != Chara_None)
                 {
-                    npcFlagsId++;
+                    npcFlagId++;
                 }
             }
 
-            if (npcFlagsId >= g_SysWork.npcFlagsId)
+            if (npcFlagId >= g_SysWork.npcFlagId)
             {
                 return 0;
             }
@@ -103,7 +103,7 @@ namespace Silent::Game
 
             auto surface = s_CollisionSurface{};
             //Collision_SurfaceGet(&surface, posX, posZ);
-            g_SysWork.npcs[i].position.vy = surface.groundHeight;
+            g_SysWork.npcs[i].position.vy = surface.floorHeight;
             g_SysWork.npcs[i].position.vz = posZ;
             g_SysWork.npcs[i].rotation.vy = rotY;
 

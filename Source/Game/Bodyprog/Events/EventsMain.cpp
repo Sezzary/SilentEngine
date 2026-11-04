@@ -18,7 +18,7 @@ namespace Silent::Game
         for (i = 0; i < 5; i++)
         {
             g_ItemTriggerItemIds[i] = NO_VALUE;
-            g_ItemTriggerEvents[i]  = nullptr;
+            g_ItemEvents[i]  = nullptr;
         }
     }
 
@@ -31,14 +31,14 @@ namespace Silent::Game
         s32    i;
 
         // `lastUsedItem` is set by `Inventory_ItemUse` when player uses an item that matches one of the item trigger events.
-        // If it's set, find its index in `g_ItemTriggerItemIds` and use that to get the corresponding `s_EventData` from `g_ItemTriggerEvents`.
+        // If it's set, find its index in `g_ItemTriggerItemIds` and use that to get the corresponding `s_EventData` from `g_ItemEvents`.
         // After processing, the field is cleared and item trigger IDs are reset.
         // (Multi-item events likely repopulate the trigger IDs below based on whichever events are still active?)
         if (g_SysWork.playerWork.extra.lastUsedItem != InvItemId_Unequipped)
         {
             for (i = 0; g_SysWork.playerWork.extra.lastUsedItem != g_ItemTriggerItemIds[i]; i++);
 
-            g_MapEventData         = g_ItemTriggerEvents[i];
+            g_MapEventData         = g_ItemEvents[i];
             g_MapEventLastUsedItem = g_SysWork.playerWork.extra.lastUsedItem;
             g_MapEventSysState     = g_MapEventData->sysState;
             g_MapEventParam        = g_MapEventData->eventParam;
@@ -56,9 +56,9 @@ namespace Silent::Game
 
         while (true)
         {
-            s32 completeEventFlag_temp;
-            s16 completeEventFlag;
-            s16 requiredEventFlag;
+            s32 completeFlag_temp;
+            s16 completeFlag;
+            s16 requiredFlag;
 
             mapEvent++;
 
@@ -67,29 +67,29 @@ namespace Silent::Game
                 break;
             }
 
-            // `requiredEventFlag`: if set, EventFlag that must be set for event to trigger?
-            // `completeEventFlag`: if set, EventFlag that must not be set for event to trigger?
-            // TODO: Can this s32 temp be removed? Trying to set `completeEventFlag` directly results in `lhu` instead?
-            requiredEventFlag      = mapEvent->requiredEventFlag;
-            completeEventFlag_temp = mapEvent->completeEventFlag;
-            completeEventFlag      = completeEventFlag_temp;
+            // `requiredFlag`: if set, EventFlag that must be set for event to trigger?
+            // `completeFlag`: if set, EventFlag that must not be set for event to trigger?
+            // TODO: Can this s32 temp be removed? Trying to set `completeFlag` directly results in `lhu` instead?
+            requiredFlag      = mapEvent->requiredFlag;
+            completeFlag_temp = mapEvent->completeFlag;
+            completeFlag      = completeFlag_temp;
 
-            if (requiredEventFlag != EventFlag_None && !Savegame_EventFlagGet(requiredEventFlag))
+            if (requiredFlag != EventFlag_None && !Savegame_EventFlagGet(requiredFlag))
             {
                 continue;
             }
 
-            if (completeEventFlag != EventFlag_None && Savegame_EventFlagGet(completeEventFlag) &&
-                (completeEventFlag < 867 || mapEvent->activationType == TriggerActivationType_Exclusive ||
+            if (completeFlag != EventFlag_None && Savegame_EventFlagGet(completeFlag) &&
+                (completeFlag < 867 || mapEvent->activationType == MapTriggerActivationType_Exclusive ||
                  mapEvent->sysState == SysState_EventSetFlag))
             {
                 continue;
             }
 
-            // `TriggerType_Tick` skips trigger/activation checks and executes every tick if flag checks are satisfied.
+            // `MapTriggerType_Tick` skips trigger/activation checks and executes every tick if flag checks are satisfied.
             // Maybe used for map-load events, and events that should run every frame?
             // Will skip processing any later events until flag checks above disable it.
-            if (mapEvent->triggerType == TriggerType_Tick)
+            if (mapEvent->triggerType == MapTriggerType_Tick)
             {
                 g_MapEventData     = mapEvent;
                 g_MapEventSysState = mapEvent->sysState;
@@ -97,9 +97,9 @@ namespace Silent::Game
                 return;
             }
 
-            // `TriggerActivationType_Button`: Only continue processing event when action button is pressed and
+            // `MapTriggerActivationType_Button`: Only continue processing event when action button is pressed and
             // `Player_IsBusy` returns `false`.
-            if (mapEvent->activationType == TriggerActivationType_Button &&
+            if (mapEvent->activationType == MapTriggerActivationType_Button &&
                 (!(g_Controller0->buttonFlags.clicked & g_GameWorkPtr->config.controllerConfig.action) ||
                 disableButtonEvents /*|| Player_IsBusy()*/))
             {
@@ -110,7 +110,7 @@ namespace Silent::Game
 
             switch (mapEvent->triggerType)
             {
-                case TriggerType_TouchAabb:
+                case MapTriggerType_TouchAabb:
                     pointPosX    = mapPoint->positionX;
                     pointPosZ    = mapPoint->positionZ;
                     pointRadiusX = mapPoint->triggerParam0 * Q12(0.25f);
@@ -127,21 +127,21 @@ namespace Silent::Game
                     }
                     break;
 
-                case TriggerType_TouchFacing:
+                case MapTriggerType_TouchFacing:
                     if (!Event_CollideFacingCheck(mapPoint))
                     {
                         continue;
                     }
                     break;
 
-                case TriggerType_TouchObbFacing:
+                case MapTriggerType_TouchObbFacing:
                     if (!Event_CollideObbFacingCheck(mapPoint))
                     {
                         continue;
                     }
                     break;
 
-                case TriggerType_TouchObb:
+                case MapTriggerType_TouchObb:
                     if (!Event_CollideObbCheck(mapPoint))
                     {
                         continue;
@@ -151,29 +151,29 @@ namespace Silent::Game
 
             // Trigger checks have passed. Check activation type.
 
-            // `TriggerActivationType_Exclusive`: Skip processing any other events if this event is active.
-            if (mapEvent->activationType == TriggerActivationType_Exclusive && mapEvent == g_MapEventData)
+            // `MapTriggerActivationType_Exclusive`: Skip processing any other events if this event is active.
+            if (mapEvent->activationType == MapTriggerActivationType_Exclusive && mapEvent == g_MapEventData)
             {
                 g_MapEventSysState = SysState_Invalid;
                 return;
             }
 
-            // `TriggerActivationType_Item`: When trigger check has passed (player is in the trigger area).
-            // Required item ID for event is stored into `g_ItemTriggerItemIds` and event pointer at `g_ItemTriggerEvents`
+            // `MapTriggerActivationType_Item`: When trigger check has passed (player is in the trigger area).
+            // Required item ID for event is stored into `g_ItemTriggerItemIds` and event pointer at `g_ItemEvents`
             // Once player uses an item in the inventory screen, it compares the ID against the ones stored at `g_ItemTriggerItemIds`.
             // If used item ID matches one that event has requested, `extra.lastUsedItem` gets set to the item ID.
-            // At the start of this function, if `extra.lastUsedItem` is set, it will locate the `s_EventData` for it from `g_ItemTriggerEvents` and run the event.
-            if (mapEvent->activationType == TriggerActivationType_Item)
+            // At the start of this function, if `extra.lastUsedItem` is set, it will locate the `s_EventData` for it from `g_ItemEvents` and run the event.
+            if (mapEvent->activationType == MapTriggerActivationType_Item)
             {
                 for (i = 0; g_ItemTriggerItemIds[i] != NO_VALUE; i++);
 
-                g_ItemTriggerEvents[i]  = mapEvent;
+                g_ItemEvents[i]  = mapEvent;
                 g_ItemTriggerItemIds[i] = mapEvent->requiredItemId;
                 continue;
             }
 
-            // `TriggerActivationType_Button`: Only allow button activated events when area is lit up?
-            if (mapEvent->activationType == TriggerActivationType_Button)
+            // `MapTriggerActivationType_Button`: Only allow button activated events when area is lit up?
+            if (mapEvent->activationType == MapTriggerActivationType_Button)
             {
                 if ((g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 2) && !g_SysWork.field_2388.isFlashlightOn &&
                     ((g_SysWork.field_2388.field_1C[0].effectsInfo.flags.field_00[0] & 1) || (g_SysWork.field_2388.field_1C[1].effectsInfo.flags.field_00[0] & 1)))
@@ -192,7 +192,7 @@ namespace Silent::Game
             // (Same as `SysState_EventSetFlag_Update`.)
             if (mapEvent->sysState == SysState_EventSetFlag)
             {
-                Savegame_EventFlagSet(mapEvent->completeEventFlag);
+                Savegame_EventFlagSet(mapEvent->completeFlag);
                 break;
             }
 

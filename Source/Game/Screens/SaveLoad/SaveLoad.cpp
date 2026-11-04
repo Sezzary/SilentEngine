@@ -151,7 +151,7 @@ namespace Silent::Game
     // Only used in `GameState_AutoLoadSavegame_Update`.
     void (*g_GameState_AutoLoadSavegame_Funcs[])() = {
         SaveScreen_Init,
-        SaveScreen_AutoLoad_SelectSave,
+        SaveScreen_AutoLoadSaveSelect,
         SaveScreen_LoadSave,
         SaveScreen_Continue
     };
@@ -2078,7 +2078,7 @@ namespace Silent::Game
 
                 g_SysWork.processFlags = ProcessFlag_LoadSave;
 
-                //GameFs_MapLoad(g_SavegamePtr->mapIdx);
+                //GameBoot_MapLoad(g_SavegamePtr->mapIdx);
                 ScreenFade_Start(true, false, false);
                 Game_StateStepIncrement(1);
                 break;
@@ -2198,7 +2198,7 @@ namespace Silent::Game
         SaveScreen_ScreenDraw();
     }
 
-    void SaveScreen_AutoLoad_SelectSave() // 0x801E737C
+    void SaveScreen_AutoLoadSaveSelect() // 0x801E737C
     {
         /*if (!MemCard_ElementsUpdate())
         {

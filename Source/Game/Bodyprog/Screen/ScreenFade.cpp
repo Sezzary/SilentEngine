@@ -14,16 +14,26 @@ using namespace Silent::Renderer;
 
 namespace Silent::Game
 {
-    int    g_Screen_FadeStatus  = 0;
+    int    g_ScreenFade_Status  = 0;
     q19_12 g_ScreenFadeTimestep = Q12(0.0f);
     q19_12 g_ScreenFadeProgress = Q12(0.0f);
 
     static q19_12 PrevScreenFadeProgress = Q12(0.0f);
     static bool   IsWhite                = false;
 
+    bool ScreenFade_IsFinished()
+    {
+        return (g_ScreenFade_Status & 0x7) == ScreenFadeState_FadeOutComplete;
+    }
+
+    bool ScreenFade_IsNone()
+    {
+        return g_ScreenFade_Status == ScreenFadeState_None;
+    }
+
     void ScreenFade_Start(bool reset, bool fadeIn, bool isWhite, q19_12 timestep)
     {
-        g_Screen_FadeStatus = (((reset) ? ScreenFadeState_FadeOutStart : ScreenFadeState_FadeOutSteps) +
+        g_ScreenFade_Status = (((reset) ? ScreenFadeState_FadeOutStart : ScreenFadeState_FadeOutSteps) +
                                ((fadeIn) ? (1 << 2) : 0)) |
                               ((isWhite) ? (1 << 3) : 0);
         
@@ -31,6 +41,16 @@ namespace Silent::Game
         {
             g_ScreenFadeTimestep = timestep;
         }
+    }
+
+    void ScreenFade_Reset()
+    {
+        g_ScreenFade_Status = ScreenFadeState_Reset;
+    }
+
+    void ScreenFade_ResetTimestep()
+    {
+        g_ScreenFade_Status = ScreenFadeState_ResetTimestep;
     }
 
     q19_12 Screen_FadeInProgressGet()
@@ -41,7 +61,7 @@ namespace Silent::Game
     /** @brief Sets the screen fade effect to black or white according to the current status. */
     static void Screen_FadeDrawModeSet()
     {
-        IsWhite = IS_SCREEN_FADE_WHITE(g_Screen_FadeStatus);
+        IsWhite = IS_SCREEN_FADE_WHITE(g_ScreenFade_Status);
     }
 
     void Screen_FadeUpdate()
@@ -51,13 +71,13 @@ namespace Silent::Game
         PrevScreenFadeProgress = g_ScreenFadeProgress;
 
         q19_12 timestep = Q12(0.0f);
-        switch (g_Screen_FadeStatus)
+        switch (g_ScreenFade_Status)
         {
             case SCREEN_FADE_STATUS(ScreenFadeState_FadeOutStart, false):
             case SCREEN_FADE_STATUS(ScreenFadeState_FadeOutStart, true):
             {
                 g_ScreenFadeProgress = Q12(0.0f);
-                g_Screen_FadeStatus++;
+                g_ScreenFade_Status++;
             }
             case SCREEN_FADE_STATUS(ScreenFadeState_FadeOutSteps, false):
             case SCREEN_FADE_STATUS(ScreenFadeState_FadeOutSteps, true):
@@ -77,7 +97,7 @@ namespace Silent::Game
                 if (g_ScreenFadeProgress >= Q12_CLAMPED(1.0f))
                 {
                     g_ScreenFadeProgress = Q12_CLAMPED(1.0f);
-                    g_Screen_FadeStatus++;
+                    g_ScreenFade_Status++;
                 }
                 break;
             }
@@ -90,7 +110,7 @@ namespace Silent::Game
             case SCREEN_FADE_STATUS(ScreenFadeState_FadeInStart, true):
             {
                 g_ScreenFadeProgress = Q12_CLAMPED(1.0f);
-                g_Screen_FadeStatus++;
+                g_ScreenFade_Status++;
             }
             case SCREEN_FADE_STATUS(ScreenFadeState_FadeOutComplete, false):
             case SCREEN_FADE_STATUS(ScreenFadeState_FadeOutComplete, true):
@@ -124,7 +144,7 @@ namespace Silent::Game
             {
                 g_ScreenFadeTimestep = Q12(0.0f);
                 g_ScreenFadeProgress = Q12(0.0f);
-                g_Screen_FadeStatus  = SCREEN_FADE_STATUS(ScreenFadeState_None, false);
+                g_ScreenFade_Status  = SCREEN_FADE_STATUS(ScreenFadeState_None, false);
                 break;
             }
             default:

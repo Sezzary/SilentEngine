@@ -3,34 +3,68 @@
 
 namespace Silent::Game
 {
-    u32 g_RngSeed = 0;
+    uint g_RngSeed = 0;
 
-    u32 Rng_Rand32()
+    bool Rng_TestProbability(q19_12 chance)
     {
-        u32 nextSeed = g_RngSeed;
+        return Rng_RandQ12() < chance;
+    }
 
-        nextSeed  = (nextSeed * 1664525) + 1013904223;
-        g_RngSeed = nextSeed;
+    int Rng_GenerateIntFromInput(int rand, int low, int high)
+    {
+        return (rand % ((high - low) + 1)) + low;
+    }
+
+    int Rng_GenerateUIntFromInput(int rand, int low, int high)
+    {
+        return ((uint)rand % ((high - low) + 1)) + low;
+    }
+
+    int Rng_GenerateInt(int low, int high)
+    {
+        return Rng_GenerateIntFromInput(Rng_Rand16(), low, high);
+    }
+
+    int Rng_GenerateUInt(int low, int high)
+    {
+        Rng_GenerateUIntFromInput(Rng_Rand16(), low, high);
+    }
+
+    int Rng_AddGeneratedUInt(int base, int low, int high)
+    {
+        return base + Rng_GenerateUInt(low, high);
+    }
+
+    q19_12 Rng_RandQ12()
+    {
+        int rand16 = Rng_Rand16();
+        return Q12_FRACT(((rand16 * 2) ^ rand16) >> 3);
+    }
+
+    uint Rng_Rand32()
+    {
+        uint nextSeed = (g_RngSeed * 1664525) + 1013904223;
+        g_RngSeed     = nextSeed;
 
         return nextSeed;
     }
 
-    s32 Rng_Rand16()
+    int Rng_Rand16()
     {
         return Rng_Rand32() >> 17;
     }
 
-    u32 Rng_GetSeed()
+    uint Rng_GetSeed()
     {
         return g_RngSeed;
     }
 
-    void Rng_SetSeed(u32 nextSeed)
+    void Rng_SetSeed(uint nextSeed)
     {
         g_RngSeed = nextSeed;
     }
 
-    u16 Rng_Rand12()
+    ushort Rng_Rand12()
     {
         return Rng_Rand32() >> 20;
     }

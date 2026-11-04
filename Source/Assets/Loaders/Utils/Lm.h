@@ -64,13 +64,40 @@ namespace Silent::Assets
      * the given parent format.
      *
      * @param filename Absolute asset file path.
+     * @param baseOffset Base stream offset.
      * @param stream Output file stream.
      * @param meshes Output meshes.
      * @param meshIDs Output mesh IDs.
      * @return LM chunk name.
      */
-    std::string ParseLmChunk(const stdfs::path& filename,
+    std::string ParseLmChunk(const stdfs::path& filename, int baseOffset,
                              Stream& stream, std::vector<LmMesh>& meshes, std::vector<int>& meshIds);
+
+    /** @brief Normalizes the UVs of meshes according to an LM model's associated texture resolution.
+     *
+     * @note For some models, the texture resolution cannot be deduced correctly from LM data alone and is therefore
+     * hardcoded.
+     *
+     * @param meshes Output model meshes with UVs to normalize.
+     * @param name Model name.
+     * @param texResStep Texture resolution rounding step for automatic resolution deduction.
+     * @param texResMap Hardcoded name-resolution associations where resolutions cannot be deduced automatically.
+     */
+    void NormalizeUvs(std::vector<LmMesh>& meshes, const std::string& name,
+                      int texResStep, const std::unordered_map<std::string, Vector2i>& texResMap);
+
+    /** @brief Gets an LM model's corresponding texture asset name.
+     *
+     * @note For some models, the texture name cannot be deduced correctly from the model name alone and is therefore
+     * hardcoded.
+     *
+     * @param name Model name.
+     * @param parentDirName Parent directory name.
+     * @param lmTimMap Hardcoded LM-TIM associations where texture asset names cannot be deduced automatically.
+     * @return Texture asset name.
+     */
+    std::string GetTextureAssetName(const std::string& name, const std::string& parentDirName,
+                                    const std::unordered_map<std::string, std::string>& lmTimMap);
 }
 
 namespace std 

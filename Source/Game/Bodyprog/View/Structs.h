@@ -95,7 +95,7 @@ namespace Silent::Game
         bool                      view_cam_active_f;
         VC_ROAD_DATA*             vc_road_ary_list;             /** Camera paths for the active map. */
         int                       flags;                        /** `VC_FLAGS` */
-        bool                      through_door_activate_init_f; /** `bool` */
+        bool                      through_door_activate_init_f; /** `bool` | Camera rail activation flag? */
         VC_THROUGH_DOOR_CAM_PARAM through_door;                 /** Active rail camera data? */
         q3_12                     scr_half_ang_wy;
         q3_12                     scr_half_ang_wx;

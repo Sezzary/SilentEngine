@@ -52,5 +52,6 @@ namespace Silent::Game
      */
     void Vw_ClampAngleRange(q3_12* angleMin, q3_12* angleMax, q3_12 angleConstraintMin, q3_12 angleConstraintMax);
 
-    s16 func_80048E3C(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4);
+    q3_12 Vw_LineSegmentIntersectionCheck(s16 segmentLength, s16 segmentDir,
+                                          s16 distToBound, q3_12 boundsMin, q3_12 boundsMax);
 }

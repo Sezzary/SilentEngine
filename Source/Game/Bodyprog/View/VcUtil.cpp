@@ -124,7 +124,7 @@ namespace Silent::Game
                 else
                 {
                     //Collision_SurfaceGet(&coll, hr_p->position.vx, hr_p->position.vz);
-                    grnd_y = surface.groundHeight;
+                    grnd_y = surface.floorHeight;
 
                     vcMakeHeroHeadPos(&hr_head_pos);
                 }

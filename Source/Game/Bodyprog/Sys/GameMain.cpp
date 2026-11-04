@@ -46,7 +46,7 @@ namespace Silent::Game
     // @todo Remove checklist when all are working.
     void (*g_GameStateUpdateFuncs[])() =
     {
-        GameState_Init_Update,
+        GameState_Init_Update,// @todo
         GameState_LanguageScreen_Update,
         GameState_SplashScreen_Update,
         GameState_LogosScreen_Update,

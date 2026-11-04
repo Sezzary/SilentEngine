@@ -15,7 +15,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Assets
 {
-    std::string ParseLmChunk(const stdfs::path& filename,
+    std::string ParseLmChunk(const stdfs::path& filename, int baseOffset,
                              Stream& stream, std::vector<LmMesh>& meshes, std::vector<int>& meshIds)
     {
         constexpr int8   MAGIC          = 0x30;
@@ -53,7 +53,7 @@ namespace Silent::Assets
         auto   name          = stream.ReadCString();
 
         // Set stream position to meshes.
-        stream.SetPosition(meshesOffset);
+        stream.SetPosition(baseOffset + meshesOffset);
 
         // Read meshes.
         meshes.reserve(meshCount);
@@ -83,10 +83,10 @@ namespace Silent::Assets
             uint32 bodyOffset = stream.ReadUint32();
 
             // Store next mesh offset.
-            int nextMeshOffset = stream.GetPosition();
+            int nextMeshOffset = stream.GetPosition() - baseOffset;
 
             // Set stream position to current mesh body.
-            stream.SetPosition(bodyOffset);
+            stream.SetPosition(baseOffset + bodyOffset);
 
             // Read mesh component counts.
             uint8 primCount   = stream.ReadUint8();
@@ -103,7 +103,7 @@ namespace Silent::Assets
             uint32 nextBodyOffset = stream.ReadUint32(); // Unused.
 
             // Read primitives.
-            stream.SetPosition(primsOffset);
+            stream.SetPosition(baseOffset + primsOffset);
             mesh.Native.Primitives.reserve(primCount);
             for (int j = 0; j < primCount; j++)
             {
@@ -196,7 +196,7 @@ namespace Silent::Assets
             mesh.Native.Positions.reserve(posCount);
 
             // Read XY vertex position components.
-            stream.SetPosition(posXyOffset);
+            stream.SetPosition(baseOffset + posXyOffset);
             for (int j = 0; j < posCount; j++)
             {
                 q8_7 x = stream.ReadInt16();
@@ -207,7 +207,7 @@ namespace Silent::Assets
             }
 
             // Read Z vertex position components.
-            stream.SetPosition(posZOffset);
+            stream.SetPosition(baseOffset + posZOffset);
             for (int j = 0; j < posCount; j++)
             {
                 q8_7 z = stream.ReadInt16();
@@ -217,7 +217,7 @@ namespace Silent::Assets
             }
 
             // Read vertex normals.
-            stream.SetPosition(normalsOffset);
+            stream.SetPosition(baseOffset + normalsOffset);
             mesh.Native.Normals.reserve(normalCount);
             for (int j = 0; j < normalCount; j++)
             {
@@ -241,11 +241,11 @@ namespace Silent::Assets
             meshes.push_back(std::move(mesh));
 
             // Set stream position to next mesh.
-            stream.SetPosition(nextMeshOffset);
+            stream.SetPosition(baseOffset + nextMeshOffset);
         }
 
         // Set stream position to mesh IDs.
-        stream.SetPosition(meshIdsOffset);
+        stream.SetPosition(baseOffset + meshIdsOffset);
 
         // Read mesh IDs.
         meshIds.reserve(meshCount);
@@ -297,7 +297,7 @@ namespace Silent::Assets
             {
                 mesh.Linear.Vertices[vertIdx] = BufferVertex3d
                 {
-                    .Position   = mesh.Native.Positions[keyVert.PositionIdx].ToVector3() / 128.0f,
+                    .Position   = mesh.Native.Positions[keyVert.PositionIdx].ToVector3(Q7_SHIFT),
                     .Normal     = Vector3::Normalize(mesh.Native.Normals[keyVert.NormalIdx].ToVector3()),
                     .Uv         = mesh.Native.Uvs[keyVert.UvIdx].ToVector2(), // @note Unnormalized pixel coordinates.
                     .PaletteIdx = keyVert.PaletteIdx
@@ -306,5 +306,54 @@ namespace Silent::Assets
         }
 
         return name;
+    }
+
+    void NormalizeUvs(std::vector<LmMesh>& meshes, const std::string& name,
+                      int texResStep, const std::unordered_map<std::string, Vector2i>& texResMap)
+    {
+        auto texRes = Vector2i::Zero;
+
+        // Get texture resolution.
+        const auto* hardcodedTexRes = Find(texResMap, name);
+        if (hardcodedTexRes != nullptr)
+        {
+            texRes = *hardcodedTexRes;
+        }
+        else
+        {
+            // Derive resolution from pixel UV layout.
+            for (const auto& mesh : meshes)
+            {
+                for (const auto& vert : mesh.Linear.Vertices)
+                {
+                    texRes = Vector2i(std::max(texRes.x, (int)CeilToStep(vert.Uv.x, texResStep)),
+                                      std::max(texRes.y, (int)CeilToStep(vert.Uv.y, texResStep)));
+                }
+            }
+        }
+
+        // Normalize UVs.
+        for (auto& mesh : meshes)
+        {
+            for (auto& vert : mesh.Linear.Vertices)
+            {
+                vert.Uv /= texRes.ToVector2();
+            }
+        }
+    }
+
+    std::string GetTextureAssetName(const std::string& name, const std::string& parentDirName,
+                                    const std::unordered_map<std::string, std::string>& lmTimMap)
+    {
+        // Retrieve hardcoded corresponding TIM.
+        const auto* hardcodedTexName = Find(lmTimMap, name);
+        if (hardcodedTexName != nullptr)
+        {
+            return *hardcodedTexName;
+        }
+
+        // Retrieve plainly corresponding TIM.
+        auto texName = parentDirName + "/" + name + ".TIM";
+        return texName; 
     }
 }

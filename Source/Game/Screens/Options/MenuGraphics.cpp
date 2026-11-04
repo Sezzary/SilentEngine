@@ -30,8 +30,7 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Define height offset if half-height tag is present.
-        // @todo Maybe a more dynamic centring system would be better.
-        // @todo Widest line width isn't computed correctly with multiple lines present?
+        // @todo More dynamic centring system based on tags would be better.
         int heightOffset = 0;
         if (FindString(str, "{H}"))
         {

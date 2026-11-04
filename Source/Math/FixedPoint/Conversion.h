@@ -50,6 +50,26 @@ namespace Silent::Math
         return FP_TO_FLT(x, Q6_SHIFT);
     }
 
+    /** @brief Converts a floating-point value to Q24.7 fixed-point.
+     *
+     * @param x Value to convert.
+     * @return `x` converted to Q24.7 fixed-point.
+     */
+    constexpr q24_7 Q7(float x)
+    {
+        return TO_FIXED(x, Q7_SHIFT);
+    }
+
+    /** @brief Converts Q24.7 fixed-point value to floating-point.
+     *
+     * @param x Q24.7 fixedd-point value to convert.
+     * @return `x` converted to floating-point.
+     */
+    constexpr float Q7_TO_FLT(q24_7 x)
+    {
+        return FP_TO_FLT(x, Q7_SHIFT);
+    }
+
     /** @brief Converts a floating-point value to Q23.8 fixed-point.
      *
      * @param x Value to convert.

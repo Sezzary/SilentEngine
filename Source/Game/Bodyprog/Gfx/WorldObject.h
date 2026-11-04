@@ -13,7 +13,7 @@ namespace Silent::Game
     {
         u_Filename name;
         s8         field_8;
-        s8         lmIdx; /** Set to 2 when found in `g_MapTerrain.globalLm.lmHdr` and 3-6 if found in `g_MapTerrain.activeChunks[i] (i + 3)`. */
+        s8         lmIdx; /** Set to 2 when found in `g_MapTerrain.globalPlm.lmHdr` and 3-6 if found in `g_MapTerrain.activeChunks[i] (i + 3)`. */
     };
 
     /** @brief World object model. TODO: Rename to "static object"? Conceptually it's what this is in modern terms. */

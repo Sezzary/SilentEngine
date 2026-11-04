@@ -2,30 +2,48 @@
 
 *Silent Engine* is an in-progress cross-platform engine port designed to run the original *Silent Hill* on modern systems. It aims to be a monolithic, flexible, and future-proof foundation with modern standards that will enable long-term goals such as translation support and modding. Written from the ground-up with a high-quality, no-compromise codebase.
 
-*Q: CAN I PLAY THIS?*
-Not yet! While some core logic has been migrated from our decompilation repository, the priority is building a stable engine foundation before integrating gameplay and graphics. I prioritize maintainability over quick, observable progress I can show off; simply getting the game to "work" is secondary to avoiding long-term technical debt. Additionally, much of the decompiled source still requires documentation and deobfuscation. Despite what completion metrics might suggest, the decompiled game code is hardly in a usable state, and rushing the port while the base source is being refined would be a mistake. However, the boot process, FMV playback, and main menus are already roughly functional, with progress on various rebuilt subsystems steadily underway alongside research of the original PSX code.
+**Q: CAN I PLAY THIS?**
+Not yet! While some core logic has been migrated from our decompilation repository, the priority is building a stable engine foundation before integrating original gameplay logic and graphics. I prioritize maintainability over quick, observable progress I can show off; simply getting the game to "work" is secondary to avoiding long-term technical debt. Additionally, much of the decompiled source still requires documentation and deobfuscation. Despite what completion metrics might suggest, the decompiled game code is hardly in a usable state, and rushing a port while the base source is being refined would be a mistake. However, the boot process, FMV playback, and some menus are already roughly functional, with progress on various rebuilt subsystems steadily underway alongside research of the original PSX code.
 
 Decompilation progress can be tracked here:
 https://github.com/Vatuu/silent-hill-decomp
 
+> [!IMPORTANT]
+> <details>
+> <summary>NOTICE AGAINST AI</summary>
+>
+> Like the decompilation, this port project is human-driven and **not vibe-coded**. Deep understanding of game systems and code quality are of high importance, and the "document everything" attitude inherited from the original effort ensures anyone with the adequate will and curiosity has the opportunity to read, understand, learn from, and potentially help improve the port themselves. Purely AI-driven workflows for projects like these have done nothing but empower opportunists with little to no interest in software design. Such individuals seek attention, instant results, and unceremoniously ignore the wishes of the people whose real work they depend on. They might additionally understate the extent of their cognitive dependence, claiming the endeavor to be merely "assisted" by LLMs, if not omit disclosure altogether.
+>
+> **This is completely antithetical to the etiquette surrounding small open-source projects**. It foregoes all creative aspects and erodes everything that makes community-driven pursuits like this one, which ought to be a chance for people of different skillsets to come together, worthwhile. Furthermore, given their hideous and practically illegible code output, contributions to AI repos will forever be out of reach to anyone who cannot afford costly tokens. At that point, I think, one might as well work with raw binary. Where there's source code, it should be workable by a human **on principle**.
+>
+> From my observation, widespread usage of LLMs predominantly benefits two kinds of people:
+> 1) Those who are already well-off (and can thereby afford throwing agent swarms at whatever they please).
+> 2) Those with sociopathic tendencies (who lack common decency and remorselessly ignore all ethical concerns).
+>
+> In trying various workflows and observing how others work, my opinion on the matter is informed by experience: LLMs on their own are an interesting technology, but the prevailing (and perhaps intrinsically coupled) abuse perpetuated by droves of bad actors is likely to endure and cannot be ignored. To the end user, i.e. the gamer, this might appear as a fair trade-off for quicker turnarounds and more games, but the significant cost to genuine, ambitious creators must be emphasized. I encourage you, the user, to carefully consider *who* you really support. I want this to be an awesome port people can enjoy, but it's about time regular users themselves also started being more high-minded and forward-thinking. **Don't hand the world to the lazy and weak of character.**
+>
+> For these reasons, **any future forks of this port by opportunistic parties who wish to go against this notice are strongly discouraged and, if created, should never be endorsed by anyone.** The *best* thing about open-source is it allows anyone to do what they want, but the *worst* thing about it is people doing literally whatever they want.
+>
+> </details>
+
 ## Contributing
 
 Contributions to the decompilation repository are welcome. We need more people to help document, deobduscate, and conduct general research on the original PSX code.
-As for this project: it's still rather early to ramp up the effort, but you are free to take a look around in the meantime! Discussion and updates can be found on the [PS1/PS2 Decompilation](https://discord.gg/VwCPdfbxgm) Discord server (`#Multi-Platform Port (Silent Engine)` thread under the `#silent-hill` channel).
+As for this project: it's still rather early to ramp up the effort, but you are free to take a look around in the meantime! Discussion and updates can be found on the [PS1/PS2 Re-Arc (Reverse Engineering, Archaeology, and Reconstruction of Code)](https://discord.gg/VwCPdfbxgm) Discord server (`#Multi-Platform Port (Silent Engine)` thread under the `#silent-hill` channel).
 
 ## Prospects
 
 - Easy to use.
-- Windows/macOS/Linux support out of the box, with the potential for other platforms later.
-- Modern renderer supporting Vulkan, DX12, and Metal, with the potential for other backends in the future.
-- Keyboard/mouse and gamepad support.
-- Widescreen and CRT filter support,
-- Retro and HD font options  (.TTF fonts matching the originals have been found or meticulously recreated, allowing for modern font rendering to take place without relying on the original sprites).
-- Various graphics toggles for a retro or modern look.
 - Clean, well-documented codebase.
+- Windows/macOS/Linux support out of the box, with the potential for other platforms later.
+- Modern renderer supporting Vulkan, DX12, and Metal, with the potential for other backends later.
+- Keyboard/mouse and gamepad support.
+- Widescreen and CRT filter support.
+- Retro and HD font options (.TTF fonts matching the originals have been found or meticulously recreated, allowing for modern font rendering to take place without relying on the original sprites).
+- Various graphics toggles for a retro or modern look.
 - Lua scripting.
-- Translation support.
-- Modding support.
+- Extensive translation support.
+- Modding support?
 - Custom levels (ambition for the far future).
 
 ## Current foundations
@@ -44,22 +62,15 @@ As for this project: it's still rather early to ramp up the effort, but you are 
 - Renderer with swappable backends
 - Translator for internationalized scripts
 - Font manager
+- Reworked subtitle handling that works with the new font system
   FMV video player
 - Debug menu
-- Various utilities pulled from other projects
-
-### TODOs
-
-- Stability.
-- Switch to GCC as the compiler on Windows with MinGW.
-- Forward renderer.
-- Parsers for all proprietary game file types.
-- Lua scripting.
-- Decompiled code migration.
+- Parsers for all game formats
+- Various handy utilities pulled from other projects I worked on
 
 ## Building (Windows/macOS/Linux)
 
-NOTE: Project setup is yet to be streamlined and this section is incomplete. Ideally, the project will be able to cross-compile between all main development platforms.
+NOTE: Project setup is yet to be streamlined and this section is incomplete. Ideally the project will be able to cross-compile between all main development platforms. On the user end, the most you can currently do is play around with the main and options menus. The game itself doesn't run yet.
 
 ### Prerequisites
 
@@ -148,4 +159,5 @@ libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev
 ### Transfer assets
 
 Copy the `Assets` folder (containing custom supplementary files) from the root of the repository to the `Build` folder. Then, run the `Launcher` utility to extract all required original assets from a 1.1 US release of the game. Note this utility is rather barebones at the moment and works silently in the background when extraction begins.
-Original game assets are not provided and your own ROM must be sourced.
+
+*Original game assets are not provided and your own ROM must be sourced.*

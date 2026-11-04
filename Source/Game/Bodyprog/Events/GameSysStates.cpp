@@ -162,11 +162,11 @@ namespace Silent::Game
             //Player_Update(player, FS_BUFFER_0, g_SysWork.playerBoneCoords);
 
             Demo_DemoRandSeedRestore();
-            //Gfx_FlashlightUpdate();
+            //Gfx_EffectsUpdate();
 
             if (g_SavegamePtr->mapIdx != MapIdx_MAP7_S03)
             {
-                g_MapOverlayHdr.particlesUpdate(0, g_SavegamePtr->mapIdx, 1);
+                g_MapOverlayHdr.particleSystemUpdate(0, g_SavegamePtr->mapIdx, 1);
             }
 
             Demo_DemoRandSeedRestore();

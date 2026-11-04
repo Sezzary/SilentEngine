@@ -425,8 +425,9 @@ namespace Silent::Game
         const s_MapInfo*       mapInfo;
         u8                     (*mapRoomIdxGet)(q19_12 posX, q19_12 posY); // Called by `Game_MapRoomIdxUpdate`.
         s8                     unused_8;
+        s32                    (*func_C)(); /** @unused */
         void                   (*bgmEvent)(bool);
-        s8                     bgmIdx;
+        s8                     bgmCmd;
         u8                     ambientAudioIdx; // Ambient file index from `g_AmbientVabTaskLoadCmds`.
         s8                     field_16;        // Set ambient tint and draw distance.
                                                 // A value of 3 sets the map to night.
@@ -459,17 +460,17 @@ namespace Silent::Game
         void                   (*func_60)(s32 idx, bool arg1);
         s32                    (*func_64)(POLY_FT4** poly, s32);
         s32                    (*func_68)(POLY_FT4** poly, s32);
-        void                   (*func_6C)();
+        void                   (*func_6C)(); /** @unused */
         s32                    (*func_70)(POLY_FT4** poly, s32);
-        void                   (*func_74)();
+        void                   (*func_74)(); /** @unused */
         s32                    (*func_78)(POLY_FT4** poly, s32);
-        s_MapOverlayHdr_7C* field_7C; // Only map1_s01, map6_s04.
+        s_MapOverlayHdr_7C*    field_7C; // Only map1_s01, map6_s04.
         void                   (*func_80)();
         s32                    (*func_84)(POLY_FT4** poly, s32);
-        s32*                   func_88;                          // Only map0_s01, map7_s01.
+        s32*                   func_88; /** @unused */           // Only map0_s01, map7_s01.
         s32                    (*func_8C)(POLY_FT4** poly, s32); // Only map0_s01, map7_s01.
         s32                    (*func_90)(POLY_FT4** poly, s32); // Only map5_s00.
-        s_MapOverlayHdr_94* field_94;                         // Only map1_s02, map1_s03.
+        s_MapOverlayHdr_94*    field_94;                         // Only map1_s02, map1_s03.
         s32                    (*func_98)(POLY_FT4** poly, s32); // Only map1_s02, map1_s03.
         void                   (*func_9C)();                     // Only map1_s02, map1_s03.
         void*                  ptr_A0;                           // M1S03 only, pointer to `s_800E3A40` array.
@@ -480,8 +481,8 @@ namespace Silent::Game
         s32                    (*func_B4)(POLY_FT4** poly, s32); // Only map1_s03, map4_s05, map6_s01, map6_s02, map5_s01.
         void                   (*func_B8)(s_SubCharacter* chara, s_PlayerExtra* extra, GsCOORDINATE2* coords);
         void                   (*func_BC)(s_SubCharacter* chara, s_PlayerExtra* extra, GsCOORDINATE2* coords);
-        void                   (*func_C0)();
-        void                   (*playerMatchArmAnimDisable)();
+        void                   (*playerCutsceneWeaponUnequip)(); /** @unused */
+        void                   (*playerMatchArmAnimDisable)(); /** @unused */
         void                   (*playerControlFreeze)();
         void                   (*playerControlUnfreeze)(bool setIdle);
         bool                   (*playerPathWaypointExecute)(s32 playerExtraState, VECTOR3* vec, q3_12 angle, s32 vecCount); // 0x800C964C
@@ -493,21 +494,21 @@ namespace Silent::Game
         void                   (*playerAnimUnlock)(void);
         s32                    (*playerAnimPlaybackStateGet)(void);
         bool                   (*playerMoveSpeedIsZero)(void);
-        void                   (*playerMoveSpeedClear)(void);
-        void                   (*playerFallBackward)(void);
-        void                   (*playerStub_F8)();
-        void                   (*playerDamageFeetFront)(void);
-        void                   (*func_100)();
-        void                   (*func_104)();
+        void                   (*playerMoveSpeedClear)(void); /** @unused */
+        void                   (*playerFallBackward)(void); /** @unused */
+        void                   (*playerStub_F8)(); /** @unused */
+        void                   (*playerDamageFeetFront)(void); /** @unused */
+        void                   (*func_100)(); /** @unused */
+        void                   (*func_104)(); /** @unused */
         s32                    (*func_108)();
-        void                   (*func_10C)();
-        void                   (*func_110)();
-        void                   (*func_114)();
-        void                   (*func_118)();
-        void                   (*func_11C)();
-        void                   (*func_120)();
+        void                   (*playerEmptyWeaponHandSet)(); /** @unused */
+        void                   (*playerWeaponAttackRestore)(); /** @unused */
+        s32                    (*playerPropertyField10DGet)(); /** @unused */
+        void                   (*func_118)(); /** @unused */
+        void                   (*charaMovementReset)(s_SubCharacter* npc); /** @unused */
+        void                   (*charaAnimReset)(); /** @unused */
         void                   (*charaAnimStateSet)(s_SubCharacter* chara, q19_12 afkTime);
-        s32                    (*charaAnimReset)(s_SubCharacter* player); // TODO: Not only used by the player.
+        s32                    (*charaControlStateReset)(s_SubCharacter* player); // TODO: Not only used by the player.
         s32                    (*charaAnimLock)(s_SubCharacter* chara);
         void                   (*charaAnimIsLocked)(s_SubCharacter* chara);
         s32                    (*charaAnimUnlock)(s_SubCharacter* chara);
@@ -515,31 +516,31 @@ namespace Silent::Game
         bool                   (*charaPathWaypointExecute)(s_SubCharacter* chara, s32 arg1, VECTOR3* arg2In, s32 angleIn, s32 arg4);
         void                   (*charaVisibleSet)(s_SubCharacter* chara);
         void                   (*charaInvisibleSet)(s_SubCharacter* chara);
-        bool                   (*func_148)(s32 animStatus, s_SubCharacter* chara, s32 keyframeIdx0, s32 keyframeIdx1, s32 sfxId, s32 pitch);
-        bool                   (*func_14C)(s32 animStatus, s_SubCharacter* chara, s32 keyframeIdx, s32 sfxId); // Play SFX?
-        s32                    (*charaAnimStartKeyframeIdxGet)(s_SubCharacter* chara);
-        void                   (*charaCollisionReset)(s_SubCharacter* chara);
-        void                   (*func_158)(q19_12 x, q19_12 z); // Only map1_s05, map1_s06.
-        void                   (*func_15C)();                   // Only map5_s01.
-        void                   (*func_160)();                   // Only map5_s01.
-        void                   (*func_164)();                   // Only map5_s01.
-        void                   (*particlesUpdate)(s32 unused, s32 mapId, s32);
-        void                   (*enviromentSet)(s8, u32);
-        void                   (*func_170)();
-        void                   (*func_174)();
+        bool                   (*npcFootstepSoundPlay)(s32 animStatus, s_SubCharacter* chara, s32 keyframeIdx0, s32 keyframeIdx1, s32 sfxId, s32 pitch); /** @unused */
+        bool                   (*npcSfxPlay)(s32 animStatus, s_SubCharacter* chara, s32 keyframeIdx, s32 sfxId); /** @unused */
+        s32                    (*charaAnimStartKeyframeIdxGet)(s_SubCharacter* chara); /** @unused */
+        void                   (*charaCollisionReset)(s_SubCharacter* chara); /** @unused */
+        void                   (*splitHeadMovementOffsetSet)(q19_12 x, q19_12 z); // Only map1_s05, map1_s06.
+        void                   (*func_15C)(); /** @unused Loads number pad. */ // Only map5_s01.
+        void                   (*func_160)(); /** @unused */ // Only map5_s01.
+        void                   (*func_164)(); /** @unused */ // Only map5_s01.
+        void                   (*particleSystemUpdate)(s32 unused, s32 mapId, s32);
+        void                   (*particleEnviromentSet)(s8, u32);
+        void                   (*func_170)(); /** @unused */
+        void                   (*func_174)(); /** @unused */
         void                   (*particleHyperBlasterBeamDraw)(VECTOR3* vec0, q19_12* rotX, q19_12* rotY);
         void                   (*particleBeamDraw)(const VECTOR3* from, const VECTOR3* to);
-        void                   (*particleSoundStop)();
+        void                   (*particleSoundStop)(); /** @unused */
 
-        q19_12*                windSpeedX;
-        q19_12*                windSpeedZ;
+        q19_12*                particleWindSpeedX;
+        q19_12*                particleWindSpeedZ;
         s32*                   data_18C;
         s32*                   data_190;
         void                   (*charaUpdateFuncs[Chara_Count])(s_SubCharacter* chara, s_AnmHeader* anmHdr, GsCOORDINATE2* coords); /** Guessed params. Funcptrs for each `e_CharaId`, set to 0 for IDs not included in the map overlay. Called by `Game_NpcUpdate`. */
         s8                     charaGroupIds[CHARA_GROUP_COUNT]; /** `e_CharaId` values where if `s_SpawnInfo::charaId == Chara_None`, `charaGroupIds[0]` is used for `charaSpawnInfos[0]` and `charaGroupIds[1]` for `charaSpawnInfos[1]`. */
         s_SpawnInfo            (*charaSpawnInfos)[16];           /** Array of character type/position/flags. `flags == SpawnFlags_None` are unused slots? Read by `Game_NpcRoomInitSpawn`. */
         VC_ROAD_DATA*          cameraPaths[CAMERA_PATH_COUNT_MAX];
-        s_CollisionTrigger     collisionTriggers[COLLISION_TRIGGER_COUNT_MAX];
+        const s_CollisionTrigger* collisionTriggers[COLLISION_TRIGGER_COUNT_MAX];
     };
 
     /** @brief Checks if a paper map has been collected.

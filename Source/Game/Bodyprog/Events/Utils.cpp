@@ -163,7 +163,7 @@ namespace Silent::Game
                 }
                 else
                 {
-                    g_MapOverlayHdr.charaAnimReset(chara);
+                    g_MapOverlayHdr.charaControlStateReset(chara);
                 }
                 break;
         }

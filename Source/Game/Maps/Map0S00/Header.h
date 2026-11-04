@@ -4,5 +4,5 @@
 
 namespace Silent::Game
 {
-    extern const s_MapOverlayHdr g_M0S00Hdr;
+    extern const s_MapOverlayHdr g_M0S00;
 }

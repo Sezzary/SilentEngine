@@ -47,7 +47,7 @@ namespace Silent::Game
     //    /* 16 */ func_800DBE00
     //};
 
-    const s_MapOverlayHdr g_M0S00Hdr =
+    const s_MapOverlayHdr g_M0S00 =
     {
         //.mapInfo                      = &MAP_INFOS[MapType_THR],
         //.mapRoomIdxGet                = Map_RoomIdxGet,
@@ -68,13 +68,13 @@ namespace Silent::Game
         /*.harryMapAnimInfos            = HARRY_M0S00_ANIM_INFOS,
         .field_38                     = g_MapHeaderTable_38,
         .initWorldObjects             = Map_WorldObjectsInit,
-        .updateWorldObjects           = Map_WorldObjectsUpdate,
+        .updateWorldObjects           = Map_WorldObjectsUpdate,*/
         .func_44                      = NULL,
-        .npcSpawnEvent                = MapEvent_GreyChildrenSpawn,
+        /*.npcSpawnEvent                = MapEvent_GreyChildrenSpawn,
         .unkTable1_4C                 = sharedData_800DFB7C_0_s00,
         .unkTable1Count_50            = ARRAY_SIZE(sharedData_800DFB7C_0_s00),
         .bloodSplats                  = g_Effect_BloodSplats,
-        .bloodSplatCount              = ARRAY_SIZE(g_Effect_BloodSplats),
+        .bloodSplatCount              = ARRAY_SIZE(g_Effect_BloodSplats),*/
         .field_5C                     = NULL,
         .func_60                      = NULL,
         .func_64                      = NULL,
@@ -98,7 +98,7 @@ namespace Silent::Game
         .func_AC                      = NULL,
         .func_B0                      = NULL,
         .func_B4                      = NULL,
-        .func_B8                      = sharedFunc_800CDAA8_0_s02,
+        /*.func_B8                      = sharedFunc_800CDAA8_0_s02,
         .func_BC                      = sharedFunc_800D1C38_0_s00,
         .playerCutsceneWeaponUnequip  = Player_CutsceneWeaponUnequip,
         .playerMatchArmAnimDisable    = Player_MatchArmAnimDisable,
@@ -137,12 +137,12 @@ namespace Silent::Game
         .npcFootstepSoundPlay         = Npc_FootstepSoundPlay,
         .npcSfxPlay                   = Npc_SfxPlay,
         .charaAnimStartKeyframeIdxGet = Chara_AnimStartKeyframeIdxGet,
-        .charaCollisionReset          = Chara_CollisionReset,
+        .charaCollisionReset          = Chara_CollisionReset,*/
         .splitHeadMovementOffsetSet   = NULL,
         .func_15C                     = NULL,
         .func_160                     = NULL,
         .func_164                     = NULL,
-        .particleSystemUpdate         = Particle_SystemUpdate,
+        /*.particleSystemUpdate         = Particle_SystemUpdate,
         .particleEnviromentSet        = Particle_EnvironmentSet,
         .func_170                     = sharedFunc_800D0A60_0_s00,
         .func_174                     = sharedFunc_800D0B18_0_s00,
@@ -163,6 +163,6 @@ namespace Silent::Game
         .charaGroupIds     = {},
         .charaSpawnInfos   = CHARA_SPAWNS,
         .cameraPaths       = CAMERA_PATHS,
-        //.collisionTriggers = COLLISION_TRIGGERS
+        .collisionTriggers = COLLISION_TRIGGERS
     };
 }

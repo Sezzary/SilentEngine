@@ -235,11 +235,11 @@ namespace Silent::Game
                 {
                     if (fadeType == ScreenFadeType_Black)
                     {
-                        ScreenFade_Start(false, false, false);
+                        Screen_FadeStart(false, false, false);
                     }
                     else if (fadeType == ScreenFadeType_White)
                     {
-                        ScreenFade_Start(false, false, true);
+                        Screen_FadeStart(false, false, true);
                     }
                     else
                     {
@@ -255,11 +255,11 @@ namespace Silent::Game
                 {
                     if (fadeType == ScreenFadeType_Black)
                     {
-                        ScreenFade_Start(false, true, false);
+                        Screen_FadeStart(false, true, false);
                     }
                     else if (fadeType == ScreenFadeType_White)
                     {
-                        ScreenFade_Start(false, true, true);
+                        Screen_FadeStart(false, true, true);
                     }
                     else
                     {
@@ -278,8 +278,8 @@ namespace Silent::Game
                 if (fadeType == ScreenFadeType_Black ||
                     fadeType == ScreenFadeType_White)
                 {
-                    //if ((!fadeOut && ScreenFade_IsNone()) ||
-                    //    (fadeOut  && ScreenFade_IsFinished()))
+                    //if ((!fadeOut && Screen_IsFadeNone()) ||
+                    //    (fadeOut  && Screen_IsFadeFinished()))
                     {
                         Event_SysStateStepIncrement(incSubStep);
                     }

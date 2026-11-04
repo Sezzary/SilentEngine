@@ -126,7 +126,7 @@ namespace Silent::Game
             {
                 if (!assets.IsBusy())
                 {
-                    ScreenFade_Start(true, true, false, Q12(FADE_SEC));
+                    Screen_FadeStart(true, true, false, Q12(FADE_SEC));
 
                     Game_StateStepIncrement(0);
                     break;
@@ -172,7 +172,7 @@ namespace Silent::Game
                         langIdx = 0;
                     }
                 }
-                else if (ScreenFade_IsNone() && input.GetAction(In::Enter).IsClicked())
+                else if (Screen_IsFadeNone() && input.GetAction(In::Enter).IsClicked())
                 {
                     SD_Call(Sfx_MenuConfirm);
 
@@ -193,14 +193,14 @@ namespace Silent::Game
             }
             case 3:
             {
-                ScreenFade_Start(true, false, false, Q12(FADE_SEC));
+                Screen_FadeStart(true, false, false, Q12(FADE_SEC));
 
                 Game_StateStepIncrement(0);
                 break;
             }
             case 4:
             {
-                if (ScreenFade_IsFinished() && !assets.IsBusy())
+                if (Screen_IsFadeFinished() && !assets.IsBusy())
                 {
                     langIdx     = 0;
                     langLabel   = {};
@@ -264,7 +264,7 @@ namespace Silent::Game
             {
                 if (!assets.IsBusy())
                 {
-                    ScreenFade_Start(true, true, false, Q12(FADE_SEC));
+                    Screen_FadeStart(true, true, false, Q12(FADE_SEC));
 
                     Game_StateStepIncrement(0);
                 }
@@ -276,7 +276,7 @@ namespace Silent::Game
                     input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(DISPLAY_SEC))
                 {
-                    ScreenFade_Start(false, false, false, Q12(FADE_SEC));
+                    Screen_FadeStart(false, false, false, Q12(FADE_SEC));
 
                     Game_StateStepIncrement(0);
                 }
@@ -284,7 +284,7 @@ namespace Silent::Game
             }
             case 3:
             {
-                if (ScreenFade_IsFinished() && !assets.IsBusy())
+                if (Screen_IsFadeFinished() && !assets.IsBusy())
                 {
                     assets.Unload("Textures/SplashScreen.png");
 
@@ -335,7 +335,7 @@ namespace Silent::Game
             {
                 if (!assets.IsBusy())
                 {
-                    ScreenFade_Start(true, true, false, Q12(FADE_SEC));
+                    Screen_FadeStart(true, true, false, Q12(FADE_SEC));
                     bgTexName = "Psx/1ST/KONAMI2.TIM";
 
                     Game_StateStepIncrement(0);
@@ -349,7 +349,7 @@ namespace Silent::Game
                     input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(DISPLAY_SEC))
                 {
-                    ScreenFade_Start(false, false, false, Q12(FADE_SEC));
+                    Screen_FadeStart(false, false, false, Q12(FADE_SEC));
                     g_SysWork.gameStateCounter = 0; // @todo Cleaner way?
 
                     Game_StateStepIncrement(0);
@@ -358,9 +358,9 @@ namespace Silent::Game
             }
             case 3:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
-                    ScreenFade_Start(true, true, false, Q12(FADE_SEC));
+                    Screen_FadeStart(true, true, false, Q12(FADE_SEC));
                     bgTexName = "Psx/1ST/KONAMI.TIM";
 
                     Game_StateStepIncrement(0);
@@ -374,14 +374,14 @@ namespace Silent::Game
                     input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(DISPLAY_SEC))
                 {
-                    ScreenFade_Start(false, false, false, Q12(FADE_SEC));
+                    Screen_FadeStart(false, false, false, Q12(FADE_SEC));
 
                     Game_StateStepIncrement(0);
                 }
                 break;
             }
             case 5:
-                if (ScreenFade_IsFinished() && !assets.IsBusy())
+                if (Screen_IsFadeFinished() && !assets.IsBusy())
                 {
                     assets.Unload("Psx/1ST/KONAMI2.TIM");
                     assets.Unload("Psx/1ST/KONAMI.TIM");

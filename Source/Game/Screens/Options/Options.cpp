@@ -110,7 +110,7 @@ namespace Silent::Game
         {
             Sd_SfxPlay(Sfx_MenuCancel, 0, 64);
 
-            ScreenFade_Start(true, false, false);
+            Screen_FadeStart(true, false, false);
             Game_StateStepSet(0, OptionsMenuState_Leave);
             return;
         }
@@ -122,7 +122,7 @@ namespace Silent::Game
 
             if (g_OptionsMenu_SelectedEntry == OptionsMenuEntry_Exit)
             {
-                ScreenFade_Start(true, false, false);
+                Screen_FadeStart(true, false, false);
                 Game_StateStepSet(0, OptionsMenuState_Leave);
             }
             else
@@ -161,14 +161,14 @@ namespace Silent::Game
         {
             case OptionsMenuState_Leave:
             {
-                ScreenFade_Start(true, false, false);
+                Screen_FadeStart(true, false, false);
                 Game_StateStepSet(0, OptionsMenuState_LeaveOptions);
                 break;
             }
             case OptionsMenuState_EnterOptions:
             {
                 g_GameWork.background2dColor = { 0, 0, 0 };
-                ScreenFade_Start(false, true, false);
+                Screen_FadeStart(false, true, false);
 
                 if (g_GameWork.gameStatePrev == GameState_InGame)
                 {
@@ -211,7 +211,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_LeaveOptions:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateSetPrevious();
                 }
@@ -219,7 +219,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_EnterGraphics:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_Graphics);
                 }
@@ -227,7 +227,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_EnterGameplay:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_Gameplay);
                 }
@@ -235,7 +235,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_EnterInput:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_Input);
                 }
@@ -243,7 +243,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_EnterEnhancements:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_Enhancements);
                 }
@@ -251,7 +251,7 @@ namespace Silent::Game
             }
             case OptionsMenuState_EnterSystem:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_System);
                 }
@@ -284,7 +284,7 @@ namespace Silent::Game
             }
 
             case OptionsMenuState_EnterBrightness:
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_Brightness);
                 }
@@ -295,14 +295,14 @@ namespace Silent::Game
                 break;
 
             case OptionsMenuState_LeaveBrightness:
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_Graphics);
                 }
                 break;
 
             case OptionsMenuState_EnterBindings:
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Game_StateStepSet(0, OptionsMenuState_Bindings);
                 }

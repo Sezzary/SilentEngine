@@ -31,7 +31,7 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[1])
         {
             case BindingsMenuState_Exit:
-                ScreenFade_Start(false, true, false);
+                Screen_FadeStart(false, true, false);
                 selectedEntries.preset = BindingsMenuState_Exit;
 
                 // Leave menu.
@@ -40,7 +40,7 @@ namespace Silent::Game
                 {
                     //Sd_EngineCmd(Sfx_Cancel);
 
-                    ScreenFade_Start(false, false, false);
+                    Screen_FadeStart(false, false, false);
                     g_GameWork.gameStateSteps[1] = BindingsMenuState_Leave;
                     g_GameWork.gameStateSteps[2] = 0;
                     break;
@@ -152,9 +152,9 @@ namespace Silent::Game
 
             case BindingsMenuState_Leave:
                 // Switch to previous menu.
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
-                    ScreenFade_Start(true, true, false);
+                    Screen_FadeStart(true, true, false);
                     g_GameWork.gameStateSteps[0]   = OptionsMenuState_LeaveBindings;
                     g_SysWork.gameStateStepCounter = 0;
                     g_GameWork.gameStateSteps[1]   = 0;

@@ -83,7 +83,7 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[0])
         {
             case 0:
-                ScreenFade_Start(true, true, false);
+                Screen_FadeStart(true, true, false);
                 g_ScreenFadeTimestep         = Q12(3.0f);
                 g_GameWork.gameStateSteps[0] = 1;
 
@@ -134,7 +134,7 @@ namespace Silent::Game
         }
         Demo_DemoRandSeedRestore();
 
-        g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
+        g_IsLoadingFinished = Screen_IsFadeFinished() && Fs_QueueChunksLoad();
 
         if (!(g_SysWork.bgmStatusFlags & BgmStatusFlag_Pause) && g_MapOverlayHdr.updateWorldObjects != nullptr)
         {
@@ -269,7 +269,7 @@ namespace Silent::Game
         {
             g_SysWork.sysState |= SysFlag_MenuActive;
         }
-        else if (ScreenFade_IsNone())
+        else if (Screen_IsFadeNone())
         {
             g_SysWork.sysState &= ~SysFlag_MenuActive;
         }
@@ -327,7 +327,7 @@ namespace Silent::Game
         switch (g_SysWork.sysStateSteps[0])
         {
             case 0:
-                ScreenFade_Start(true, false, false);
+                Screen_FadeStart(true, false, false);
                 g_ScreenFadeTimestep        = Q12(0.0f);
                 g_SysWork.sysStateSteps[0] = 1;
 
@@ -449,7 +449,7 @@ namespace Silent::Game
         if (g_GameWork.gameStateSteps[0] == 0)
         {
             g_IntervalVBlanks = 1;
-            ScreenFade_Reset();
+            Screen_FadeReset();
 
             func_8003943C();
 
@@ -506,7 +506,7 @@ namespace Silent::Game
 
                 Fs_QueueStartSeek((e_FsFile)((int)FILE_TIM_MP_0TOWN_TIM + g_PaperMapFileIdxs[g_SavegamePtr->paperMapIdx]));
 
-                ScreenFade_Start(true, false, false);
+                Screen_FadeStart(true, false, false);
                 g_ScreenFadeTimestep = Q12(0.0f);
                 g_SysWork.sysStateSteps[0]++;
             }
@@ -563,7 +563,7 @@ namespace Silent::Game
                     case 0:
                         g_IsLoadingFinished = false;
 
-                        ScreenFade_Start(false, false, false);
+                        Screen_FadeStart(false, false, false);
                         SysWork_StateStepIncrement(1);
 
                     case 1:
@@ -812,7 +812,7 @@ namespace Silent::Game
                 {
                     //GameFs_SaveLoadBinLoad();
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     SysWork_StateStepIncrement(0);
                 }
                 /*else if (MapMsg_Draw(MapMsgIdx_SaveGame) == MapMsgState_SelectEntry1)
@@ -821,7 +821,7 @@ namespace Silent::Game
 
                     //GameFs_SaveLoadBinLoad();
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     SysWork_StateStepIncrement(0);
                 }*/
                 break;
@@ -829,7 +829,7 @@ namespace Silent::Game
             case 1:
                 if (g_IsLoadingFinished)
                 {
-                    ScreenFade_Start(true, true, false);
+                    Screen_FadeStart(true, true, false);
                     func_8003943C();
                     Game_StateSetNext(GameState_SaveScreen);
                 }
@@ -1067,11 +1067,11 @@ namespace Silent::Game
         {
             g_IntervalVBlanks = 1;
 
-            ScreenFade_Start(true, true, false);
+            Screen_FadeStart(true, true, false);
             g_GameWork.gameStateSteps[0] = 1;
         }
 
-        g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
+        g_IsLoadingFinished = Screen_IsFadeFinished() && Fs_QueueChunksLoad();
 
         Savegame_EventFlagSet(g_MapEventData->completeFlag);
         g_MapOverlayHdr.mapEventFuncs[g_MapEventParam]();

@@ -36,7 +36,7 @@ namespace Silent::Game
         {
             case (int)StateStep::FadeIn:
             {
-                ScreenFade_Start(false, true, false, Q12(1.0f));
+                Screen_FadeStart(false, true, false, Q12(1.0f));
 
                 Game_StateStepIncrement(0);
                 break;
@@ -65,7 +65,7 @@ namespace Silent::Game
         {
             case (int)StateStep::ResetFade:
             {
-                ScreenFade_Reset();
+                Screen_FadeReset();
 
                 Game_StateStepIncrement(0);
                 break;

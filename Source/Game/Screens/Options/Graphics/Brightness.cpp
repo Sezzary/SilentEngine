@@ -71,7 +71,7 @@ namespace Silent::Game
             }
             case 1:
             {
-                ScreenFade_Start(true, true, false);
+                Screen_FadeStart(true, true, false);
                 Game_StateStepIncrement(2);
                 break;
             }
@@ -110,7 +110,7 @@ namespace Silent::Game
                         //Sd_SfxPlay(Sfx_Cancel, 0, Q8_CLAMPED(0.25f));
                     }
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     Game_StateStepIncrement(2);
                 }
                 break;
@@ -118,11 +118,11 @@ namespace Silent::Game
             case 3:
             {
                 // Switch to previous menu.
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     g_GameWork.background2dColor = { 0, 0, 0 };
 
-                    ScreenFade_Start(true, true, false);
+                    Screen_FadeStart(true, true, false);
                     Game_StateStepSet(0, OptionsMenuState_LeaveBrightness);
                 }
                 break;

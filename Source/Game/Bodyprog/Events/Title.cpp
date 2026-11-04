@@ -188,7 +188,7 @@ namespace Silent::Game
                 g_GameWork.background2dColor = { 0, 0, 0 };
 
                 g_IntervalVBlanks = 1;
-                ScreenFade_Start(true, true, false);
+                Screen_FadeStart(true, true, false);
                 g_ScreenFadeTimestep = Q12(2.0f);
 
                 g_MainMenuState++;
@@ -281,7 +281,7 @@ namespace Silent::Game
                         Fs_QueueReset();
                     }
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     g_MainMenuState++;
 
                     if (g_MainMenu_SelectedEntry < MainMenuEntry_Start)
@@ -315,7 +315,7 @@ namespace Silent::Game
                             break;
 
                         case MainMenuEntry_Start:
-                            ScreenFade_Reset();
+                            Screen_FadeReset();
                             g_MainMenuState = MainMenuState_DifficultySelector;
                             break;
 
@@ -400,7 +400,7 @@ namespace Silent::Game
                     GameBoot_MapLoad(MapIdx_MAP0_S00);
                     SD_Call(Sfx_MenuStartGame);
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     g_MainMenuState = MainMenuState_NewGameStart;
                 }
                 // Cancel.
@@ -413,7 +413,7 @@ namespace Silent::Game
 
             case MainMenuState_LoadGame:
             case MainMenuState_NewGameStart:
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Screen_Refresh(SCREEN_WIDTH, 0);
                     Fs_QueueWaitForEmpty();
@@ -436,7 +436,7 @@ namespace Silent::Game
 
             case MainMenuState_Quit:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     g_App.Quit();
                 }

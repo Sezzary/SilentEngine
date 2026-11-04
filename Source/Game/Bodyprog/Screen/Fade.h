@@ -2,7 +2,7 @@
 
 namespace Silent::Game
 {
-    /** @brief Screen fade states used by `g_ScreenFade_Status`. The flow is not linear. */
+    /** @brief Screen fade states used by `g_Screen_FadeStatus`. The flow is not linear. */
     enum e_ScreenFadeState
     {
         ScreenFadeState_Reset           = 0,
@@ -15,26 +15,19 @@ namespace Silent::Game
         ScreenFadeState_FadeInSteps     = 7
     };
 
-    /** @brief Packed screen fade effect data. Uses `e_ScreenFadeState`.
+    /** @brief Active screen fade effect data. Uses `e_ScreenFadeState`.
      *
-     * Data is packed as follows:
+     * @note Data is packed as follows:
      * State as `e_ScreenFadeState`: bits 0-2.
      * Is white:                     bit 3.
-     *
-     * TODO: Reference enum entries for details below.
-     * 0-1   - Nothing.
-     * 2-5   - Fades to black and keeps the screen black.
-     * 6-7   - Fades from black.
-     * 10-15 - Fades to white and keeps the screen white.
-     * 16    - Fades to black.
      */
-    extern int g_ScreenFade_Status;
+    extern int g_Screen_FadeStatus;
 
     extern q19_12 g_ScreenFadeTimestep;
     extern q19_12 g_ScreenFadeProgress;
 
     /** @brief Packs a screen fade status containing a fade state and white flag.
-     * See `g_ScreenFade_Status` for bit layout.
+     * See `g_Screen_FadeStatus` for bit layout.
      *
      * @param state Screen fade state.
      * @param isWhite White status.
@@ -46,7 +39,7 @@ namespace Silent::Game
     }
 
     /** @brief Checks if the screen fade is white.
-     * See `g_ScreenFade_Status` for bit layout.
+     * See `g_Screen_FadeStatus` for bit layout.
      *
      * @param fadeStatus Packed screen fade status containing a fade state and white flag.
      * @return `true` if white, `false` if black.
@@ -60,13 +53,13 @@ namespace Silent::Game
      *
      * @return `true` if finished, `false` if still in progress.
      */
-    bool ScreenFade_IsFinished();
+    bool Screen_IsFadeFinished();
 
     /** @brief Checks if the screen fade is not in progress (idle step) without masking away the color bit.
      *
      * @return `true` if idle, `false` otherwise.
      */
-    bool ScreenFade_IsNone();
+    bool Screen_IsFadeNone();
 
     /** @brief Starts a screen fade in/out.
      *
@@ -77,19 +70,19 @@ namespace Silent::Game
      * @param isWhite `true` for white fade, `false` for black fade.
      * @param timestep Fade speed timestep. By default, determined by the number of assets currently being loaded.
      */
-    void ScreenFade_Start(bool reset, bool fadeIn, bool isWhite, q19_12 timestep = NO_VALUE);
+    void Screen_FadeStart(bool reset, bool fadeIn, bool isWhite, q19_12 timestep = NO_VALUE);
 
     /** @brief Resets the screen fade. */
-    void ScreenFade_Reset();
+    void Screen_FadeReset();
 
     /** @brief Resets the custom screen fade timestep back to zero, disregarding the color bit. */
-    void ScreenFade_ResetTimestep();
+    void Screen_FadeResetTimestep();
 
     /** @brief Gets the screen fade effect's progress.
      *
      * @return Fade progress.
      */
-    q19_12 Screen_FadeInProgressGet();
+    q19_12 Screen_FadeProgressGet();
 
     /** @brief Updates the screen fade effect. */
     void Screen_FadeUpdate();

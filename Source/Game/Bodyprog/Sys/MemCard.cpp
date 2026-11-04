@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Psx.h"
 #include "Game/Bodyprog/Bodyprog.h"
-#include "Game/Bodyprog/MemCard.h"
+#include "Game/Bodyprog/Sys/MemCard.h"
 
 #include "Game/Main/FsQueue.h"
 

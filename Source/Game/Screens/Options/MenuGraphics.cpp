@@ -6,7 +6,7 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Screens/Options/Options.h"
 #include "Game/Screens/Options/SelectionGraphics.h"

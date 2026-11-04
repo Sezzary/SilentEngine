@@ -11,7 +11,7 @@
 #include "Utils/Parallel.h"
 
 #include "Game/Screens/Options/MenuGraphics.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 
 using namespace Silent::Game;

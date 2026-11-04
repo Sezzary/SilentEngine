@@ -6,7 +6,7 @@
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
-#include "Game/Bodyprog/Demo.h"
+#include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Main/FsMem.h"
 
 using namespace Silent::Assets;

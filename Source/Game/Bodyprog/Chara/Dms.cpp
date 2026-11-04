@@ -1,6 +1,6 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Dms.h"
+#include "Game/Bodyprog/Chara/Dms.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 

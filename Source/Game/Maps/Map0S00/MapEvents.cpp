@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Game/Maps/Map0S00/MapEvents.h"
 
-#include "Game/Bodyprog/EventFlags.h"
+#include "Game/Bodyprog/Events/EventFlags.h"
 #include "Game/Bodyprog/Map/Map.h"
 #include "Game/Bodyprog/Sound/Sfx.h"
 #include "Game/Game.h"

@@ -4,7 +4,7 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
-#include "Game/Bodyprog/Demo.h"
+#include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/GameBoot/LoadScreen.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
@@ -83,8 +83,10 @@ namespace Silent::Game
 
     void GameBoot_InGameStartup(void)
     {
-        // Makes up to 5 attemps. If the load fails, the timer used to check if a demo should be triggered is restarted.
-        static int demoLoadAttempCount;
+        constexpr int DEMO_LOAD_ATTEMPT_COUNT_MAX = 5;
+
+        // If the load fails, the timer used to check if a demo should be triggered is restarted.
+        static int demoLoadAttempCount = 0;
 
         const auto& player = g_SysWork.playerWork.player;
 
@@ -134,7 +136,7 @@ namespace Silent::Game
                     Demo_DemoDataRead();
 
                     demoLoadAttempCount++;
-                    if (demoLoadAttempCount >= 5)
+                    if (demoLoadAttempCount >= DEMO_LOAD_ATTEMPT_COUNT_MAX)
                     {
                         demoLoadAttempCount            = 0;
                         g_SysWork.gameStateStepCounter = 0;

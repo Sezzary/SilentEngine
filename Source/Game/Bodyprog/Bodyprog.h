@@ -8,7 +8,6 @@
 #include "Game/Bodyprog/Chara/Spawn.h"
 #include "Game/Bodyprog/Events/Bgm.h"
 #include "Game/Bodyprog/Events/Utils.h"
-//#include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/Formats/Ipd.h"
 #include "Game/Bodyprog/Formats/Lm.h"
 #include "Game/Bodyprog/Formats/Model.h"
@@ -20,6 +19,7 @@
 #include "Game/Bodyprog/Map/Terrain.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Sound/SfxIdEnum.h"
+//#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/View/VwSystem.h"
 #include "Game/Main/FsQueue.h"
 

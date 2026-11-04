@@ -441,9 +441,6 @@ namespace Silent::Game
         q23_8 field_2764;                       // }
     };
 
-    extern void* g_OvlBodyprog;
-    extern void* g_OvlDynamic;
-
     extern s_SysWork         g_SysWork;
     extern s_GameWork        g_GameWork;
     extern s_GameWork* const g_GameWorkConst;

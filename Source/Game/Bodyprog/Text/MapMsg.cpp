@@ -1,6 +1,6 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 

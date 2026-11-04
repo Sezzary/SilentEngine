@@ -1,7 +1,7 @@
 #include "Framework.h"
 #include "Psx.h"
 #include "Game/Bodyprog/Bodyprog.h"
-#include "Game/Bodyprog/Demo.h"
+#include "Game/Bodyprog/Sys/Demo.h"
 
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"

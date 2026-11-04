@@ -5,8 +5,8 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
-#include "Game/Bodyprog/MemCard.h"
-#include "Game/Bodyprog/Demo.h"
+#include "Game/Bodyprog/Sys/MemCard.h"
+#include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/GameBoot/GameLoad.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"

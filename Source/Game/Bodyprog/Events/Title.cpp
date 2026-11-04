@@ -1,21 +1,21 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Title.h"
+#include "Game/Bodyprog/Events/Title.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
 #include "Game/Bodyprog/Events/PlayerPosUpdate.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
-#include "Game/Bodyprog/MemCard.h"
+#include "Game/Bodyprog/Sys/MemCard.h"
 #include "Game/Bodyprog/Screen/BackgroundDraw.h"
 #include "Game/Bodyprog/Screen/ScreenData.h"
 #include "Game/Bodyprog/Screen/ScreenDraw.h"
 #include "Game/Bodyprog/Screen/ScreenFade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"
@@ -197,7 +197,7 @@ namespace Silent::Game
             case MainMenuState_Main:
                 if (playInGameDemo)
                 {
-                    //GameFs_MapStartup();
+                    GameBoot_InGameStartup();
 
                     if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
@@ -305,9 +305,9 @@ namespace Silent::Game
                                 GameFs_SaveLoadBinLoad();
                             }
 
-                            //Game_PlayerInit();
+                            GameBoot_WorldInit();
                             g_SysWork.processFlags = ProcessFlag_Continue;
-                            //GameBoot_MapLoad(g_SavegamePtr->mapIdx);
+                            GameBoot_MapLoad(g_SavegamePtr->mapIdx);
                             break;
 
                         case MainMenuEntry_Load:
@@ -335,7 +335,7 @@ namespace Silent::Game
             case MainMenuState_DifficultySelector:
                 if (playInGameDemo)
                 {
-                    //GameFs_MapStartup();
+                    GameBoot_InGameStartup();
 
                     if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
@@ -392,8 +392,8 @@ namespace Silent::Game
                 // Select game difficulty.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Game_SavegameInitialize(0, newGameSelectedDifficultyIdx - 1);
-                    //Game_PlayerInit();
+                    GameBoot_SavegameInitialize(0, newGameSelectedDifficultyIdx - 1);
+                    GameBoot_WorldInit();
 
                     g_SysWork.processFlags = ProcessFlag_NewGame;
 

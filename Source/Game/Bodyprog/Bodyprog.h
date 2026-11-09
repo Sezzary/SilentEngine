@@ -201,10 +201,10 @@ namespace Silent::Game
 
     typedef struct
     {
-        u8  unk_0[4];
-        s16 field_4;
-        s16 field_6; // Keyframe index or time.
-    } s_800C44F0; // Probable size: 8 bytes.
+        u8  unused_0[4];      /** @unused TODO: Looks meaningful, but unclear what it could be. */
+        s16 startKeyframeIdx;
+        s16 endKeyframeIdx;
+    } s_800C44F0;
 
     struct s_MapEnvPresetIdxs
     {
@@ -259,31 +259,7 @@ namespace Silent::Game
         } u;
     } s_GteScratchData2;
 
-    // Something for inventory items.
-    typedef struct
-    {
-        q3_12   positionY;
-        q3_12   field_2; // Move dist?
-        q3_12   field_4; // Angle.
-        s16     field_6;
-        s16     field_8;
-        s8      __pad_A[2];
-        SVECTOR field_C;  // Q3.12 | Offset?
-        SVECTOR position; /** Q3.12 */
-    } s_800AE204;
-
-    typedef struct
-    {
-        s_800AE204* ptr_0;
-        u8          count_4;
-        u8          unk_5;
-        q7_8        field_6;
-        u8          field_8;
-        u8          field_9;
-        u8          field_A;
-        u8          field_B;
-    } s_800AE4DC;
-
+    // Paper map marking info?
     typedef struct
     {
         u8 field_0;
@@ -291,8 +267,7 @@ namespace Silent::Game
         u8 field_2;
         u8 field_3; // Map marking sprite height?
     } s_800AE8A0_0;
-
-    typedef struct
+    typedef struct // Maybe the same? Both related to `s_800AEDBC`.
     {
         s8 field_0;
         s8 field_1;
@@ -567,6 +542,7 @@ namespace Silent::Game
 
     extern const s_AnimInfo HARRY_WEAPON_ANIM_INFOS[];
 
+    // Something related to keyframes.
     extern const s_800C44F0 D_800294F4[];
 
     extern const s_AnimInfo* D_800297B8;

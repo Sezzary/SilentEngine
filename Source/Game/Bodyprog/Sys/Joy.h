@@ -4,7 +4,7 @@ namespace Silent::Game
 {
     constexpr int  INPUT_ACTION_COUNT   = 14;
     constexpr int  CONTROLLER_COUNT_MAX = 2;
-    constexpr q0_7 STICK_DEADZONE       = FP_STICK(0.5f);
+    constexpr q0_7 STICK_DEADZONE       = Q7(0.5f);
 
     /** @brief PSX controller input flags. */
     enum e_ControllerFlags

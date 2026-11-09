@@ -12,7 +12,7 @@ namespace Silent::Assets
     /** @brief ANM rotation matrix. */
     struct AnmMatrix
     {
-        std::array<std::array<q1_7, 3>, 3> Rotation = {};
+        std::array<std::array<q0_7, 3>, 3> Rotation = {};
 
         /** @brief Converts the ANM rotation matrix to a `Quaternion`.
          *
@@ -74,9 +74,9 @@ namespace Silent::Assets
             for (int j = 0; j < translationCount; j++)
             {
                 // Read translation components.
-                q1_7 x = stream.ReadInt8();
-                q1_7 y = stream.ReadInt8();
-                q1_7 z = stream.ReadInt8();
+                q0_7 x = stream.ReadInt8();
+                q0_7 y = stream.ReadInt8();
+                q0_7 z = stream.ReadInt8();
 
                 // Collect bone translation.
                 auto translation = ConvertTranslation(x, y, z, translationShift);
@@ -162,9 +162,9 @@ namespace Silent::Assets
             int8 parentBoneIdx    = stream.ReadInt8();
             int8 rotIdx           = stream.ReadInt8();
             int8 translationIdx   = stream.ReadInt8();
-            q1_7 bindTranslationX = stream.ReadInt8();
-            q1_7 bindTranslationY = stream.ReadInt8();
-            q1_7 bindTranslationZ = stream.ReadInt8();
+            q0_7 bindTranslationX = stream.ReadInt8();
+            q0_7 bindTranslationY = stream.ReadInt8();
+            q0_7 bindTranslationZ = stream.ReadInt8();
 
             // Collect bone.
             bones.push_back(AnmBone

@@ -4,7 +4,7 @@ namespace Silent::Game
 {
     constexpr int  INPUT_ACTION_COUNT   = 14;
     constexpr int  CONTROLLER_COUNT_MAX = 2;
-    constexpr q1_7 STICK_DEADZONE       = Q7(0.5f);
+    constexpr q0_7 STICK_DEADZONE       = Q7(0.5f);
 
     /** @brief PSX controller input flags. */
     enum e_ControllerFlags
@@ -58,10 +58,10 @@ namespace Silent::Game
         u32 rawData;
         struct
         {
-            q1_7 rightX;
-            q1_7 rightY;
-            q1_7 leftX;
-            q1_7 leftY;
+            q0_7 rightX;
+            q0_7 rightY;
+            q0_7 leftX;
+            q0_7 leftY;
         } sticks;
     } s_AnalogSticks;
 

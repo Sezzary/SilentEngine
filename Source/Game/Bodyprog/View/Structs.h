@@ -62,8 +62,8 @@ namespace Silent::Game
         q27_4             ofs_watch_hy   : 8;
         int               lens_flare     : 4; /** `e_LensFlareType` | TODO: Unsure, rough name. */
         int               cam_mv_type    : 4; /** `VC_CAM_MV_TYPE` */
-        q1_7              fix_ang_x;          /** @note Part of union in SH2 `VC_ROAD_DATA`. */
-        q1_7              fix_ang_y;
+        q0_7              fix_ang_x;          /** @note Part of union in SH2 `VC_ROAD_DATA`. */
+        q0_7              fix_ang_y;
     };
 
     /** @brief Rail camera parementers. */

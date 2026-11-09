@@ -21,7 +21,7 @@ namespace Silent
     using uint32 = uint32_t;
     using uint64 = uint64_t;
 
-    using q0_7   = int8;
+    using q1_7   = int8;
     using q11_4  = int16;
     using q8_7   = int16;
     using q7_8   = int16;

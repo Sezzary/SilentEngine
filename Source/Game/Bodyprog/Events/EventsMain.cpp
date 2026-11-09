@@ -175,8 +175,8 @@ namespace Silent::Game
             // `MapTriggerActivationType_Button`: Only allow button activated events when area is lit up?
             if (mapEvent->activationType == MapTriggerActivationType_Button)
             {
-                if ((g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 2) && !g_SysWork.field_2388.isFlashlightOn &&
-                    ((g_SysWork.field_2388.field_1C[0].effectsInfo.flags.field_00[0] & 1) || (g_SysWork.field_2388.field_1C[1].effectsInfo.flags.field_00[0] & 1)))
+                if ((g_SysWork.worldEnv.current.effectsInfo.flags & 2) && !g_SysWork.worldEnv.isFlashlightOn &&
+                    ((g_SysWork.worldEnv.transition[0].effectsInfo.flags & 1) || (g_SysWork.worldEnv.transition[1].effectsInfo.flags & 1)))
                 {
                     if (mapEvent->sysState != SysState_LoadOverlay &&
                         (mapEvent->sysState != SysState_LoadRoom && mapEvent->eventParam > 1))

@@ -249,6 +249,41 @@ namespace Silent::Game
         GameEndingFlag_7        = 1 << 7  // Set if ranking has been seen and ending was UFO?
     } e_GameEndingFlags;
 
+    // TODO: World Env group. Move to `map_effects.h`
+    // =================================================================
+
+    /** @brief World environment flags. Used by `s_WorldEnvPreset::flags`. */
+    enum e_WorldEnvFlags
+    {
+        WorldEnvFlag_None              = 0,
+        WorldEnvFlag_Dark              = 1 << 0, /** Set on the "flashlight off" preset in dark areas. Lots of map overlay code check this to tell if area is currently in darkness. (TODO: Macro for checking this?) */
+        WorldEnvFlag_FlashlightAllowed = 1 << 1,
+        WorldEnvFlag_EnableBrightness  = 1 << 2, /** Applies the user's brightness setting. */
+        WorldEnvFlag_UseLighter        = 1 << 3,
+        WorldEnvFlag_EnableLensFlare   = 1 << 4
+    };
+
+    /** @brief World environment light modes. Determines how models and billboards are lit by the dynamic light.
+     * Used by `s_WorldEnvPreset::lightMode`.
+     */
+    enum e_WorldEnvLightMode
+    {
+        WorldEnvLightMode_None        = 0, /** No dynamic light. Flat vertex colors nad fog drawn as overlay polygons. */
+        WorldEnvLightMode_Spot        = 1, /** Positional light (normally the flashlight). Enables the lens flare. */
+        WorldEnvLightMode_Directional = 2  /** Lights everywhere from one direction. No source point or distance falloff. */
+    };
+
+    /** @brief World environment fog modes. Used by`s_WorldEnvPreset::fogMode`. */
+    enum e_WorldEnvFogMode
+    {
+        WorldEnvFogMode_Off         = 0,
+        WorldEnvFogMode_On          = 1,
+        WorldEnvFogMode_Zero        = 2, /** @unused Fog on with a distance of 0. No preset sets it. */
+        WorldEnvFogMode_FollowLight = 3  /** @unused Fog distance follows the light position. Only set by preset 5, which nothing selects? */
+    };
+
+    // =================================================================
+
     /** @brief Game workspace. Stores miscellaneous gameplay-related data. */
     struct s_GameWork
     {
@@ -302,67 +337,62 @@ namespace Silent::Game
         bool    isAiming;
     };
 
-    typedef union
+    /** @brief World environment preset. Contains fog, lighting, and tint settings. */
+    struct s_WorldEnvPreset
     {
-        s32 field_0; // Flags?
-        struct
-        {
-            u8 field_0; // Flags. (1 << 0) Might be flashlight enabled.
-            u8 field_1;
-            u8 field_2;
-            s8 __pad_3;
-        } s_field_0;
-    } u_Unk0;
-
-    /** @brief Map effects info. */
-    struct s_MapEffectsInfo
-    {
-        union
-        {
-            s32 field_0;     // }
-            u8  field_00[4]; // } Index 0 `e_SpecialEnvEventFlags` | Index 2 `e_UnkGfxEnum`.
-        } flags;
+        u8      flags;                  /** `e_WorldEnvFlags` */
+        u8      lightLevelMax;          /** Upper limit on the computed light level of lit vertices. `0xFF` for no limit. */
+        u8      lightMode;              /** `e_WorldEnvLightMode` */
         q3_12   spotLightIntensity;
         q3_12   worldLightIntensity;
         q3_12   worldTintR;
         q3_12   worldTintG;
         q3_12   worldTintB;
-        u8      field_E; /** Some fog state information.
+        u8      fogMode;                /** `e_WorldEnvFogMode` */
         q19_12  fogDistance;
         CVECTOR fogColor;
         u8      enableTintLightOverlap; /** `bool` */
         CVECTOR pointLightTint;         /** Volumetric point light color. */
         CVECTOR worldTint;              /** Subtractive. */
-        CVECTOR field_21;               // } Particle effect related. Only the first value affects snow transparency.
-        CVECTOR field_25;               // }
+        CVECTOR snowColor;              /** Snow particle color. `Particle_SnowDraw` uses only the red value in maps with header `field_16 == 1`. } Both multiply a dim additive texture, colors in the default env presets likely make very little difference? */
+        CVECTOR rainColor;              /** Rain particle color. `Particle_RainDraw` uses only the red value in maps with header `field_16 == 1`. } */
     };
 
-    typedef struct
+    /** @brief World environment state. */
+    struct s_WorldEnvState
     {
-        s_MapEffectsInfo effectsInfo;
+        s_WorldEnvPreset effectsInfo;
         q3_12            flashlightLensFlareIntensity;
         q3_12            brightnessIntensity;
         q19_12           fogDistance;
-    } s_StructUnk3;
+    };
 
-    // Extra effects info?
-    typedef struct
+    /** @brief Game-side world environment, lighting and fog presets in use, and flashlight state.
+     *
+     * Each frame `WorldEnv_Update` works out `current` in two steps:
+     * 1. `transition` fades from the previous presets (`transitionFrom`) toward the new ones (`transitionTo`).
+     * 2. `current` is a mix of the flashlight off and on entries of `transition`, weighted by `flashlightIntensity`.
+     *
+     * `WorldEnv_Apply` then copies `current` into `g_WorldEnvRenderWork` for drawing.
+     *
+     * The `transition***` arrays are indexed by the flashlight state: 0 off, 1 on.
+     */
+    struct s_WorldEnvWork
     {
-        s32          primitiveType; /** `e_PrimitiveType` */
-        s8*          field_4;       /** Points to different types of data depending on `field_0`. */
-        s32          field_8;       // } Q19.12?
-        s32          field_C;       // }
-        s32          field_10;
-        bool         field_14;
-        bool         isFlashlightOn;
-        bool         isFlashlightUnavailable;
-        q3_12        flashlightIntensity;
-        u16          field_1A;
-        s_StructUnk3 field_1C[2];
-        s_StructUnk3 field_84[2];
-        s_StructUnk3 field_EC[2];
-        s_StructUnk3 field_154;
-    } s_SysWork_2388;
+        s32             progressType;            /** `e_PrimitiveType` of `progressValue`. `PrimitiveType_None`: no transition. */
+        s8*             progressValue;           /** Value that drives the transition. Usually overlay data. */
+        q19_12          progressStart;           /** `progressValue` at which the transition starts. */
+        q19_12          progressEnd;             /** `progressValue` at which the transition completes. */
+        q19_12          visibilityDistance;      /** @unused Result of `func_8003FEC0`, never read. */
+        u8              flashEffect;             /** `bool` | Trigger world flash effect (used for weapons). */
+        u8              isFlashlightOn;          /** `bool` */
+        u8              isFlashlightUnavailable; /** `bool` | Set when both presets are the same. Forces the flashlight off. */
+        q3_12           flashlightIntensity;
+        s_WorldEnvState transition[2];        /** Current blend of `transitionFrom` and `transitionTo`. */
+        s_WorldEnvState transitionTo[2];      /** Most recently selected presets. */
+        s_WorldEnvState transitionFrom[2];    /** Copy of `transition` taken when a transition starts. */
+        s_WorldEnvState current;              /** Final blended state. Read by gameplay code for the environment flags. */
+    };
 
     /** @brief Main system workspace. Stores key engine data. */
     struct s_SysWork
@@ -374,7 +404,7 @@ namespace Silent::Game
         int  gameStateCounter;     /** Frame counter for the current `g_GameWork.gameState`. Reset when `gameState` is changed. */
         int  gameStateStepCounter; /** Frame counter for the current `g_GameWork.gameStateSteps[0]`. Reset when `gameStateSteps[0]` is changed. */
         int  cutsceneBorderState;  /** `e_CutsceneBorderState` */
-        bool isMgsStringSet;       /** Indicates if string have been loaded and is going (or it is) being display. */
+        bool isMsgStringSet;       /** Indicates if string have been loaded and is going (or it is) being display. */
 
         s_PlayerCombat playerCombat;
         s_PlayerWork   playerWork;
@@ -424,11 +454,10 @@ namespace Silent::Game
 
         q3_12  cameraAngleY;
         q3_12  cameraAngleZ;
-        s16    field_237E;
         q19_12 cameraRadiusXz;
         q19_12 cameraY;
 
-        s_SysWork_2388 field_2388;
+        s_WorldEnvWork worldEnv;
 
         //s_KPad_Handler* kpadHandlers; // Head of the kpad handler list from `KPad_HandlerList_Init`.
         //s_KPadWork      kpad;
@@ -699,4 +728,51 @@ namespace Silent::Game
             g_GameWork.gameStateSteps[2]++;
         }
     }
+
+    // =======================
+    // =======================
+    // =======================
+    // TODO: Move these and the e_WorldEnv enums into `map_effects.h` with the `WorldEnv_XXX` funcs.
+    // =======================
+    // =======================
+    // =======================
+
+    /** @brief Checks if the world environment is in darkness, without the flashlight turned on.
+     *
+     * @return `WorldEnvFlag_Dark` if the work environment is in darkness, `false` otherwise.
+     */
+    #define WorldEnv_IsInDarkness() \
+        (g_SysWork.worldEnv.current.params.flags & WorldEnvFlag_Dark)
+
+    /** @brief Checks if the world environment allows the flashlight to be used.
+     *
+     * @return `WorldEnvFlag_FlashlightAllowed` if the flashlight can be used, `false` otherwise.
+     */
+    #define WorldEnv_IsFlashlightAllowed() \
+        (g_SysWork.worldEnv.current.params.flags & WorldEnvFlag_FlashlightAllowed)
+
+    /** @brief Checks if the flashlight is turned on.
+     *
+     * @return `true` if the flashlight is turned on, `false` otherwise.
+     */
+    #define WorldEnv_IsFlashlightOn() \
+        (g_SysWork.worldEnv.isFlashlightOn)
+
+    /** @brief Checks if any active world environment presets can count as in darkness.
+     *
+     * @param `true`, otherwise `false`.
+     */
+    #define WorldEnv_CanBeInDarkness()                                          \
+        ((g_SysWork.worldEnv.transition[0].params.flags & WorldEnvFlag_Dark) || \
+        (g_SysWork.worldEnv.transition[1].params.flags & WorldEnvFlag_Dark))
+
+    /** @brief Checks if the world is lit by any of the following conditions:
+     * - The flashlight beign disallowed in a lit area. 
+     * - The flashlight being turned on.
+     * - The world being unable to turn dark.
+     *
+     * @return `true` if the world is lit, `false` otherwise.
+     */
+    #define WorldEnv_IsWorldLit() \
+        (!WorldEnv_IsFlashlightAllowed() || WorldEnv_IsFlashlightOn() || !WorldEnv_CanBeInDarkness())
 }

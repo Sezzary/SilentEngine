@@ -76,15 +76,15 @@ namespace Silent::Game
             if (pulseTicks >= PULSE_INITIAL_INTERVAL_TICKS)
             {
                 cont->buttonFlags.pulsed = cont->buttonFlags.held;
-                pulseTicks           = PULSE_INITIAL_INTERVAL_TICKS - PULSE_INTERVAL_TICKS;
+                pulseTicks               = PULSE_INITIAL_INTERVAL_TICKS - PULSE_INTERVAL_TICKS;
             }
             else
             {
                 cont->buttonFlags.pulsed = cont->buttonFlags.clicked;
             }
 
-            btnsPulsed              = cont->buttonFlags.pulsed;
-            cont->pulseTicks        = pulseTicks;
+            btnsPulsed                  = cont->buttonFlags.pulsed;
+            cont->pulseTicks            = pulseTicks;
             cont->buttonFlags.pulsedGui = btnsPulsed;
 
             // Clear left/right pulse flags if concurrent.
@@ -157,7 +157,7 @@ namespace Silent::Game
         }
 
         processedInputFlags       = normalizedAnalogData;
-        cont->rawSticks.rawData_0 = signedRawAnalog;
+        cont->rawSticks.rawData = signedRawAnalog;
 
         // TODO: Demagic hex values. Analog stick or button flags?
         if (cont == g_Controller0)
@@ -219,7 +219,7 @@ namespace Silent::Game
             }
         }
 
-        cont->normalizedSticks.rawData_0 = normalizedAnalogData;
+        cont->normalizedSticks.rawData = normalizedAnalogData;
         cont->field_28 = processedInputFlags;
     }
 }

@@ -221,9 +221,9 @@ namespace Silent::Assets
             mesh.Native.Normals.reserve(normalCount);
             for (int j = 0; j < normalCount; j++)
             {
-                q0_7  x     = stream.ReadInt8();
-                q0_7  y     = stream.ReadInt8();
-                q0_7  z     = stream.ReadInt8();
+                q1_7  x     = stream.ReadInt8();
+                q1_7  y     = stream.ReadInt8();
+                q1_7  z     = stream.ReadInt8();
                 uint8 count = stream.ReadUint8();
 
                 // Collect normal.

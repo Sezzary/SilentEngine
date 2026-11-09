@@ -75,11 +75,11 @@ namespace Silent::Game
 
             if (activeMapMsgIdx != mapMsgIdx)
             {
-                g_SysWork.isMgsStringSet = false;
+                g_SysWork.isMsgStringSet = false;
             }
         }
 
-        switch (g_SysWork.isMgsStringSet)
+        switch (g_SysWork.isMsgStringSet)
         {
             case true:
             {
@@ -242,7 +242,7 @@ namespace Silent::Game
                 MapMsg_Reset();
 
                 loadAudio                = true;
-                g_SysWork.isMgsStringSet = true;
+                g_SysWork.isMsgStringSet = true;
                 return MapMsgState_Finish;
             }
         }
@@ -252,7 +252,7 @@ namespace Silent::Game
             return MapMsgState_Idle;
         }
 
-        g_SysWork.isMgsStringSet = false;
+        g_SysWork.isMsgStringSet = false;
         displayLength            = 0;
 
         if (g_SysWork.bgmStatusFlags & BgmStatusFlag_VoiceDialog)

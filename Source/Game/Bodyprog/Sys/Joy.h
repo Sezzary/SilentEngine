@@ -4,7 +4,7 @@ namespace Silent::Game
 {
     constexpr int  INPUT_ACTION_COUNT   = 14;
     constexpr int  CONTROLLER_COUNT_MAX = 2;
-    constexpr q0_7 STICK_DEADZONE       = Q7(0.5f);
+    constexpr q1_7 STICK_DEADZONE       = Q7(0.5f);
 
     /** @brief PSX controller input flags. */
     enum e_ControllerFlags
@@ -55,14 +55,14 @@ namespace Silent::Game
 
     typedef union
     {
-        u32 rawData_0;
+        u32 rawData;
         struct
         {
-            s8 rightX;
-            s8 rightY;
-            s8 leftX;
-            s8 leftY;
-        } sticks_0; // Normalized range: `[-128, 127]`.
+            q1_7 rightX;
+            q1_7 rightY;
+            q1_7 leftX;
+            q1_7 leftY;
+        } sticks;
     } s_AnalogSticks;
 
     /** @brief Analog PSX controller state. */
@@ -123,6 +123,75 @@ namespace Silent::Game
 
     extern s_ControllerData* const g_Controller0;
     extern s_ControllerData* const g_Controller1;
+
+    // TODO: Went with Pad_XXX for these over Joy_XXX so they wouldn't get confused with
+    // actual Joy_XXX funcs, but not against making these more consistent
+    // (right now we use "controller", "pad", "joy", maybe something less gamepad-focused
+    // like "Input" would be better) -- emoose
+
+    /** @brief Checks clicked/debounced controller 0 button flags against a mask of `e_ControllerFlags`.
+     *
+     * @param buttons Controller button flags to check.
+     * @return `true` if the button is clicked, `false` otherwise.
+     */
+    #define Pad_ButtonClicked(buttons) \
+        (g_Controller0->buttonFlags.clicked & (buttons))
+
+    /** @brief Checks held/throttled controller 0 button flags against a mask of `e_ControllerFlags`.
+     *
+     * @param buttons Controller button flags to check.
+     * @return `true` if the button is held, `false` otherwise.
+     */
+    #define Pad_ButtonHeld(buttons) \
+        (g_Controller0->buttonFlags.held & (buttons))
+
+    /** @brief Checks pulsed controller 0 button flags against a mask of `e_ControllerFlags`.
+     *
+     * @param buttons Controller button flags to check.
+     * @return `true` if the button is pulsed, `false` otherwise.
+     */
+    #define Pad_ButtonPulsed(buttons) \
+        (g_Controller0->buttonFlags.pulsed & (buttons))
+
+    /** @brief Checks controller 0 button flags against a mask of `e_ControllerFlags` in a GUI context.
+     *
+     * @param buttons Controller button flags to check.
+     * @return `true` if the button is pulsed in a GUI, `false` otherwise.
+     */
+    #define Pad_ButtonPulsedGui(buttons) \
+        (g_Controller0->buttonFlags.pulsedGui & (buttons))
+
+    /** @brief Checks held/throttled controller 1 button flags against a mask of `e_ControllerFlags`.
+     *
+     * @param buttons Controller button flags to check.
+     * @return `true` if the button is held, `false` otherwise.
+     */
+    #define Pad2_ButtonHeld(buttons)\
+        (g_Controller1->buttonFlags.held & (buttons))
+
+    /** @brief Gets the number of buttons bound to an input action, e.g. `Pad_BindingGet(cancel)`.
+     *
+     * @param action Action binding field to check.
+     * @return Bound controller button flags `e_ControllerFlags`.
+     */
+    #define Pad_BindingGet(action) \
+        (g_GameWorkPtr->config.controllerConfig.action)
+
+    /** @brief Checks if an action is clicked/debounced on controller 0.
+     *
+     * @param action Action binding field to check.
+     * @return `true` if the action is clicked, `false` otherwise.
+     */
+    #define Pad_ButtonClickedBind(action) \
+        Pad_ButtonClicked(Pad_BindingGet(action))
+
+    /** @brief Checks if an action is held/throttled on controller 0.
+     *
+     * @param action Action binding field to check.
+     * @return `true` if the action is held, `false` otherwise.
+     */
+    #define Pad_ButtonHeldBind(action) \
+        Pad_ButtonHeld(Pad_BindingGet(action))
 
     /** @brief Updates digital data for all controllers, additionally handling special directional cases. */
     void Joy_ControllerDataUpdate();

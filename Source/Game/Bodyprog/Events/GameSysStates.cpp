@@ -114,7 +114,7 @@ namespace Silent::Game
 
         if (g_SysWork.sysState == SysState_Gameplay)
         {
-            g_SysWork.isMgsStringSet = false;
+            g_SysWork.isMsgStringSet = false;
             g_SysStateFuncs[SysState_Gameplay]();
         }
         else
@@ -232,7 +232,7 @@ namespace Silent::Game
         }
 
         if (input.GetAction(In::Light).IsClicked() &&
-            g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & (1 << 1))
+            g_SysWork.worldEnv.current.effectsInfo.flags & (1 << 1))
         {
             //Game_FlashlightToggle();
         }
@@ -256,7 +256,7 @@ namespace Silent::Game
         else if (input.GetAction(In::Map).IsClicked())
         {
             SysWork_StateSetNext(SysState_MapScreen);
-            g_SysWork.isMgsStringSet = false;
+            g_SysWork.isMsgStringSet = false;
         }
         else if (input.GetAction(In::Option).IsClicked())
         {
@@ -485,9 +485,9 @@ namespace Silent::Game
                 SysWork_StateSetNext(SysState_Gameplay);
             }
         }
-        else if ((g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & (1 << 1)) && !g_SysWork.field_2388.isFlashlightOn &&
-                ((g_SysWork.field_2388.field_1C[0].effectsInfo.flags.field_00[0] & (1 << 0)) ||
-                (g_SysWork.field_2388.field_1C[1].effectsInfo.flags.field_00[0] & (1 << 0))))
+        else if ((g_SysWork.worldEnv.current.effectsInfo.flags & (1 << 1)) && !g_SysWork.worldEnv.isFlashlightOn &&
+                ((g_SysWork.worldEnv.transition[0].effectsInfo.flags & (1 << 0)) ||
+                (g_SysWork.worldEnv.transition[1].effectsInfo.flags & (1 << 0))))
         {
             if (input.GetAction(In::Map).IsClicked() ||
                 MapMsg_Draw(MapMsgIdx_TooDarkForMap) > MapMsgState_Idle)
@@ -743,7 +743,7 @@ namespace Silent::Game
             g_DeltaTime = g_DeltaTimeCpy;
         }
 
-        if (!g_SysWork.isMgsStringSet)
+        if (!g_SysWork.isMsgStringSet)
         {
             g_MapOverlayHdr.playerControlFreeze();
         }
@@ -922,8 +922,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2) ||
-                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2))
+                        if ((!(g_SysWork.worldEnv.current.effectsInfo.flags & 0x3) && (tipIdx - 13) >= 2) ||
+                            ( (g_SysWork.worldEnv.current.effectsInfo.flags & 0x3) && (tipIdx - 13) <  2))
                         {
                             randTipVal += 3;
                         }
@@ -942,8 +942,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2) ||
-                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2))
+                        if ((!(g_SysWork.worldEnv.current.effectsInfo.flags & 0x3) && (tipIdx - 13) >= 2) ||
+                            ( (g_SysWork.worldEnv.current.effectsInfo.flags & 0x3) && (tipIdx - 13) <  2))
                         {
                             if (randTipVal < 3)
                             {

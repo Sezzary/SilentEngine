@@ -47,10 +47,10 @@ namespace Silent::Game
 
     void Gfx_MapEnvUpdate(s32 idx0, s32 idx1, e_PrimitiveType primType, void* primData, s32 arg4, s32 arg5);
 
-    void Gfx_MapEnvStepUpdate(const s_MapEffectsInfo* preset0, const s_MapEffectsInfo* preset1,
-                                e_PrimitiveType primType, void* primData, s32 arg4, s32 arg5);
+    void Gfx_MapEnvStepUpdate(const s_WorldEnvPreset* preset0, const s_WorldEnvPreset* preset1,
+                              e_PrimitiveType primType, void* primData, s32 arg4, s32 arg5);
 
-    void Gfx_FogParametersSet(s_StructUnk3* arg0, const s_MapEffectsInfo* preset);
+    void Gfx_FogParametersSet(s_WorldEnvState* arg0, const s_WorldEnvPreset* preset);
 
     void Gfx_EffectsUpdate(void);
 
@@ -76,15 +76,9 @@ namespace Silent::Game
      */
     q19_12 Math_WeightedAverageGet(s32 a, s32 b, q19_12 weight);
 
-    void func_8003F838(s_StructUnk3* arg0, s_StructUnk3* arg1, s_StructUnk3* arg2, q19_12 weight);
+    void func_8003FE04(const s_WorldEnvPreset* arg0, const s_WorldEnvPreset* arg1, const s_WorldEnvPreset* arg2, q19_12 alphaTo);
 
-    void func_8003FCB0(const s_MapEffectsInfo* arg0, const s_MapEffectsInfo* arg1, const s_MapEffectsInfo* arg2, q19_12 alphaTo);
+    s32 func_8003FEC0(const s_WorldEnvPreset* arg0);
 
-    void func_8003FD38(s_StructUnk3* arg0, s_StructUnk3* arg1, s_StructUnk3* arg2, q19_12 weight0, q19_12 weight1, q19_12 alphaTo);
-
-    void func_8003FE04(const s_MapEffectsInfo* arg0, const s_MapEffectsInfo* arg1, const s_MapEffectsInfo* arg2, q19_12 alphaTo);
-
-    s32 func_8003FEC0(const s_MapEffectsInfo* arg0);
-
-    void WorldEnv_FogLightingParamsUpdate(s_StructUnk3* arg0);
+    void WorldEnv_Apply(s_WorldEnvState* state);
 }

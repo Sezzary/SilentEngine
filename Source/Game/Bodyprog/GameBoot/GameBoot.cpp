@@ -86,7 +86,7 @@ namespace Silent::Game
         constexpr int DEMO_LOAD_ATTEMPT_COUNT_MAX = 5;
 
         // If the load fails, the timer used to check if a demo should be triggered is restarted.
-        static int demoLoadAttempCount = 0;
+        static int demoLoadAttemptCount = 0;
 
         const auto& player = g_SysWork.playerWork.player;
 
@@ -106,7 +106,7 @@ namespace Silent::Game
                 }
                 else if (g_SysWork.processFlags == ProcessFlag_BootDemo)
                 {
-                    demoLoadAttempCount            = 0;
+                    demoLoadAttemptCount            = 0;
                     g_GameWork.gameStateSteps[0]   = 1;
                     g_SysWork.gameStateStepCounter = 1;
                 }
@@ -135,10 +135,10 @@ namespace Silent::Game
                     Demo_SequenceAdvance(1);
                     Demo_DemoDataRead();
 
-                    demoLoadAttempCount++;
-                    if (demoLoadAttempCount >= DEMO_LOAD_ATTEMPT_COUNT_MAX)
+                    demoLoadAttemptCount++;
+                    if (demoLoadAttemptCount >= DEMO_LOAD_ATTEMPT_COUNT_MAX)
                     {
-                        demoLoadAttempCount            = 0;
+                        demoLoadAttemptCount            = 0;
                         g_SysWork.gameStateStepCounter = 0;
                         break;
                     }

@@ -569,9 +569,9 @@ namespace Silent::Game
 
     extern s_FsImageDesc D_800A9094;
 
-    extern s_MapEffectsInfo MAP_EFFECTS_INFOS[21];
+    extern s_WorldEnvPreset MAP_EFFECTS_INFOS[21];
 
-    extern s_StructUnk3 D_800A952C;
+    extern s_WorldEnvState D_800A952C;
 
     extern s32 D_800A9A20;
 
@@ -779,10 +779,10 @@ namespace Silent::Game
 
     extern s8 D_800C39A0;
 
-    /** Functions from `bodyprog_8003AB28` access `g_WorldEnvWork` as constant, but some functions from `bodyprog_80055028` write to it.
-     * It appears that g_WorldEnvWork is intended to be defined inside `bodyprog_80055028` as writable and declared as read-only (`const`) outside of it.
+    /** Functions from `bodyprog_8003AB28` access `g_WorldEnvRenderWork` as constant, but some functions from `bodyprog_80055028` write to it.
+     * It appears that g_WorldEnvRenderWork is intended to be defined inside `bodyprog_80055028` as writable and declared as read-only (`const`) outside of it.
      */
-    // extern s_WorldEnvWork g_WorldEnvWork;
+    // extern s_WorldEnvRenderWork g_WorldEnvRenderWork;
 
     extern GsCOORDINATE2* D_800C42B8; // Set to view coord.
 

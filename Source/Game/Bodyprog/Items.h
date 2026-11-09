@@ -233,10 +233,10 @@ namespace Silent::Game
     /** @brief Inventory item entry. */
     struct s_InventoryItem
     {
-        u8 id_0;      /** `e_InvItemId` */
-        u8 count_1;
-        u8 command_2; /** `e_InvCmdId` */
-        u8 field_3;   // Some sort of index?
+        u8 id;      /** `e_InvItemId` */
+        u8 count;
+        u8 command; /** `e_InvCmdId` */
+        u8 field_3; // Some sort of index?
     };
 
     /** @brief Gets the `e_InvItemGroup` for an `e_InvItemId`.
@@ -273,4 +273,21 @@ namespace Silent::Game
      */
     #define INV_AMMO_WEAPON_ID(ammoId) \
         ((ammoId) - INV_ITEM_GROUP_SIZE)
+
+    /** @brief Packs a weapon attack containing a weapon ID and attack input type.
+     *
+     * @param weaponId Weapon ID.
+     * @param attackInputType Attack input type.
+     * @return Packed weapon attack containing a weapon ID and attack input type.
+     */
+    #define WEAPON_ATTACK(weaponId, attackInputType) \
+        ((weaponId) + ((attackInputType) * 10))
+
+    /** @brief Retrieves the weapon ID from a packed weapon attack.
+     *
+     * @param weaponAttack Packed weapon attack containing a weapon ID and attack input type.
+     * @return Weapon ID.
+     */
+    #define WEAPON_ATTACK_ID_GET(weaponAttack) \
+        ((weaponAttack) % 10)
 }

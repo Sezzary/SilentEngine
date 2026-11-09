@@ -169,11 +169,9 @@ namespace Silent::Game
         q19_12        runDistance;
         u8            field_10C;    // Player SFX pitch?
         u8            field_10D;
-        s8            __pad_10E[2];
         q19_12        timer_110; // Increases when `flags & CharaFlag_Unk4` is set, reset when reaches `D_800C45EC`.
         q19_12        gasWeaponPowerTimer; // Timer for the rock drill and chainsaw power.
         s16           field_118; // q3_12?
-        s8            __pad_11A[2];
         s32           flags; /** `e_PlayerFlags` */
         q3_12         quickTurnHeadingAngle; /** Target quick turn heading angle. */
         q3_12         field_122; // Specially used when aiming an enemy. Y angle delta to target? 
@@ -208,7 +206,6 @@ namespace Silent::Game
         s32    freeze; // `bool`, `q19_12` timer in MonsterCybil.
         s32    field_F4;
         s32    resetControlState; // `bool`, `q19_12` timer in MonsterCybil.
-        s8     __pad_FC[2];
         s16    field_FE; // Index.
         q19_12 field_100;
         s16    field_104;
@@ -219,7 +216,6 @@ namespace Silent::Game
         u8     field_114;
         u8     field_115;
         u8     field_116;
-        s8     __pad_117;
         q3_12  field_118; // Angle.
         q3_12  field_11A; // Angle.
         s32    flags; /** `e_*Flags` */
@@ -232,10 +228,9 @@ namespace Silent::Game
     /** @brief Air Screamer or Night Flutter character properties. */
     struct s_PropsAirScreamer
     {
-        u32     field_E8_0  : 4; // `AirScreamerHit_None` step.
-        u32     field_E8_4  : 4; /** `bool` */
-        u32     field_E8_8  : 4;
-        u32     __pad_E8_12 : 20;
+        u32     field_E8_0 : 4; // `AirScreamerHit_None` step.
+        u32     field_E8_4 : 4; /** `bool` */
+        u32     field_E8_8 : 4;
         s32     field_EC;
         s16     field_F0; // } Maybe 2D offset like in Creeper properties? Must check.
         s16     field_F2; // }
@@ -269,7 +264,6 @@ namespace Silent::Game
     struct s_PropsCreeper
     {
         u16    flags; /** `e_CreeperFlags` */
-        s8     __pad_EA[2];
         q3_12  collisionOffsetX;
         q3_12  collisionOffsetZ;
         q19_12 attackTimer;
@@ -292,14 +286,11 @@ namespace Silent::Game
         q3_12      field_EE; // Angle.
         q19_12     field_F0; // Timer.
         q3_12      field_F4; // Angle.
-        s8         __pad_F6[2];
         u16        field_F8;
         u16        field_FA;
         q4_12      field_FC; // Timer?
-        s8         __pad_FE[2];
         q19_12     field_100; // Timer.
         u8         field_104;
-        s8         __pad_105;
         s16        field_106;
         q19_12     field_108; // Damage related.
         q3_12      field_10C; // Angle, backup of `field_F4`?
@@ -320,7 +311,6 @@ namespace Silent::Game
         q3_12      angleToTarget;
         q3_12      field_FE;
         u16        relKeyframeIdx_100;
-        s8         __pad_102[2];
         q19_12     timer_104;
         u32        field_108;
         q3_12      timer_10C; // SFX timer?
@@ -328,7 +318,6 @@ namespace Silent::Game
         u8         field_10F; // }
         u8         playLeftFootstepSfx;  /** `bool` */
         u8         playRightFootstepSfx; /** `bool` */
-        s8         __pad_112[2];
         q3_12      field_114; // Move speed coefficient?
     };
 
@@ -339,19 +328,16 @@ namespace Silent::Game
         q4_12  timer_EA;
         q3_12  targetHeadingAngle_EC;
         u8     field_EE;
-        s8     __pad_EF;
         q3_12  offsetX_F0; // } Offsets passed to `Chara_MovementUpdate1`
         q3_12  offsetZ_F2; // }
         q19_12 positionX_F4;
         q19_12 positionZ_F8;
         q3_12  field_FC;
-        s8     __pad_FE[2];
         q3_12  timer_100;
         u8     field_102;
         u8     field_103;
         s32    field_104;
         q3_12  timer_108;
-        s8     __pad_10A[2];
         q4_12  radiusMax_10C; // } Used as `Chara_MoveSpeedUpdate` limit param, TODO: rename?
         q4_12  radiusMin_10E; // }
     };
@@ -363,7 +349,6 @@ namespace Silent::Game
         s32    field_EC; // Flags?
         s32    someState_F0;
         q19_12 bossFightTimer_F4;
-        s8     __pad_F8[48];
     };
 
     /** @brief Larval Stalker character properties. */
@@ -371,7 +356,6 @@ namespace Silent::Game
     {
         u16        flags_E8; /** `e_LarvalStalkerFlags` */
         u8         field_EA;
-        s8         __pad_EB;
         q19_12     timer_EC;
         q20_12     timer_F0;
         s16        keyframeIdx_F4; // Relative keyframe?
@@ -427,7 +411,6 @@ namespace Silent::Game
         s32    field_104;
         q19_12 positionX_108;
         u8     field_10C; // Relative keyframe index?
-        s8     __pad_10D;
         u16    field_10E;
         q19_12 positionZ_110;
         u8     field_114;
@@ -435,9 +418,7 @@ namespace Silent::Game
         q3_12  field_116;
         q3_12  timer_118;
         u8     field_11A;
-        s8     __pad_11B;
         q3_12  timer_11C;
-        s8     __pad_11E[2];
         q19_12 distance_120;
         q19_12 field_124; // Move speed step?
     };
@@ -447,13 +428,11 @@ namespace Silent::Game
     {
         u16     flags; /** `e_SplitHeadFlags` */
         u8      field_EA;
-        s8      __pad_EB;
         q3_12   angle_EC;
         q3_12   field_EE;
         q4_12   angle_F0;
         q4_12   timer_F2;
         q4_12   timer_F4;
-        s8      __pad_F8[2];
         q19_12  animTime_F8;
         s32     field_FC;
         s32     field_100;
@@ -471,7 +450,6 @@ namespace Silent::Game
     struct s_PropsStalker
     {
         s16    flags; /** `e_StalkerFlags` */
-        s8     __pad_EA[2];
         q3_12  offset_EC;
         q3_12  offset_EE;
         q19_12 targetPositionX;
@@ -484,7 +462,6 @@ namespace Silent::Game
         q19_12 relAnimTime_104;
         q4_12  timer_108;
         u8     field_10A;
-        s8     __pad_10B;
         q19_12 timer_10C;
         q19_12 health_110;
         q3_12  angle_114;
@@ -505,12 +482,9 @@ namespace Silent::Game
         q19_12        prevMoveSpeed;
         q19_12        accumulatedDamage;
         s16           field_110; /** @unused */
-        s8            __pad_112[2];
         u32           flags;     /** `e_TwinfeelerFlags` */
         u16           field_118; /** `bool` */
-        s8            __pad_11A[2];
         q19_12        prevHealth;
-        s8            __pad_120[8];
     };
 
     typedef struct
@@ -521,7 +495,6 @@ namespace Silent::Game
                          // In NPCs: Indicates attack performed on player.
         u8      field_3;
         u8      field_4;
-        s8      __pad_5[3];
         s32     field_8;  // } `bool`? | Fields used by `func_8008A3E0`.
         s16     field_C;  // } Angle?
         s16     field_E;  // } Angle?

@@ -4,6 +4,32 @@
 
 namespace Silent::Game
 {
+    constexpr int    TICKS_PER_SECOND = 60; /** Game has a variable timestep with 60 ticks max. */
+    constexpr q19_12 TIMESTEP_30_FPS  = Q12(1.0f / (float)(TICKS_PER_SECOND / 2));
+    constexpr q19_12 TIMESTEP_60_FPS  = Q12(1.0f / (float)(TICKS_PER_SECOND));
+
+    constexpr int SCREEN_WIDTH                   = 320;
+    constexpr int SCREEN_HEIGHT                  = 240;
+    constexpr int FRAMEBUFFER_HEIGHT_PROGRESSIVE = 224;
+    constexpr int FRAMEBUFFER_HEIGHT_INTERLACED  = FRAMEBUFFER_HEIGHT_PROGRESSIVE * 2;
+    constexpr int ORDERING_TABLE_SIZE            = 2048;
+
+    /** @brief Converts seconds to frames at 60 FPS.
+     *
+     * @param sec Seconds to convert.
+     * @return Frames at 60 FPS.
+     */
+    #define SECONDS_60_FPS(sec) \
+        (s32)((sec) * TICKS_PER_SECOND)
+
+    /** @brief Converts seconds to frames at 60 FPS.
+     *
+     * @param sec Seconds to convert.
+     * @return Frames at 60 FPS.
+     */
+    #define SECONDS_TO_FRAMES(sec) \
+        (s32)((sec) * 30)
+
     /** @brief @deprecated Sync modes used by `DrawSync` and `VSync`. */
     enum e_SyncMode
     {

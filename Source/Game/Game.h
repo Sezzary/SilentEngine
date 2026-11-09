@@ -15,119 +15,54 @@
 
 namespace Silent::Game
 {
-    constexpr int    TICKS_PER_SECOND = 60; /** Game has a variable timestep with 60 ticks max. */
-    constexpr q19_12 TIMESTEP_30_FPS  = Q12(1.0f / (float)(TICKS_PER_SECOND / 2));
-    constexpr q19_12 TIMESTEP_60_FPS  = Q12(1.0f / (float)(TICKS_PER_SECOND));
+    /* Macros for comparing map chunk indices against a map X/Z position.
+    *
+    * SH1 game world is split to 40x40 meter chunks, terrain loading code and filenames of IPDs (eg. `THR01FF.IPD` for X 1, Z -1)
+    * use a rounded-down grid where chunk 0 is anything between 0 to 40, chunk -1 is anything between -40 to 0.
+    *
+    * The code used in map event/object spawning code number them differently, since these divide positions with
+    * C's truncating division which would give 0 for anything between -40 to 40 (making chunk "0" count as 80 units).
+    * To workaround that the code adds 1 if position is positive, or subtracts 1 for negative (or 0).
+    * This workaround prevents the actual compiled code from seeing any position as chunk 0 (while other parts of game code do
+    * make use of chunk 0), and makes code for any checks for chunk 0 or above +1 of the actual index being checked.
+    *
+    * To make our code that uses these macros consistent with rest of game code, we make our macro adjust the
+    * index being checked for, so the source code using the macros can pass in rounded-down chunk indices, and that'll
+    * handle adding 1 to any index that's positive/zero.
+    * This lets it match the original compiled ASM for positive chunk checks (that showed it checking +1 of the actual chunk index),
+    * but lets our C code make use of the same indices used in the rest of the game.
+    */
 
-    constexpr int SCREEN_WIDTH                   = 320;
-    constexpr int SCREEN_HEIGHT                  = 240;
-    constexpr int FRAMEBUFFER_HEIGHT_PROGRESSIVE = 224;
-    constexpr int FRAMEBUFFER_HEIGHT_INTERLACED  = FRAMEBUFFER_HEIGHT_PROGRESSIVE * 2;
-    constexpr int ORDERING_TABLE_SIZE            = 2048;
+    /** @brief Map event chunk index of world coordinate `pos`, never returns chunk 0, see above. */
+    #define MAP_CHUNK_IDX(pos) \
+        (((pos) / Q12(CHUNK_SIZE)) + (((pos) > Q12(0.0f)) ? 1 : -1))
 
-    /** @brief Converts seconds to frames at 60 FPS.
-     *
-     * @param sec Seconds to convert.
-     * @return Frames at 60 FPS.
-     */
-    #define SECONDS_TO_FRAMES(sec) \
-        (s32)((sec) * 30)
+    /** @brief Converts rounded-down terrain chunk grid index `n` to its equivalent `MAP_CHUNK_IDX` value. */
+    #define MAP_CHUNK_IDX_FROM_GRID(n) \
+        (((n) >= 0) ? ((n) + 1) : (n))
 
-    /** @brief Packs a weapon attack containing a weapon ID and attack input type.
-     *
-     * @param weaponId Weapon ID.
-     * @param attackInputType Attack input type.
-     * @return Packed weapon attack containing a weapon ID and attack input type.
-     */
-    #define WEAPON_ATTACK(weaponId, attackInputType) \
-        ((weaponId) + ((attackInputType) * 10))
+    #define PLAYER_IN_MAP_CHUNK_X(x) \
+        (MAP_CHUNK_IDX(g_SysWork.playerWork.player.position.vx) == MAP_CHUNK_IDX_FROM_GRID(x))
 
-    /** @brief Retrieves the weapon ID from a packed weapon attack.
-     *
-     * @param weaponAttack Packed weapon attack containing a weapon ID and attack input type.
-     * @return Weapon ID.
-     */
-    #define WEAPON_ATTACK_ID_GET(weaponAttack) \
-        ((weaponAttack) % 10)
+    #define PLAYER_IN_MAP_CHUNK_Z(z) \
+        (MAP_CHUNK_IDX(g_SysWork.playerWork.player.position.vz) == MAP_CHUNK_IDX_FROM_GRID(z))
 
-    /** @brief Creates a bitmask with a contiguous range of bits set.
-     * For use with `s_PlayerExtra::disabledAnimBoneFlags`.
-     *
-     * Generates an `unsigned int` mask with all bits in the range `[fromInclusive, toInclusive]` set.
-     *
-     * For example:
-     * - `BITMASK_RANGE(0, 2)` -> 0b000...0111 (decimal 7).
-     * - `BITMASK_RANGE(4, 11)` -> 0b000...111111110000 (decimal 4080).
-     *
-     * @param fromInclusive Index of the lowest bit to set (0 = least significant bit).
-     * @param toInclusive Index of the highest bit to set.
-     * @return Bitmask with the specified range of bits set to 1 (`unsigned int`).
-     */
-    #define BITMASK_RANGE(fromInclusive, toInclusive) \
-        (((~0u << (fromInclusive)) & ~(~0u << ((toInclusive) + 1))))
+    /** @brief Checks if the player is in terrain chunk (`x`, `z`). */
+    #define PLAYER_IN_MAP_CHUNK(x, z) \
+        (PLAYER_IN_MAP_CHUNK_X(x) && PLAYER_IN_MAP_CHUNK_Z(z))
 
-    // @todo Use this instead.
-    /*bool Player_InMapChunkCheck(int x0, int x1, int x2, int x3,
-                                int z0, int z1, int z2, int z3)
-    {
-        const auto& pos = g_SysWork.playerWork.player.position;
+    /** @brief `CELL_XZ` switch key of terrain chunk (`x`, `z`). Indices are offset by 16 to keep both positive? (or maybe `SUBCHUNK_SIZE * 2`?) */
+    #define MAP_CHUNK_CELL(x, z) \
+        CELL_XZ(MAP_CHUNK_IDX_FROM_GRID(x) + 16, MAP_CHUNK_IDX_FROM_GRID(z) + 16)
 
-        int chunkIdxX = pos.vx / Q12(40.0f); // @todo Use `CHUNK_SIZE`.
-        if (!((pos.vx >  Q12(0.0f) && (chunkIdxX + x0) == x1) || 
-              (pos.vx <= Q12(0.0f) && (chunkIdxX + x2) == x3)))
-        {
-            return false;
-        }
-
-        int chunkIdxZ = pos.vz / Q12(40.0f); // @todo Use `CHUNK_SIZE`.
-        if (!((pos.vz >  Q12(0.0f) && (chunkIdxZ + z0) == z1) || 
-              (pos.vz <= Q12(0.0f) && (chunkIdxZ + z2) == z3)))
-        {
-            return false;
-        }
-        
-        return true;
-    }*/
-
-    #define MAP_CHUNK_CHECK_VARIABLE_DECL() \
-        s32 __chunkIdx
-
-    /** @hack This macro requires a variable `s32 __chunkIdx` to be declared before using it.
-     * The macro `MAP_CHUNK_CHECK_VARIABLE_DECL` declares that variable and must be called before this macro.
-     * The first argument is `vx` or `vz`, which is used as the component name in `VECTOR3`.
-     * @bug Some maps appear to have a bug where the negative position check will never be true because they check
-     * if the chunk index will be a positive number. Seems like they forgot to use `ABS`?
-     */
-    #define PLAYER_IN_MAP_CHUNK(comp, x0, x1, x2, x3)                                               \
-        (__chunkIdx = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                       \
-        ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx + (x0)) == (x1)) || \
-         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) == (x3))))
-
-    #define PLAYER_NOT_IN_MAP_CHUNK(comp, x0, x1, x2, x3)                                           \
-        (__chunkIdx = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                       \
-        ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx + (x0)) != (x1)) || \
-         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx + (x2)) != (x3))))
-
-    #define MAP_CHUNK_CHECK_VARIABLE_DECL_2() \
-        s32 __chunkIdx2
-
-    #define PLAYER_IN_MAP_CHUNK_2(comp, x0, x1, x2, x3)                                             \
-        (__chunkIdx2 = g_SysWork.playerWork.player.position.comp / Q12(40.0f),                      \
-        ((g_SysWork.playerWork.player.position.comp >  Q12(0.0f) && (__chunkIdx2 + (x0)) < (x1)) || \
-         (g_SysWork.playerWork.player.position.comp <= Q12(0.0f) && (__chunkIdx2 + (x2)) < (x3))))
+    /** @brief `MAP_CHUNK_CELL` switch key of the player's current chunk. */
+    #define PLAYER_MAP_CHUNK_CELL()                                          \
+        CELL_XZ(MAP_CHUNK_IDX(g_SysWork.playerWork.player.position.vx) + 16, \
+                MAP_CHUNK_IDX(g_SysWork.playerWork.player.position.vz) + 16)
 
     #define PLAYER_NEAR_POS(comp, base, tol)                                                                                                             \
         (((g_SysWork.playerWork.player.position.comp - Q12(base)) >= Q12(0.0f)) ? ((g_SysWork.playerWork.player.position.comp - Q12(base)) < Q12(tol)) : \
                                                                                   ((Q12(base) - g_SysWork.playerWork.player.position.comp) < Q12(tol)))
-
-    #define HAS_FLAG(ptr, idx) \
-        ((((u32*)ptr)[(idx) >> 5] >> ((idx) & 0x1F)) & (1 << 0))
-
-    #define SET_FLAG(ptr, idx) \
-        ((((u32*)ptr)[(idx) >> 5] |= (1 << 0) << ((idx) & 0x1F)))
-
-    #define CLEAR_FLAG(ptr, idx) \
-        ((((u32*)ptr)[(idx) >> 5] &= ~((1 << 0) << ((idx) & 0x1F))))
 
     /** @brief System flags. TODO: Give this a more specific name. */
     enum e_SysFlags
@@ -248,41 +183,6 @@ namespace Silent::Game
         GameEndingFlag_6        = 1 << 6, // Set the first time ranking has been seen?
         GameEndingFlag_7        = 1 << 7  // Set if ranking has been seen and ending was UFO?
     } e_GameEndingFlags;
-
-    // TODO: World Env group. Move to `map_effects.h`
-    // =================================================================
-
-    /** @brief World environment flags. Used by `s_WorldEnvPreset::flags`. */
-    enum e_WorldEnvFlags
-    {
-        WorldEnvFlag_None              = 0,
-        WorldEnvFlag_Dark              = 1 << 0, /** Set on the "flashlight off" preset in dark areas. Lots of map overlay code check this to tell if area is currently in darkness. (TODO: Macro for checking this?) */
-        WorldEnvFlag_FlashlightAllowed = 1 << 1,
-        WorldEnvFlag_EnableBrightness  = 1 << 2, /** Applies the user's brightness setting. */
-        WorldEnvFlag_UseLighter        = 1 << 3,
-        WorldEnvFlag_EnableLensFlare   = 1 << 4
-    };
-
-    /** @brief World environment light modes. Determines how models and billboards are lit by the dynamic light.
-     * Used by `s_WorldEnvPreset::lightMode`.
-     */
-    enum e_WorldEnvLightMode
-    {
-        WorldEnvLightMode_None        = 0, /** No dynamic light. Flat vertex colors nad fog drawn as overlay polygons. */
-        WorldEnvLightMode_Spot        = 1, /** Positional light (normally the flashlight). Enables the lens flare. */
-        WorldEnvLightMode_Directional = 2  /** Lights everywhere from one direction. No source point or distance falloff. */
-    };
-
-    /** @brief World environment fog modes. Used by`s_WorldEnvPreset::fogMode`. */
-    enum e_WorldEnvFogMode
-    {
-        WorldEnvFogMode_Off         = 0,
-        WorldEnvFogMode_On          = 1,
-        WorldEnvFogMode_Zero        = 2, /** @unused Fog on with a distance of 0. No preset sets it. */
-        WorldEnvFogMode_FollowLight = 3  /** @unused Fog distance follows the light position. Only set by preset 5, which nothing selects? */
-    };
-
-    // =================================================================
 
     /** @brief Game workspace. Stores miscellaneous gameplay-related data. */
     struct s_GameWork
@@ -411,21 +311,20 @@ namespace Silent::Game
         s_SubCharacter npcs[NPC_COUNT_MAX];
 
         // @deprecated Using `s_SubCharacter::model.anim.BoneTransforms` in new code.
-        GsCOORDINATE2  playerBoneCoords[HarryBone_Count];
-        GsCOORDINATE2  unkCoords_E30[5];                       // Might be part of previous array for 5 extra coords which go unused.
-        GsCOORDINATE2  npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
+        GsCOORDINATE2 playerBoneCoords[HarryBone_Count];
+        GsCOORDINATE2 npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
 
-        int npcFlagId; // 1-based NPC ID for `npcFlags`.
+        int npcFlagId; /** 1-based NPC ID for `npcFlags`. */
 
         int loadingScreenIdx;
         int areaTransitionFlags;                /** `e_AreaTransitionFlags` */
         int sfxPairIdx;                         /** `e_SfxPairIdx` | Index into `SFX_PAIRS`. */
         int charaGroupFlags[CHARA_GROUP_COUNT]; /** `e_CharaGroupFlags` */ // Enabling a flag for Larval Stalkers causes them to die.
         s32 field_228C[1];
-        int npcFlags;       // Flags related to NPCs. Each bit corresponds to an `npcs` array entry.
-        int processFlags;   /** `e_ProcessFlags` */
-        int bgmStatusFlags; /** `e_BgmStatusFlags` */
-        int sysFlags;       // `e_SysFlags` | `SysFlag_OnCameraRail` passed as "use through door cam" flag in `vcSetFirstCamWork`.
+        int npcFlags;                           // Flags related to NPCs. Each bit corresponds to an `npcs` array entry.
+        int processFlags;                       /** `e_ProcessFlags` */
+        int bgmStatusFlags;                     /** `e_BgmStatusFlags` */
+        int sysFlags;                           // `e_SysFlags` | `SysFlag_OnCameraRail` passed as "use through door cam" flag in `vcSetFirstCamWork`.
 
         GsCOORDINATE2 coord_22A8;   // For particles only?
         GsCOORDINATE2 coord_22F8;   // Likely related to above.
@@ -728,51 +627,4 @@ namespace Silent::Game
             g_GameWork.gameStateSteps[2]++;
         }
     }
-
-    // =======================
-    // =======================
-    // =======================
-    // TODO: Move these and the e_WorldEnv enums into `map_effects.h` with the `WorldEnv_XXX` funcs.
-    // =======================
-    // =======================
-    // =======================
-
-    /** @brief Checks if the world environment is in darkness, without the flashlight turned on.
-     *
-     * @return `WorldEnvFlag_Dark` if the work environment is in darkness, `false` otherwise.
-     */
-    #define WorldEnv_IsInDarkness() \
-        (g_SysWork.worldEnv.current.params.flags & WorldEnvFlag_Dark)
-
-    /** @brief Checks if the world environment allows the flashlight to be used.
-     *
-     * @return `WorldEnvFlag_FlashlightAllowed` if the flashlight can be used, `false` otherwise.
-     */
-    #define WorldEnv_IsFlashlightAllowed() \
-        (g_SysWork.worldEnv.current.params.flags & WorldEnvFlag_FlashlightAllowed)
-
-    /** @brief Checks if the flashlight is turned on.
-     *
-     * @return `true` if the flashlight is turned on, `false` otherwise.
-     */
-    #define WorldEnv_IsFlashlightOn() \
-        (g_SysWork.worldEnv.isFlashlightOn)
-
-    /** @brief Checks if any active world environment presets can count as in darkness.
-     *
-     * @param `true`, otherwise `false`.
-     */
-    #define WorldEnv_CanBeInDarkness()                                          \
-        ((g_SysWork.worldEnv.transition[0].params.flags & WorldEnvFlag_Dark) || \
-        (g_SysWork.worldEnv.transition[1].params.flags & WorldEnvFlag_Dark))
-
-    /** @brief Checks if the world is lit by any of the following conditions:
-     * - The flashlight beign disallowed in a lit area. 
-     * - The flashlight being turned on.
-     * - The world being unable to turn dark.
-     *
-     * @return `true` if the world is lit, `false` otherwise.
-     */
-    #define WorldEnv_IsWorldLit() \
-        (!WorldEnv_IsFlashlightAllowed() || WorldEnv_IsFlashlightOn() || !WorldEnv_CanBeInDarkness())
 }

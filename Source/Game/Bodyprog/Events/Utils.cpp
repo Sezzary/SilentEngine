@@ -4,7 +4,7 @@
 #include "Game/Bodyprog/Events/Utils.h"
 
 #include "Game/Bodyprog/Events/EventFlags.h"
-#include "Game/Bodyprog/Events/bodyprog_data_800A99B4.h"
+#include "Game/Bodyprog/Events/EventData.h"
 #include "Game/Bodyprog/Items.h"
 //#include "Game/Bodyprog/ItemScreens.h"
 #include "Game/Bodyprog/Screen/Data.h"

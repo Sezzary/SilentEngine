@@ -1,6 +1,6 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Screens/Stream/Stream.h"
+#include "Game/Screens/Fmv/Fmv.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 

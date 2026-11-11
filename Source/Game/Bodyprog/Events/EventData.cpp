@@ -1,6 +1,6 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Events/bodyprog_data_800A99B4.h"
+#include "Game/Bodyprog/Events/EventData.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 

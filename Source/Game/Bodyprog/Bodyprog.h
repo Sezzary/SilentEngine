@@ -610,9 +610,6 @@ namespace Silent::Game
 
     extern s32 D_800A9A68;
 
-    /** Counts the amount of times that demos has been play in the current game session. */
-    extern s8 g_Demo_ReproducedCount;
-
     extern RECT D_800A9A6C; // `RECT<320, 256, 160, 240>`, only used in `SysState_Fmv_Update`?
 
     extern s32 D_800A9ECC;
@@ -761,9 +758,6 @@ namespace Silent::Game
 
     extern s32 D_800BCD84;
 
-    /** Related to main menu fog randomization. */
-    extern s8* D_800BCDE0; // Type assumed.
-
     /** Angles. */
     extern s16 D_800BCDE8[8];
 
@@ -806,18 +800,6 @@ namespace Silent::Game
 
     extern s8 D_800C447A;
 
-    extern s16 D_800AEEDC[][2]; // Type assumed.
-
-    extern s16 D_800AEF78[][2]; //  Type assumed.
-
-    extern s16 D_800AF014[];
-
-    extern s16 D_800AF04C[];
-
-    extern q3_12 D_800AF070[];
-
-    extern q3_12 D_800AF1FC[];
-
     extern u8 g_Player_AnimResetRequest; /** `bool` */
 
     extern s_CollisionSurface D_800C4620;
@@ -834,8 +816,6 @@ namespace Silent::Game
     extern s_RayTrace D_800C47F8;
 
     extern s_800C4818 D_800C4818;
-
-    extern s32 D_800C48F0;
 
     extern u8 D_800AD480[24];
 

@@ -68,14 +68,14 @@ namespace Silent::Game
     /** @brief Analog PSX controller state. */
     struct s_AnalogController
     {
-        u8  status;
-        u8  receivedBytes : 4; /** Number of bytes received / 2. */
-        u8  terminalType  : 4; /** `e_PadTerminalType` */
-        u16 digitalButtons;    /** `e_ControllerFlags` */
-        u8  rightX;
-        u8  rightY;
-        u8  leftX;
-        u8  leftY;
+        u8   status;
+        u8   receivedBytes : 4; /** Number of bytes received / 2. */
+        u8   terminalType  : 4; /** `e_PadTerminalType` */
+        u16  digitalButtons;    /** `e_ControllerFlags` */
+        q1_7 rightX;
+        q1_7 rightY;
+        q1_7 leftX;
+        q1_7 leftY;
     };
 
     /** @brief PSX controller button state flags. */

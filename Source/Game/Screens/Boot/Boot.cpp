@@ -18,7 +18,7 @@
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
-#include "Game/Screens/Stream/Stream.h"
+#include "Game/Screens/Fmv/Fmv.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Services/Clock.h"

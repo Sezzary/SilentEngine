@@ -5,7 +5,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Game/Bodyprog/Sys/Demo.h"
-#include "Game/Bodyprog/Events/bodyprog_data_800A99B4.h"
+#include "Game/Bodyprog/Events/EventData.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
 //#include "Game/Bodyprog/player.h"
 #include "Game/Bodyprog/Screen/Data.h"

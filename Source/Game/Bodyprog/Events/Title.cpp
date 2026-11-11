@@ -19,7 +19,7 @@
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"
-#include "Game/Screens/Stream/Stream.h"
+#include "Game/Screens/Fmv/Fmv.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Utils/Translator.h"

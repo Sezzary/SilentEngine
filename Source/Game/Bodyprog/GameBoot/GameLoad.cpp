@@ -21,7 +21,7 @@
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Mem.h"
 #include "Game/Main/Rng.h"
-#include "Game/Screens/Stream/Stream.h"
+#include "Game/Screens/Fmv/Fmv.h"
 
 // nps_anims_clear.c
 

@@ -398,10 +398,10 @@ namespace Silent::Game
 
         *(u16*)&g_Controller0->analogController.status = 0x7300;
         g_Controller0->analogController.digitalButtons = btns;
-        g_Controller0->analogController.rightX = 128;
-        g_Controller0->analogController.rightY = 128;
-        g_Controller0->analogController.leftX  = 128;
-        g_Controller0->analogController.leftY  = 128;
+        g_Controller0->analogController.rightX         = Q7(1.0f);
+        g_Controller0->analogController.rightY         = Q7(1.0f);
+        g_Controller0->analogController.leftX          = Q7(1.0f);
+        g_Controller0->analogController.leftY          = Q7(1.0f);
         return true;
     }
 

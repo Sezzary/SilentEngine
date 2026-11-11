@@ -2612,16 +2612,13 @@ namespace Silent::Game
 
     void vcMakeNewBaseCamAng(SVECTOR* new_base_ang, VC_CAM_MV_TYPE cam_mv_type, VC_WORK* w_p) // 0x80084EDC
     {
-        // Last 2 could be compiler-added padding, but are needed for match.
         static const q19_12 ANGLES[] =
         {
             Q12_ANGLE(0.0f),
             Q12_ANGLE(15.0f),
             Q12_ANGLE(60.0f),
             Q12_ANGLE(110.0f),
-            Q12_ANGLE(110.0f),
-            Q12_ANGLE(0.0f),
-            Q12_ANGLE(0.0f)
+            Q12_ANGLE(110.0f)
         };
 
         s32   sp18[5];

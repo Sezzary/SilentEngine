@@ -10,19 +10,19 @@ https://github.com/Vatuu/silent-hill-decomp
 
 > [!IMPORTANT]
 > <details>
-> <summary>NOTICE AGAINST AI</summary>
+> <summary>NOTICE AGAINST AI MISUSE</summary>
 >
 > Like the decompilation, this port project is human-driven and **not vibe-coded**. Deep understanding of game systems and code quality are of high importance, and the "document everything" attitude inherited from the original effort ensures anyone with the adequate will and curiosity has the opportunity to read, understand, learn from, and potentially help improve the port themselves. Purely AI-driven workflows for projects like these have done nothing but empower opportunists with little to no interest in software design. Such individuals seek attention, instant results, and unceremoniously ignore the wishes of the people whose real work they depend on. They might additionally understate the extent of their cognitive dependence, claiming the endeavor to be merely "assisted" by LLMs, if not omit disclosure altogether.
 >
-> **This is completely antithetical to the etiquette surrounding small open-source projects**. It foregoes all creative aspects and erodes everything that makes community-driven pursuits like this one, which ought to be a chance for people of different skillsets to come together, worthwhile. Furthermore, given their hideous and practically illegible code output, contributions to AI repos will forever be out of reach to anyone who cannot afford costly tokens. At that point, I think, one might as well work with raw binary. Where there's source code, it should be workable by a human **on principle**.
+> **This is completely antithetical to the etiquette surrounding small open-source projects**. It foregoes all creative aspects and erodes everything that makes community-driven pursuits, which ought to be a chance for people of different skillsets to come together, worthwhile. Furthermore, given the largely illegible output of coding agents, contributions to LLM-lead repos will forever be out of reach to anyone who cannot afford costly tokens or who doesn't wish to spend money on them. At that point, I think, one might as well work with raw binary. Where there's source code, it should be workable by a human **on principle**.
 >
-> From my observation, widespread usage of LLMs predominantly benefits two kinds of people:
+> From my observation of the broad landscape, widespread usage of LLMs predominantly benefits two kinds of people:
 > 1) Those who are already well-off (and can thereby afford throwing agent swarms at whatever they please).
 > 2) Those with sociopathic tendencies (who lack common decency and remorselessly ignore all ethical concerns).
 >
-> In trying various workflows and observing how others work, my opinion on the matter is informed by experience: LLMs on their own are an interesting technology, but the prevailing (and perhaps intrinsically coupled) abuse perpetuated by droves of bad actors is likely to endure and cannot be ignored. To the end user, i.e. the gamer, this might appear as a fair trade-off for quicker turnarounds and more games, but the significant cost to genuine, ambitious creators must be emphasized. I encourage you, the user, to carefully consider *who* you really support. I want this to be an awesome port people can enjoy and to lay the foundations for fun creative things on top of it, but it's about time regular users themselves started being more high-minded and forward-thinking. **Don't hand the world to the lazy and weak of character.**
+> In trying various workflows and observing how others work, my opinion on the matter is informed by experience: LLMs on their own are an interesting technology with good potential in novel contexts, but the prevailing misuse perpetuated by droves of bad actors is likely to endure and cannot be ignored. To the end user, i.e. the gamer, this might appear as a fair trade-off for quicker turnarounds and more games. However, the significant cost to genuine, ambitious creators must be emphasized. I encourage you, the user, to carefully consider *who* you really support. I want this to be an awesome port people can enjoy and to lay the foundations for fun creative things on top of it, but it's about time regular users themselves started being more high-minded and forward-thinking. **Don't hand the world to the lazy and weak of character.**
 >
-> For these reasons, **any future forks of this port by opportunistic parties who wish to go against this notice are strongly discouraged and, if created, should never be endorsed by anyone.** The *best* thing about open-source is it allows anyone to do what they want, but the *worst* thing about it is people doing literally whatever they want.
+> **Any future forks by opportunistic parties who wish to go against this notice are strongly discouraged and, if created, should never be endorsed by anyone.**
 >
 > </details>
 

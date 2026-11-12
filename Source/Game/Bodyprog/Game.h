@@ -261,7 +261,7 @@ namespace Silent::Game
     /** @brief World environment state. */
     struct s_WorldEnvState
     {
-        s_WorldEnvPreset effectsInfo;
+        s_WorldEnvPreset params;
         q3_12            flashlightLensFlareIntensity;
         q3_12            brightnessIntensity;
         q19_12           fogDistance;

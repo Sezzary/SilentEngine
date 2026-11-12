@@ -26,6 +26,7 @@
 //#include "Game/Bodyprog/player.h"
 //#include "Game/Bodyprog/ranking.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
+#include "Game/Bodyprog/World/Effects.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"
 #include "Game/Screens/Fmv/Fmv.h"
@@ -231,8 +232,7 @@ namespace Silent::Game
             return;
         }
 
-        if (input.GetAction(In::Light).IsClicked() &&
-            g_SysWork.worldEnv.current.effectsInfo.flags & (1 << 1))
+        if (input.GetAction(In::Light).IsClicked() && WorldEnv_IsFlashlightAllowed())
         {
             //Game_FlashlightToggle();
         }
@@ -355,7 +355,7 @@ namespace Silent::Game
         s32 val0;
         s32 val1;
 
-        bool isRockDrillAttack = g_SysWork.playerCombat.weaponAttack == WEAPON_ATTACK(EquippedWeaponId_RockDrill, AttackInputType_Tap);
+        bool isRockDrillAttack = g_SysWork.playerCombat.weaponAttack == WEAPON_ATTACK(AttackType_RockDrill, AttackInputType_Tap);
 
         //func_8008B3E4(0);
 
@@ -485,9 +485,7 @@ namespace Silent::Game
                 SysWork_StateSetNext(SysState_Gameplay);
             }
         }
-        else if ((g_SysWork.worldEnv.current.effectsInfo.flags & (1 << 1)) && !g_SysWork.worldEnv.isFlashlightOn &&
-                ((g_SysWork.worldEnv.transition[0].effectsInfo.flags & (1 << 0)) ||
-                (g_SysWork.worldEnv.transition[1].effectsInfo.flags & (1 << 0))))
+        else if (!WorldEnv_IsWorldLit())
         {
             if (input.GetAction(In::Map).IsClicked() ||
                 MapMsg_Draw(MapMsgIdx_TooDarkForMap) > MapMsgState_Idle)
@@ -922,8 +920,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.worldEnv.current.effectsInfo.flags & 0x3) && (tipIdx - 13) >= 2) ||
-                            ( (g_SysWork.worldEnv.current.effectsInfo.flags & 0x3) && (tipIdx - 13) <  2))
+                        if (((!WorldEnv_IsInDarkness() && !WorldEnv_IsFlashlightAllowed()) && (tipIdx != 13 && tipIdx != 14)) ||
+                            (!(!WorldEnv_IsInDarkness() && !WorldEnv_IsFlashlightAllowed()) && (tipIdx == 13 || tipIdx == 14)))
                         {
                             randTipVal += 3;
                         }
@@ -942,8 +940,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.worldEnv.current.effectsInfo.flags & 0x3) && (tipIdx - 13) >= 2) ||
-                            ( (g_SysWork.worldEnv.current.effectsInfo.flags & 0x3) && (tipIdx - 13) <  2))
+                        if (( (!WorldEnv_IsInDarkness() && !WorldEnv_IsFlashlightAllowed()) && (tipIdx != 13 && tipIdx != 14)) ||
+                            (!(!WorldEnv_IsInDarkness() && !WorldEnv_IsFlashlightAllowed()) && (tipIdx == 13 || tipIdx == 14)))
                         {
                             if (randTipVal < 3)
                             {

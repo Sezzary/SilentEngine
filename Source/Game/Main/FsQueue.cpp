@@ -6,6 +6,7 @@
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
+#include "Game/Bodyprog/Sys/CharaFileInfos.h"
 #include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Main/FsMem.h"
 

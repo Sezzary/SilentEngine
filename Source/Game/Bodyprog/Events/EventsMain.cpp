@@ -8,17 +8,16 @@
 #include "Game/Bodyprog/Events/EventData.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/World/Effects.h"
 
 namespace Silent::Game
 {
-    static void Event_ItemTriggersClear() // 0x80037388
+    static void Event_ItemTriggersClear()
     {
-        s32 i;
-
-        for (i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             g_ItemTriggerItemIds[i] = NO_VALUE;
-            g_ItemEvents[i]  = nullptr;
+            g_ItemEvents[i]         = nullptr;
         }
     }
 
@@ -175,8 +174,7 @@ namespace Silent::Game
             // `MapTriggerActivationType_Button`: Only allow button activated events when area is lit up?
             if (mapEvent->activationType == MapTriggerActivationType_Button)
             {
-                if ((g_SysWork.worldEnv.current.effectsInfo.flags & 2) && !g_SysWork.worldEnv.isFlashlightOn &&
-                    ((g_SysWork.worldEnv.transition[0].effectsInfo.flags & 1) || (g_SysWork.worldEnv.transition[1].effectsInfo.flags & 1)))
+                if (!WorldEnv_IsWorldLit())
                 {
                     if (mapEvent->sysState != SysState_LoadOverlay &&
                         (mapEvent->sysState != SysState_LoadRoom && mapEvent->eventParam > 1))

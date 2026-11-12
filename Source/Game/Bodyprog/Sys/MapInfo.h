@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Game/Bodyprog/Map/Map.h"
-#include "Game/Game.h"
+#include "Game/Bodyprog/Game.h"
 
 namespace Silent::Game
 {

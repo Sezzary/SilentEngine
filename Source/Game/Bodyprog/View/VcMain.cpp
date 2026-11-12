@@ -6,6 +6,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/Sys/CharaFileInfos.h"
 //#include "bodyprog/player.h"
 #include "Game/Bodyprog/View/VwSystem.h"
 #include "Game/Maps/Characters/Harry.h"

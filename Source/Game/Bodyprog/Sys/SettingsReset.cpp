@@ -11,7 +11,7 @@ namespace Silent::Game
     {
         Screen_XyPositionSet(g_GameWork.config.screenPositionX, g_GameWork.config.screenPositionY);
         SD_Call((g_GameWork.config.soundType != 0) ? AudioMode_Mono : AudioMode_Stereo);
-        //Sd_SetVolume(OPT_SOUND_VOLUME_MAX, g_GameWork.config.volumeBgm, g_GameWork.config.volumeSe);
+        //Sd_SetVolume(Q7(1.0f), g_GameWork.config.volumeBgm, g_GameWork.config.volumeSe);
     }
 
     void Settings_RestoreDefaults() // 0x8003342C
@@ -21,9 +21,9 @@ namespace Silent::Game
 
         Settings_RestoreControlDefaults(0);
 
-        g_GameWork.config.vibrationEnabled = OPT_VIBRATION_ENABLED;
-        g_GameWork.config.volumeBgm        = OPT_SOUND_VOLUME_MAX;
-        g_GameWork.config.volumeSe         = OPT_SOUND_VOLUME_MAX;
+        g_GameWork.config.vibrationEnabled = Q7(1.0f);
+        g_GameWork.config.volumeBgm        = Q7(1.0f);
+        g_GameWork.config.volumeSe         = Q7(1.0f);
 
         Settings_ScreenAndVolUpdate();
 

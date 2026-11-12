@@ -7,24 +7,25 @@
 #include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Bodyprog/Events/EventData.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
+#include "Game/Bodyprog/Items/WeaponData.h"
 //#include "Game/Bodyprog/player.h"
 #include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
+#include "Game/Bodyprog/World/Effects.h"
 #include "Game/Main/FsQueue.h"
+#include "Game/Main/Rng.h"
 
 namespace Silent::Game
 {
-    s_800AD4C8 D_800AD4C8[70]; // @todo Temp placement.
-
-    void Savegame_EnemyStateUpdate(s_SubCharacter* chara) // 0x80037DC4
+    void Savegame_EnemyStateUpdate(s_SubCharacter* chara)
     {
-        if (g_SavegamePtr->gameDifficulty <= GameDifficulty_Normal/* || Rng_RandQ12() >= Q12(0.3f)*/)
+        if (g_SavegamePtr->gameDifficulty <= GameDifficulty_Normal || Rng_RandQ12() >= Q12(0.3f))
         {
             g_SavegamePtr->mapEnemyStates[g_SavegamePtr->mapIdx] &= ~(1 << chara->field_40);
         }
     }
 
-    void Chara_DamagedFlagUpdate(s_SubCharacter* chara) // 0x80037E40
+    void Chara_DamagedFlagUpdate(s_SubCharacter* chara)
     {
         if (chara->damage.amount > Q12(0.0f))
         {
@@ -43,7 +44,7 @@ namespace Silent::Game
             int idx = chara->attackReceived;
             if (idx < 39) // TODO: What weapon attack?
             {
-                bool cond = D_800AD4C8[idx].field_10 == 3;
+                bool cond = g_Items_WeaponAttackInfos[idx].type == AttackInfoType_Gunshot;
                 //func_800914C4(cond, func_8009146C(cond) + 1);
             }
 
@@ -319,8 +320,7 @@ namespace Silent::Game
 
                 // Unload distant NPC to avoid drawing.
                 distToNpcCpy = curDistToNpc;
-                if (distToNpcCpy > ((!isLowVisInterior && curNpc->health < Q12(0.0f)) ? SQUARE(24) : // Approx. `Q12(0.15f)`.
-                                                                                        SQUARE(40))) // Approx. `Q12(0.4f)`.
+                if (distToNpcCpy > ((!isLowVisInterior && curNpc->health < Q12(0.0f)) ? SQUARE(24) : SQUARE(40)))
                 {
                     curNpc->model.charaId = Chara_None;
 
@@ -330,9 +330,8 @@ namespace Silent::Game
                 }
 
                 // Set NPC visibility.
-                if ((g_SysWork.worldEnv.current.effectsInfo.flags & 0x2 && curDistToNpc > SQUARE(15)) || // Approx. `Q12(0.055f)`.
-                    (!(g_SysWork.worldEnv.current.effectsInfo.flags & 0x2) &&
-                        Camera_Distance2dGet(&curNpc->position) > SQUARE(15))) // Approx. `Q12(0.055f)`.
+                if ((WorldEnv_IsFlashlightAllowed() && curDistToNpc > SQUARE(15)) ||
+                    (!WorldEnv_IsFlashlightAllowed() && Camera_Distance2dGet(&curNpc->position) > SQUARE(15)))
                 {
                     curNpc->model.anim.flags &= ~AnimFlag_Visible;
                 }

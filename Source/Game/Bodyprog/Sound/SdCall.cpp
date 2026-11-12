@@ -276,9 +276,9 @@ namespace Silent::Game
         SdStart();
         SdSetTableSize(&D_800C16C8, 16, 3);
 
-        gSDVolConfig.globalVolumeSe_C  = OPT_SOUND_VOLUME_MAX - 1;
-        gSDVolConfig.globalVolumeBgm_D = OPT_SOUND_VOLUME_MAX - 1;
-        gSDVolConfig.globalVolumeXa_E  = OPT_SOUND_VOLUME_MAX - 1;
+        gSDVolConfig.globalVolumeSe_C  = Q7(1.0f) - 1;
+        gSDVolConfig.globalVolumeBgm_D = Q7(1.0f) - 1;
+        gSDVolConfig.globalVolumeXa_E  = Q7(1.0f) - 1;
 
         sd_work_init();
     }
@@ -1765,12 +1765,12 @@ namespace Silent::Game
         }
         else
         {
-            if (gSDVolConfig.volumeGlobal_A < (OPT_SOUND_VOLUME_MAX - 1))
+            if (gSDVolConfig.volumeGlobal_A < (Q7(1.0f) - 1))
             {
                 gSDVolConfig.volumeGlobal_A += 4;
-                if (gSDVolConfig.volumeGlobal_A >= (OPT_SOUND_VOLUME_MAX - 1))
+                if (gSDVolConfig.volumeGlobal_A >= (Q7(1.0f) - 1))
                 {
-                    gSDVolConfig.volumeGlobal_A = OPT_SOUND_VOLUME_MAX - 1;
+                    gSDVolConfig.volumeGlobal_A = Q7(1.0f) - 1;
                 }
 
                 SdSetMVol(gSDVolConfig.volumeGlobal_A, gSDVolConfig.volumeGlobal_A);

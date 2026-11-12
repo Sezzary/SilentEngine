@@ -65,7 +65,7 @@ namespace Silent::Game
         }
 
         g_SysWork.playerWork.player.properties.player.gasWeaponPowerTimer = Q12(0.0f);
-        //func_8004C564(g_SysWork.playerCombat.weaponAttack, WEAPON_ATTACK(EquippedWeaponId_RockDrill, AttackInputType_Tap));
+        //func_8004C564(g_SysWork.playerCombat.weaponAttack, WEAPON_ATTACK(AttackType_RockDrill, AttackInputType_Tap));
 
         // Cache new message.
         auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";

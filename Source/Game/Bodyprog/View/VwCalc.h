@@ -59,7 +59,7 @@ namespace Silent::Game
 
     /** @brief Computes a view-space matrix for a coordinate hierarchy node.
      *
-     * Gets the cumulative world matrix, subtracts the camera position, and multiplies by `VbWvsMatrix`.
+     * Gets the cumulative world matrix, subtracts the camera position, and multiplies by `VwCrdWsRotMat`.
      *
      * @param boneCoords Character model bone coords.
      * @param outViewMat Output view-space matrix.

@@ -115,7 +115,7 @@ namespace Silent::Game
         SVECTOR                   ofs_cam_ang;                  /** Offset rotation. */
         SVECTOR                   ofs_cam_ang_spd;              /** Offset rotational speed. */
         SVECTOR                   base_cam_ang;                 /** Base rotation. */
-        s8                        unk[8];                       // TODO: Possibly unused or debug data?
+        SVECTOR                   old_base_cam_ang;             /** @unused Previous base rotation. Name from SH2. */
         bool                      updateLookAtPoint;
         MATRIX                    lookAtMat;
         bool                      updateLookAtMat;

@@ -11,6 +11,8 @@
 
 using namespace Silent::Input;
 
+VECTOR3 vcRefPosSt; /** Q19.12 | View camera reference position start. */
+
 namespace Silent::Game
 {
     constexpr int V_BLANKS_MULT = 11;

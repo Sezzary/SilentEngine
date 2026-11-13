@@ -47,7 +47,7 @@ namespace Silent::Game
         }
         else
         {
-            result[0] = Math_MulFixed(Vc_VectorMagnitudeCalc(intersect->offsetX, Q12(0.0f), intersect->offsetZ),
+            result[0] = Math_MulFixed(vwRet3DLength(intersect->offsetX, Q12(0.0f), intersect->offsetZ),
                                     intersect->intersectAlpha,
                                     Q12_SHIFT);
             result[1] = intersect->triggerHeight;
@@ -208,7 +208,7 @@ namespace Silent::Game
             }
 
             // Check accurate cylinder-trigger collision at projected position.
-            q19_12 projDistToTrigger = Vc_VectorMagnitudeCalc(projOffsetToTriggerX, Q12(0.0f), projOffsetToTriggerZ);
+            q19_12 projDistToTrigger = vwRet3DLength(projOffsetToTriggerX, Q12(0.0f), projOffsetToTriggerZ);
             if (projDistToTrigger >= cylinderRadius)
             {
                 continue;
@@ -225,7 +225,7 @@ namespace Silent::Game
 
                 // Compute allowed intersection depth.
                 q19_12 allowedIntersectDist = INTERSECTION_BUFFER;
-                q19_12 distToTrigger        = Vc_VectorMagnitudeCalc(offsetToTriggerX, Q12(0.0f), offsetToTriggerZ);
+                q19_12 distToTrigger        = vwRet3DLength(offsetToTriggerX, Q12(0.0f), offsetToTriggerZ);
                 if ((cylinderRadius - distToTrigger) <= INTERSECTION_BUFFER)
                 {
                     allowedIntersectDist = cylinderRadius - distToTrigger;

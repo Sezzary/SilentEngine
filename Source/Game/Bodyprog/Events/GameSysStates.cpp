@@ -71,7 +71,7 @@ namespace Silent::Game
     static q19_12 g_DeltaTimeCpy;
 
     s_EventData*   g_ItemEvents[5]; // Guessed size. Check decomp later.
-    s_RadioNpcInfo g_RadioNpcInfos[2];
+    s_RadioNoise g_RadioNoise[2];
     s_MapPoint2d   g_MapPoint;
     s32            g_ItemTriggerItemIds[5];
     u8             g_MapAreaLoadCounter;

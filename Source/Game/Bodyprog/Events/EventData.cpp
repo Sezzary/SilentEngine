@@ -4,7 +4,7 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
-#include "Game/Bodyprog/Sound/SfxIdEnum.h"
+#include "Game/Bodyprog/Sound/SfxIds.h"
 #include "Game/Main/FsQueue.h"
 
 namespace Silent::Game

@@ -1,6 +1,6 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/GameBoot/GameLoad.h"
+#include "Game/Bodyprog/GameBoot/NpcAnimsClear.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
@@ -23,12 +23,10 @@
 #include "Game/Main/Rng.h"
 #include "Game/Screens/Fmv/Fmv.h"
 
-// nps_anims_clear.c
-
 namespace Silent::Game
 {
     void Anim_CharaTypeAnimInfoClear(void) // 0x800348C0
     {
-        //bzero(&g_CharaModelAnimsData[1], 72);
+        //bzero(&g_CharaModelAnimsData[1], sizeof(s_CharaAnimData) * (CHARA_GROUP_COUNT - 1));
     }
 }

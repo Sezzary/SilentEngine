@@ -81,7 +81,7 @@ namespace Silent::Game
     /** @brief Adjust light point attributes to make it simile a flashlight. */
     void Game_FlashlightAttribSet(void);
 
-    /** @brief Determines what enviroment effects data from `MAP_EFFECTS_INFOS` will use based on
+    /** @brief Determines what enviroment effects data from `WORLD_ENV_PRESETS` will use based on
      * `s_MapOverlayHdr::field_16`.
      */
     void Gfx_MapEffectsAssign(s_MapOverlayHdr* mapHdr);

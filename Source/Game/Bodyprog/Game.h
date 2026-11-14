@@ -208,7 +208,7 @@ namespace Silent::Game
     /** @brief Extra player character info. */
     struct s_PlayerExtra
     {
-        s_Model     model;                 /** Manages upper half body's animations (torso, arms, head). */
+        s_Model     model;                 /** Manages upper body's animations (torso, arms, head). */
         int         disabledAnimBoneFlags; /** Created using `BITMASK_RANGE`. */
         int         state;                 /** `e_PlayerState` */
         int         upperBodyState;        /** `e_PlayerUpperBodyState` */

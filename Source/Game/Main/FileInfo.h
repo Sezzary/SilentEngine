@@ -14,7 +14,7 @@ namespace Silent::Game
      */
     enum e_FsFile
     {
-        #include "FileEnum.h.USA.inc"
+        #include "FileEnum.USA.inc"
         FS_FILE_COUNT /** Number of files in `g_FileTable`. 2074 in USA/JAP0. */
     };
 

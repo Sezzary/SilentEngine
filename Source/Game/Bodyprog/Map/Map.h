@@ -74,7 +74,7 @@ namespace Silent::Game
         MapIdx_MAPX_S00 = 44  // }
     };
 
-    /** @brief Paper map indices. Used for the navigation map screen. */
+    /** @brief Paper map indices. Used for the paper map screen. */
     enum e_PaperMapIdx
     {
         PaperMapIdx_OtherPlaces    = 0,

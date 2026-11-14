@@ -83,17 +83,17 @@ namespace Silent::Game
         return Fs_QueueStartRead(fileIdx);
     }
 
-    const std::future<void>& Fs_QueueStartReadAnm(int idx, int charaId, void* dest, GsCOORDINATE2* coords)
+    const std::future<void>& Fs_QueueStartReadAnm(int animDataIdx, int charaId, void* dest, GsCOORDINATE2* boneCoords)
     {
         auto& assets = g_App.GetAssets();
 
         int            fileIdx;
         s_FsQueueExtra extra;
 
-        fileIdx             = CHARA_FILE_INFOS[charaId].animFileIdx; // @todo Port over `CHARA_FILE_INFOS`.
-        extra.anm.charaId_4 = charaId;
-        extra.anm.field_0   = idx;
-        extra.anm.coords_8  = coords;
+        fileIdx               = CHARA_FILE_INFOS[charaId].animFileIdx; // @todo Port over `CHARA_FILE_INFOS`.
+        extra.anm.charaId     = charaId;
+        extra.anm.animDataIdx = animDataIdx;
+        extra.anm.boneCoords  = boneCoords;
         return assets.Load(fileIdx);
     }
 
@@ -112,9 +112,9 @@ namespace Silent::Game
 
     bool Fs_QueuePostLoadAnm(s_FsQueueEntry* entry)
     {
-        // @todo Seems important, not decompiled yet.
-        //Fs_CharaAnimDataUpdate(entry->extra.anm.field_0, entry->extra.anm.charaId_4, entry->externalData,
-        //                       entry->extra.anm.coords_8);
+        // @todo Seems important.
+        //Fs_CharaAnimDataUpdate(entry->extra.anm.animDataIdx, entry->extra.anm.charaId, entry->externalData,
+        //                       entry->extra.anm.boneCoords);
         return true;
     }
 }

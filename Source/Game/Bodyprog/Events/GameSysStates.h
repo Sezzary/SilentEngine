@@ -6,6 +6,14 @@ namespace Silent::Game
     struct s_MapPoint2d;
     struct s_RadioNoise;
 
+    struct s_RadioNoise
+    {
+        s8 prevIdx;
+        s8 idx;
+        s8 closeNpcInfoIdx;
+        s8 field_3;
+    };
+
     extern s_EventData* g_ItemEvents[];
 
     extern s_RadioNoise g_RadioNoise[2];

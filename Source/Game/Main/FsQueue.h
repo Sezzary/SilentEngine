@@ -96,9 +96,9 @@ namespace Silent::Game
      */
     struct s_FsAnmDesc
     {
-        u32            field_0; // Unknown index.
-        u32            charaId_4;
-        GsCOORDINATE2* coords_8;
+        u32            animDataIdx; /** Index into `g_CharaModelAnimsData`. */
+        u32            charaId;
+        GsCOORDINATE2* boneCoords;
     };
 
     /** @brief Extra data passed with the queue entry.
@@ -206,16 +206,13 @@ namespace Silent::Game
     /** @brief Add a new ANM read operation to the queue.
      * Adds a read operation with `postLoad = FsQueuePostLoadType_Anm`.
      *
-     * @note Does not actually take a file number, but instead takes one from an array of structs at 0x800A90FC in bodyprog,
-     * using `arg1` as an index. Does not seem to take a `s_FsAnmDesc` pointer either. Maybe by value?
-     *
-     * @param idx Unknown index.
+     * @param animDataIdx Index into `g_CharaModelAnimsData`.
      * @param charaId Character ID.
      * @param dest Destination buffer.
-     * @param coords Character coords.
+     * @param boneCoords Character model bone coords.
      * @return Index of the new queue entry.
      */
-    const std::future<void>& Fs_QueueStartReadAnm(int idx, int charaId, void* dest, GsCOORDINATE2* coords);
+    const std::future<void>& Fs_QueueStartReadAnm(int animDataIdx, int charaId, void* dest, GsCOORDINATE2* boneCoords);
 
     /** Seems to clear the queue. */
     void Fs_QueueReset();

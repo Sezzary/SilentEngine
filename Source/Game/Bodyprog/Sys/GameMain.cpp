@@ -8,7 +8,7 @@
 #include "Game/Bodyprog/Sys/MemCard.h"
 #include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
-#include "Game/Bodyprog/GameBoot/GameLoad.h"
+#include "Game/Bodyprog/GameBoot/NpcAnimsClear.h"
 #include "Game/Bodyprog/Screen/Background.h"
 #include "Game/Bodyprog/Screen/Draw.h"
 #include "Game/Bodyprog/Screen/Fade.h"

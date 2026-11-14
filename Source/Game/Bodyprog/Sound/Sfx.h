@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/Bodyprog/Sound/SfxIdEnum.h"
+#include "Game/Bodyprog/Sound/SfxIds.h"
 
 namespace Silent::Game
 {

@@ -53,7 +53,5 @@ namespace Silent::Game
     /** Weapon attacks. */
     extern s_AttackInfo g_Items_WeaponAttackInfo[70];
 
-    extern s_MapOverlayHdr g_MapOverlayHdr;
-
     extern s16 SQRT[100];
 }

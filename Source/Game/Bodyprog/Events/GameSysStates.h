@@ -14,6 +14,8 @@ namespace Silent::Game
         s8 field_3;
     };
 
+    extern s_MapOverlayHdr g_MapOverlayHdr;
+
     extern s_EventData* g_ItemEvents[];
 
     extern s_RadioNoise g_RadioNoise[2];

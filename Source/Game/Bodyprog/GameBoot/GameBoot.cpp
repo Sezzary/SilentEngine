@@ -6,6 +6,7 @@
 
 #include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Bodyprog/Chara/Anim.h"
+#include "Game/Bodyprog/GameBoot/CharaAnim.h"
 #include "Game/Bodyprog/GameBoot/LoadScreen.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/Events/Radio.h"
@@ -175,9 +176,9 @@ namespace Silent::Game
                 break;
 
             case 5:
-                //Fs_CharaAnimDataAlloc(1, g_MapOverlayHdr.charaGroupIds[0], NULL, 0);
-                //Fs_CharaAnimDataAlloc(2, g_MapOverlayHdr.charaGroupIds[1], NULL, 0);
-                //Fs_CharaAnimDataAlloc(3, g_MapOverlayHdr.charaGroupIds[2], NULL, 0);
+                Fs_CharaAnimDataAlloc(1, (e_CharaId)g_MapOverlayHdr.charaGroupIds[0], nullptr);
+                Fs_CharaAnimDataAlloc(2, (e_CharaId)g_MapOverlayHdr.charaGroupIds[1], nullptr);
+                Fs_CharaAnimDataAlloc(3, (e_CharaId)g_MapOverlayHdr.charaGroupIds[2], nullptr);
                 //WorldGfx_MapInitCharaLoad(&g_MapOverlayHdr);
 
                 g_GameWork.gameStateSteps[0]++;

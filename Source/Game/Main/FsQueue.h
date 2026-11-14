@@ -91,29 +91,6 @@ namespace Silent::Game
         std::string AssetName;
     };
 
-    /** @brief Extra queue entry data describing something related to loading some ANM files.
-     * See `FsQueueExtra`.
-     */
-    struct s_FsAnmDesc
-    {
-        u32            animDataIdx; /** Index into `g_CharaModelAnimsData`. */
-        u32            charaId;
-        GsCOORDINATE2* boneCoords;
-    };
-
-    /** @brief Extra data passed with the queue entry.
-     *
-     * Seems to be either a TIM descriptor (`image`), or something for ANM files (`anm`).
-     *
-     * For `image` usage, see `Fs_QueuePostLoadTim`.
-     *
-     * Unknown what exactly `anm` is, but it is used with preprocess type 2, which is only used
-     * for some ANM files, but not others. See `Fs_QueuePostLoadAnm`.
-     */
-    struct s_FsQueueExtra
-    {
-        s_FsAnmDesc anm; /** Unknown. Used when loading some ANM files. */
-    };
 
     /** @brief FS queue entry.
      *
@@ -127,7 +104,6 @@ namespace Silent::Game
         u8                postLoad;     /** What to do after `operation` is done. See `e_FsQueuePostLoadType`. */
         u8                allocate;     /** Boolean. If `true`, allocate a buffer for `data` from `g_FsMemory`, otherwise use `externalData` */
         void*             externalData; /** Pointer to an external buffer. */
-        s_FsQueueExtra    extra;        /** Extra data, used during post-load. */
         void*             data;         /** Output buffer. Either allocated or same as `externalData`. */
     };
 
@@ -208,35 +184,10 @@ namespace Silent::Game
      *
      * @param animDataIdx Index into `g_CharaModelAnimsData`.
      * @param charaId Character ID.
-     * @param dest Destination buffer.
-     * @param boneCoords Character model bone coords.
      * @return Index of the new queue entry.
      */
-    const std::future<void>& Fs_QueueStartReadAnm(int animDataIdx, int charaId, void* dest, GsCOORDINATE2* boneCoords);
+    const std::future<void>& Fs_QueueStartReadAnm(int animDataIdx, int charaId);
 
     /** Seems to clear the queue. */
     void Fs_QueueReset();
-
-    /** @brief Ticks post-loading once.
-     *
-     * Performs one step in the post-loading process according to `entry->postLoadState`. When the whole process is done, returns 1.
-     *
-     * @param entry Entry to tick.
-     * @return `true` when `entry` is done post-loading, `false` otherwise.
-     */
-    bool Fs_QueueUpdatePostLoad(s_FsQueueEntry* entry);
-
-    /** @brief Parse an ANM file after loading it?
-     *
-     * Called during post-loading for some ANM files (when `entry->postLoad = 2`).
-     * For example, it is called for CLD2.ANM, SRL.ANM, SBL.ANM (maybe ones used for NPCs?), but not for others
-     * (e.g. HB_M0S01.ANM).
-     *
-     * Calls into BODYPROG, where a function gets a `GsCOORDINATE2` from somewhere in the loaded data.
-     * Always uses data from `entry->extra.anm`.
-     *
-     * @param entry Entry to parse.
-     * @return Always `true`.
-     */
-    bool Fs_QueuePostLoadAnm(s_FsQueueEntry* entry);
 }

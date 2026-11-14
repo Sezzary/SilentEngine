@@ -9,10 +9,12 @@
 #include "Renderer/Common/Enums.h"
 #include "Renderer/Common/Resources/Scene/Text2d.h"
 #include "Renderer/Common/Utils.h"
+#include "Services/Options.h"
 #include "Utils/Font.h"
 #include "Utils/Utils.h"
 
 using namespace Silent::Renderer;
+using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Game

@@ -19,10 +19,10 @@ namespace Silent::Utils
     {
         char32   CodePoint     = 0;
         int      AtlasIdx      = 0;
-        Vector2i AtlasPosition = Vector2i::Zero;
-        Vector2i AtlasSize     = Vector2i::Zero;
+        Vector2i AtlasPosition = {};
+        Vector2i AtlasSize     = {};
 
-        Vector2 Bearing   = Vector2::Zero;
+        Vector2 Bearing   = {};
         float   Spacing   = 0.0f;
         float   Ascender  = 0.0f;
         float   Descender = 0.0f;

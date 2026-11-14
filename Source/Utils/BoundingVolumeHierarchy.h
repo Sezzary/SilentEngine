@@ -25,8 +25,8 @@ namespace Silent::Utils
     private:
         struct Node
         {
-            int                    ObjectId = NO_VALUE;                 /** Only stored by a leaf node. */
-            AxisAlignedBoundingBox Aabb     = AxisAlignedBoundingBox(); /** Encompassing AABB. */
+            int                    ObjectId = NO_VALUE; /** Only stored by a leaf node. */
+            AxisAlignedBoundingBox Aabb     = {};       /** Encompassing AABB. */
 
             int Height       = 0;        /** Height of the node in the tree. */
             int ParentId     = NO_VALUE; /** Parent node ID. */

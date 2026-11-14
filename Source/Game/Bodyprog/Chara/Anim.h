@@ -170,10 +170,8 @@ namespace Silent::Game
      */
     void Anim_BlendLinear(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo);
 
-    /** @brief Smoothly blends between the current pose into a new target animation using a sine-based ease-out
+    /** @brief @unused? Smoothly blends between the current pose into a new target animation using a sine-based ease-out
      * without triggering a status transition.
-     *
-     * @unused?
      *
      * @param model Character model to animate.
      * @param anmAsset Character animation asset.

@@ -18,16 +18,16 @@
 #include "Utils/Parallel.h"
 #include "Utils/Translator.h"
 
-using namespace Silent::Assets;
-using namespace Silent::Audio;
-using namespace Silent::Game;
-using namespace Silent::Input;
-using namespace Silent::Renderer;
-using namespace Silent::Services;
-using namespace Silent::Utils;
-
 namespace Silent
 {
+    using namespace Assets;
+    using namespace Audio;
+    using namespace Game;
+    using namespace Input;
+    using namespace Renderer;
+    using namespace Services;
+    using namespace Utils;
+
     ApplicationManager g_App = ApplicationManager();
 
     AssetStreamer& ApplicationManager::GetAssets()

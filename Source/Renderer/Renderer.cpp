@@ -13,9 +13,11 @@
 #include "Renderer/Common/Resources/Scene/Triangle3d.h"
 #include "Renderer/Common/Utils.h"
 #include "Renderer/Common/View.h"
+#include "Services/Options.h"
 #include "Utils/Parallel.h"
 #include "Utils/Utils.h"
 
+using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Renderer

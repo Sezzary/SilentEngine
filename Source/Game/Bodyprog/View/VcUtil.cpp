@@ -263,22 +263,22 @@ namespace Silent::Game
         {
             if (input.GetAction(In::Down).IsHeld(ACTION_HALF_STATE))
             {
-                cam_ang.vx = cam_ang.vx - (g_VBlanks * V_BLANKS_MULT);
+                cam_ang.vx -= g_VBlanks * V_BLANKS_MULT;
             }
 
             if (input.GetAction(In::Up).IsHeld(ACTION_HALF_STATE))
             {
-                cam_ang.vx = cam_ang.vx + (g_VBlanks * V_BLANKS_MULT);
+                cam_ang.vx += g_VBlanks * V_BLANKS_MULT;
             }
 
             if (input.GetAction(In::Right).IsHeld(ACTION_HALF_STATE))
             {
-                cam_ang.vy = cam_ang.vy + (g_VBlanks * V_BLANKS_MULT);
+                cam_ang.vy += g_VBlanks * V_BLANKS_MULT;
             }
 
             if (input.GetAction(In::Left).IsHeld(ACTION_HALF_STATE))
             {
-                cam_ang.vy = cam_ang.vy - (g_VBlanks * V_BLANKS_MULT);
+                cam_ang.vy -=g_VBlanks * V_BLANKS_MULT;
             }
 
             if (input.GetRawEventState(EventId::GamepadNorth) ||

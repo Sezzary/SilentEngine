@@ -9,7 +9,7 @@ namespace Silent::Utils
         struct Cell
         {
             std::set<int>          ObjectIds = {};
-            AxisAlignedBoundingBox Aabb      = AxisAlignedBoundingBox();
+            AxisAlignedBoundingBox Aabb      = {};
 
             Cell(const AxisAlignedBoundingBox& aabb);
         };

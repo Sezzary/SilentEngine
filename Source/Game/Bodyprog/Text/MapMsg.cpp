@@ -12,19 +12,21 @@
 #include "Game/Main/FsQueue.h"
 #include "Input/Input.h"
 #include "Renderer/Common/Utils.h"
+#include "Services/Options.h"
 
 using namespace Silent::Input;
+using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    static s32   ActiveIdx        = 0;
-    static int   ActivePageIdx    = 0;
-    static q3_12 SelectFlashTimer = Q12(0.0f);
-    static auto  CachedMsg        = ParsedMsg{};
+    static int    ActiveIdx        = 0;
+    static int    ActivePageIdx    = 0;
+    static q19_12 SelectFlashTimer = Q12(0.0f);
+    static auto   CachedMsg        = ParsedMsg{};
 
-    static s_MapMsgSelect Select;
-    static int            SelectCancelIdx;
+    static auto Select          = s_MapMsgSelect{};
+    static int  SelectCancelIdx = 0;
 
     /** @brief Draws map message strings in screen space.
      *

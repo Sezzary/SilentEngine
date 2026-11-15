@@ -210,6 +210,17 @@ namespace Silent::Math
         return FP_TRUNCATE(x, Q12_SHIFT);
     }
 
+    /** @brief Multiplies two integers in Q24.7 fixed-point.
+     *
+     * @param a First Q24.7 fixed-point factor.
+     * @param b Second Q24.7 fixed-point factor.
+     * @return Q24.7 product of `a` and `b`.
+     */
+    constexpr q24_7 Q7_MULT(q24_7 a, q24_7 b)
+    {
+        return FP_MULTIPLY(a, b, Q7_SHIFT);
+    }
+
     /** @brief Multiplies two integers in Q19.12 fixed-point.
      *
      * @param a First Q19.12 fixed-point factor.

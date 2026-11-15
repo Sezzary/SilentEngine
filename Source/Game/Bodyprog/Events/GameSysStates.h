@@ -3,12 +3,23 @@
 namespace Silent::Game
 {
     struct s_EventData;
+    struct s_MapOverlayHdr;
     struct s_MapPoint2d;
-    struct s_RadioNpcInfo;
+    struct s_RadioNoise;
+
+    struct s_RadioNoise
+    {
+        s8 prevIdx;
+        s8 idx;
+        s8 closeNpcInfoIdx;
+        s8 field_3;
+    };
+
+    extern s_MapOverlayHdr g_MapOverlayHdr;
 
     extern s_EventData* g_ItemEvents[];
 
-    extern s_RadioNpcInfo g_RadioNpcInfos[2];
+    extern s_RadioNoise g_RadioNoise[2];
 
     extern s_MapPoint2d g_MapPoint;
 

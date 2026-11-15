@@ -5,11 +5,13 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
+#include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Bodyprog/View/VwSystem.h"
 #include "Input/Input.h"
 
 using namespace Silent::Input;
+
+VECTOR3 vcRefPosSt; /** Q19.12 | View camera reference position start. */
 
 namespace Silent::Game
 {
@@ -162,9 +164,10 @@ namespace Silent::Game
 
             case DebugCameraMode_ResetReference:
                 vcSetRefPosAndSysRef2CamParam(&vcRefPosSt, &g_SysWork, for_f, back_f, right_f, left_f, up_f, down_f);
-                vwSetCoordRefAndEntou(&g_SysWork.playerBoneCoords[HarryBone_Head],
-                                      Q12(0.0f), Q12(-0.15f), Q12(1.0f),
-                                      Q12_ANGLE(165.0f), Q12_ANGLE(0.0f), Q12(-0.2f), Q12(1.0f));
+                // @todo Refactor bone handling.
+                //vwSetCoordRefAndEntou(&g_SysWork.playerBoneCoords[HarryBone_Head],
+                //                      Q12(0.0f), Q12(-0.15f), Q12(1.0f),
+                //                      Q12_ANGLE(165.0f), Q12_ANGLE(0.0f), Q12(-0.2f), Q12(1.0f));
                 break;
         }
 
@@ -179,7 +182,8 @@ namespace Silent::Game
         SVECTOR fpos;     // Q23.8
         VECTOR  vec;
 
-        Vw_CoordHierarchyMatrixCompute(&g_SysWork.playerBoneCoords[HarryBone_Head], &neck_lwm);
+        // @todo Refactor bone handling.
+        //Vw_CoordHierarchyMatrixCompute(&g_SysWork.playerBoneCoords[HarryBone_Head], &neck_lwm);
 
         fpos.vx = Q8(0.0f);
         fpos.vy = Q8(-0.1f);
@@ -261,22 +265,22 @@ namespace Silent::Game
         {
             if (input.GetAction(In::Down).IsHeld(ACTION_HALF_STATE))
             {
-                cam_ang.vx = cam_ang.vx - (g_VBlanks * V_BLANKS_MULT);
+                cam_ang.vx -= g_VBlanks * V_BLANKS_MULT;
             }
 
             if (input.GetAction(In::Up).IsHeld(ACTION_HALF_STATE))
             {
-                cam_ang.vx = cam_ang.vx + (g_VBlanks * V_BLANKS_MULT);
+                cam_ang.vx += g_VBlanks * V_BLANKS_MULT;
             }
 
             if (input.GetAction(In::Right).IsHeld(ACTION_HALF_STATE))
             {
-                cam_ang.vy = cam_ang.vy + (g_VBlanks * V_BLANKS_MULT);
+                cam_ang.vy += g_VBlanks * V_BLANKS_MULT;
             }
 
             if (input.GetAction(In::Left).IsHeld(ACTION_HALF_STATE))
             {
-                cam_ang.vy = cam_ang.vy - (g_VBlanks * V_BLANKS_MULT);
+                cam_ang.vy -=g_VBlanks * V_BLANKS_MULT;
             }
 
             if (input.GetRawEventState(EventId::GamepadNorth) ||

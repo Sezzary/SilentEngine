@@ -1,10 +1,10 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
+#include "Game/Bodyprog/Screen/Data.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 
 namespace Silent::Game
 {
@@ -20,7 +20,7 @@ namespace Silent::Game
     // SH2 symbols indicate this should be in `vc_main.c`, but the file already has its data segment assigned.
     // It's possible this is part of another split as there is also some inbetween data in
     // the bss data segment related to the view camera system.
-    VC_ROAD_DATA vcNullRoadArray[] =
+    const VC_ROAD_DATA vcNullRoadArray[] =
     {
         {
             .lim_sw          = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },

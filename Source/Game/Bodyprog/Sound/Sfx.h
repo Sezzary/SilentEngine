@@ -1,9 +1,18 @@
 #pragma once
 
-#include "Game/Bodyprog/Sound/SfxIdEnum.h"
+#include "Game/Bodyprog/Sound/SfxIds.h"
 
 namespace Silent::Game
 {
+    /** @brief SFX flags. */
+    enum e_SfxFlags
+    {
+        SfxFlag_None          = 0,
+        SfxFlag_Mono          = 1 << 0, /** Monophonic. */
+        SfxFlag_NoDistAtten   = 1 << 1, /** No distance attenuation. */
+        SfxFlag_UpdateAttribs = 1 << 2  /** @unused Update attributes. */
+    };
+
     /** @brief SFX pair indices. Used for `SFX_PAIRS`. */
     enum e_SfxPairIdx
     {

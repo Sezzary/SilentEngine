@@ -9,8 +9,8 @@
 #include "Game/Bodyprog/Formats/Model.h"
 #include "Game/Bodyprog/Map/Terrain.h"
 #include "Game/Bodyprog/Map/Map.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 #include "Game/Bodyprog/View/VwCalc.h"
 #include "Game/Main/FsQueue.h"
 
@@ -698,7 +698,7 @@ namespace Silent::Game
 
         chunkPosX = OUTSIDE_DIST(posX, chunkEdgeX, chunkEdgeX + Q8(CHUNK_SIZE));
         chunkPosZ = OUTSIDE_DIST(posZ, chunkEdgeZ, chunkEdgeZ + Q8(CHUNK_SIZE));
-        return Vc_VectorMagnitudeCalc(chunkPosX, Q12(0.0f), chunkPosZ);
+        return vwRet3DLength(chunkPosX, Q12(0.0f), chunkPosZ);
     }
 
     s32 WorldMap_ChunkLoad(s_WorldMapWork* terrain, q19_12 posX, q19_12 posZ, q19_12 projPosX, q19_12 projPosZ) // 0x80042EBC

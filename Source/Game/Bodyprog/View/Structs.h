@@ -79,21 +79,21 @@ namespace Silent::Game
     /** @brief Nearby camera path collision. */
     struct VC_NEAR_ROAD_DATA
     {
-        VC_ROAD_DATA* road_p;              /** Path associated with the collision. */
-        int           rd_dir_type;         /** `VC_ROAD_DIR_TYPE` */
-        int           use_priority;        /** Usage priority in case of overlap. Higher values take precedence. */
-        q19_12        chara2road_sum_dist; /** Character to path distance. */
-        q19_12        chara2road_vec_x;    /** Character to path distance on X axis. */
-        q19_12        chara2road_vec_z;    /** Character to path distance on Z axis. */
-        VC_LIMIT_AREA rd;                  /** Camera path constraint on XZ plane. */
-        VC_LIMIT_AREA sw;                  /** Switch constraint on XZ plane. */
+        const VC_ROAD_DATA* road_p;              /** Path associated with the collision. */
+        int                 rd_dir_type;         /** `VC_ROAD_DIR_TYPE` */
+        int                 use_priority;        /** Usage priority in case of overlap. Higher values take precedence. */
+        q19_12              chara2road_sum_dist; /** Character to path distance. */
+        q19_12              chara2road_vec_x;    /** Character to path distance on X axis. */
+        q19_12              chara2road_vec_z;    /** Character to path distance on Z axis. */
+        VC_LIMIT_AREA       rd;                  /** Camera path constraint on XZ plane. */
+        VC_LIMIT_AREA       sw;                  /** Switch constraint on XZ plane. */
     };
 
     /** @brief Camera workspace. */
     struct VC_WORK
     {
         bool                      view_cam_active_f;
-        VC_ROAD_DATA*             vc_road_ary_list;             /** Camera paths for the active map. */
+        const VC_ROAD_DATA*       vc_road_ary_list;             /** Camera paths for the active map. */
         int                       flags;                        /** `VC_FLAGS` */
         bool                      through_door_activate_init_f; /** `bool` | Camera rail activation flag? */
         VC_THROUGH_DOOR_CAM_PARAM through_door;                 /** Active rail camera data? */
@@ -115,7 +115,7 @@ namespace Silent::Game
         SVECTOR                   ofs_cam_ang;                  /** Offset rotation. */
         SVECTOR                   ofs_cam_ang_spd;              /** Offset rotational speed. */
         SVECTOR                   base_cam_ang;                 /** Base rotation. */
-        s8                        unk[8];                       // TODO: Possibly unused or debug data?
+        SVECTOR                   old_base_cam_ang;             /** @unused Previous base rotation. Name from SH2. */
         bool                      updateLookAtPoint;
         MATRIX                    lookAtMat;
         bool                      updateLookAtMat;

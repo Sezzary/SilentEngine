@@ -13,11 +13,11 @@ namespace Silent::Game
     {
         s32 i;
 
-        for (i = 0; i < ARRAY_SIZE(g_RadioNpcInfos); i++)
+        for (i = 0; i < ARRAY_SIZE(g_RadioNoise); i++)
         {
-            g_RadioNpcInfos[i].closeNpcInfoIdx = NO_VALUE;
-            g_RadioNpcInfos[i].idx             = NO_VALUE;
-            g_RadioNpcInfos[i].field_3         = 0;
+            g_RadioNoise[i].closeNpcInfoIdx = NO_VALUE;
+            g_RadioNoise[i].idx             = NO_VALUE;
+            g_RadioNoise[i].field_3         = 0;
         }
     }
 
@@ -25,12 +25,12 @@ namespace Silent::Game
     {
         s32 i;
 
-        for (i = 0; i < ARRAY_SIZE(g_RadioNpcInfos); i++)
+        for (i = 0; i < ARRAY_SIZE(g_RadioNoise); i++)
         {
-            g_RadioNpcInfos[i].prevIdx = NO_VALUE;
+            g_RadioNoise[i].prevIdx = NO_VALUE;
         }
 
-        for (i = 0; i < ARRAY_SIZE(g_RadioNpcInfos); i++)
+        for (i = 0; i < ARRAY_SIZE(g_RadioNoise); i++)
         {
             Sd_SfxStop(Sfx_RadioInterferenceLoop + i);
         }

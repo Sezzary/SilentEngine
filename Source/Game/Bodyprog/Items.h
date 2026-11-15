@@ -172,57 +172,6 @@ namespace Silent::Game
         CommonPickupItemId_ShotgunShells  = 5
     };
 
-    /** @brief Equipped weapon IDs. Derivative of `e_InvItemId`.
-     *
-     * TODO: Maybe just "Weapon ID", "equipable item ID", "[something else] item ID"?
-     */
-    enum e_EquippedWeaponId
-    {
-        EquippedWeaponId_KitchenKnife   = 0,
-        EquippedWeaponId_SteelPipe      = 1,
-        EquippedWeaponId_RockDrill      = 2,
-        EquippedWeaponId_Unk3           = 3,
-        EquippedWeaponId_Hammer         = 4,
-        EquippedWeaponId_Chainsaw       = 5,
-        EquippedWeaponId_Katana         = 6,
-        EquippedWeaponId_Axe            = 7,
-        EquippedWeaponId_Kick           = 8,
-        EquippedWeaponId_Stomp          = 9,
-
-        EquippedWeaponId_Unk31          = 31, // Larval Stalker attack.
-        EquippedWeaponId_Handgun        = 32,
-        EquippedWeaponId_HuntingRifle   = 33,
-        EquippedWeaponId_Shotgun        = 34,
-        EquippedWeaponId_HyperBlaster   = 35,
-
-        EquippedWeaponId_Unk37          = 37, // Split Head attack.
-
-        EquippedWeaponId_Unk44          = 44, // } HangedScratcher attack.
-        EquippedWeaponId_Unk45          = 45, // }
-
-        EquippedWeaponId_Unk48          = 48, // } Stalker attack.
-        EquippedWeaponId_Unk49          = 49, // }
-
-        EquippedWeaponId_Unk56          = 56, // Puppet Nurse attack.
-
-        EquippedWeaponId_Unk59          = 59, // Float Stinger attack.
-
-        EquippedWeaponId_Unk61          = 61, // Twinfeeler attack.
-
-        EquippedWeaponId_Unk63          = 63, // Cybil or Monster Cybil attack.
-
-        EquippedWeaponId_HandgunBullets = 64, // Monster Cybil attack?
-        EquippedWeaponId_RifleShells    = 65, // Monster Cybil attack?
-        EquippedWeaponId_ShotgunShells  = 66, // Monster Cybil attack?
-
-        EquippedWeaponId_Unk69          = 69, // Bloodsucker attack.
-        EquippedWeaponId_Unk70          = 70, // Kaufmann attack on Dahlia?
-
-        EquippedWeaponId_Flashlight     = 96,
-        EquippedWeaponId_PocketRadio    = 97,
-        EquippedWeaponId_GasolineTank   = 98
-    };
-
     /** @brief Special inventory item toggle flags. */
     enum e_ItemToggleFlags
     {
@@ -233,10 +182,10 @@ namespace Silent::Game
     /** @brief Inventory item entry. */
     struct s_InventoryItem
     {
-        u8 id_0;      /** `e_InvItemId` */
-        u8 count_1;
-        u8 command_2; /** `e_InvCmdId` */
-        u8 field_3;   // Some sort of index?
+        u8 id;      /** `e_InvItemId` */
+        u8 count;
+        u8 command; /** `e_InvCmdId` */
+        u8 field_3; // Some sort of index?
     };
 
     /** @brief Gets the `e_InvItemGroup` for an `e_InvItemId`.
@@ -273,4 +222,21 @@ namespace Silent::Game
      */
     #define INV_AMMO_WEAPON_ID(ammoId) \
         ((ammoId) - INV_ITEM_GROUP_SIZE)
+
+    /** @brief Packs a weapon attack containing a weapon ID and attack input type.
+     *
+     * @param weaponId Weapon ID.
+     * @param attackInputType Attack input type.
+     * @return Packed weapon attack containing a weapon ID and attack input type.
+     */
+    #define WEAPON_ATTACK(weaponId, attackInputType) \
+        ((weaponId) + ((attackInputType) * 10))
+
+    /** @brief Retrieves the weapon ID from a packed weapon attack.
+     *
+     * @param weaponAttack Packed weapon attack containing a weapon ID and attack input type.
+     * @return Weapon ID.
+     */
+    #define WEAPON_ATTACK_ID_GET(weaponAttack) \
+        ((weaponAttack) % 10)
 }

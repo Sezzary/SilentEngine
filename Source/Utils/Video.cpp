@@ -3,10 +3,12 @@
 
 #include "Application.h"
 #include "Renderer/Common/Constants.h"
+#include "Services/Filesystem.h"
 #include "Utils/DoubleBuffer.h"
 #include "Utils/Parallel.h"
 
 using namespace Silent::Renderer;
+using namespace Silent::Services;
 
 namespace Silent::Utils
 {

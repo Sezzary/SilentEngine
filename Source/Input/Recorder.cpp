@@ -3,9 +3,6 @@
 
 #include "Input/Action.h"
 #include "Input/AnalogAxis.h"
-#include "Utils/Utils.h"
-
-using namespace Silent::Utils;
 
 namespace Silent::Input
 {

@@ -1,30 +1,33 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Input/Input.h"
 #include "Renderer/Common/Utils.h"
+#include "Services/Options.h"
 
 using namespace Silent::Input;
+using namespace Silent::Services;
 using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    static s32   ActiveIdx        = 0;
-    static int   ActivePageIdx    = 0;
-    static q3_12 SelectFlashTimer = Q12(0.0f);
-    static auto  CachedMsg        = ParsedMsg{};
+    static int    ActiveIdx        = 0;
+    static int    ActivePageIdx    = 0;
+    static q19_12 SelectFlashTimer = Q12(0.0f);
+    static auto   CachedMsg        = ParsedMsg{};
 
-    static s_MapMsgSelect Select;
-    static int            SelectCancelIdx;
+    static auto Select          = s_MapMsgSelect{};
+    static int  SelectCancelIdx = 0;
 
     /** @brief Draws map message strings in screen space.
      *
@@ -65,7 +68,7 @@ namespace Silent::Game
         }
 
         g_SysWork.playerWork.player.properties.player.gasWeaponPowerTimer = Q12(0.0f);
-        //func_8004C564(g_SysWork.playerCombat.weaponAttack, WEAPON_ATTACK(EquippedWeaponId_RockDrill, AttackInputType_Tap));
+        //func_8004C564(g_SysWork.playerCombat.weaponAttack, WEAPON_ATTACK(AttackType_RockDrill, AttackInputType_Tap));
 
         // Cache new message.
         auto fontName = (options->TextQuality == TextQualityType::Retro) ? "RetroSerif" : "ModernSerif";
@@ -75,11 +78,11 @@ namespace Silent::Game
 
             if (activeMapMsgIdx != mapMsgIdx)
             {
-                g_SysWork.isMgsStringSet = false;
+                g_SysWork.isMsgStringSet = false;
             }
         }
 
-        switch (g_SysWork.isMgsStringSet)
+        switch (g_SysWork.isMsgStringSet)
         {
             case true:
             {
@@ -242,7 +245,7 @@ namespace Silent::Game
                 MapMsg_Reset();
 
                 loadAudio                = true;
-                g_SysWork.isMgsStringSet = true;
+                g_SysWork.isMsgStringSet = true;
                 return MapMsgState_Finish;
             }
         }
@@ -252,7 +255,7 @@ namespace Silent::Game
             return MapMsgState_Idle;
         }
 
-        g_SysWork.isMgsStringSet = false;
+        g_SysWork.isMsgStringSet = false;
         displayLength            = 0;
 
         if (g_SysWork.bgmStatusFlags & BgmStatusFlag_VoiceDialog)

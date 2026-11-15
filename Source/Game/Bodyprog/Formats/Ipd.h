@@ -5,9 +5,9 @@
 
 namespace Silent::Game
 {
-    constexpr float CELL_SIZE     = 2.0f;  /** 2x2 meters. */
     constexpr float CHUNK_SIZE    = 40.0f; /** 40x40 meters. */
     constexpr float SUBCHUNK_SIZE = 8.0f;  /** 8x8 meters. */
+    constexpr float CELL_SIZE     = 2.0f;  /** 2x2 meters. */
 
     /** @brief Floor material types. TODO: SH2 suggests "material"? */
     typedef enum _FloorType

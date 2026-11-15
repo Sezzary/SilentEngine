@@ -3,15 +3,16 @@
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Bodyprog/Events/Utils.h"
 
-#include "Game/Bodyprog/EventFlags.h"
-#include "Game/Bodyprog/Events/bodyprog_data_800A99B4.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Events/EventFlags.h"
+#include "Game/Bodyprog/Events/EventData.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/Items.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
 //#include "Game/Bodyprog/ItemScreens.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/Screen/Fade.h"
+#include "Game/Bodyprog/Screen/Background.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/Sound/Sfx.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Main/FsQueue.h"
@@ -163,7 +164,7 @@ namespace Silent::Game
                 }
                 else
                 {
-                    g_MapOverlayHdr.charaAnimReset(chara);
+                    g_MapOverlayHdr.charaControlStateReset(chara);
                 }
                 break;
         }
@@ -235,11 +236,11 @@ namespace Silent::Game
                 {
                     if (fadeType == ScreenFadeType_Black)
                     {
-                        ScreenFade_Start(false, false, false);
+                        Screen_FadeStart(false, false, false);
                     }
                     else if (fadeType == ScreenFadeType_White)
                     {
-                        ScreenFade_Start(false, false, true);
+                        Screen_FadeStart(false, false, true);
                     }
                     else
                     {
@@ -255,11 +256,11 @@ namespace Silent::Game
                 {
                     if (fadeType == ScreenFadeType_Black)
                     {
-                        ScreenFade_Start(false, true, false);
+                        Screen_FadeStart(false, true, false);
                     }
                     else if (fadeType == ScreenFadeType_White)
                     {
-                        ScreenFade_Start(false, true, true);
+                        Screen_FadeStart(false, true, true);
                     }
                     else
                     {
@@ -278,8 +279,8 @@ namespace Silent::Game
                 if (fadeType == ScreenFadeType_Black ||
                     fadeType == ScreenFadeType_White)
                 {
-                    //if ((!fadeOut && ScreenFade_IsNone()) ||
-                    //    (fadeOut  && ScreenFade_IsFinished()))
+                    //if ((!fadeOut && Screen_IsFadeNone()) ||
+                    //    (fadeOut  && Screen_IsFadeFinished()))
                     {
                         Event_SysStateStepIncrement(incSubStep);
                     }

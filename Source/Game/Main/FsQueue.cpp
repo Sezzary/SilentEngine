@@ -6,7 +6,9 @@
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
-#include "Game/Bodyprog/Demo.h"
+#include "Game/Bodyprog/Chara/Anim.h"
+#include "Game/Bodyprog/Sys/CharaFileInfos.h"
+#include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Main/FsMem.h"
 
 using namespace Silent::Assets;
@@ -82,38 +84,9 @@ namespace Silent::Game
         return Fs_QueueStartRead(fileIdx);
     }
 
-    const std::future<void>& Fs_QueueStartReadAnm(int idx, int charaId, void* dest, GsCOORDINATE2* coords)
-    {
-        auto& assets = g_App.GetAssets();
-
-        int            fileIdx;
-        s_FsQueueExtra extra;
-
-        fileIdx             = CHARA_FILE_INFOS[charaId].animFileIdx; // @todo Port over `CHARA_FILE_INFOS`.
-        extra.anm.charaId_4 = charaId;
-        extra.anm.field_0   = idx;
-        extra.anm.coords_8  = coords;
-        return assets.Load(fileIdx);
-    }
-
     void Fs_QueueReset()
     {
         // @stub
         // @todo Previously cleared the queue, should that translate to clearing all loaded assets?
-    }
-
-    bool Fs_QueueUpdatePostLoad(s_FsQueueEntry* entry)
-    {
-        // @stub
-        // @todo `Fs_QueuePostLoadAnm` call seemed important.
-        return true;
-    }
-
-    bool Fs_QueuePostLoadAnm(s_FsQueueEntry* entry)
-    {
-        // @todo Seems important, not decompiled yet.
-        //Fs_CharaAnimDataUpdate(entry->extra.anm.field_0, entry->extra.anm.charaId_4, entry->externalData,
-        //                       entry->extra.anm.coords_8);
-        return true;
     }
 }

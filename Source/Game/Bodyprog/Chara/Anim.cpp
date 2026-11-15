@@ -4,8 +4,9 @@
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
 #include "Game/Bodyprog/Chara/Model.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Game.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Sys/CharaFileInfos.h"
+#include "Game/Bodyprog/Game.h"
 
 using namespace Silent::Assets;
 
@@ -29,13 +30,16 @@ namespace Silent::Game
         return Q12(0.0f);
     }
 
-    void Anim_BonesInit(const Asset& anmAsset, std::vector<BoneTransform>& transforms)
+    void Anim_BonesInit(int charaId, std::vector<BoneTransform>& transforms)
     {
-        const auto anmData = anmAsset.GetData<AnmAsset>();
+        auto& assets = g_App.GetAssets();
 
-        // @todo `transforms` must be resized beforehand elsewhere.
+        const auto& charaFileInfo = CHARA_FILE_INFOS[charaId];
+        const auto* anmAsset      = assets[assets.GetName(charaFileInfo.animFileIdx)];
+        const auto  anmData       = anmAsset->GetData<AnmAsset>();
 
         // Run through bones.
+        transforms.resize(anmData->Bones.size());
         for (int i = 1; i < anmData->Bones.size(); i++)
         {
             auto& bone      = anmData->Bones[i];

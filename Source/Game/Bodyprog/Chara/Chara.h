@@ -1,8 +1,11 @@
 #pragma once
 
+#include "Assets/AssetStreamer.h"
 #include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Main/FsQueue.h"
+
+using namespace Silent::Assets;
 
 namespace Silent::Game
 {
@@ -12,6 +15,26 @@ namespace Silent::Game
                                                                * types (including the player) can be loaded at a time.
                                                                */
     constexpr int  CHARA_FORCE_FREE_ALL = 0xFF;               /** `Chara_Load` can force free already loaded models to make room for new ones. */
+
+    /** @brief Returns the `s_SubCharacter` instance for the player character.
+     *
+     * @note Kept as function-style macro to prevent macro from replacing anything named the same, if we decide to rename these.
+     *       e.g. if we had `#define playerChara ...`, that would break things that use `s_SubCharacter* playerChara`
+     *       but `#define playerChara() ...` would only replace function-style uses.
+    */
+    #define PLAYER_CHARA() (g_SysWork.playerWork.player)
+
+    /** @brief Returns the player character properties. */
+    #define PLAYER_PROPS() (g_SysWork.playerWork.player.properties.player)
+
+    /** @brief Returns the player character extra data. */
+    #define PLAYER_EXTRA() (g_SysWork.playerWork.extra)
+
+    /** @brief Returns the player combat data. */
+    #define PLAYER_COMBAT() (g_SysWork.playerCombat)
+
+    /** @brief Returns the `s_SubCharacter` instance for a given NPC index. */
+    #define NPC_CHARA(index) (g_SysWork.npcs[(index)])
 
     /** @brief Character flags. Used by `s_SubCharacter::flags`. */
     enum e_CharaFlags
@@ -34,17 +57,6 @@ namespace Silent::Game
         CharaGroupFlag_None = 0,
         CharaGroupFlag_0    = 1 << 0,
         CharaGroupFlag_1    = 1 << 1
-    };
-
-    /** @brief Character spawn flags. */
-    enum e_CharaSpawnFlags
-    {
-        CharaSpawnFlag_None = 0,
-        CharaSpawnFlag_0    = 1 << 0,
-        CharaSpawnFlag_1    = 1 << 1,
-        CharaSpawnFlag_2    = 1 << 2,
-        CharaSpawnFlag_3    = 1 << 3,
-        CharaSpawnFlag_4    = 1 << 4
     };
 
     /** @brief Character collision states. */
@@ -94,6 +106,7 @@ namespace Silent::Game
         Chara_Incubus          = 22,
         Chara_Unknown23        = 23,
         Chara_MonsterCybil     = 24,
+        CHARA_LAST_ENEMY_ID    = Chara_MonsterCybil,
 
         /** Cutscene characters. */
 
@@ -169,11 +182,9 @@ namespace Silent::Game
         q19_12        runDistance;
         u8            field_10C;    // Player SFX pitch?
         u8            field_10D;
-        s8            __pad_10E[2];
         q19_12        timer_110; // Increases when `flags & CharaFlag_Unk4` is set, reset when reaches `D_800C45EC`.
         q19_12        gasWeaponPowerTimer; // Timer for the rock drill and chainsaw power.
         s16           field_118; // q3_12?
-        s8            __pad_11A[2];
         s32           flags; /** `e_PlayerFlags` */
         q3_12         quickTurnHeadingAngle; /** Target quick turn heading angle. */
         q3_12         field_122; // Specially used when aiming an enemy. Y angle delta to target? 
@@ -208,7 +219,6 @@ namespace Silent::Game
         s32    freeze; // `bool`, `q19_12` timer in MonsterCybil.
         s32    field_F4;
         s32    resetControlState; // `bool`, `q19_12` timer in MonsterCybil.
-        s8     __pad_FC[2];
         s16    field_FE; // Index.
         q19_12 field_100;
         s16    field_104;
@@ -219,7 +229,6 @@ namespace Silent::Game
         u8     field_114;
         u8     field_115;
         u8     field_116;
-        s8     __pad_117;
         q3_12  field_118; // Angle.
         q3_12  field_11A; // Angle.
         s32    flags; /** `e_*Flags` */
@@ -232,10 +241,9 @@ namespace Silent::Game
     /** @brief Air Screamer or Night Flutter character properties. */
     struct s_PropsAirScreamer
     {
-        u32     field_E8_0  : 4; // `AirScreamerHit_None` step.
-        u32     field_E8_4  : 4; /** `bool` */
-        u32     field_E8_8  : 4;
-        u32     __pad_E8_12 : 20;
+        u32     field_E8_0 : 4; // `AirScreamerHit_None` step.
+        u32     field_E8_4 : 4; /** `bool` */
+        u32     field_E8_8 : 4;
         s32     field_EC;
         s16     field_F0; // } Maybe 2D offset like in Creeper properties? Must check.
         s16     field_F2; // }
@@ -269,7 +277,6 @@ namespace Silent::Game
     struct s_PropsCreeper
     {
         u16    flags; /** `e_CreeperFlags` */
-        s8     __pad_EA[2];
         q3_12  collisionOffsetX;
         q3_12  collisionOffsetZ;
         q19_12 attackTimer;
@@ -292,14 +299,11 @@ namespace Silent::Game
         q3_12      field_EE; // Angle.
         q19_12     field_F0; // Timer.
         q3_12      field_F4; // Angle.
-        s8         __pad_F6[2];
         u16        field_F8;
         u16        field_FA;
         q4_12      field_FC; // Timer?
-        s8         __pad_FE[2];
         q19_12     field_100; // Timer.
         u8         field_104;
-        s8         __pad_105;
         s16        field_106;
         q19_12     field_108; // Damage related.
         q3_12      field_10C; // Angle, backup of `field_F4`?
@@ -320,7 +324,6 @@ namespace Silent::Game
         q3_12      angleToTarget;
         q3_12      field_FE;
         u16        relKeyframeIdx_100;
-        s8         __pad_102[2];
         q19_12     timer_104;
         u32        field_108;
         q3_12      timer_10C; // SFX timer?
@@ -328,7 +331,6 @@ namespace Silent::Game
         u8         field_10F; // }
         u8         playLeftFootstepSfx;  /** `bool` */
         u8         playRightFootstepSfx; /** `bool` */
-        s8         __pad_112[2];
         q3_12      field_114; // Move speed coefficient?
     };
 
@@ -339,19 +341,16 @@ namespace Silent::Game
         q4_12  timer_EA;
         q3_12  targetHeadingAngle_EC;
         u8     field_EE;
-        s8     __pad_EF;
         q3_12  offsetX_F0; // } Offsets passed to `Chara_MovementUpdate1`
         q3_12  offsetZ_F2; // }
         q19_12 positionX_F4;
         q19_12 positionZ_F8;
         q3_12  field_FC;
-        s8     __pad_FE[2];
         q3_12  timer_100;
         u8     field_102;
         u8     field_103;
         s32    field_104;
         q3_12  timer_108;
-        s8     __pad_10A[2];
         q4_12  radiusMax_10C; // } Used as `Chara_MoveSpeedUpdate` limit param, TODO: rename?
         q4_12  radiusMin_10E; // }
     };
@@ -363,7 +362,6 @@ namespace Silent::Game
         s32    field_EC; // Flags?
         s32    someState_F0;
         q19_12 bossFightTimer_F4;
-        s8     __pad_F8[48];
     };
 
     /** @brief Larval Stalker character properties. */
@@ -371,7 +369,6 @@ namespace Silent::Game
     {
         u16        flags_E8; /** `e_LarvalStalkerFlags` */
         u8         field_EA;
-        s8         __pad_EB;
         q19_12     timer_EC;
         q20_12     timer_F0;
         s16        keyframeIdx_F4; // Relative keyframe?
@@ -427,7 +424,6 @@ namespace Silent::Game
         s32    field_104;
         q19_12 positionX_108;
         u8     field_10C; // Relative keyframe index?
-        s8     __pad_10D;
         u16    field_10E;
         q19_12 positionZ_110;
         u8     field_114;
@@ -435,9 +431,7 @@ namespace Silent::Game
         q3_12  field_116;
         q3_12  timer_118;
         u8     field_11A;
-        s8     __pad_11B;
         q3_12  timer_11C;
-        s8     __pad_11E[2];
         q19_12 distance_120;
         q19_12 field_124; // Move speed step?
     };
@@ -447,13 +441,11 @@ namespace Silent::Game
     {
         u16     flags; /** `e_SplitHeadFlags` */
         u8      field_EA;
-        s8      __pad_EB;
         q3_12   angle_EC;
         q3_12   field_EE;
         q4_12   angle_F0;
         q4_12   timer_F2;
         q4_12   timer_F4;
-        s8      __pad_F8[2];
         q19_12  animTime_F8;
         s32     field_FC;
         s32     field_100;
@@ -471,7 +463,6 @@ namespace Silent::Game
     struct s_PropsStalker
     {
         s16    flags; /** `e_StalkerFlags` */
-        s8     __pad_EA[2];
         q3_12  offset_EC;
         q3_12  offset_EE;
         q19_12 targetPositionX;
@@ -484,7 +475,6 @@ namespace Silent::Game
         q19_12 relAnimTime_104;
         q4_12  timer_108;
         u8     field_10A;
-        s8     __pad_10B;
         q19_12 timer_10C;
         q19_12 health_110;
         q3_12  angle_114;
@@ -505,33 +495,36 @@ namespace Silent::Game
         q19_12        prevMoveSpeed;
         q19_12        accumulatedDamage;
         s16           field_110; /** @unused */
-        s8            __pad_112[2];
         u32           flags;     /** `e_TwinfeelerFlags` */
         u16           field_118; /** `bool` */
-        s8            __pad_11A[2];
         q19_12        prevHealth;
-        s8            __pad_120[8];
     };
 
-    typedef struct
+    /** @brief State of the attack a character is currently performing.
+     *
+     * @note SH2 keeps similar data to this inside `shBattleInfo`, and also seemed 
+     * to move some `s_SubCharacter` fields (`flags`, `field_40`, `attackReceived`) inside it.
+     */
+    struct s_CharaAttack
     {
-        s16     field_0; // Something dependent on `CharaFlag_Unk8`.
-        u8      field_2; // In player: packed weapon attack. See `WEAPON_ATTACK`.
-                         // This is not the same as `attackReceived`, as this value only resets when player is aiming.
-                         // In NPCs: Indicates attack performed on player.
-        u8      field_3;
-        u8      field_4;
-        s8      __pad_5[3];
-        s32     field_8;  // } `bool`? | Fields used by `func_8008A3E0`.
-        s16     field_C;  // } Angle?
-        s16     field_E;  // } Angle?
-        s16     field_10; // }
-        s16     field_12; // }
-        s32     field_14; // }
-        VECTOR3 field_18; // Q19.12 | Set to player attack position.
-        VECTOR3 field_24[3];
-        VECTOR3 field_48[3];
-    } s_SubCharacter_44;
+        int     state;        /** 0: idle, 1: requested, 2: first active tick, 3: hit checks running, `NO_VALUE`: finished.
+                               * Reset to 0 by `func_8008A3AC` when `CharaFlag_Unk8` is clear. */
+        int     weaponAttack; /** Packed `WEAPON_ATTACK` being performed. Index into `g_Items_WeaponAttackInfos`. */
+        int     shotsLeft;    /** Gunshots only. Set to 100 on start, decremented per shot. Attack ends at 0. */
+        int     shotsFired;   /** Gunshots only. Compared against `s_AttackShot::shotCountMax`. */
+        int     hitFlags;     /** Bit `1 << npcIdx` per NPC hit by this attack, `NO_VALUE` (all bits set) if the player is hit. */
+        q3_12   aimYaw;
+        q3_12   aimPitch;     /** Measured from vertical. 90 degrees is level. */
+        q3_12   prevAimYaw;
+        q3_12   prevAimPitch;
+        q19_12  hitCheckTime; /** Animation time that hit checks have been run up to, clamped to the attack's hit window. */
+        VECTOR3 origin;       /** Q19.12 | Attack origin or ray start for gunshots. */
+        VECTOR3 segStart[2];  /** Q19.12 | Hit segment start, `origin` + direction * `rangeMin`. [0]: this tick, [1]: previous tick. */
+        VECTOR3 prevOrigin;   /** Q19.12 */
+        VECTOR3 segVec[2];    /** Q19.12 | Hit segment, direction * (`rangeMax` - `rangeMin`). [0]: this tick, [1]: previous tick. */
+        VECTOR3 field_60;     /** Q19.12 | Read by `func_8008B714` as the offset from `prevOrigin` to the previous segment end,
+                               * but never written. Always 0 after the `bzero` during character spawn? */
+    };
 
     /** @brief Character collision box. */
     struct s_CharaBox
@@ -540,15 +533,16 @@ namespace Silent::Game
         q3_12 bottom;
         q3_12 height;
         q3_12 offsetY;
-        q3_12 field_8; // X extent?? Always negative, but why? `s_CharaCylinder::radius` is set to this.
-        q3_12 field_A; // Z extent?? `s_CharaCylinder::field_2` is set to this.
+        // TODO: Maybe nested inner and outer XZ extents. See `s_CharaCylinder`.
+        q3_12 field_8; // Outer XZ extent? Always nagative, might be unsigned? `s_CharaCylinder::outerRadius` is set to this.
+        q3_12 field_A; // Innter XZ extent? `s_CharaCylinder::innerRadius` is set to this.
     };
 
     /** @brief Character collision cylinder. */
     struct s_CharaCylinder
     {
-        q3_12 radius;  // Map geometry collision radius?
-        q3_12 field_2; // Character-to-character collision radius? Sometimes used as box extent?
+        q3_12 outerRadius;
+        q3_12 innerRadius;
     };
 
     /** @brief Character shape offsets for `s_CharaBox` and `s_CharaCylinder`. */
@@ -570,10 +564,10 @@ namespace Silent::Game
     {
         s_CharaBox          box;
         s_CharaCylinder     cylinder;
-        s_CharaShapeOffsets shapeOffsets;   // Translation data?
-        u8                  field_E0;       // Related to collision. If the player collides with the only enemy in memory and the enemy is knocked down, this is set to 1.
-        s8                  state      : 4; /** `e_CharaCollisionState` */
-        u8                  field_E1_4 : 4; // Index for array of `s_func_8006CF18`.
+        s_CharaShapeOffsets shapeOffsets; // Translation data?
+        int                 field_E0;     // Related to collision. If the player collides with the only enemy in memory and the enemy is knocked down, this is set to 1.
+        int                 state;        /** `e_CharaCollisionState` */
+        int                 field_E1_4;   // Index for array of `s_func_8006CF18`.
         s_func_8006CF18*    field_E4;
     };
 
@@ -589,14 +583,14 @@ namespace Silent::Game
         q19_12            fallSpeed;
         q19_12            moveSpeed;
         q3_12             headingAngle;
-        s16               flags;          /** `e_CharaFlags` */
-        s8                field_40;       // In player: Index of the NPC attacking the player. Spawn index for Air Screamer?
+        int               flags;          /** `e_CharaFlags` */
+        int               field_40;       // In player: Index of the NPC attacking the player. Spawn index for Air Screamer?
                                           // In NPCs: Unknown. `Game_NpcRoomInitSpawn` sugests it indicates the NPC index in `s_Savegame::mapEnemyStates`.
-        s8                attackReceived; // Packed weapon attack indicating what attack has been performed to the character. See `WEAPON_ATTACK`.
-        s_SubCharacter_44 field_44;
+        int               attackReceived; // Packed weapon attack indicating what attack has been performed to the character. See `WEAPON_ATTACK`.
+        s_CharaAttack     attack;
         q19_12            health;
         s_CharaDamage     damage;
-        u16               deathTimer;     // Part of `shBattleInfo` struct in SH2, may use something similar here.
+        int               deathTimer;     // Part of `shBattleInfo` struct in SH2, may use something similar here.
         q3_12             timer_C6;       // Some sort of timer. Written to by `LarvalStalker_Update`.
         s_CharaCollision  collision;
 
@@ -627,25 +621,6 @@ namespace Silent::Game
         } properties;
     };
 
-    /** @brief Character file info.
-     * Holds file IDs of anim/model/texture for each `e_CharaId` along with some data used in VC camera code.
-     */
-    struct s_CharaFileInfo
-    {
-        s16            animFileIdx;
-        s16            modelFileIdx;
-        s16            textureFileIdx    : 16;
-        q8_8           field_6           : 10;
-        u16            materialBlendMode : 6; /** `e_BlendMode` */
-        s_FsImageDesc* field_8;               // TODO: Extra texture pointer? Usually `NULL` in `CHARA_FILE_INFOS`.
-        u16            cameraAnchor  : 2;     /** `e_CameraAnchor` */
-        q19_12         cameraOffsetY : 14;
-        // 2 bytes of padding.
-    };
-
-    /** Array containg file IDs used for each `e_CharaId`, used in `Fs_QueueStartReadAnm`. */
-    extern s_CharaFileInfo CHARA_FILE_INFOS[Chara_Count]; // 0x800A90FC
-
     /** @brief Sets the collision shapes of a character from keyframe collision data.
      *
      * @param chara Character to update.
@@ -659,35 +634,46 @@ namespace Silent::Game
         chara->collision.box.offsetY              = keyframe->box.offsetY;
         chara->collision.shapeOffsets.cylinder.vx = keyframe->shapeOffsets.cylinder.vx;
         chara->collision.shapeOffsets.cylinder.vz = keyframe->shapeOffsets.cylinder.vz;
-        chara->collision.cylinder.radius          = keyframe->box.field_8;
+        chara->collision.cylinder.outerRadius     = keyframe->box.field_8;
         chara->collision.shapeOffsets.box.vx      = keyframe->shapeOffsets.box.vx;
         chara->collision.shapeOffsets.box.vz      = keyframe->shapeOffsets.box.vz;
-        chara->collision.cylinder.field_2         = keyframe->box.field_A;
+        chara->collision.cylinder.innerRadius     = keyframe->box.field_A;
     }
 
-    /** @brief Checks if the `s_SubCharacter*` has the given `flags` value set. */
-    #define Chara_HasFlag(chara, flag) \
-        ((chara)->flags & (flag))
+    /** @brief Checks if a character has given flags set.
+     *
+     * @param chara Character to check (`s_SubCharacter`).
+     * @param flags Flags to check (`e_CharaFlags`).
+     * @return `true` if the flags are set, `false` otherwise.
+     */
+    static inline bool Chara_HasFlag(const s_SubCharacter* chara, int flags)
+    {
+        return chara->flags & flags;
+    }
 
     /** @brief Clears a character's properties. TODO: Declare `i` here.
      *
      * @param chara Character to update.
      */
-    #define Chara_PropsClear(chara)                             \
-        for (i = 0; i < 16; i++)                                \
-        {                                                       \
-            chara->properties.dummy.properties_E8[i].val32 = 0; \
+    static inline void Chara_PropsClear(s_SubCharacter* chara)
+    {
+        for (int i = 0; i < 16; i++)
+        {
+            chara->properties.dummy.properties_E8[i].val32 = 0;
         }
+    }
 
-    /** @brief Clears a character's damage field.
+    /** @brief Clears a character's damage parameters.
      *
      * @param chara Character to update.
      */
-    #define Chara_DamageClear(chara)             \
-        (chara)->damage.amount      = Q12(0.0f); \
-        (chara)->damage.position.vz = Q12(0.0f); \
-        (chara)->damage.position.vy = Q12(0.0f); \
-        (chara)->damage.position.vx = Q12(0.0f)
+    static inline void Chara_DamageClear(s_SubCharacter* chara)
+    {
+        chara->damage.amount      = Q12(0.0f);
+        chara->damage.position.vz = Q12(0.0f);
+        chara->damage.position.vy = Q12(0.0f);
+        chara->damage.position.vx = Q12(0.0f);
+    }
 
     /** @brief Sets a character's received attack type.
      *
@@ -695,44 +681,47 @@ namespace Silent::Game
      * Maybe devs did similar thing, which is why this separate macro/inline is needed for a match?
      *
      * @param chara Character to update.
-     * @param attack Attack type to set.
+     * @param attack Packed weapona attack to set. See `WEAPON_ATTACK`.
      */
-    #define Chara_AttackReceivedSet(chara, attack) \
-        (chara)->attackReceived = (attack)
+    static inline void Chara_AttackReceivedSet(s_SubCharacter* chara, int attack) 
+    {
+        chara->attackReceived = attack;
+    }
 
     /** @brief Gets a character's received attack type.
      *
      * @param chara Character to update.
      */
-    #define Chara_AttackReceivedGet(chara) \
-        (chara)->attackReceived
+    static inline int Chara_AttackReceivedGet(s_SubCharacter* chara)
+    {
+        return chara->attackReceived;
+    }
 
     /** @brief Updates an NPC's animation if the `freeze` flag isn't currently set.
      *
      * @note This is only for NPCs which use the `s_PropsNpc` part of the `s_SubCharacter::properties` union.
      *
      * @param chara Character to update.
-     * @param anmHdr ANM file header.
-     * @param boneCoords Character model bone coords.
+     * @param anmAsset ANM asset.
      * @param animInfos Character animation infos.
      */
-    #define Chara_AnimUpdate(chara, anmHdr, boneCoords, animInfos)                     \
-    {                                                                                  \
-        if (!(chara)->properties.npc.freeze)                                           \
-        {                                                                              \
-            s_AnimInfo* __animInfo = &(animInfos)[(chara)->model.anim.status];         \
-                                                                                       \
-            __animInfo->playbackFunc(&(chara)->model, anmHdr, boneCoords, __animInfo); \
-        }                                                                              \
+    static inline void Chara_AnimUpdate(s_SubCharacter* chara, const Asset& anmAsset, const s_AnimInfo* animInfos)
+    {
+        if (!(chara)->properties.npc.freeze)
+        {
+            auto& animInfo = animInfos[(chara)->model.anim.status];
+
+            animInfo.playbackFunc(chara->model, anmAsset, animInfo);
+        }
     }
 
-    /** @brief Sets the animation of a character.
+    /** @brief Sets a character's animation.
      *
-     * @param chara Character to set animation for. TODO: Maybe should take `s_ModelAnim` instead? If fits better, also rename to `Anim_Set`.
+     * @param chara Character to set animation for.
      * @param animStatus Packed anim status. See `s_ModelAnim::status`.
      * @param keyframeIdx Active keyframe index.
      */
-    static inline void Chara_AnimSet(s_SubCharacter* chara, s32 animStatus, s32 keyframeIdx)
+    static inline void Chara_AnimSet(s_SubCharacter* chara, int animStatus, int keyframeIdx)
     {
         chara->model.anim.status      = animStatus;
         chara->model.anim.time        = Q12(keyframeIdx);

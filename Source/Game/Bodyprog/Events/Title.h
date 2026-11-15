@@ -2,6 +2,7 @@
 
 namespace Silent::Game
 {
+    /** @brief Main menu entries. */
     enum e_MainMenuEntry
     {
         MainMenuEntry_Load     = 0,
@@ -13,6 +14,7 @@ namespace Silent::Game
         MainMenuEntry_Count    = 5
     };
 
+    /** @brief Main menu states. */
     enum e_MainMenuState
     {
         MainMenuState_Start              = 0,
@@ -22,6 +24,12 @@ namespace Silent::Game
         MainMenuState_NewGameStart       = 4,
         MainMenuState_Quit               = 5
     };
+
+    /** Counts the amount of times that demos has been play in the current game session. */
+    extern s8 g_Demo_ReproducedCount;
+
+    /** Related to main menu fog randomization. */
+    extern s8* D_800BCDE0; // Type assumed.
 
     void MainMenu_SelectedOptionIdxReset();
 

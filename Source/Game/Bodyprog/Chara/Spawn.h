@@ -8,6 +8,17 @@ namespace Silent::Game
     struct s_MapOverlayHdr;
     struct s_SubCharacter;
 
+    /** @brief Character spawn flags. */
+    enum e_CharaSpawnFlags
+    {
+        CharaSpawnFlag_None = 0,
+        CharaSpawnFlag_0    = 1 << 0,
+        CharaSpawnFlag_1    = 1 << 1,
+        CharaSpawnFlag_2    = 1 << 2,
+        CharaSpawnFlag_3    = 1 << 3,
+        CharaSpawnFlag_4    = 1 << 4
+    };
+
     /** @brief Loads a character model.
      *
      * @param modelIdx Slot index of the moddel array to load into.

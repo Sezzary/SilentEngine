@@ -1,13 +1,13 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
+#include "Game/Bodyprog/Screen/Background.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
 #include "Game/Main/FsQueue.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
 #include "Renderer/Renderer.h"
 #include "Utils/Video.h"
 

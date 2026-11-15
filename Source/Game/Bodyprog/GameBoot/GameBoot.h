@@ -2,6 +2,15 @@
 
 namespace Silent::Game
 {
+    /** @brief Loading screen IDs. */
+    enum e_LoadingScreenId
+    {
+        LoadingScreenId_None              = 0,
+        LoadingScreenId_PlayerRun         = 1,
+        LoadingScreenId_BackgroundTexture = 2,
+        LoadingScreenId_StageString       = 3
+    };
+
     /** @brief Handles the loading screen game state. */
     void GameState_LoadScreen_Update(void);
 

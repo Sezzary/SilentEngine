@@ -1,14 +1,14 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Screens/Stream/Stream.h"
+#include "Game/Screens/Fmv/Fmv.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
 #include "Game/Main/FileInfo.h"
 #include "Input/Input.h"
@@ -36,7 +36,7 @@ namespace Silent::Game
         {
             case (int)StateStep::FadeIn:
             {
-                ScreenFade_Start(false, true, false, Q12(1.0f));
+                Screen_FadeStart(false, true, false, Q12(1.0f));
 
                 Game_StateStepIncrement(0);
                 break;
@@ -65,7 +65,7 @@ namespace Silent::Game
         {
             case (int)StateStep::ResetFade:
             {
-                ScreenFade_Reset();
+                Screen_FadeReset();
 
                 Game_StateStepIncrement(0);
                 break;

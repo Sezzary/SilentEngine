@@ -1,34 +1,33 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "GameSysStates.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Demo.h"
-#include "Game/Bodyprog/Events/bodyprog_data_800A99B4.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Sys/Demo.h"
+#include "Game/Bodyprog/Events/EventData.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/Events/EventsMain.h"
 #include "Game/Bodyprog/Events/PlayerPosUpdate.h"
 #include "Game/Bodyprog/Events/Radio.h"
 #include "Game/Bodyprog/Events/Utils.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
-//#include "Game/Bodyprog/item_screens.h"
+#include "Game/Bodyprog/Map/Map.h"
 #include "Game/Bodyprog/Savegame.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
+#include "Game/Bodyprog/Screen/Background.h"
 #include "Game/Bodyprog/Screen/CutsceneBorder.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
-#include "Game/Bodyprog/Title.h"
-//#include "Game/Bodyprog/player.h"
-//#include "Game/Bodyprog/ranking.h"
+#include "Game/Bodyprog/Events/Title.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
+#include "Game/Bodyprog/World/Effects.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"
-#include "Game/Screens/Stream/Stream.h"
+#include "Game/Screens/Fmv/Fmv.h"
 #include "Input/Input.h"
 #include "Services/Filesystem.h"
 #include "Utils/Translator.h"
@@ -42,7 +41,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    s_MapOverlayHdr g_MapOverlayHdr; // } @todo Defined elsewhere in decomp.
+    s_MapOverlayHdr g_MapOverlayHdr;
 
     // @todo Remove checklist when all are working.
     static void (*g_SysStateFuncs[])() =
@@ -69,12 +68,12 @@ namespace Silent::Game
      */
     static q19_12 g_DeltaTimeCpy;
 
-    s_EventData*   g_ItemEvents[5]; // Guessed size. Check decomp later.
-    s_RadioNpcInfo g_RadioNpcInfos[2];
-    s_MapPoint2d   g_MapPoint;
-    s32            g_ItemTriggerItemIds[5];
-    u8             g_MapAreaLoadCounter;
-    s_EventData*   g_MapEventData;
+    s_EventData* g_ItemEvents[5]; // Guessed size. Check decomp later.
+    s_RadioNoise g_RadioNoise[2];
+    s_MapPoint2d g_MapPoint;
+    s32          g_ItemTriggerItemIds[5];
+    u8           g_MapAreaLoadCounter;
+    s_EventData* g_MapEventData;
 
     void GameState_InGame_Update() // 0x80038BD4
     {
@@ -83,7 +82,7 @@ namespace Silent::Game
         switch (g_GameWork.gameStateSteps[0])
         {
             case 0:
-                ScreenFade_Start(true, true, false);
+                Screen_FadeStart(true, true, false);
                 g_ScreenFadeTimestep         = Q12(3.0f);
                 g_GameWork.gameStateSteps[0] = 1;
 
@@ -114,7 +113,7 @@ namespace Silent::Game
 
         if (g_SysWork.sysState == SysState_Gameplay)
         {
-            g_SysWork.isMgsStringSet = false;
+            g_SysWork.isMsgStringSet = false;
             g_SysStateFuncs[SysState_Gameplay]();
         }
         else
@@ -134,7 +133,7 @@ namespace Silent::Game
         }
         Demo_DemoRandSeedRestore();
 
-        g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
+        g_IsLoadingFinished = Screen_IsFadeFinished() && Fs_QueueChunksLoad();
 
         if (!(g_SysWork.bgmStatusFlags & BgmStatusFlag_Pause) && g_MapOverlayHdr.updateWorldObjects != nullptr)
         {
@@ -159,23 +158,23 @@ namespace Silent::Game
             Demo_DemoRandSeedRestore();
 
             auto* player = &g_SysWork.playerWork.player;
-            //Player_Update(player, FS_BUFFER_0, g_SysWork.playerBoneCoords);
+            //Player_Update(player, FS_BUFFER_0, PLAYER_CHARA().model.anim.BoneTransforms);
 
             Demo_DemoRandSeedRestore();
-            //Gfx_FlashlightUpdate();
+            //Gfx_EffectsUpdate();
 
             if (g_SavegamePtr->mapIdx != MapIdx_MAP7_S03)
             {
-                g_MapOverlayHdr.particlesUpdate(0, g_SavegamePtr->mapIdx, 1);
+                g_MapOverlayHdr.particleSystemUpdate(0, g_SavegamePtr->mapIdx, 1);
             }
 
             Demo_DemoRandSeedRestore();
 
             if (player->model.anim.flags & AnimFlag_Visible)
             {
-                //func_8003DA9C(Chara_Harry, g_SysWork.playerBoneCoords, 1, g_SysWork.playerWork.player.timer_C6, 0);
+                //func_8003DA9C(Chara_Harry, PLAYER_CHARA().model.anim.BoneTransforms, 1, g_SysWork.playerWork.player.timer_C6, 0);
                 //Chara_Flag8Clear(&g_SysWork.playerWork.player);
-                //Player_CombatUpdate(&g_SysWork.playerWork, g_SysWork.playerBoneCoords);
+                //Player_CombatUpdate(&g_SysWork.playerWork, PLAYER_CHARA().model.anim.BoneTransforms);
                 //func_8008A3AC(&g_SysWork.playerWork.player);
             }
 
@@ -231,8 +230,7 @@ namespace Silent::Game
             return;
         }
 
-        if (input.GetAction(In::Light).IsClicked() &&
-            g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & (1 << 1))
+        if (input.GetAction(In::Light).IsClicked() && WorldEnv_IsFlashlightAllowed())
         {
             //Game_FlashlightToggle();
         }
@@ -256,7 +254,7 @@ namespace Silent::Game
         else if (input.GetAction(In::Map).IsClicked())
         {
             SysWork_StateSetNext(SysState_MapScreen);
-            g_SysWork.isMgsStringSet = false;
+            g_SysWork.isMsgStringSet = false;
         }
         else if (input.GetAction(In::Option).IsClicked())
         {
@@ -269,7 +267,7 @@ namespace Silent::Game
         {
             g_SysWork.sysState |= SysFlag_MenuActive;
         }
-        else if (ScreenFade_IsNone())
+        else if (Screen_IsFadeNone())
         {
             g_SysWork.sysState &= ~SysFlag_MenuActive;
         }
@@ -327,7 +325,7 @@ namespace Silent::Game
         switch (g_SysWork.sysStateSteps[0])
         {
             case 0:
-                ScreenFade_Start(true, false, false);
+                Screen_FadeStart(true, false, false);
                 g_ScreenFadeTimestep        = Q12(0.0f);
                 g_SysWork.sysStateSteps[0] = 1;
 
@@ -355,7 +353,7 @@ namespace Silent::Game
         s32 val0;
         s32 val1;
 
-        bool isRockDrillAttack = g_SysWork.playerCombat.weaponAttack == WEAPON_ATTACK(EquippedWeaponId_RockDrill, AttackInputType_Tap);
+        bool isRockDrillAttack = g_SysWork.playerCombat.weaponAttack == WEAPON_ATTACK(AttackType_RockDrill, AttackInputType_Tap);
 
         //func_8008B3E4(0);
 
@@ -449,7 +447,7 @@ namespace Silent::Game
         if (g_GameWork.gameStateSteps[0] == 0)
         {
             g_IntervalVBlanks = 1;
-            ScreenFade_Reset();
+            Screen_FadeReset();
 
             func_8003943C();
 
@@ -485,9 +483,7 @@ namespace Silent::Game
                 SysWork_StateSetNext(SysState_Gameplay);
             }
         }
-        else if ((g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & (1 << 1)) && !g_SysWork.field_2388.isFlashlightOn &&
-                ((g_SysWork.field_2388.field_1C[0].effectsInfo.flags.field_00[0] & (1 << 0)) ||
-                (g_SysWork.field_2388.field_1C[1].effectsInfo.flags.field_00[0] & (1 << 0))))
+        else if (!WorldEnv_IsWorldLit())
         {
             if (input.GetAction(In::Map).IsClicked() ||
                 MapMsg_Draw(MapMsgIdx_TooDarkForMap) > MapMsgState_Idle)
@@ -506,7 +502,7 @@ namespace Silent::Game
 
                 Fs_QueueStartSeek((e_FsFile)((int)FILE_TIM_MP_0TOWN_TIM + g_PaperMapFileIdxs[g_SavegamePtr->paperMapIdx]));
 
-                ScreenFade_Start(true, false, false);
+                Screen_FadeStart(true, false, false);
                 g_ScreenFadeTimestep = Q12(0.0f);
                 g_SysWork.sysStateSteps[0]++;
             }
@@ -563,7 +559,7 @@ namespace Silent::Game
                     case 0:
                         g_IsLoadingFinished = false;
 
-                        ScreenFade_Start(false, false, false);
+                        Screen_FadeStart(false, false, false);
                         SysWork_StateStepIncrement(1);
 
                     case 1:
@@ -743,7 +739,7 @@ namespace Silent::Game
             g_DeltaTime = g_DeltaTimeCpy;
         }
 
-        if (!g_SysWork.isMgsStringSet)
+        if (!g_SysWork.isMsgStringSet)
         {
             g_MapOverlayHdr.playerControlFreeze();
         }
@@ -812,7 +808,7 @@ namespace Silent::Game
                 {
                     //GameFs_SaveLoadBinLoad();
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     SysWork_StateStepIncrement(0);
                 }
                 /*else if (MapMsg_Draw(MapMsgIdx_SaveGame) == MapMsgState_SelectEntry1)
@@ -821,7 +817,7 @@ namespace Silent::Game
 
                     //GameFs_SaveLoadBinLoad();
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     SysWork_StateStepIncrement(0);
                 }*/
                 break;
@@ -829,7 +825,7 @@ namespace Silent::Game
             case 1:
                 if (g_IsLoadingFinished)
                 {
-                    ScreenFade_Start(true, true, false);
+                    Screen_FadeStart(true, true, false);
                     func_8003943C();
                     Game_StateSetNext(GameState_SaveScreen);
                 }
@@ -922,8 +918,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2) ||
-                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2))
+                        if (((!WorldEnv_IsInDarkness() && !WorldEnv_IsFlashlightAllowed()) && (tipIdx != 13 && tipIdx != 14)) ||
+                            (!(!WorldEnv_IsInDarkness() && !WorldEnv_IsFlashlightAllowed()) && (tipIdx == 13 || tipIdx == 14)))
                         {
                             randTipVal += 3;
                         }
@@ -942,8 +938,8 @@ namespace Silent::Game
                 {
                     if (!seenTipIdxs.Test(tipIdx))
                     {
-                        if ((!(g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) >= 2) ||
-                            ( (g_SysWork.field_2388.field_154.effectsInfo.flags.field_00[0] & 0x3) && (tipIdx - 13) <  2))
+                        if (( (!WorldEnv_IsInDarkness() && !WorldEnv_IsFlashlightAllowed()) && (tipIdx != 13 && tipIdx != 14)) ||
+                            (!(!WorldEnv_IsInDarkness() && !WorldEnv_IsFlashlightAllowed()) && (tipIdx == 13 || tipIdx == 14)))
                         {
                             if (randTipVal < 3)
                             {
@@ -1067,11 +1063,11 @@ namespace Silent::Game
         {
             g_IntervalVBlanks = 1;
 
-            ScreenFade_Start(true, true, false);
+            Screen_FadeStart(true, true, false);
             g_GameWork.gameStateSteps[0] = 1;
         }
 
-        g_IsLoadingFinished = ScreenFade_IsFinished() && Fs_QueueChunksLoad();
+        g_IsLoadingFinished = Screen_IsFadeFinished() && Fs_QueueChunksLoad();
 
         Savegame_EventFlagSet(g_MapEventData->completeFlag);
         g_MapOverlayHdr.mapEventFuncs[g_MapEventParam]();

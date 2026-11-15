@@ -44,10 +44,11 @@ namespace Silent::Game
 
     void Game_PlayerHeightUpdate(void) // 0x80037334
     {
-        if (g_MapOverlayHdr.updateWorldObjects != NULL)
-        {
-            g_MapOverlayHdr.updateWorldObjects();
-        }
+        // @todo
+        //if (g_MapOverlayHdr.updateWorldObjects != NULL)
+        //{
+        //    g_MapOverlayHdr.updateWorldObjects();
+        //}
 
         auto surface = s_CollisionSurface{};
         //Collision_SurfaceGet(&surface, g_SysWork.playerWork.player.position.vx, g_SysWork.playerWork.player.position.vz);

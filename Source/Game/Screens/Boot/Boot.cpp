@@ -7,18 +7,18 @@
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Demo.h"
-#include "Game/Bodyprog/MemCard.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Sys/Demo.h"
+#include "Game/Bodyprog/Sys/MemCard.h"
+#include "Game/Bodyprog/Screen/Background.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Screens/Options/SelectionGraphics.h"
-#include "Game/Screens/Stream/Stream.h"
+#include "Game/Screens/Fmv/Fmv.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Services/Clock.h"
@@ -126,7 +126,7 @@ namespace Silent::Game
             {
                 if (!assets.IsBusy())
                 {
-                    ScreenFade_Start(true, true, false, Q12(FADE_SEC));
+                    Screen_FadeStart(true, true, false, Q12(FADE_SEC));
 
                     Game_StateStepIncrement(0);
                     break;
@@ -172,7 +172,7 @@ namespace Silent::Game
                         langIdx = 0;
                     }
                 }
-                else if (ScreenFade_IsNone() && input.GetAction(In::Enter).IsClicked())
+                else if (Screen_IsFadeNone() && input.GetAction(In::Enter).IsClicked())
                 {
                     SD_Call(Sfx_MenuConfirm);
 
@@ -193,14 +193,14 @@ namespace Silent::Game
             }
             case 3:
             {
-                ScreenFade_Start(true, false, false, Q12(FADE_SEC));
+                Screen_FadeStart(true, false, false, Q12(FADE_SEC));
 
                 Game_StateStepIncrement(0);
                 break;
             }
             case 4:
             {
-                if (ScreenFade_IsFinished() && !assets.IsBusy())
+                if (Screen_IsFadeFinished() && !assets.IsBusy())
                 {
                     langIdx     = 0;
                     langLabel   = {};
@@ -264,7 +264,7 @@ namespace Silent::Game
             {
                 if (!assets.IsBusy())
                 {
-                    ScreenFade_Start(true, true, false, Q12(FADE_SEC));
+                    Screen_FadeStart(true, true, false, Q12(FADE_SEC));
 
                     Game_StateStepIncrement(0);
                 }
@@ -276,7 +276,7 @@ namespace Silent::Game
                     input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(DISPLAY_SEC))
                 {
-                    ScreenFade_Start(false, false, false, Q12(FADE_SEC));
+                    Screen_FadeStart(false, false, false, Q12(FADE_SEC));
 
                     Game_StateStepIncrement(0);
                 }
@@ -284,7 +284,7 @@ namespace Silent::Game
             }
             case 3:
             {
-                if (ScreenFade_IsFinished() && !assets.IsBusy())
+                if (Screen_IsFadeFinished() && !assets.IsBusy())
                 {
                     assets.Unload("Textures/SplashScreen.png");
 
@@ -335,7 +335,7 @@ namespace Silent::Game
             {
                 if (!assets.IsBusy())
                 {
-                    ScreenFade_Start(true, true, false, Q12(FADE_SEC));
+                    Screen_FadeStart(true, true, false, Q12(FADE_SEC));
                     bgTexName = "Psx/1ST/KONAMI2.TIM";
 
                     Game_StateStepIncrement(0);
@@ -349,7 +349,7 @@ namespace Silent::Game
                     input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(DISPLAY_SEC))
                 {
-                    ScreenFade_Start(false, false, false, Q12(FADE_SEC));
+                    Screen_FadeStart(false, false, false, Q12(FADE_SEC));
                     g_SysWork.gameStateCounter = 0; // @todo Cleaner way?
 
                     Game_StateStepIncrement(0);
@@ -358,9 +358,9 @@ namespace Silent::Game
             }
             case 3:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
-                    ScreenFade_Start(true, true, false, Q12(FADE_SEC));
+                    Screen_FadeStart(true, true, false, Q12(FADE_SEC));
                     bgTexName = "Psx/1ST/KONAMI.TIM";
 
                     Game_StateStepIncrement(0);
@@ -374,14 +374,14 @@ namespace Silent::Game
                     input.GetAction(In::Cancel).IsClicked() ||
                     g_SysWork.gameStateCounter >= SEC_TO_TICK(DISPLAY_SEC))
                 {
-                    ScreenFade_Start(false, false, false, Q12(FADE_SEC));
+                    Screen_FadeStart(false, false, false, Q12(FADE_SEC));
 
                     Game_StateStepIncrement(0);
                 }
                 break;
             }
             case 5:
-                if (ScreenFade_IsFinished() && !assets.IsBusy())
+                if (Screen_IsFadeFinished() && !assets.IsBusy())
                 {
                     assets.Unload("Psx/1ST/KONAMI2.TIM");
                     assets.Unload("Psx/1ST/KONAMI.TIM");

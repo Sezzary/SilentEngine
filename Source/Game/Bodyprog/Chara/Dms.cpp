@@ -1,13 +1,8 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Dms.h"
+#include "Game/Bodyprog/Chara/Dms.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
-
-//#include "Game/Bodyprog/ItemScreens.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
-#include "Game/Bodyprog/Sound/SoundSystem.h"
-#include "Game/Main/FsQueue.h"
 
 #include "Application.h"
 #include "Assets/AssetStreamer.h"
@@ -16,7 +11,8 @@ using namespace Silent::Assets;
 
 namespace Silent::Game
 {
-    void Dms_CharacterTransformGet(VECTOR3* pos, SVECTOR3* rot, const std::string& charaName, q19_12 time, const Asset& dmsAsset)
+    void Dms_CharacterTransformGet(VECTOR3* pos, SVECTOR3* rot, const std::string& charaName, q19_12 time,
+                                   const Asset& dmsAsset)
     {
         int charaEntryIdx = Dms_CharacterGetIdxByName(charaName, dmsAsset);
         if (charaEntryIdx == NO_VALUE)

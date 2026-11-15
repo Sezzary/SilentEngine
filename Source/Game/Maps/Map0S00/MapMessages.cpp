@@ -9,7 +9,7 @@ namespace Silent::Game
 {
     const char* MAP_MESSAGES[] =
     {
-        #include "Game/Maps/Common/MapMessages.h.inc"
+        #include "Game/Maps/Common/MapMessages.inc"
         /* 15 */ KEY_M0S00_MSG_1,
         /* 16 */ KEY_M0S00_MSG_2,
         /* 17 */ KEY_M0S00_MSG_3,

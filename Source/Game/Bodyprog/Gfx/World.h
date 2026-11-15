@@ -46,44 +46,45 @@ namespace Silent::Game
     typedef struct
     {
         VECTOR3 field_0[2][1];
-    } s_WorldEnvWork_84;
+    } s_WorldEnvRenderWork_84;
 
     /** @brief Dynamic point light. */
     struct s_PointLight
     {
-        s32               field_0; // Light intensity in Q4?
-        q3_12             lensFlareIntensity;
-        q19_12            intensity;
-        SVECTOR           direction; /** Q3.12 */
-        VECTOR3           position;  /** Q19.12 */
-        SVECTOR           rotation;  /** Q3.12 */
-        SVECTOR           field_28;  // Q8 light position for matrix?
-        SVECTOR           field_30;  // Light offset?
-        s_WorldEnvWork_84 field_38[3];
+        s32                 field_0; // Light intensity in Q4?
+        q3_12               lensFlareIntensity;
+        q19_12              intensity;
+        SVECTOR             direction; /** Q3.12 */
+        VECTOR3             position;  /** Q19.12 */
+        SVECTOR             rotation;  /** Q3.12 */
+        SVECTOR             field_28;  // Q8 light position for matrix?
+        SVECTOR             field_30;  // Light offset?
+        s_WorldEnvRenderWork_84 field_38[3];
     };
 
-    /** @brief World environment workspace.
+    /** @brief World environment render workspace.
      *
      * Holds fog distances and ramps, lighting and color parameters, water zone references, and other per-map environmental
-     * data used for world drawing.
+     * data used for world drawing. Most of it is set each frame from `g_SysWork.worldEnv.current` by `WorldEnv_Apply`.
      */
-    struct s_WorldEnvWork
+    struct s_WorldEnvRenderWork
     {
-        u8           field_0;                // `bool`?
+        u8           lightMode;              /** `e_WorldEnvLightMode` */
         u8           isFogEnabled;           /** `bool` */
-        u8           enableTintLightOverlap; /** `bool`. Allows overlapping the world tint and volumetric light color.
-                                              * @note Specifically modifies the volumetric light color that the point light generates,
-                                              * the color it applies to the enviroment doesn't change. */
-        u8           field_3; // Enviroment lighting.
+        u8           enableTintLightOverlap; /** `bool` | Allows overlapping the world tint and volumetric light color.
+                                              * @note Specifically modifies the volumetric light color that the point light generates.
+                                              * The color it applies to the enviroment doesn't change.
+                                              */
+        u8           lightLevelMax;          /** Upper limit on the computed light level of lit vertices. */
         s_WaterZone* waterZones;
         s32          screenBrightness;
         s_Fog        fog;
-        s32          field_20; // Map lighting.
+        q19_12       field_20; // Map lighting.
         CVECTOR      field_24; // Character color lighting.
         CVECTOR      worldTintColor;
         MATRIX       colorMat;
         s_PointLight light;
         u8           fogRamp[128]; // Fog-related values based on `fog.nearDistance`/`fog.farDistance`.
-        u16          field_14C;
+        u16          clutY;
     };
 }

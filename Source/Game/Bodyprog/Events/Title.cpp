@@ -1,25 +1,26 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "Game/Bodyprog/Title.h"
+#include "Game/Bodyprog/Events/Title.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/Events/PlayerPosUpdate.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
-#include "Game/Bodyprog/MemCard.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Sys/MemCard.h"
+#include "Game/Bodyprog/Screen/Background.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/Sys/FsScreens.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"
-#include "Game/Screens/Stream/Stream.h"
+#include "Game/Screens/Fmv/Fmv.h"
 #include "Input/Input.h"
 #include "Renderer/Renderer.h"
 #include "Utils/Translator.h"
@@ -188,7 +189,7 @@ namespace Silent::Game
                 g_GameWork.background2dColor = { 0, 0, 0 };
 
                 g_IntervalVBlanks = 1;
-                ScreenFade_Start(true, true, false);
+                Screen_FadeStart(true, true, false);
                 g_ScreenFadeTimestep = Q12(2.0f);
 
                 g_MainMenuState++;
@@ -197,7 +198,7 @@ namespace Silent::Game
             case MainMenuState_Main:
                 if (playInGameDemo)
                 {
-                    //GameFs_MapStartup();
+                    GameBoot_InGameStartup();
 
                     if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
@@ -281,7 +282,7 @@ namespace Silent::Game
                         Fs_QueueReset();
                     }
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     g_MainMenuState++;
 
                     if (g_MainMenu_SelectedEntry < MainMenuEntry_Start)
@@ -305,9 +306,9 @@ namespace Silent::Game
                                 GameFs_SaveLoadBinLoad();
                             }
 
-                            //Game_PlayerInit();
+                            GameBoot_WorldInit();
                             g_SysWork.processFlags = ProcessFlag_Continue;
-                            //GameBoot_MapLoad(g_SavegamePtr->mapIdx);
+                            GameBoot_MapLoad(g_SavegamePtr->mapIdx);
                             break;
 
                         case MainMenuEntry_Load:
@@ -315,7 +316,7 @@ namespace Silent::Game
                             break;
 
                         case MainMenuEntry_Start:
-                            ScreenFade_Reset();
+                            Screen_FadeReset();
                             g_MainMenuState = MainMenuState_DifficultySelector;
                             break;
 
@@ -335,7 +336,7 @@ namespace Silent::Game
             case MainMenuState_DifficultySelector:
                 if (playInGameDemo)
                 {
-                    //GameFs_MapStartup();
+                    GameBoot_InGameStartup();
 
                     if (g_GameWork.gameStateSteps[0] == 1 && g_SysWork.gameStateStepCounter == 0)
                     {
@@ -392,15 +393,15 @@ namespace Silent::Game
                 // Select game difficulty.
                 if (input.GetAction(In::Enter).IsClicked())
                 {
-                    //Game_SavegameInitialize(0, newGameSelectedDifficultyIdx - 1);
-                    //Game_PlayerInit();
+                    GameBoot_SavegameInitialize(0, newGameSelectedDifficultyIdx - 1);
+                    GameBoot_WorldInit();
 
                     g_SysWork.processFlags = ProcessFlag_NewGame;
 
                     GameBoot_MapLoad(MapIdx_MAP0_S00);
                     SD_Call(Sfx_MenuStartGame);
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     g_MainMenuState = MainMenuState_NewGameStart;
                 }
                 // Cancel.
@@ -413,7 +414,7 @@ namespace Silent::Game
 
             case MainMenuState_LoadGame:
             case MainMenuState_NewGameStart:
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Screen_Refresh(SCREEN_WIDTH, 0);
                     Fs_QueueWaitForEmpty();
@@ -436,7 +437,7 @@ namespace Silent::Game
 
             case MainMenuState_Quit:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     g_App.Quit();
                 }

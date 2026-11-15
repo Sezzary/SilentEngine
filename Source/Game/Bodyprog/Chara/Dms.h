@@ -1,7 +1,7 @@
 #pragma once
 
-// @todo temp
 #include "Assets/AssetStreamer.h"
+
 using namespace Silent::Assets;
 
 namespace Silent::Game

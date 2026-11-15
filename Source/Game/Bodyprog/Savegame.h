@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Game/Bodyprog/Chara/Chara.h"
-#include "Game/Bodyprog/EventFlags.h"
+#include "Game/Bodyprog/Events/EventFlags.h"
 #include "Game/Bodyprog/Items.h"
 #include "Game/Bodyprog/Sys/Joy.h"
 #include "Utils/Bitfield.h"

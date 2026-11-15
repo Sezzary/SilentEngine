@@ -1,9 +1,9 @@
 #include "Framework.h"
 #include "Psx.h"
 #include "Game/Bodyprog/Bodyprog.h"
-#include "Game/Bodyprog/Demo.h"
+#include "Game/Bodyprog/Sys/Demo.h"
 
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Main/FsQueue.h"
 #include "Game/Main/Rng.h"
@@ -162,19 +162,19 @@ namespace Silent::Game
         g_GameWork.config.screenPositionX  = g_Demo_UserConfigBackup.screenPositionX;
         g_GameWork.config.screenPositionY  = g_Demo_UserConfigBackup.screenPositionY;
         g_GameWork.config.soundType        = g_Demo_UserConfigBackup.soundType;
-        g_GameWork.config.volumeBgm        = OPT_SOUND_VOLUME_MIN; // Disable BGM during demo.
+        g_GameWork.config.volumeBgm        = Q7(0.0f); // Disable BGM during demo.
         g_GameWork.config.volumeSe         = g_Demo_UserConfigBackup.volumeSe;
-        g_GameWork.config.vibrationEnabled = OPT_VIBRATION_DISABLED; // Disable vibration during demo.
+        g_GameWork.config.vibrationEnabled = Q7(0.0f); // Disable vibration during demo.
         g_GameWork.config.brightness       = g_Demo_UserConfigBackup.brightness;
 
-        //Sd_SetVolume(OPT_SOUND_VOLUME_MIN, OPT_SOUND_VOLUME_MIN, g_GameWork.config.volumeSe);
+        //Sd_SetVolume(Q7(0.0f), Q7(0.0f), g_GameWork.config.volumeSe);
     }
 
     void Demo_GameGlobalsRestore() // 0x8008F2BC
     {
         g_GameWork.config = g_Demo_UserConfigBackup;
 
-        //Sd_SetVolume(OPT_SOUND_VOLUME_MAX, g_GameWork.config.volumeBgm, g_GameWork.config.volumeSe);
+        //Sd_SetVolume(Q7(1.0f), g_GameWork.config.volumeBgm, g_GameWork.config.volumeSe);
     }
 
     void Demo_GameRandSeedUpdate() // 0x8008F33C
@@ -311,7 +311,7 @@ namespace Silent::Game
         prevScreenFadeCpy      = prevScreenFade;
         cond                   = g_Demo_IsLoadingChunks;
         g_Demo_IsLoadingChunks = false;
-        prevScreenFade         = g_ScreenFade_Status;
+        prevScreenFade         = g_Screen_FadeStatus;
 
         if (!(g_SysWork.sysFlags & SysFlag_DemoActive))
         {
@@ -334,7 +334,7 @@ namespace Silent::Game
         }
 
         if (!Gfx_ScreenFadeIn_IsInProgress(prevScreenFadeCpy)   ||
-            !Gfx_ScreenFadeIn_IsInProgress(g_ScreenFade_Status) ||
+            !Gfx_ScreenFadeIn_IsInProgress(g_Screen_FadeStatus) ||
             cond)
         {
             g_Demo_CurFrameData = nullptr;
@@ -398,10 +398,10 @@ namespace Silent::Game
 
         *(u16*)&g_Controller0->analogController.status = 0x7300;
         g_Controller0->analogController.digitalButtons = btns;
-        g_Controller0->analogController.rightX = 128;
-        g_Controller0->analogController.rightY = 128;
-        g_Controller0->analogController.leftX  = 128;
-        g_Controller0->analogController.leftY  = 128;
+        g_Controller0->analogController.rightX         = Q7(1.0f);
+        g_Controller0->analogController.rightY         = Q7(1.0f);
+        g_Controller0->analogController.leftX          = Q7(1.0f);
+        g_Controller0->analogController.leftY          = Q7(1.0f);
         return true;
     }
 

@@ -2,10 +2,10 @@
 #include "Game/Screens/Options/Utils.h"
 
 #include "Application.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
-#include "Game/Game.h"
+#include "Game/Bodyprog/Screen/Background.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Fade.h"
+#include "Game/Bodyprog/Game.h"
 #include "Game/Screens/Options/Options.h"
 #include "Gui/Button.h"
 #include "Gui/Cursor.h"
@@ -268,7 +268,7 @@ namespace Silent::Game
             {
                 const auto& binding = std::get<MenuEntrySubmenuBinding>(entry.Binding);
 
-                ScreenFade_Start(true, false, false);
+                Screen_FadeStart(true, false, false);
                 Game_StateStepSet(0, binding.MenuState);
                 return;
             }
@@ -339,7 +339,7 @@ namespace Silent::Game
             {
                 Options_ResetSelection();
 
-                ScreenFade_Start(true, true, false);
+                Screen_FadeStart(true, true, false);
                 Game_StateStepIncrement(menuStateStep);
                 break;
             }
@@ -349,7 +349,7 @@ namespace Silent::Game
                 {
                     //Sd_SfxPlay(Sfx_Cancel, 0, Q8(0.25f));
 
-                    ScreenFade_Start(true, false, false);
+                    Screen_FadeStart(true, false, false);
                     Game_StateStepIncrement(menuStateStep);
                 }
                 else
@@ -362,11 +362,11 @@ namespace Silent::Game
             case 2:
             {
                 // Switch to previous menu.
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Options_ResetSelection(prevMenuEntryIdx);
 
-                    ScreenFade_Start(true, true, false);
+                    Screen_FadeStart(true, true, false);
                     Game_StateStepSet(menuStateStep - 1, leaveMenuState);
                 }
                 break;

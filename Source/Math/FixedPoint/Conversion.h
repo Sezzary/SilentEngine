@@ -60,6 +60,16 @@ namespace Silent::Math
         return TO_FIXED(x, Q7_SHIFT);
     }
 
+    /** @brief Converts a floating-point value to clamped Q24.7 fixed-point.
+     *
+     * @param x Value to convert.
+     * @return `x` converted to clamped Q24.7 fixed-point.
+     */
+    constexpr q24_7 Q7_CLAMPED(float x)
+    {
+        return CLAMP(Q7(x), Q7(0.0f), Q7(1.0f) - 1);
+    }
+
     /** @brief Converts Q24.7 fixed-point value to floating-point.
      *
      * @param x Q24.7 fixedd-point value to convert.
@@ -137,7 +147,7 @@ namespace Silent::Math
      */
     constexpr q23_8 Q4_TO_Q8(q27_4 x)
     {
-        return x << 4;
+        return x << (Q8_SHIFT - Q4_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q27.4 to Q19.12.
@@ -147,7 +157,7 @@ namespace Silent::Math
      */
     constexpr q19_12 Q4_TO_Q12(q27_4 x)
     {
-        return x << 8;
+        return x << (Q12_SHIFT - Q4_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q25.6 to Q19.12.
@@ -157,7 +167,7 @@ namespace Silent::Math
      */
     constexpr q19_12 Q6_TO_Q12(q25_6 x)
     {
-        return x << 6;
+        return x << (Q12_SHIFT - Q6_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q23.8 to Q19.12.
@@ -167,7 +177,7 @@ namespace Silent::Math
      */
     constexpr q23_8 Q8_TO_Q12(q19_12 x)
     {
-        return x << 4;
+        return x << (Q12_SHIFT - Q8_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q23.8 to Q27.4.
@@ -177,7 +187,7 @@ namespace Silent::Math
      */
     constexpr q27_4 Q8_TO_Q4(q23_8 x)
     {
-        return x >> 4;
+        return x >> (Q8_SHIFT - Q4_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q21.10 to Q19.12.
@@ -187,7 +197,7 @@ namespace Silent::Math
      */
     constexpr q19_12 Q10_TO_Q12(q21_10 x)
     {
-        return x << 2;
+        return x << (Q12_SHIFT - Q10_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q19.12 to Q27.4.
@@ -197,7 +207,7 @@ namespace Silent::Math
      */
     constexpr q27_4 Q12_TO_Q4(q19_12 x)
     {
-        return x >> 8;
+        return x >> (Q12_SHIFT - Q4_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q19.12 to Q25.6.
@@ -207,7 +217,7 @@ namespace Silent::Math
      */
     constexpr q25_6 Q12_TO_Q6(q19_12 x)
     {
-        return x >> 6;
+        return x >> (Q12_SHIFT - Q6_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q19.12 to Q23.8.
@@ -217,7 +227,7 @@ namespace Silent::Math
      */
     constexpr q23_8 Q12_TO_Q8(q19_12 x)
     {
-        return x >> 4;
+        return x >> (Q12_SHIFT - Q8_SHIFT);
     }
 
     /** @brief Converts a fixed-point value from Q19.12 to Q21.10.
@@ -227,7 +237,7 @@ namespace Silent::Math
      */
     constexpr q21_10 Q12_TO_Q10(q19_12 x)
     {
-        return x >> 2;
+        return x >> (Q12_SHIFT - Q10_SHIFT);
     }
 
     /** @brief Extracts the fractional part of a value in Q19.12 fixed-point.
@@ -253,18 +263,6 @@ namespace Silent::Math
     // =========
     // Abstract
     // =========
-
-    /** @brief Converts a normalized floating-point analog stick value in the range `[-1.0f, 1.0f]` to Q0.7 fixed-point,
-     * clamped integer range `[-128, 127]`.
-     *
-     * @param analog Analog stick value (`float`).
-     * @return Analog stick value in Q0.7 fixed-point, clamped integer range `[-128, 127]` (`q0_7`).
-     */
-    constexpr q0_7 FP_STICK(float analog)
-    {
-        return ((analog) >= 0) ? CLAMP(Q8(analog) / 2, 0, (Q8(1.0f) / 2) - 1) :
-                                -CLAMP(Q8(ABS(analog)) / 2, 0, Q8(1.0f) / 2);
-    }
 
     /** @brief Converts a normalized floating-point color component in the range `[0.0f, 1.0f]` to Q0.8 fixed-point,
      * integer range `[0, 255]`.

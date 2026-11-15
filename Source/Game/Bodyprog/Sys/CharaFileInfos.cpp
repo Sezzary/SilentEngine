@@ -2,6 +2,8 @@
 #include "Psx.h"
 #include "Game/Bodyprog/Bodyprog.h"
 
+#include "Game/Bodyprog/Sys/CharaFileInfos.h"
+
 namespace Silent::Game
 {
     s_CharaFileInfo CHARA_FILE_INFOS[] =

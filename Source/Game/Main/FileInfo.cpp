@@ -20,7 +20,7 @@ namespace Silent::Game
 
     s_FileInfo g_FileTable[FS_FILE_COUNT] =
     {
-        #include "FileTable.c.USA.inc"
+        #include "FileTable.USA.inc"
     };
 
     const char* g_FilePaths[] =

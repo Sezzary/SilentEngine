@@ -5,12 +5,13 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
-#include "Game/Bodyprog/Events/MapMsg.h"
-#include "Game/Bodyprog/MemCard.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/GameBoot/GameBoot.h"
+#include "Game/Bodyprog/Sys/MemCard.h"
+#include "Game/Bodyprog/Screen/Background.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
+#include "Game/Bodyprog/Text/MapMsg.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Input/Input.h"
 #include "Utils/Translator.h"
@@ -1699,7 +1700,7 @@ namespace Silent::Game
     void SaveScreen_Init() // 0x801E63C0
     {
         g_IntervalVBlanks = 1;
-        ScreenFade_Start(true, true, false);
+        Screen_FadeStart(true, true, false);
 
         g_GameWork.background2dColor = { 0, 0, 0 };
 
@@ -1816,7 +1817,7 @@ namespace Silent::Game
                 // Exit save screen.
                 if (input.GetAction(In::Cancel).IsClicked())
                 {
-                    ScreenFade_Start(false, false, false);
+                    Screen_FadeStart(false, false, false);
                     Game_StateStepSet(1, 2);
                     SD_Call(Sfx_MenuCancel);
 
@@ -1873,7 +1874,7 @@ namespace Silent::Game
                 break;
 
             case 2:
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     g_GameWork.background2dColor = { 0, 0, 0 };
 
@@ -2074,18 +2075,18 @@ namespace Silent::Game
                 D_800A97D7             = 1;
                 g_GameWork.autosave = g_GameWork.savegame;
 
-                //Game_PlayerInit();
+                GameBoot_WorldInit();
 
                 g_SysWork.processFlags = ProcessFlag_LoadSave;
 
-                //GameBoot_MapLoad(g_SavegamePtr->mapIdx);
-                ScreenFade_Start(true, false, false);
+                GameBoot_MapLoad(g_SavegamePtr->mapIdx);
+                Screen_FadeStart(true, false, false);
                 Game_StateStepIncrement(1);
                 break;
 
             case 1:
             {
-                if (ScreenFade_IsFinished())
+                if (Screen_IsFadeFinished())
                 {
                     Fs_QueueWaitForEmpty();
                     //Settings_ScreenAndVolUpdate();

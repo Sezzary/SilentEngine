@@ -4,8 +4,9 @@
 
 #include "Application.h"
 #include "Game/Bodyprog/Bodyprog.h"
-#include "Game/Bodyprog/Screen/ScreenData.h"
-#include "Game/Bodyprog/Screen/ScreenDraw.h"
+#include "Game/Bodyprog/Screen/Data.h"
+#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/Sys/CharaFileInfos.h"
 //#include "bodyprog/player.h"
 #include "Game/Bodyprog/View/VwSystem.h"
 #include "Game/Maps/Characters/Harry.h"
@@ -74,7 +75,7 @@ namespace Silent::Game
         Q12(1.3f)
     };
 
-    void vcInitVCSystem(VC_ROAD_DATA* vc_road_ary_list) // 0x80080940
+    void vcInitVCSystem(const VC_ROAD_DATA* vc_road_ary_list) // 0x80080940
     {
         vcWork.view_cam_active_f = false;
 
@@ -247,7 +248,7 @@ namespace Silent::Game
         cos_y = Math_Cos(vcWork.cam_mat_ang.vy);
         sin_y = Math_Sin(vcWork.cam_mat_ang.vy);
 
-        r = Vc_VectorMagnitudeCalc(vcWork.cam_pos.vx - vcWork.watch_tgt_pos.vx,
+        r = vwRet3DLength(vcWork.cam_pos.vx - vcWork.watch_tgt_pos.vx,
                                    vcWork.cam_pos.vy - vcWork.watch_tgt_pos.vy,
                                    vcWork.cam_pos.vz - vcWork.watch_tgt_pos.vz);
 
@@ -411,7 +412,7 @@ namespace Silent::Game
         intrpt = Q12(g_DeltaTime) / TIMESTEP_60_FPS;
         intrpt = CLAMP(intrpt, INTRPT_TIME_MIN, INTRPT_TIME_MAX);
 
-        mv_vec = Vc_VectorMagnitudeCalc(Q12_TO_Q8(now_pos->vx - old_pos->vx),
+        mv_vec = vwRet3DLength(Q12_TO_Q8(now_pos->vx - old_pos->vx),
                                         Q12_TO_Q8(now_pos->vy - old_pos->vy),
                                         Q12_TO_Q8(now_pos->vz - old_pos->vz));
 
@@ -659,7 +660,7 @@ namespace Silent::Game
 
         cam_max_rate = (cur_cam_mv_type == VC_MV_SELF_VIEW) ? Q8(16.0f) : Q8(5.6f);
 
-        xyz_dist = Vc_VectorMagnitudeCalc(Q12_TO_Q8(w_p->cam_pos.vx - w_p->chara_head_pos.vx),
+        xyz_dist = vwRet3DLength(Q12_TO_Q8(w_p->cam_pos.vx - w_p->chara_head_pos.vx),
                                           Q12_TO_Q8(w_p->cam_pos.vy - w_p->chara_head_pos.vy),
                                           Q12_TO_Q8(w_p->cam_pos.vz - w_p->chara_head_pos.vz));
 
@@ -789,7 +790,7 @@ namespace Silent::Game
         }
     }
 
-    void vcPreSetDataInVC_WORK(VC_WORK* w_p, VC_ROAD_DATA* vc_road_ary_list) // 0x80081B6C
+    void vcPreSetDataInVC_WORK(VC_WORK* w_p, const VC_ROAD_DATA* vc_road_ary_list) // 0x80081B6C
     {
         const auto& input = g_App.GetInput();
 
@@ -852,7 +853,7 @@ namespace Silent::Game
             case VC_TDSC_MAIN:
                 if (w_p->through_door.active_f)
                 {
-                    prm_p->rail_sta_to_chara_dist = Vc_VectorMagnitudeCalc(w_p->chara_pos.vx - w_p->through_door.rail_sta_pos.vx,
+                    prm_p->rail_sta_to_chara_dist = vwRet3DLength(w_p->chara_pos.vx - w_p->through_door.rail_sta_pos.vx,
                                                                            Q12(0.0f),
                                                                            w_p->chara_pos.vz - w_p->through_door.rail_sta_pos.vz);
 
@@ -906,7 +907,7 @@ namespace Silent::Game
                     continue;
                 }
 
-                xz_dist = Vc_VectorMagnitudeCalc(ofs_x, 0, ofs_z);
+                xz_dist = vwRet3DLength(ofs_x, 0, ofs_z);
                 Math_Ratan2(ofs_x, ofs_z); // @unused Result unused?
 
                 if (xz_dist < all_min_dist)
@@ -950,25 +951,25 @@ namespace Silent::Game
         }
     }
 
-    void vcSetNearRoadAryByCharaPos(VC_WORK* w_p, VC_ROAD_DATA* road_ary_list, s32 half_w, s32 unused, bool near_enemy_f) // 0x80081FBC
+    void vcSetNearRoadAryByCharaPos(VC_WORK* w_p, const VC_ROAD_DATA* road_ary_list, s32 half_w, s32 unused, bool near_enemy_f) // 0x80081FBC
     {
-        q19_12             diff_pos_x;
-        q19_12             sum_pos_x;
-        q19_12             diff_pos_z;
-        q19_12             sum_pos_z;
-        q19_12             rd_max_hx;
-        q19_12             rd_max_hz;
-        q19_12             sw_min_hx;
-        q19_12             sw_min_hz;
-        q19_12             rd_min_hx;
-        q19_12             rd_min_hz;
-        q19_12             sw_max_hx;
-        q19_12             sw_max_hz;
-        s32                flag;
-        s32                dir_type;
-        s32                unused2;
-        VC_NEAR_ROAD_DATA* ptr;
-        VC_ROAD_DATA*      road_data_ptr;
+        q19_12              diff_pos_x;
+        q19_12              sum_pos_x;
+        q19_12              diff_pos_z;
+        q19_12              sum_pos_z;
+        q19_12              rd_max_hx;
+        q19_12              rd_max_hz;
+        q19_12              sw_min_hx;
+        q19_12              sw_min_hz;
+        q19_12              rd_min_hx;
+        q19_12              rd_min_hz;
+        q19_12              sw_max_hx;
+        q19_12              sw_max_hz;
+        s32                 flag;
+        s32                 dir_type;
+        s32                 unused2;
+        VC_NEAR_ROAD_DATA*  ptr;
+        const VC_ROAD_DATA* road_data_ptr;
 
         road_data_ptr      = road_ary_list;
         w_p->near_road_suu = 0;
@@ -1017,14 +1018,14 @@ namespace Silent::Game
 
                     ptr->rd_dir_type  = dir_type;
                     ptr->use_priority = vcRetRoadUsePriority(road_data_ptr->rd_type, unused2);
-                    ptr->rd.min_hx   = Q12_TO_Q4(rd_min_hx);
-                    ptr->rd.max_hx   = Q12_TO_Q4(rd_max_hx);
-                    ptr->rd.min_hz   = Q12_TO_Q4(rd_min_hz);
-                    ptr->rd.max_hz   = Q12_TO_Q4(rd_max_hz);
-                    ptr->sw.min_hx   = Q12_TO_Q4(sw_min_hx);
-                    ptr->sw.max_hx   = Q12_TO_Q4(sw_max_hx);
-                    ptr->sw.min_hz   = Q12_TO_Q4(sw_min_hz);
-                    ptr->sw.max_hz   = Q12_TO_Q4(sw_max_hz);
+                    ptr->rd.min_hx    = Q12_TO_Q4(rd_min_hx);
+                    ptr->rd.max_hx    = Q12_TO_Q4(rd_max_hx);
+                    ptr->rd.min_hz    = Q12_TO_Q4(rd_min_hz);
+                    ptr->rd.max_hz    = Q12_TO_Q4(rd_max_hz);
+                    ptr->sw.min_hx    = Q12_TO_Q4(sw_min_hx);
+                    ptr->sw.max_hx    = Q12_TO_Q4(sw_max_hx);
+                    ptr->sw.min_hz    = Q12_TO_Q4(sw_min_hz);
+                    ptr->sw.max_hz    = Q12_TO_Q4(sw_max_hz);
                     w_p->near_road_suu++;
                 }
             }
@@ -1392,8 +1393,9 @@ namespace Silent::Game
             w_p->watch_tgt_pos = far_watch_pos;
         }
 
-        vcMixSelfViewEffectToWatchTgtPos(&w_p->watch_tgt_pos, &w_p->watch_tgt_ang_z, self_view_eff_rate,
-                                         w_p, &g_SysWork.playerBoneCoords[HarryBone_Head].workm, player.model.anim.status);
+        // @todo Refactor bone handling.
+        //vcMixSelfViewEffectToWatchTgtPos(&w_p->watch_tgt_pos, &w_p->watch_tgt_ang_z, self_view_eff_rate,
+        //                                 w_p, &g_SysWork.playerBoneCoords[HarryBone_Head].workm, player.model.anim.status);
 
         if (w_p->watch_tgt_pos.vy > w_p->watch_tgt_max_y)
         {
@@ -1429,7 +1431,7 @@ namespace Silent::Game
         }
         else
         {
-            chara_to_cam_dist = Vc_VectorMagnitudeCalc(w_p->chara_pos.vx - w_p->cam_pos.vx,
+            chara_to_cam_dist = vwRet3DLength(w_p->chara_pos.vx - w_p->cam_pos.vx,
                                                        Q12(0.0f),
                                                        w_p->chara_pos.vz - w_p->cam_pos.vz);
 
@@ -1500,9 +1502,9 @@ namespace Silent::Game
         delta_y = watch_tgt_pos->vy - w_p->cam_pos.vy;
         delta_z = watch_tgt_pos->vz - w_p->cam_pos.vz;
 
-        dist_to_target = Vc_VectorMagnitudeCalc(delta_x, delta_y, delta_z);
+        dist_to_target = vwRet3DLength(delta_x, delta_y, delta_z);
 
-        vertical_angle = Math_Ratan2(-delta_y, Vc_VectorMagnitudeCalc(delta_x, 0, delta_z));
+        vertical_angle = Math_Ratan2(-delta_y, vwRet3DLength(delta_x, 0, delta_z));
         vertical_angle = (vertical_angle >= Q12_ANGLE(-70.0f)) ? ((vertical_angle <= Q12_ANGLE(70.0f)) ? vertical_angle : Q12_ANGLE(70.0f)) : Q12_ANGLE(-70.0f);
 
         Math_Ratan2(delta_x, delta_z);
@@ -1811,7 +1813,7 @@ namespace Silent::Game
         q3_12  cam_ang_x;
 
         max_cam_ang_x = Math_Ratan2(cam_pos->vy + Q12(5.0f), Q12(13.0f)) - Math_Ratan2(g_GameWork.gsScreenHeight / 2, sy);
-        dist          = Vc_VectorMagnitudeCalc(watch_pos->vx - cam_pos->vx, 0, watch_pos->vz - cam_pos->vz);
+        dist          = vwRet3DLength(watch_pos->vx - cam_pos->vx, 0, watch_pos->vz - cam_pos->vz);
         cam_ang_x     = Math_Ratan2(-watch_pos->vy + cam_pos->vy, dist);
 
         if (cam_ang_x > max_cam_ang_x)
@@ -1887,7 +1889,7 @@ namespace Silent::Game
             w_p->cam_tgt_velo.vy = Q12(tgt_vec.vy) / g_DeltaTime;
             w_p->cam_tgt_velo.vz = Q12(tgt_vec.vz) / g_DeltaTime;
 
-            w_p->cam_tgt_spd = Vc_VectorMagnitudeCalc(w_p->cam_tgt_velo.vx, 0, w_p->cam_tgt_velo.vz);
+            w_p->cam_tgt_spd = vwRet3DLength(w_p->cam_tgt_velo.vx, 0, w_p->cam_tgt_velo.vz);
             return;
         }
 
@@ -1938,16 +1940,16 @@ namespace Silent::Game
 
     void vcMakeIdealCamPosForFixAngCam(VECTOR3* ideal_pos, VC_WORK* w_p) // 0x80083ADC
     {
-        SVECTOR3       cam_angle_vec; // Q3.12
-        q19_12         dist_x_to_lim_area;
-        q19_12         dist_z_to_lim_area;
-        q19_12         offset_dist;
-        q19_12         chara_to_cam_dist;
-        q19_12         max_dist_to_lim_area;
-        q19_12         cam_offset_forward;
-        q19_12         abs_dist_z_to_lim_area;
-        q19_12         abs_dist_x_to_lim_area;
-        VC_LIMIT_AREA* limit_area;
+        SVECTOR3             cam_angle_vec; // Q3.12
+        q19_12               dist_x_to_lim_area;
+        q19_12               dist_z_to_lim_area;
+        q19_12               offset_dist;
+        q19_12               chara_to_cam_dist;
+        q19_12               max_dist_to_lim_area;
+        q19_12               cam_offset_forward;
+        q19_12               abs_dist_z_to_lim_area;
+        q19_12               abs_dist_x_to_lim_area;
+        const VC_LIMIT_AREA* limit_area;
 
         cam_angle_vec.vx = Q12_ANGLE_FROM_Q8(w_p->cur_near_road.road_p->fix_ang_x);
         cam_angle_vec.vy = Q12_ANGLE_FROM_Q8(w_p->cur_near_road.road_p->fix_ang_y);
@@ -1981,7 +1983,7 @@ namespace Silent::Game
         }
 
         offset_dist       = (max_dist_to_lim_area >> 1) + Q12(1.5f);
-        chara_to_cam_dist = Vc_VectorMagnitudeCalc(w_p->chara_pos.vx - w_p->cam_pos.vx,
+        chara_to_cam_dist = vwRet3DLength(w_p->chara_pos.vx - w_p->cam_pos.vx,
                                                    Q12(0.0f),
                                                    w_p->chara_pos.vz - w_p->cam_pos.vz);
 
@@ -2085,20 +2087,20 @@ namespace Silent::Game
     {
         constexpr q19_12 ANGLE_DELTA_RANGE = Q12_ANGLE(12.0f);
 
-        q19_12             temp_x;
-        q19_12             temp_z;
-        q3_12              base_angle;
-        q19_12             chara_pos_y;
-        q3_12              delta_angle;
-        q19_12             cam_pos_y;
-        q23_8              horizontal_distance_fp;
-        q23_8              blend_max_dist;
-        q23_8              blend_min_dist;
-        q19_12             delta_y_clamped;
-        q19_12             final_cam_dist;
-        q19_12             default_cam_dist;
-        VC_NEAR_ROAD_DATA* near_road_data;
-        VC_ROAD_DATA*      road_data;
+        q19_12              temp_x;
+        q19_12              temp_z;
+        q3_12               base_angle;
+        q19_12              chara_pos_y;
+        q3_12               delta_angle;
+        q19_12              cam_pos_y;
+        q23_8               horizontal_distance_fp;
+        q23_8               blend_max_dist;
+        q23_8               blend_min_dist;
+        q19_12              delta_y_clamped;
+        q19_12              final_cam_dist;
+        q19_12              default_cam_dist;
+        VC_NEAR_ROAD_DATA*  near_road_data;
+        const VC_ROAD_DATA* road_data;
 
         base_angle  = w_p->chara_eye_ang_y + Q12_ANGLE(180.0f);
         delta_angle = Math_AngleNormalize(w_p->cam_chara2ideal_ang_y - base_angle);
@@ -2164,7 +2166,7 @@ namespace Silent::Game
 
         vcAdjustXzInLimAreaUsingMIN_IN_ROAD_DIST(&temp_x, &temp_z, &near_road_data->rd);
 
-        horizontal_distance_fp = Q12_TO_Q8(Vc_VectorMagnitudeCalc(temp_x - w_p->chara_pos.vx,
+        horizontal_distance_fp = Q12_TO_Q8(vwRet3DLength(temp_x - w_p->chara_pos.vx,
                                                                   delta_y_clamped,
                                                                   temp_z - w_p->chara_pos.vz));
 
@@ -2206,7 +2208,7 @@ namespace Silent::Game
         vcAdjustXzInLimAreaUsingMIN_IN_ROAD_DIST(&ideal_pos->vx, &ideal_pos->vz, &near_road_data->rd);
     }
 
-    void vcAdjustXzInLimAreaUsingMIN_IN_ROAD_DIST(q19_12* x_p, q19_12* z_p, VC_LIMIT_AREA* lim_p) // 0x80084210
+    void vcAdjustXzInLimAreaUsingMIN_IN_ROAD_DIST(q19_12* x_p, q19_12* z_p, const VC_LIMIT_AREA* lim_p) // 0x80084210
     {
         q19_12 min_z;
         q19_12 min_x;
@@ -2248,7 +2250,7 @@ namespace Silent::Game
         deltaZ = ideal_pos->vx - w_p->cam_tgt_pos.vx;
         deltaX = ideal_pos->vz - w_p->cam_tgt_pos.vz;
 
-        now2ideal_tgt_dist  = Vc_VectorMagnitudeCalc(deltaZ, Q12(0.0f), deltaX);
+        now2ideal_tgt_dist  = vwRet3DLength(deltaZ, Q12(0.0f), deltaX);
         now2ideal_tgt_ang_y = Math_Ratan2(deltaZ, deltaX);
 
         if (now2ideal_tgt_dist < max_tgt_mv_xz_len)
@@ -2274,18 +2276,18 @@ namespace Silent::Game
 
     void vcAdjTgtMvVecYByCurNearRoad(VECTOR3* tgt_mv_vec, VC_WORK* w_p) // 0x800843F4
     {
-        VC_ROAD_DATA* cur_rd_p;
-        q19_12        tgt_y;
-        q19_12        to_chara_dist;
-        q19_12        abs_ofs_y;
-        q19_12        max_tgt_y;
-        q19_12        min_tgt_y;
-        q19_12        dist;
-        q19_12        near_ratio;
+        const VC_ROAD_DATA* cur_rd_p;
+        q19_12              tgt_y;
+        q19_12              to_chara_dist;
+        q19_12              abs_ofs_y;
+        q19_12              max_tgt_y;
+        q19_12              min_tgt_y;
+        q19_12              dist;
+        q19_12              near_ratio;
 
         cur_rd_p = w_p->cur_near_road.road_p;
 
-        to_chara_dist = Vc_VectorMagnitudeCalc(w_p->chara_pos.vx - w_p->cam_tgt_pos.vx,
+        to_chara_dist = vwRet3DLength(w_p->chara_pos.vx - w_p->cam_tgt_pos.vx,
                                                Q12(0.0f),
                                                w_p->chara_pos.vz - w_p->cam_tgt_pos.vz);
 
@@ -2419,7 +2421,7 @@ namespace Silent::Game
             tgt_mv_vec->vx = post_tgt_pos.vx - w_p->cam_tgt_pos.vx;
             tgt_mv_vec->vz = post_tgt_pos.vz - w_p->cam_tgt_pos.vz;
 
-            if (max_tgt_mv_xz_len < Vc_VectorMagnitudeCalc(tgt_mv_vec->vx, Q12(0.0f), tgt_mv_vec->vz))
+            if (max_tgt_mv_xz_len < vwRet3DLength(tgt_mv_vec->vx, Q12(0.0f), tgt_mv_vec->vz))
             {
                 ang_y          = Math_Ratan2(tgt_mv_vec->vx, tgt_mv_vec->vz);
                 tgt_mv_vec->vx = Math_MulFixed(max_tgt_mv_xz_len, Math_Sin(ang_y), Q12_SHIFT);
@@ -2486,7 +2488,7 @@ namespace Silent::Game
 
         *old_cam_excl_area_r_p = desired_radius;
 
-        distance_to_chara = Vc_VectorMagnitudeCalc(in_pos->vx - chara_pos->vx, Q12(0.0f), in_pos->vz - chara_pos->vz);
+        distance_to_chara = vwRet3DLength(in_pos->vx - chara_pos->vx, Q12(0.0f), in_pos->vz - chara_pos->vz);
 
         exclusion_overlap = Q12(0.0f);
         if (distance_to_chara < desired_radius)
@@ -2612,16 +2614,13 @@ namespace Silent::Game
 
     void vcMakeNewBaseCamAng(SVECTOR* new_base_ang, VC_CAM_MV_TYPE cam_mv_type, VC_WORK* w_p) // 0x80084EDC
     {
-        // Last 2 could be compiler-added padding, but are needed for match.
         static const q19_12 ANGLES[] =
         {
             Q12_ANGLE(0.0f),
             Q12_ANGLE(15.0f),
             Q12_ANGLE(60.0f),
             Q12_ANGLE(110.0f),
-            Q12_ANGLE(110.0f),
-            Q12_ANGLE(0.0f),
-            Q12_ANGLE(0.0f)
+            Q12_ANGLE(110.0f)
         };
 
         s32   sp18[5];
@@ -2658,7 +2657,7 @@ namespace Silent::Game
         }
         else
         {
-            angle   = Math_Ratan2(-deltaY, Vc_VectorMagnitudeCalc(deltaX, Q12(0.0f), deltaZ));
+            angle   = Math_Ratan2(-deltaY, vwRet3DLength(deltaX, Q12(0.0f), deltaZ));
             temp_v0 = Math_Ratan2(deltaX, deltaZ);
 
             temp_v1   = Q12_ANGLE_FROM_Q8(w_p->cur_near_road.road_p->fix_ang_x);
@@ -2870,9 +2869,10 @@ namespace Silent::Game
         if (w_p->updateLookAtPoint)
         {
             w_p->updateLookAtPoint = false;
-            vwSetCoordRefAndEntou(&g_SysWork.playerBoneCoords[HarryBone_Head],
-                                  Q12(0.0f), Q12(-0.05f), Q12(0.3f),
-                                  Q12_ANGLE(180.0f), Q12_ANGLE(0.0f), Q12(-0.2f), Q12(1.0f));
+            // @todo Refactor bone handling.
+            //vwSetCoordRefAndEntou(&g_SysWork.playerBoneCoords[HarryBone_Head],
+            //                      Q12(0.0f), Q12(-0.05f), Q12(0.3f),
+            //                      Q12_ANGLE(180.0f), Q12_ANGLE(0.0f), Q12(-0.2f), Q12(1.0f));
         }
         else if (w_p->updateLookAtMat)
         {
@@ -2917,17 +2917,14 @@ namespace Silent::Game
         return Q12_MULT(noise_w, noise);
     }
 
-    q19_12 Vc_VectorMagnitudeCalc(q19_12 posX, q19_12 posY, q19_12 posZ) // 0x80085B1C
+    q19_12 vwRet3DLength(q19_12 x, q19_12 y, q19_12 z) // 0x80085B1C
     {
-        q19_12 mag;
-        s32    shift;
-
-        mag   = MAX(MAX(ABS(posX), ABS(posY)), ABS(posZ));
-        //shift = Math_MagnitudeShiftGet(mag);
-        posX   >>= shift;
-        posY   >>= shift;
-        posZ   >>= shift;
-        return SquareRoot0(SQUARE(posX) + SQUARE(posY) + SQUARE(posZ)) << shift;
+        q19_12 mag = MAX(MAX(ABS(x), ABS(y)), ABS(z));
+        int shift  = 0;//Math_MagnitudeShiftGet(mag);
+        x        >>= shift;
+        y        >>= shift;
+        z        >>= shift;
+        return SquareRoot0(SQUARE(x) + SQUARE(y) + SQUARE(z)) << shift;
     }
 
     q19_12 vcGetXZSumDistFromLimArea(q19_12* out_vec_x_p, q19_12* out_vec_z_p, q19_12 chk_wld_x, q19_12 chk_wld_z,

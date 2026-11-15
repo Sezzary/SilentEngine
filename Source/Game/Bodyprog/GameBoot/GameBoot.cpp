@@ -4,13 +4,15 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
-#include "Game/Bodyprog/Demo.h"
+#include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Bodyprog/Chara/Anim.h"
+#include "Game/Bodyprog/Chara/Chara.h"
+#include "Game/Bodyprog/GameBoot/CharaAnim.h"
 #include "Game/Bodyprog/GameBoot/LoadScreen.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/Events/Radio.h"
-#include "Game/Bodyprog/Screen/BackgroundDraw.h"
-#include "Game/Bodyprog/Screen/ScreenFade.h"
+#include "Game/Bodyprog/Screen/Background.h"
+#include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Main/FsQueue.h"
 //#include "Game/Bodyprog/player_logic.h"
@@ -22,7 +24,7 @@ namespace Silent::Game
     {
         if (g_SysWork.loadingScreenIdx != LoadingScreenId_None && g_GameWork.gameStateSteps[0] < 10)
         {
-            ScreenFade_Start(false, true, false);
+            Screen_FadeStart(false, true, false);
             g_ScreenFadeTimestep = Q12(0.8f);
             g_MapOverlayHdr.loadingScreenFuncs[g_SysWork.loadingScreenIdx]();
         }
@@ -83,8 +85,10 @@ namespace Silent::Game
 
     void GameBoot_InGameStartup(void)
     {
-        // Makes up to 5 attemps. If the load fails, the timer used to check if a demo should be triggered is restarted.
-        static int demoLoadAttempCount;
+        constexpr int DEMO_LOAD_ATTEMPT_COUNT_MAX = 5;
+
+        // If the load fails, the timer used to check if a demo should be triggered is restarted.
+        static int demoLoadAttemptCount = 0;
 
         const auto& player = g_SysWork.playerWork.player;
 
@@ -104,7 +108,7 @@ namespace Silent::Game
                 }
                 else if (g_SysWork.processFlags == ProcessFlag_BootDemo)
                 {
-                    demoLoadAttempCount            = 0;
+                    demoLoadAttemptCount            = 0;
                     g_GameWork.gameStateSteps[0]   = 1;
                     g_SysWork.gameStateStepCounter = 1;
                 }
@@ -133,10 +137,10 @@ namespace Silent::Game
                     Demo_SequenceAdvance(1);
                     Demo_DemoDataRead();
 
-                    demoLoadAttempCount++;
-                    if (demoLoadAttempCount >= 5)
+                    demoLoadAttemptCount++;
+                    if (demoLoadAttemptCount >= DEMO_LOAD_ATTEMPT_COUNT_MAX)
                     {
-                        demoLoadAttempCount            = 0;
+                        demoLoadAttemptCount            = 0;
                         g_SysWork.gameStateStepCounter = 0;
                         break;
                     }
@@ -173,9 +177,9 @@ namespace Silent::Game
                 break;
 
             case 5:
-                //Fs_CharaAnimDataAlloc(1, g_MapOverlayHdr.charaGroupIds[0], NULL, 0);
-                //Fs_CharaAnimDataAlloc(2, g_MapOverlayHdr.charaGroupIds[1], NULL, 0);
-                //Fs_CharaAnimDataAlloc(3, g_MapOverlayHdr.charaGroupIds[2], NULL, 0);
+                Fs_CharaAnimDataAlloc(1, (e_CharaId)g_MapOverlayHdr.charaGroupIds[0]);
+                Fs_CharaAnimDataAlloc(2, (e_CharaId)g_MapOverlayHdr.charaGroupIds[1]);
+                Fs_CharaAnimDataAlloc(3, (e_CharaId)g_MapOverlayHdr.charaGroupIds[2]);
                 //WorldGfx_MapInitCharaLoad(&g_MapOverlayHdr);
 
                 g_GameWork.gameStateSteps[0]++;
@@ -261,8 +265,8 @@ namespace Silent::Game
                     if (AreaLoad_TransitionFlags() & AreaTransitionFlag_SkipFadeIn)
                     {
                         g_GameWork.gameStateSteps[0] = 1;
-                        g_ScreenFade_Status          = SCREEN_FADE_STATUS(ScreenFadeState_ResetTimestep,
-                                                                          IS_SCREEN_FADE_WHITE(g_ScreenFade_Status));
+                        g_Screen_FadeStatus          = SCREEN_FADE_STATUS(ScreenFadeState_ResetTimestep,
+                                                                          IS_SCREEN_FADE_WHITE(g_Screen_FadeStatus));
                     }
                 }
                 break;
@@ -281,7 +285,7 @@ namespace Silent::Game
         //World_CollisionTriggersSet(&g_MapOverlayHdr);
         //GameBoot_WorldEnvInit(0);
         //WorldGfx_CharaModelProcessAllLoads();
-        //Game_FlashlightAttributesFix();
+        //Game_FlashlightAttribSet();
 
         //g_MapOverlayHdr.particleSystemUpdate(0, mapOvlId, NO_VALUE);
 
@@ -294,7 +298,6 @@ namespace Silent::Game
         //func_8007E8C0();
         //Game_NpcRoomInitSpawn(false);
         //Game_PlayerHeightUpdate();
-        //Fs_CharaAnimBoneInfoSet();
         //GameFs_WeaponInfoUpdate();
         //GameFs_Tim00TIMLoad();
         Fs_QueueWaitForEmpty();
@@ -332,7 +335,7 @@ namespace Silent::Game
         //World_Init();
         //WorldGfx_CharaModelsFree();
         //WorldGfx_HeldItemModelFree();
-        //Anim_BonesInit((s_AnmHeader*)FS_BUFFER_0, g_SysWork.playerBoneCoords);
+        Anim_BonesInit(Chara_Harry, PLAYER_CHARA().model.anim.BoneTransforms);
         //WorldGfx_PlayerModelProcessLoad();
 
         if ((g_SavegamePtr->itemToggleFlags >> 1) & (1 << 0)) // `& ItemToggleFlag_FlashlightOff`

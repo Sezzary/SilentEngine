@@ -111,7 +111,12 @@ namespace Silent::Game
         return FP_FROM(animTime, Q12_SHIFT) - baseOffset;
     }
 
-    void Anim_BonesInit(const Asset& anmAsset, std::vector<BoneTransform>& transforms);
+    /** @brief Initializes character bones to the bind pose.
+     *
+     * @param charaId Character ID.
+     * @param transforms Character bone transforms.
+     */
+    void Anim_BonesInit(int charaId, std::vector<BoneTransform>& transforms);
 
     void Anim_BonesUpdate(const Asset& anmAsset, std::vector<BoneTransform>& transforms,
                           int keyframe0, int keyframe1, q19_12 alpha);
@@ -170,10 +175,8 @@ namespace Silent::Game
      */
     void Anim_BlendLinear(s_Model& model, const Asset& anmAsset, const s_AnimInfo& animInfo);
 
-    /** @brief Smoothly blends between the current pose into a new target animation using a sine-based ease-out
+    /** @brief @unused? Smoothly blends between the current pose into a new target animation using a sine-based ease-out
      * without triggering a status transition.
-     *
-     * @unused?
      *
      * @param model Character model to animate.
      * @param anmAsset Character animation asset.

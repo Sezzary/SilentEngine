@@ -16,32 +16,25 @@
 
 namespace Silent
 {
-    using namespace Assets;
-    using namespace Audio;
-    using namespace Input;
-    using namespace Renderer;
-    using namespace Services;
-    using namespace Utils;
-
     constexpr char APP_NAME[]    = "Silent Engine";
     constexpr char APP_VERSION[] = "0.1.0";
 
     /** @brief Application workspace. Keeps all subsystems. */
     struct ApplicationWork
     {
-        AssetStreamer                 Assets     = AssetStreamer();
-        AudioManager                  Audio      = AudioManager();
-        ClockManager                  Clock      = ClockManager();
-        ParallelExecutor              Executor   = ParallelExecutor();
-        FilesystemManager             Filesystem = FilesystemManager();
-        FontManager                   Fonts      = FontManager();
-        InputManager                  Input      = InputManager();
-        OptionsManager                Options    = OptionsManager();
-        std::unique_ptr<RendererBase> Renderer   = nullptr;
-        SavegameManager               Savegame   = SavegameManager();
-        TranslationManager            Translator = TranslationManager();
-        ToastManager                  Toaster    = ToastManager();
-        VideoPlayer                   Video      = VideoPlayer();
+        Assets::AssetStreamer                   Assets     = {};
+        Audio::AudioManager                     Audio      = {};
+        Services::ClockManager                  Clock      = {};
+        Utils::ParallelExecutor                 Executor   = {};
+        Services::FilesystemManager             Filesystem = {};
+        Utils::FontManager                      Fonts      = {};
+        Input::InputManager                     Input      = {};
+        Services::OptionsManager                Options    = {};
+        std::unique_ptr<Renderer::RendererBase> Renderer   = nullptr;
+        Services::SavegameManager               Savegame   = {};
+        Utils::TranslationManager               Translator = {};
+        Services::ToastManager                  Toaster    = {};
+        Utils::VideoPlayer                      Video      = {};
     };
 
     class ApplicationManager
@@ -56,10 +49,10 @@ namespace Silent
         bool        _isPaused   = false;
         bool        _quit       = false;
         
-        ApplicationWork   _work           = {};
-        ParallelExecutor  _renderExecutor = ParallelExecutor(1);
-        std::future<void> _renderFuture   = std::future<void>();
-        Vector2           _mouseWheelAxis = Vector2::Zero;
+        ApplicationWork         _work           = {};
+        Utils::ParallelExecutor _renderExecutor = {};
+        std::future<void>       _renderFuture   = {};
+        Vector2                 _mouseWheelAxis = Vector2::Zero;
 
     public:
         // =============
@@ -77,73 +70,73 @@ namespace Silent
          *
          * @return Asset streamer instance.
          */
-        AssetStreamer& GetAssets();
+        Assets::AssetStreamer& GetAssets();
 
         /** @brief Gets the audio subsystem instance.
          *
          * @return Audio instance.
          */
-        AudioManager& GetAudio();
+        Audio::AudioManager& GetAudio();
 
         /** @brief Gets the clock subsystem instance.
          *
          * @return Clock instance.
          */
-        ClockManager& GetClock();
+        Services::ClockManager& GetClock();
 
         /** @brief Gets the executor subsystem instance.
          *
          * @return Executor instance.
          */
-        ParallelExecutor& GetExecutor();
+        Utils::ParallelExecutor& GetExecutor();
 
         /** @brief Gets the filesystem subsystem instance.
          *
          * @return Filesystem instance.
          */
-        FilesystemManager& GetFilesystem();
+        Services::FilesystemManager& GetFilesystem();
 
         /** @brief Gets the fonts subsystem instance.
          *
          * @return Fonts instance.
          */
-        FontManager& GetFonts();
+        Utils::FontManager& GetFonts();
 
         /** @brief Gets the input subsystem instance.
          *
          * @return Input instance.
          */
-        InputManager& GetInput();
+        Input::InputManager& GetInput();
 
         /** @brief Gets the options subsystem instance.
          *
          * @return Options instance.
          */
-        OptionsManager& GetOptions();
+        Services::OptionsManager& GetOptions();
 
         /** @brief Gets the renderer subsystem instance.
          *
          * @return Renderer instance.
          */
-        RendererBase& GetRenderer();
+        Renderer::RendererBase& GetRenderer();
 
         /** @brief Gets the savegame subsystem instance.
          *
          * @return Savegame instance.
          */
-        SavegameManager& GetSavegame();
+        Services::SavegameManager& GetSavegame();
 
         /** @brief Gets the toaster subsystem instance.
          *
          * @return Toaster instance.
          */
-        ToastManager& GetToaster();
+        Services::ToastManager& GetToaster();
 
         /** @brief Gets the translator subsystem instance.
          *
          * @return Translator instance.
          */
-        TranslationManager& GetTranslator();
+        Utils::TranslationManager& GetTranslator();
 
         /** @brief Gets the video player instance.
          *

@@ -3,6 +3,7 @@
 namespace Silent::Game
 {
     struct s_EventData;
+    struct s_MapOverlayHdr;
     struct s_MapPoint2d;
     struct s_RadioNoise;
 

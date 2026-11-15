@@ -440,9 +440,6 @@ namespace Silent::Game
         s_MapPoint2d*          mapPoints;
         void                   (**mapEventFuncs)(); /** Points to array of event functions. */
         s_EventData*           mapEvents;
-        GsCOORDINATE2*         npcBoneCoordBuffer; /** Dynamic NPC bone coord buffer used as backup for `s_SysWork::npcBoneCoordBuffer`.
-                                                    * In practice, this is always set to `g_SysWork.npcBoneCoordBuffer`,
-                                                    * effectively forming a ring buffer. */
         u8*                    loadableItems;
         const char**           mapMessages;
         s_AnimInfo*            harryMapAnimInfos; /** Map-specific anim infos for Harry (for anims 38+). */

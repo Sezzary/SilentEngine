@@ -5,6 +5,7 @@
 #include "Game/Bodyprog/Bodyprog.h"
 
 #include "Application.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Bodyprog/Screen/Draw.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"

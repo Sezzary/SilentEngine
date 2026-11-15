@@ -1393,8 +1393,9 @@ namespace Silent::Game
             w_p->watch_tgt_pos = far_watch_pos;
         }
 
-        vcMixSelfViewEffectToWatchTgtPos(&w_p->watch_tgt_pos, &w_p->watch_tgt_ang_z, self_view_eff_rate,
-                                         w_p, &g_SysWork.playerBoneCoords[HarryBone_Head].workm, player.model.anim.status);
+        // @todo Refactor bone handling.
+        //vcMixSelfViewEffectToWatchTgtPos(&w_p->watch_tgt_pos, &w_p->watch_tgt_ang_z, self_view_eff_rate,
+        //                                 w_p, &g_SysWork.playerBoneCoords[HarryBone_Head].workm, player.model.anim.status);
 
         if (w_p->watch_tgt_pos.vy > w_p->watch_tgt_max_y)
         {
@@ -2868,9 +2869,10 @@ namespace Silent::Game
         if (w_p->updateLookAtPoint)
         {
             w_p->updateLookAtPoint = false;
-            vwSetCoordRefAndEntou(&g_SysWork.playerBoneCoords[HarryBone_Head],
-                                  Q12(0.0f), Q12(-0.05f), Q12(0.3f),
-                                  Q12_ANGLE(180.0f), Q12_ANGLE(0.0f), Q12(-0.2f), Q12(1.0f));
+            // @todo Refactor bone handling.
+            //vwSetCoordRefAndEntou(&g_SysWork.playerBoneCoords[HarryBone_Head],
+            //                      Q12(0.0f), Q12(-0.05f), Q12(0.3f),
+            //                      Q12_ANGLE(180.0f), Q12_ANGLE(0.0f), Q12(-0.2f), Q12(1.0f));
         }
         else if (w_p->updateLookAtMat)
         {

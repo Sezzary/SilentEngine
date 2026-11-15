@@ -84,14 +84,6 @@ namespace Silent::Game
         return Fs_QueueStartRead(fileIdx);
     }
 
-    const std::future<void>& Fs_QueueStartReadAnm(int animDataIdx, int charaId)
-    {
-        auto& assets = g_App.GetAssets();
-
-        int assetIdx = CHARA_FILE_INFOS[charaId].animFileIdx;
-        return assets.Load(assetIdx);
-    }
-
     void Fs_QueueReset()
     {
         // @stub

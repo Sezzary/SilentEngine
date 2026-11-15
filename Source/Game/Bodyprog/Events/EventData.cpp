@@ -60,8 +60,14 @@ namespace Silent::Game
 
     char* D_800A99E4[8] =
     {
-        nullptr,    "PAD_NEAR", "AIDKIT_N", "DRINK_NE",
-        "AMPULE_N", "BULLET_N", "SHELL_NE", "SHOT_NEA"
+        nullptr,
+        "PAD_NEAR",
+        "AIDKIT_N",
+        "DRINK_NE",
+        "AMPULE_N",
+        "BULLET_N",
+        "SHELL_NE",
+        "SHOT_NEA"
     };
 
     /** @note Related to images display. */

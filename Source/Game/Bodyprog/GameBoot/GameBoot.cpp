@@ -6,6 +6,7 @@
 
 #include "Game/Bodyprog/Sys/Demo.h"
 #include "Game/Bodyprog/Chara/Anim.h"
+#include "Game/Bodyprog/Chara/Chara.h"
 #include "Game/Bodyprog/GameBoot/CharaAnim.h"
 #include "Game/Bodyprog/GameBoot/LoadScreen.h"
 #include "Game/Bodyprog/Events/GameSysStates.h"
@@ -176,9 +177,9 @@ namespace Silent::Game
                 break;
 
             case 5:
-                Fs_CharaAnimDataAlloc(1, (e_CharaId)g_MapOverlayHdr.charaGroupIds[0], nullptr);
-                Fs_CharaAnimDataAlloc(2, (e_CharaId)g_MapOverlayHdr.charaGroupIds[1], nullptr);
-                Fs_CharaAnimDataAlloc(3, (e_CharaId)g_MapOverlayHdr.charaGroupIds[2], nullptr);
+                Fs_CharaAnimDataAlloc(1, (e_CharaId)g_MapOverlayHdr.charaGroupIds[0]);
+                Fs_CharaAnimDataAlloc(2, (e_CharaId)g_MapOverlayHdr.charaGroupIds[1]);
+                Fs_CharaAnimDataAlloc(3, (e_CharaId)g_MapOverlayHdr.charaGroupIds[2]);
                 //WorldGfx_MapInitCharaLoad(&g_MapOverlayHdr);
 
                 g_GameWork.gameStateSteps[0]++;
@@ -297,7 +298,6 @@ namespace Silent::Game
         //func_8007E8C0();
         //Game_NpcRoomInitSpawn(false);
         //Game_PlayerHeightUpdate();
-        //Fs_CharaAnimBoneInfoSet();
         //GameFs_WeaponInfoUpdate();
         //GameFs_Tim00TIMLoad();
         Fs_QueueWaitForEmpty();
@@ -335,7 +335,7 @@ namespace Silent::Game
         //World_Init();
         //WorldGfx_CharaModelsFree();
         //WorldGfx_HeldItemModelFree();
-        //Anim_BonesInit((s_AnmHeader*)FS_BUFFER_0, g_SysWork.playerBoneCoords);
+        Anim_BonesInit(Chara_Harry, PLAYER_CHARA().model.anim.BoneTransforms);
         //WorldGfx_PlayerModelProcessLoad();
 
         if ((g_SavegamePtr->itemToggleFlags >> 1) & (1 << 0)) // `& ItemToggleFlag_FlashlightOff`

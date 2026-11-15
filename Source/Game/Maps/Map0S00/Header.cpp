@@ -62,7 +62,6 @@ namespace Silent::Game
         .mapPoints                    = MAP_POINTS,
         //.mapEventFuncs                = g_MapEventFuncs,
         .mapEvents                    = MAP_EVENTS,
-        .npcBoneCoordBuffer           = &g_SysWork.npcBoneCoordBuffer[0],
         //.loadableItems                = LOADABLE_INVENTORY_ITEMS,
         .mapMessages                  = MAP_MESSAGES,
         /*.harryMapAnimInfos            = HARRY_M0S00_ANIM_INFOS,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Bodyprog/Chara/Anim.h"
+#include "Game/Bodyprog/Chara/Chara.h"
 #include "Game/Bodyprog/Chara/Model.h"
 #include "Game/Main/FsQueue.h"
 
@@ -12,6 +13,26 @@ namespace Silent::Game
                                                                * types (including the player) can be loaded at a time.
                                                                */
     constexpr int  CHARA_FORCE_FREE_ALL = 0xFF;               /** `Chara_Load` can force free already loaded models to make room for new ones. */
+
+    /** @brief Returns the `s_SubCharacter` instance for the player character.
+     *
+     * @note Kept as function-style macro to prevent macro from replacing anything named the same, if we decide to rename these.
+     *       e.g. if we had `#define playerChara ...`, that would break things that use `s_SubCharacter* playerChara`
+     *       but `#define playerChara() ...` would only replace function-style uses.
+    */
+    #define PLAYER_CHARA() (g_SysWork.playerWork.player)
+
+    /** @brief Returns the player character properties. */
+    #define PLAYER_PROPS() (g_SysWork.playerWork.player.properties.player)
+
+    /** @brief Returns the player character extra data. */
+    #define PLAYER_EXTRA() (g_SysWork.playerWork.extra)
+
+    /** @brief Returns the player combat data. */
+    #define PLAYER_COMBAT() (g_SysWork.playerCombat)
+
+    /** @brief Returns the `s_SubCharacter` instance for a given NPC index. */
+    #define NPC_CHARA(index) (g_SysWork.npcs[(index)])
 
     /** @brief Character flags. Used by `s_SubCharacter::flags`. */
     enum e_CharaFlags
@@ -83,6 +104,7 @@ namespace Silent::Game
         Chara_Incubus          = 22,
         Chara_Unknown23        = 23,
         Chara_MonsterCybil     = 24,
+        CHARA_LAST_ENEMY_ID    = Chara_MonsterCybil,
 
         /** Cutscene characters. */
 

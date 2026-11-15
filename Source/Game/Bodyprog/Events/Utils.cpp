@@ -5,6 +5,7 @@
 
 #include "Game/Bodyprog/Events/EventFlags.h"
 #include "Game/Bodyprog/Events/EventData.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/Items.h"
 //#include "Game/Bodyprog/ItemScreens.h"
 #include "Game/Bodyprog/Screen/Data.h"

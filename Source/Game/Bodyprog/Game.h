@@ -310,10 +310,6 @@ namespace Silent::Game
         s_PlayerWork   playerWork;
         s_SubCharacter npcs[NPC_COUNT_MAX];
 
-        // @deprecated Using `s_SubCharacter::model.anim.BoneTransforms` in new code.
-        GsCOORDINATE2 playerBoneCoords[HarryBone_Count];
-        GsCOORDINATE2 npcBoneCoordBuffer[NPC_BONE_COUNT_MAX]; /** Contiguous NPC bone coord buffer. */
-
         int npcFlagId; /** 1-based NPC ID for `npcFlags`. */
 
         int loadingScreenIdx;

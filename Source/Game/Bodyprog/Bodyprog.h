@@ -26,9 +26,6 @@
 
 namespace Silent::Game
 {
-    /** Loaded NPC types in memory and their `g_CharaModelAnimsData` indices. */
-    extern s8 g_CharaAnimDataIdxs[Chara_Count];
-
     extern u8 D_800AA604[41][16];
 
     extern s_EventData* g_ItemEvents[];

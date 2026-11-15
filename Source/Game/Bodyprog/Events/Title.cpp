@@ -6,6 +6,7 @@
 
 #include "Application.h"
 #include "Assets/TranslationKeys.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
 #include "Game/Bodyprog/Events/PlayerPosUpdate.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
 #include "Game/Bodyprog/Sys/MemCard.h"

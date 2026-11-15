@@ -1,6 +1,6 @@
 #include "Framework.h"
 #include "Psx.h"
-#include "GameSysStates.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
 
 #include "Game/Bodyprog/Bodyprog.h"
 
@@ -14,7 +14,7 @@
 #include "Game/Bodyprog/Events/Radio.h"
 #include "Game/Bodyprog/Events/Utils.h"
 #include "Game/Bodyprog/GameBoot/GameBoot.h"
-//#include "Game/Bodyprog/item_screens.h"
+#include "Game/Bodyprog/Map/Map.h"
 #include "Game/Bodyprog/Savegame.h"
 #include "Game/Bodyprog/Screen/Background.h"
 #include "Game/Bodyprog/Screen/CutsceneBorder.h"
@@ -23,8 +23,6 @@
 #include "Game/Bodyprog/Screen/Fade.h"
 #include "Game/Bodyprog/Text/TextDraw.h"
 #include "Game/Bodyprog/Events/Title.h"
-//#include "Game/Bodyprog/player.h"
-//#include "Game/Bodyprog/ranking.h"
 #include "Game/Bodyprog/Sound/SoundSystem.h"
 #include "Game/Bodyprog/World/Effects.h"
 #include "Game/Main/FsQueue.h"
@@ -43,7 +41,7 @@ using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    s_MapOverlayHdr g_MapOverlayHdr; // } @todo Defined elsewhere in decomp.
+    s_MapOverlayHdr g_MapOverlayHdr;
 
     // @todo Remove checklist when all are working.
     static void (*g_SysStateFuncs[])() =
@@ -70,12 +68,12 @@ namespace Silent::Game
      */
     static q19_12 g_DeltaTimeCpy;
 
-    s_EventData*   g_ItemEvents[5]; // Guessed size. Check decomp later.
+    s_EventData* g_ItemEvents[5]; // Guessed size. Check decomp later.
     s_RadioNoise g_RadioNoise[2];
-    s_MapPoint2d   g_MapPoint;
-    s32            g_ItemTriggerItemIds[5];
-    u8             g_MapAreaLoadCounter;
-    s_EventData*   g_MapEventData;
+    s_MapPoint2d g_MapPoint;
+    s32          g_ItemTriggerItemIds[5];
+    u8           g_MapAreaLoadCounter;
+    s_EventData* g_MapEventData;
 
     void GameState_InGame_Update() // 0x80038BD4
     {
@@ -160,7 +158,7 @@ namespace Silent::Game
             Demo_DemoRandSeedRestore();
 
             auto* player = &g_SysWork.playerWork.player;
-            //Player_Update(player, FS_BUFFER_0, g_SysWork.playerBoneCoords);
+            //Player_Update(player, FS_BUFFER_0, PLAYER_CHARA().model.anim.BoneTransforms);
 
             Demo_DemoRandSeedRestore();
             //Gfx_EffectsUpdate();
@@ -174,9 +172,9 @@ namespace Silent::Game
 
             if (player->model.anim.flags & AnimFlag_Visible)
             {
-                //func_8003DA9C(Chara_Harry, g_SysWork.playerBoneCoords, 1, g_SysWork.playerWork.player.timer_C6, 0);
+                //func_8003DA9C(Chara_Harry, PLAYER_CHARA().model.anim.BoneTransforms, 1, g_SysWork.playerWork.player.timer_C6, 0);
                 //Chara_Flag8Clear(&g_SysWork.playerWork.player);
-                //Player_CombatUpdate(&g_SysWork.playerWork, g_SysWork.playerBoneCoords);
+                //Player_CombatUpdate(&g_SysWork.playerWork, PLAYER_CHARA().model.anim.BoneTransforms);
                 //func_8008A3AC(&g_SysWork.playerWork.player);
             }
 

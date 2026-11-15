@@ -179,15 +179,6 @@ namespace Silent::Game
      */
     const std::future<void>& Fs_QueueStartReadTim(e_FsFile fileIdx, void* dest = nullptr, s_FsImageDesc* image = nullptr);
 
-    /** @brief Add a new ANM read operation to the queue.
-     * Adds a read operation with `postLoad = FsQueuePostLoadType_Anm`.
-     *
-     * @param animDataIdx Index into `g_CharaModelAnimsData`.
-     * @param charaId Character ID.
-     * @return Index of the new queue entry.
-     */
-    const std::future<void>& Fs_QueueStartReadAnm(int animDataIdx, int charaId);
-
     /** Seems to clear the queue. */
     void Fs_QueueReset();
 }

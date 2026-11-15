@@ -3,9 +3,8 @@
 #include "Game/Bodyprog/Bodyprog.h"
 #include "Game/Bodyprog/Chara/Spawn.h"
 
-#include "Game/Bodyprog/Screen/Draw.h"
-//#include "Game/Bodyprog/item_screens.h"
-#include "Game/Bodyprog/Sound/SoundSystem.h"
+#include "Game/Bodyprog/Events/GameSysStates.h"
+#include "Game/Bodyprog/GameBoot/CharaAnim.h"
 #include "Game/Main/FsQueue.h"
 
 namespace Silent::Game
@@ -13,8 +12,8 @@ namespace Silent::Game
     bool Chara_Load(s32 modelIdx, s8 charaId, GsCOORDINATE2* coords, s8 forceFree,
                     s_LmHeader* lmHdr, s_FsImageDesc* tex) // 0x80088C7C
     {
-        //Fs_CharaAnimDataAlloc(modelIdx + 1, charaId, nullptr, coords);
-        //WorldGfx_CharaLmBufferAssign(forceFree);
+        Fs_CharaAnimDataAlloc(modelIdx + 1, (e_CharaId)charaId);
+        //WorldGfx_CharaLmBufferAssign(forceFree); // @todo Load ILM and its texture with this call.
         //WorldGfx_CharaLoad(charaId, modelIdx, lmHdr, tex);
         return true;
     }
@@ -29,7 +28,7 @@ namespace Silent::Game
     void Chara_BonesInit(s32 idx) // 0x80088D34
     {
         idx++;
-        //Anim_BonesInit(g_CharaTypeAnimInfo[idx].animFile1_8, g_CharaTypeAnimInfo[idx].npcBoneCoords);
+        //Anim_BonesInit(g_CharaModelAnimsData[idx].animFile1_8, g_CharaModelAnimsData[idx].npcBoneCoords);
     }
 
     s32 Chara_Spawn(e_CharaId charaId, s32 spawnFlags, q19_12 posX, q19_12 posZ, q3_12 rotY, u32 stateStep) // 0x80088D78
@@ -144,10 +143,10 @@ namespace Silent::Game
         s_SpawnInfo* spawnInfo0;
         s_SpawnInfo* spawnInfo1;
 
-        /*spawnInfo0            = &g_MapOverlayHdr.charaSpawnInfos[g_CharaAnimDataIdxs[charaId] - 1][spawnIdx];
+        spawnInfo0            = &g_MapOverlayHdr.charaSpawnInfos[g_CharaAnimDataIdxs[charaId] - 1][spawnIdx];
         spawnInfo0->positionX = posX;
 
         spawnInfo1            = &g_MapOverlayHdr.charaSpawnInfos[g_CharaAnimDataIdxs[charaId] - 1][spawnIdx];
-        spawnInfo1->positionZ = posZ;*/
+        spawnInfo1->positionZ = posZ;
     }
 }

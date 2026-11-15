@@ -14,7 +14,7 @@ namespace Silent::Game
 {
     static void Event_ItemTriggersClear()
     {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < ARRAY_SIZE(g_ItemTriggerItemIds); i++)
         {
             g_ItemTriggerItemIds[i] = NO_VALUE;
             g_ItemEvents[i]         = nullptr;

@@ -26,8 +26,6 @@
 
 namespace Silent::Game
 {
-    extern u8 D_800AA604[41][16];
-
     extern s_EventData* g_ItemEvents[];
 
     extern s_MapPoint2d g_MapPoint;

@@ -64,7 +64,7 @@ namespace Silent::Game
         (((g_SysWork.playerWork.player.position.comp - Q12(base)) >= Q12(0.0f)) ? ((g_SysWork.playerWork.player.position.comp - Q12(base)) < Q12(tol)) : \
                                                                                   ((Q12(base) - g_SysWork.playerWork.player.position.comp) < Q12(tol)))
 
-    /** @brief System flags. TODO: Give this a more specific name. */
+    /** @brief System flags. */
     enum e_SysFlags
     {
         SysFlag_None           = 0,
@@ -359,10 +359,10 @@ namespace Silent::Game
         //s_KPad_Channel  kpadChannels[2];
         //s_KPad_Effect   kpadEffects[16];
 
-        q3_12 bgmLayerVolumes[BGM_LAYER_COUNT]; // Last index value is not a layer, but some sort of timer. See `Bgm_LayersUpdate`.
-        q23_8 field_275C;                       // } SFX volumes?
-        q23_8 field_2760;                       // }
-        q23_8 field_2764;                       // }
+        q3_12  bgmLayerVolumes[BGM_LAYER_COUNT]; // Last index value is not a layer, but some sort of timer. See `Bgm_LayersUpdate`.
+        q19_12 gasWeaponEngineSfxLevel;          // } Chainsaw and rock drill sound levels. TODO: Might be wrong Q format?
+        q19_12 gasWeaponContactSfxLevel;         // }
+        q19_12 rockDrillRunSfxLevel;             // }
     };
 
     extern s_SysWork         g_SysWork;

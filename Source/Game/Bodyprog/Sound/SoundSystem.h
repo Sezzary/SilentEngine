@@ -105,7 +105,7 @@ namespace Silent::Game
                                         * Used to assign the corresponding MIDI channel for BGM layers.
                                         *
                                         * This requires further investigation for a proper explanation. This is used
-                                        * to access values from `D_800AA604` columns in an odd way, as the values assigned
+                                        * to access values from `g_Sd_SongLayerChannels` columns in an odd way, as the values assigned
                                         * are from `g_UnknownBgmTable1`, which range from 769 to 808 (including 0).
                                         * However, the variables are cast as `u8`, which removes
                                         * the second byte (range in hexadecimal: 0x1003 to 0x2803), leaving only the first byte
@@ -241,7 +241,7 @@ namespace Silent::Game
     extern u8 g_Sd_ReverbDepths[];
 
     // Odd access. See `Sd_BgmLayerVolumeSet` and `Sd_BgmLayerVolumeGet`.
-    extern u8 D_800AA604[41][16];
+    extern u8 g_Sd_SongLayerChannels[41][16];
 
     extern s_XaItemData g_XaItemData[];
 

@@ -188,8 +188,6 @@ namespace Silent::Game
     // Didn't see any array accesses in Ghidra though, struct might be more likely.
     extern s_ActiveCollisionTriggers g_ActiveCollisionTriggers;
 
-    extern u16 g_CollisionTriggerFlags;
-
     // ========================================
     // @split? Collision init, flags, getters.
     // ========================================

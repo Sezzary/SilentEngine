@@ -188,8 +188,6 @@ namespace Silent::Game
     // Didn't see any array accesses in Ghidra though, struct might be more likely.
     extern s_ActiveCollisionTriggers g_ActiveCollisionTriggers;
 
-    extern u16 g_CollisionTriggerFlags;
-
     // ========================================
     // @split? Collision init, flags, getters.
     // ========================================
@@ -314,8 +312,8 @@ namespace Silent::Game
     s32 func_8006A42C(s_CollisionResult* collResult, const VECTOR3* offset, const s_CollisionCylinder* cylinder);
 
     bool func_8006A4A8(s_CollisionResult* collResult, VECTOR3* moveOffset, const s_CollisionCylinder* cylinder, bool arg3,
-                    s_IpdCollisionData** collDataPtrs, s32 collDataIdx, s_func_8006CF18* arg6, s32 arg7,
-                    s_SubCharacter** charas, s32 charaCount);
+                       s_IpdCollisionData** collDataPtrs, s32 collDataIdx, s_CharaCollisionRecord* charaRecords, s32 charaRecordCount,
+                       s_SubCharacter** charas, s32 charaCount);
 
     /** @brief Slows down colliding characters according to relational cylinder collision. */
     void Collision_TargetCharaCollidingSlowDown(VECTOR3* offset, const s_CollisionCylinder* cylinder, s_SubCharacter** charas, s32 charaCount);

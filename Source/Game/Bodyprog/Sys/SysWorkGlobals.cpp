@@ -13,6 +13,4 @@ namespace Silent::Game
     s_ControllerData* const g_Controller0   = &g_GameWork.controllers[0];
     s_ControllerData* const g_Controller1   = &g_GameWork.controllers[1];
     s_GameWork* const       g_GameWorkPtr   = &g_GameWork;
-
-    s_WorldGfxWork g_WorldGfxWork; // @todo Placement unknown, not yet migrated in decomp.
 }

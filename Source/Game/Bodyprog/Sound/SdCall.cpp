@@ -742,7 +742,7 @@ namespace Silent::Game
 
         for (i = 0; i < 15; i++)
         {
-            if (D_800AA604[(u8)g_Sd_AudioWork.field_E][i] == layerIdx)
+            if (g_Sd_SongLayerChannels[(u8)g_Sd_AudioWork.field_E][i] == layerIdx)
             {
                 vol = SdGetMidiVol(0, i);
                 break;
@@ -770,7 +770,7 @@ namespace Silent::Game
 
             for (i = 0; i < 15; i++)
             {
-                var1   = D_800AA604[idx][i];
+                var1   = g_Sd_SongLayerChannels[idx][i];
                 volCpy = vol;
 
                 if (var1 == layerIdx)

@@ -7,6 +7,7 @@
 #include "Application.h"
 #include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Bodyprog/View/VwSystem.h"
+#include "Game/Bodyprog/World/Draw.h"
 #include "Input/Input.h"
 
 using namespace Silent::Input;

@@ -7,7 +7,7 @@ namespace Silent::Game
      * @note Attacks here are associated with the `e_InvItemId` enum. Game code adds 128 to attack types from player weapons
      * (0-7, 32-35, and 96-98) to find the `e_InvItemId` for a given attack.
      */
-    typedef enum _AttackType
+    enum e_AttackType
     {
         AttackType_KitchenKnife         = 0,
         AttackType_SteelPipe            = 1,
@@ -57,10 +57,10 @@ namespace Silent::Game
         AttackType_Unknown23            = 68, /** `Chara_Unknown23` attack. Pushes the player away. */
         AttackType_Bloodsucker          = 69,
         AttackType_KaufmannHandgun      = 70  // Muzzle flash only, never hit-tested?
-    } e_AttackType;
+    };
 
     /** @brief Attack info types. */
-    typedef enum _AttackInfoType
+    enum e_AttackInfoType
     {
         AttackInfoType_Unk0      = 0,
         AttackInfoType_Melee     = 1, /** Melee hitting every frame. */
@@ -69,31 +69,31 @@ namespace Silent::Game
         AttackInfoType_Enemy0    = 4, // } TODO: Better naming.
         AttackInfoType_Enemy1    = 5, // }
         AttackInfoType_Enemy2    = 6  // }
-    } e_AttackInfoType;
+    };
 
     /** @brief Melee attack hitbox.
      *
      * SH2 name: `shBattleFight`.
      */
-    typedef struct _AttackFight
+    struct s_AttackFight
     {
-        /* 0x0 */ q4_12 sizeX; /** SH2 name: `test_a`. */
-        /* 0x2 */ q4_12 sizeY; /** SH2 name: `test_b`. */
-        /* 0x4 */ q4_12 sizeZ; /** SH2 name: `test_c`. */
-    } s_AttackFight;
+        q4_12 sizeX; /** SH2 name: `test_a`. */
+        q4_12 sizeY; /** SH2 name: `test_b`. */
+        q4_12 sizeZ; /** SH2 name: `test_c`. */
+    };
 
     /** @brief Gunshot attack parameters.
      *
      * SH2 name: `shBattleShot`.
      */
-    typedef struct _AttackShot
+    struct s_AttackShot
     {
-        /* 0x0 */ q4_12 interval;    /** Animation time between shots. */
-        /* 0x2 */ u8    shotCountMax;    /** 0 is treated as 1. */
-        /* 0x3 */ u8    pelletCount; /** Rays trace per shot. */
-        /* 0x4 */ u8    inaccuracy;
-        /* 0x5 */ u8    spread;      /** Low nibble: `D_800AFD1C` index, high nibble: step count. */
-    } s_AttackShot;
+        q4_12 interval;    /** Animation time between shots. */
+        u8    shotCountMax;    /** 0 is treated as 1. */
+        u8    pelletCount; /** Rays trace per shot. */
+        u8    inaccuracy;
+        u8    spread;      /** Low nibble: `D_800AFD1C` index, high nibble: step count. */
+    };
 
     /** @brief Attack definition, indexed by `WEAPON_ATTACK` value.
      *
@@ -103,7 +103,7 @@ namespace Silent::Game
      * which is a good indication they were a holdover from SH1. The code in SH2 that uses this struct seems to have been
      * reworked into a kind of attack queue system for that game and doesn't resemble anything from SH1.
     */
-    typedef struct _AttackInfo
+    struct s_AttackInfo
     {
         q4_12 rangeMax;          /** SH2 name: `max_range`. */
         q3_12 rangeMin;          /** SH2 name: `min_range`. */
@@ -121,7 +121,7 @@ namespace Silent::Game
         u8    impactSfxGroup;    /** SH2 name: `eff`. Impact SFX per target, uses values 0-4. */
         s8    __pad_13;
         u32*  unk_14;            /** Some pointer. All `g_Items_WeaponAttackInfos` entries point to `D_800AD4C4`. */
-    } s_AttackInfo;
+    };
 
     extern u8 g_Items_GunsMaxLoadAmmo[36]; // Max loaded ammo that a weapon can hold. 0x800AD4A0
 

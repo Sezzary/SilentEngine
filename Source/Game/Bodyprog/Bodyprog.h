@@ -26,29 +26,4 @@
 
 namespace Silent::Game
 {
-    extern u8 D_800AA604[41][16];
-
-    extern s_EventData* g_ItemEvents[];
-
-    extern s_MapPoint2d g_MapPoint;
-
-    /** Related to special item interactions. */
-    extern s32 g_ItemTriggerItemIds[5];
-
-    extern u8 g_MapAreaLoadCounter;
-
-    extern s_EventData* g_MapEventData;
-
-    extern s_FsImageDesc D_800A90A4;
-
-    extern s_FsImageDesc D_800A90B4;
-
-    extern s_WorldGfxWork g_WorldGfxWork;
-
-    extern u8 D_800AD480[24];
-
-    /** Weapon attacks. */
-    extern s_AttackInfo g_Items_WeaponAttackInfo[70];
-
-    extern s16 SQRT[100];
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Psx.h"
-#include "Game/libkpad.h"
+#include "Game/Bodyprog/LibKpad/LibKpad.h"
 
 #include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/Chara/Chara.h"
@@ -67,18 +67,19 @@ namespace Silent::Game
     /** @brief System flags. */
     enum e_SysFlags
     {
-        SysFlag_None           = 0,
-        SysFlag_0              = 1 << 0, /** @unused */
-        SysFlag_DemoActive     = 1 << 1,
-        SysFlag_2              = 1 << 2, /** @unused */
-        SysFlag_CutsceneActive = 1 << 3,
-        SysFlag_NoEnemySpawn   = 1 << 4,
-        SysFlag_5              = 1 << 5, // Set during cafe cutscene. Something to prevent cutscene softlocks when an enemy is around??
-        SysFlag_OnCameraRail   = 1 << 6,
-        SysFlag_MenuActive     = 1 << 7,
-        SysFlag_DoWarmReset    = 1 << 8,
-        SysFlag_9              = 1 << 9, // @unused? Set during cafe cutscene along with `SysFlag_5` and never checked.
-        SysFlag_LoadActive     = 1 << 10
+        SysFlag_None               = 0,
+        SysFlag_0                  = 1 << 0, /** @unused */
+        SysFlag_DemoActive         = 1 << 1,
+        SysFlag_2                  = 1 << 2, /** @unused */
+        SysFlag_CutsceneActive     = 1 << 3,
+        SysFlag_NoEnemySpawn       = 1 << 4,
+        SysFlag_NoEventWorldFreeze = 1 << 5, /** Prevents map messages and item pickups from freezing the world while enemies are alive and stops the camera from tracking the nearest enemy.
+                                            * Only set by map0_s01 event with the cafe Air Screamer. */
+        SysFlag_SetCameraRail      = 1 << 6,
+        SysFlag_MenuActive         = 1 << 7,
+        SysFlag_DoWarmReset        = 1 << 8,
+        SysFlag_9                  = 1 << 9, /** @unused Set and cleared along with `SysFlag_NoEventWorldFreeze` but never checked. */
+        SysFlag_LoadActive         = 1 << 10
     };
 
     /** @brief System process flags. */
@@ -178,10 +179,10 @@ namespace Silent::Game
         GameEndingFlag_Bad      = 1 << 3,
         GameEndingFlag_Ufo      = 1 << 4,
 
-        // The following are only used in `currentEndingFlags`.
-        GameEndingFlag_5        = 1 << 5, // Unknown purpose, `Ranking_PrepareSavegame` sets `g_SavegamePtr->currentEndingFlags |= 1 << 5`, nothing checks it?
-        GameEndingFlag_6        = 1 << 6, // Set the first time ranking has been seen?
-        GameEndingFlag_7        = 1 << 7  // Set if ranking has been seen and ending was UFO?
+        // TODO: The following are only used in `currentEndingFlags`.
+        GameEndingFlag_PerfectScore = 1 << 5, // `Ranking_PrepareSavegame` sets this when `g_Ranking_Score == 100` but nothing checks it?
+        GameEndingFlag_6            = 1 << 6, // Set the first time ranking has been seen?
+        GameEndingFlag_7            = 1 << 7  // Set if ranking has been seen and ending was UFO?
     } e_GameEndingFlags;
 
     /** @brief Game workspace. Stores miscellaneous gameplay-related data. */
@@ -320,7 +321,7 @@ namespace Silent::Game
         int npcFlags;                           // Flags related to NPCs. Each bit corresponds to an `npcs` array entry.
         int processFlags;                       /** `e_ProcessFlags` */
         int bgmStatusFlags;                     /** `e_BgmStatusFlags` */
-        int sysFlags;                           // `e_SysFlags` | `SysFlag_OnCameraRail` passed as "use through door cam" flag in `vcSetFirstCamWork`.
+        int sysFlags;                           // `e_SysFlags` | `SysFlag_SetCameraRail` passed as "use through door cam" flag in `vcSetFirstCamWork`.
 
         GsCOORDINATE2 coord_22A8;   // For particles only?
         GsCOORDINATE2 coord_22F8;   // Likely related to above.
@@ -354,10 +355,10 @@ namespace Silent::Game
 
         s_WorldEnvWork worldEnv;
 
-        //s_KPad_Handler* kpadHandlers; // Head of the kpad handler list from `KPad_HandlerList_Init`.
-        //s_KPadWork      kpad;
-        //s_KPad_Channel  kpadChannels[2];
-        //s_KPad_Effect   kpadEffects[16];
+        s_KPad_Handler* kpadHandlers; // Head of the kpad handler list from `KPad_HandlerList_Init`.
+        s_KPadWork      kpad;
+        s_KPad_Channel  kpadChannels[2];
+        s_KPad_Effect   kpadEffects[16];
 
         q3_12  bgmLayerVolumes[BGM_LAYER_COUNT]; // Last index value is not a layer, but some sort of timer. See `Bgm_LayersUpdate`.
         q19_12 gasWeaponEngineSfxLevel;          // } Chainsaw and rock drill sound levels. TODO: Might be wrong Q format?

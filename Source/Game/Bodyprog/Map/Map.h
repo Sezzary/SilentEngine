@@ -183,8 +183,8 @@ namespace Silent::Game
         WorldModelLocation_Chunk4 = 5
     };
 
-    // Something related to enemies attacks.
-    typedef struct
+    /** @brief Generic particle data. */
+    struct s_Particle
     {
         union
         {
@@ -210,7 +210,7 @@ namespace Silent::Game
             } s_0;
         } field_4;
         q3_12 vy_8;
-        u8    field_A;
+        u8    field_A; // Particle type? 0 means slot is free for reuse.
         u8    field_B; // Flags?
         union
         {
@@ -260,12 +260,12 @@ namespace Silent::Game
                 u16 field_2;
             } s_3;
         } field_10;
-    } s_MapHdr_field_4C;
+    };
 
     /** @brief Speed zone. Defines a volume used for player speed modulation. */
     struct s_SpeedZone
     {
-        s8   type; /** `e_SpeedZoneType` */
+        s8    type; /** `e_SpeedZoneType` */
         q11_4 minX;
         q11_4 maxX;
         q11_4 minZ;
@@ -402,17 +402,17 @@ namespace Silent::Game
      */
     struct s_BloodSplat
     {
-        s16 field_0; // Maybe an array of `u16`s? Contains indices.
+        s16 field_0; // Maybe an array of `u16`s? Contains indices. `NO_VALUE` means cleared.
     };
 
     /** @brief Character spawn info. */
     struct s_SpawnInfo
     {
         q19_12 positionX;
-        s8     charaId; /** `e_CharaId` */
+        s8     charaId;               /** `e_CharaId` */
         q0_8   rotationY;
         s8     flags;                 /** `e_SpawnFlags` | Copied to `stateStep` in `s_Model`, with `controlState = 0`. */
-        s32    gameDifficultyMin : 4; /** `e_GameDifficulty` | Minimum difficulty required for successful spawn. */
+        s32    gameDifficultyMin : 4; /** `e_GameDifficulty` | Minimum difficulty required to spawn. */
         q19_12 positionZ;
     };
 
@@ -448,8 +448,8 @@ namespace Silent::Game
         void                   (*updateWorldObjects)(void);
         void                   (*func_44)();
         void                   (*npcSpawnEvent)();
-        s_MapHdr_field_4C*     unkTable1_4C; // Related to collision?
-        s16                    unkTable1Count_50;
+        s_Particle*            particleBuffer;     /** Always set to `g_Particle_Buffer`. */
+        s16                    particleBufferSize; /** `particleBuffer` array size. */
         s_BloodSplat*          bloodSplats;
         s16                    bloodSplatCount;
         s_MapOverlayHdr_5C*    field_5C;
@@ -521,7 +521,7 @@ namespace Silent::Game
         void                   (*func_15C)(); /** @unused Loads number pad. */ // Only map5_s01.
         void                   (*func_160)(); /** @unused */ // Only map5_s01.
         void                   (*func_164)(); /** @unused */ // Only map5_s01.
-        void                   (*particleSystemUpdate)(s32 unused, s32 mapId, s32);
+        void                   (*weatherParticleSystemUpdate)(s32 unused, s32 mapId, s32);
         void                   (*particleEnviromentSet)(s8, u32);
         void                   (*func_170)(); /** @unused */
         void                   (*func_174)(); /** @unused */
@@ -529,8 +529,8 @@ namespace Silent::Game
         void                   (*particleBeamDraw)(const VECTOR3* from, const VECTOR3* to);
         void                   (*particleSoundStop)(); /** @unused */
 
-        q19_12*                particleWindSpeedX;
-        q19_12*                particleWindSpeedZ;
+        q19_12*                weatherParticleWindSpeedX;
+        q19_12*                weatherParticleWindSpeedZ;
         s32*                   data_18C;
         s32*                   data_190;
         void                   (*charaUpdateFuncs[Chara_Count])(s_SubCharacter* chara, s_AnmHeader* anmHdr, GsCOORDINATE2* coords); /** Guessed params. Funcptrs for each `e_CharaId`, set to 0 for IDs not included in the map overlay. Called by `Game_NpcUpdate`. */

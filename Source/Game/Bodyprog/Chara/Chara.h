@@ -97,7 +97,7 @@ namespace Silent::Game
         Chara_Twinfeeler       = 20,
         Chara_Bloodsucker      = 21,
         Chara_Incubus          = 22,
-        Chara_Unknown23        = 23,
+        Chara_MonsterIncubator        = 23,
         Chara_MonsterCybil     = 24,
         CHARA_LAST_ENEMY_ID    = Chara_MonsterCybil,
 

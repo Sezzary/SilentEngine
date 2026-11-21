@@ -33,8 +33,9 @@ namespace Silent::Game
                                                      // Also includes map marking flags - see Sparagas' `MapMarkingsFlags` struct for details of every bit.
         q19_12          healthSaturation;            /** Range: [0, 300]. Ampoules give extra stored health. If the player loses health, it will be slowly restored. */
         int             pickedUpItemCount;
-        u8              inventoryItemFlags; /** `e_InvItemFlags` */
-        q19_12          playerHealth;       /** Default: `Q12(100.0f)` */
+        s8              gasWeaponFuelAmount; /** @unused Used in prototypes to display the fuel gauge in item screen. Other proto funcs also seem to read/write it. Unused in retail. */
+        u8              inventoryItemFlags;  /** `e_InvItemFlags` */
+        q19_12          playerHealth;        /** Default: `Q12(100.0f)` */
         q19_12          playerPositionX;
         q3_12           playerRotationY;  /** Range [0, 0.999755859375], positive Z: 0, clockwise rotation. It can be multiplied by 360 to get degrees. */
         int             clearGameCount;   /** Range [0, 99] */

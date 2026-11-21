@@ -251,6 +251,17 @@ namespace Silent::Math
         return (((uint)x + SHRT_MAX) >= USHRT_MAX) ? 4 : 0;
     };
 
+    /** @brief Wraps an index to the range `[0, count - 1]`.
+     *
+     * @param idx Index to wrap.
+     * @param count Number of entries.
+     * @return `idx` wrapped to the range `[0, count - 1]`.
+     */
+    constexpr auto IDX_WRAP = [](auto idx, auto count)
+    {
+        return (uint)idx % count;
+    };
+
     /** @brief Rounds a floating-point value.
      *
      * @param x Value to round.

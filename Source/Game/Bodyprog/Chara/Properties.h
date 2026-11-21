@@ -233,7 +233,7 @@ namespace Silent::Game
         q4_12  radiusMin_10E; // }
     } s_PropsHangedScratcher;
 
-    /** @brief Incubus character properties, shared with Unknown23? */
+    /** @brief Incubus character properties, also used by Monster Incubator. */
     typedef struct _PropsIncubus
     {
         q19_12 timer_E8;

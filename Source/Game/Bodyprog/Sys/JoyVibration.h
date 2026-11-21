@@ -1,0 +1,224 @@
+#pragma once
+
+namespace Silent::Game
+{
+    // Vibration scripts:
+    // - Started by index into `g_VibScript_Steps`. Start, Chain and Pulse steps allocate an effect in the libkpad effect list.
+    // - Each frame, every effect runs its steps until one has to wait for ticks to pass.
+    // - Waveform and Pulse steps set the effect's motor level, which raises the pad channel's level if higher.
+    // - The effect is freed once its script ends.
+    // - Command steps call into libkpad to enable/disable/pause/resume/remove effects.
+
+    // Script step initializers, see `s_VibScriptStep`. `next` is the step to run afterwards.
+    #define VIBSCRIPT_STEP_COMMAND(cmd, next) \
+        { next, { .command = { VibScriptOp_Command, VibScriptCommand_##cmd, 0, 0, 0 } } }
+
+    #define VIBSCRIPT_STEP_START(skipIfActive, id, next) \
+        { next, { .start = { VibScriptOp_Start, 0, skipIfActive, 0, 0, 0, id, 0 } } }
+
+    #define VIBSCRIPT_STEP_EMPTY() \
+        { NULL, { .start = { VibScriptOp_Start, 0, 0, 0, 0, 0, 0, 0 } } }
+
+    #define VIBSCRIPT_STEP_CHAIN(spawned, next) \
+        { next, { .chain = { VibScriptOp_Chain, 0, 0, 0, spawned, 0 } } }
+
+    #define VIBSCRIPT_STEP_WAVEFORM(channel, mask, duration, ticksPerSample, bytesPerSample, interpolate, samples, next) \
+        { next, { .waveform = { VibScriptOp_Waveform, channel, mask, samples, duration, ticksPerSample, bytesPerSample, interpolate } } }
+
+    #define VIBSCRIPT_STEP_PULSE(channel, mask, id, priority, next) \
+        { next, { .pulse = { VibScriptOp_Pulse, channel, mask, id, priority } } }
+
+    // Waveform sample data for `VIBSCRIPT_STEP_WAVEFORM`. Byte samples are motor levels (`0x80` is 1.0).
+    // 1-bit samples are on/off, bit 0 of each byte is the first sample.
+    // (trailing zeros added to pad each array to original size, compiler doesn't seem to insert it for us...)
+    #define VIBSCRIPT_SAMPLES_U8(...) \
+        ((const u8[]){ __VA_ARGS__ })
+
+    #define VIBSCRIPT_SAMPLES_BITS(...) \
+        ((const u8[]){ __VA_ARGS__ })
+
+    #define VIBSCRIPT_BITS8(b0, b1, b2, b3, b4, b5, b6, b7) \
+        ((b0) | ((b1) << 1) | ((b2) << 2) | ((b3) << 3) | ((b4) << 4) | ((b5) << 5) | ((b6) << 6) | ((b7) << 7))
+
+    /** @brief Script entry points in `g_VibScript_Steps`, passed to `Vibration_Play`. 
+    * Indices past 21 are waveforms the game code doesn't refer to directly.
+    */
+    typedef enum _VibScriptIdx
+    {
+        /** Commands */
+
+        VibScriptIdx_Pause                  = 0,
+        VibScriptIdx_Resume                 = 1,
+        VibScriptIdx_Disable                = 2,
+        VibScriptIdx_Enable                 = 3,
+        VibScriptIdx_ClearAll               = 4,
+        
+        /** Scripts */
+
+        VibScriptIdx_Gunshot                = 5,  /** Harry firing a gun. */
+        VibScriptIdx_StrikeHit              = 6,  /** Harry attacking with Strike attacks. */
+        VibScriptIdx_SlashHit               = 7,  /** Harry attacking with Slash attacks. */
+        VibScriptIdx_Unk8                   = 8,
+        VibScriptIdx_Rumble                 = 9,  /** Used by `Vibration_*Rumble` functions. */
+        VibScriptIdx_Damage                 = 10, /** Used by `Vibration_DamageRumble`. */
+        VibScriptIdx_Unk11                  = 11,
+        VibScriptIdx_HeartbeatHealthUnder60 = 12, /** Heartbeat rumble. Speeds up as health drops, all share same effect ID for some reason (maybe makes it easier to turn off with single ID?) */
+        VibScriptIdx_HeartbeatHealthUnder50 = 13,
+        VibScriptIdx_HeartbeatHealthUnder40 = 14,
+        VibScriptIdx_HeartbeatHealthUnder30 = 15,
+        VibScriptIdx_HeartbeatHealthUnder20 = 16,
+        VibScriptIdx_HeartbeatHealthZero    = 17,
+        VibScriptIdx_Unk18                  = 18,
+        VibScriptIdx_Stumble                = 19, /** Used by `Vibration_StumbleRumble`/`Vibration_LandingRumble`. */
+        VibScriptIdx_Unk20                  = 20,
+        VibScriptIdx_GasWeaponEngine        = 21  /** Used by `Vibration_GasWeaponEngineUpdate`. */
+    } e_VibScriptIdx;
+
+    /** @brief Step opcodes, index into the handler table `g_VibScript_StepHandlers`. */
+    typedef enum _VibScriptOp
+    {
+        VibScriptOp_Start    = 0, /** Starts an effect that runs the script following this step. */
+        VibScriptOp_Chain    = 1, /** Starts an effect and spawns a second one from another script. */
+        VibScriptOp_Waveform = 2, /** Plays sample data on a motor for a fixed number of ticks. */
+        VibScriptOp_Command  = 3, /** Changes global state or removes effects, see `e_VibScriptCommand`. */
+        VibScriptOp_Pulse    = 4  /** Sets a motor level for a single tick. */
+    } e_VibScriptOp;
+
+    /** @brief Selects the action of an `VibScriptOp_Command` step. */
+    typedef enum _VibScriptCommand
+    {
+        VibScriptCommand_Enable       = 0,
+        VibScriptCommand_Disable      = 1,
+        VibScriptCommand_Pause        = 2,
+        VibScriptCommand_Resume       = 3,
+        VibScriptCommand_ClearAll     = 4,
+        VibScriptCommand_RemoveByMask = 5, // Removes effects for which the `callback_C(mask, arg_6)` returns non-zero.
+        VibScriptCommand_RemoveByTag  = 6, // Same as above, tested against the effect tag instead of its mask.
+        VibScriptCommand_RemoveById   = 7  // Removes effects with an id equal to `id_8`.
+    } e_VibScriptCommand;
+
+    /** @brief One step of a vibration script. Scripts are chains of steps linked through `next_0`.
+     *
+     * What the fields after `opcode_4` mean depends on the opcode, so each opcode has its own view in `data_4`.
+     * `opcode_4` repeats in every view as the compiler needs it to be part of the structs for a match.
+     */
+    typedef struct _VibScriptStep
+    {
+        const struct _VibScriptStep* next_0; // Step to run once this one completes, `NULL` ends the script.
+
+        union
+        {
+            u8 opcode_4;
+
+            // `VibScriptOp_Start`
+            struct
+            {
+                u8  opcode_4;
+                u8  unk_5_0           : 5;
+                u32 skipIfActive_5_5  : 1; // Do nothing if an effect with the same `id_8` is already running.
+                u32 replaceActive_5_6 : 1; // Remove any running effects with the same `id_8` first.
+                u32 hasTag_5_7        : 1; // Copy `tag_6` to the effect.
+                u16 tag_6;
+                s32 id_8;
+                u32 priority_C;
+            } start;
+
+            // `VibScriptOp_Chain`
+            struct
+            {
+                u8                           opcode_4;
+                u8                           unk_5      : 7;
+                u32                          hasTag_5_7 : 1; // Copy `tag_6` to the effect.
+                u16                          tag_6;
+                const struct _VibScriptStep* spawned_8; // Script for the second effect, which gets the id of the first.
+                u32                          priority_C;
+            } chain;
+
+            // `VibScriptOp_Waveform`
+            struct
+            {
+                u8  opcode_4;
+                u8  channel_5; // Bits 0-6: motor index into `s_KPadWork::channels_C`.
+                u16 mask_6;    // Effect output only applies when a caller's mask intersects this, `NO_VALUE` for any.
+                u8* samples_8;
+                u32 duration_C_0        : 16; // Total length in ticks.
+                u32 ticksPerSample_C_16 : 12;
+                u32 bytesPerSample_C_28 : 3;  // 0: 1-bit samples packed LSB first, else big-endian bytes (max 4).
+                u32 interpolate_C_31    : 1;  // Blend between neighbouring samples instead of holding each one.
+            } waveform;
+
+            // `VibScriptOp_Command`
+            struct
+            {
+                u8  opcode_4;
+                u8  command_5; // `e_VibScriptCommand`.
+                u16 arg_6;
+                s32 id_8;
+                s32 (*callback_C)(u16 value, s32 arg); // Removal test, `value` is the effect mask or tag.
+            } command;
+
+            // `VibScriptOp_Pulse`
+            struct
+            {
+                u8  opcode_4;
+                u8  channel_5; // Bits 0-6: motor index into `s_KPadWork::channels_C`.
+                u16 mask_6;
+                s32 id_8;
+                u32 priority_C;
+            } pulse;
+        } data_4;
+    } s_VibScriptStep;
+
+    /** Might retrun `bool`. */
+    void Vibration_AnalogModeSet(bool isAnalog);
+
+    // Related to libkpad.
+    void Vibration_Init(void);
+
+    s32 Vibration_Update(void);
+
+    void Vibration_Play(e_VibScriptIdx scriptIdx);
+
+    void Vibration_PlayStrength(e_VibScriptIdx scriptIdx, u8 strength);
+
+    void Vibration_GasWeaponEngineUpdate(bool isChainsaw);
+
+    void Vibration_DamageRumble(q19_12 damage);
+
+    void Vibration_StumbleRumble(void);
+
+    void Vibration_LandingRumble(void);
+
+    void Vibration_EnemyGrabRumble(void);
+
+    void Vibration_RumbleStrength(s32 strength);
+
+    void Vibration_StrongRumble(void);
+
+    void Vibration_Rumble(void);
+
+    /** Handles initial gamepad init. */
+    bool Vibration_KPadAnalogModeSet(s_KPadWork* kpadWork, bool isAnalog);
+
+    s32 VibScript_Play(s_KPadWork* kpadWork, const s_VibScriptStep* step, u8 strength);
+
+    bool VibScript_EffectUpdate(s_KPadWork* kpadWork, s_KPad_Effect* effect, u16 mask, u32 ticks);
+
+    bool VibScript_Handler_Start(s_KPadWork* kpadWork, s_KPad_Effect* effect, const s_VibScriptStep* step, u32* strength);
+
+    bool VibScript_Handler_Chain(s_KPadWork* kpadWork, s_KPad_Effect* effect, const s_VibScriptStep* step, u32* strength);
+
+    bool VibScript_Handler_Waveform(s_KPadWork* kpadWork, s_KPad_Effect* effect, const s_VibScriptStep* step, u32* ticksLeft);
+
+    bool VibScript_Handler_Command(s_KPadWork* kpadWork, s_KPad_Effect* effect, const s_VibScriptStep* step, u32* strength);
+
+    void VibScript_EffectsClear(s_KPadWork* kpadWork);
+
+    void VibScript_EffectsRemoveByMask(s_KPadWork* kpadWork, u16 arg, s32 (*testFunc)(u16 mask, s32 arg));
+
+    void VibScript_EffectsRemoveByTag(s_KPadWork* kpadWork, u16 arg, s32 (*testFunc)(u16 tag, s32 arg));
+
+    void VibScript_EffectsRemoveById(s_KPadWork* kpadWork, s32 id);
+
+    bool VibScript_Handler_Pulse(s_KPadWork* kpadWork, s_KPad_Effect* effect, const s_VibScriptStep* step, u32* strength);
+}

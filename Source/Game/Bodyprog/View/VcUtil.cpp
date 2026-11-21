@@ -53,8 +53,8 @@ namespace Silent::Game
         cam_pos.vy = chr_pos->vy - HEIGHT;
         cam_pos.vz = chr_pos->vz - Q12_MULT(Math_Cos(chr_ang_y), RADIUS);
 
-        vcSetFirstCamWork(&cam_pos, chr_ang_y, g_SysWork.sysState & SysFlag_OnCameraRail);
-        g_SysWork.sysState &= ~SysFlag_OnCameraRail;
+        vcSetFirstCamWork(&cam_pos, chr_ang_y, g_SysWork.sysState & SysFlag_SetCameraRail);
+        g_SysWork.sysState &= ~SysFlag_SetCameraRail;
     }
 
     s32 vcRetCamMvSmoothF() // 0x80040190

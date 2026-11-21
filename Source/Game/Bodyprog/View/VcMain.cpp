@@ -884,7 +884,7 @@ namespace Silent::Game
         all_min_dist    = ENEMY_DIST_MAX;
         active_min_dist = ENEMY_DIST_MAX;
 
-        if (g_SysWork.sysState & SysFlag_5) // `sh2jms->player.battle(ShBattleInfo).status & (1 << 4)` in SH2.
+        if (g_SysWork.sysState & SysFlag_NoEventWorldFreeze) // `sh2jms->player.battle(ShBattleInfo).status & (1 << 4)` in SH2.
         {
             w_p->nearest_enemy         = nullptr;
             w_p->nearest_enemy_xz_dist = ENEMY_DIST_MAX;

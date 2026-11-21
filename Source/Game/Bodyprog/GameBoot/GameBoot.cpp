@@ -75,7 +75,7 @@ namespace Silent::Game
         if (g_SysWork.field_234A)
         {
             //g_MapOverlayHdr.particleEnviromentSet(g_SysWork.field_2349, 127);
-            //g_MapOverlayHdr.particleSystemUpdate(0, g_SavegamePtr->mapIdx, 0);
+            //g_MapOverlayHdr.weatherParticleSystemUpdate(0, g_SavegamePtr->mapIdx, 0);
         }
 
         GameBoot_NpcClear();
@@ -287,7 +287,7 @@ namespace Silent::Game
         //WorldGfx_CharaModelProcessAllLoads();
         //Game_FlashlightAttribSet();
 
-        //g_MapOverlayHdr.particleSystemUpdate(0, mapOvlId, NO_VALUE);
+        //g_MapOverlayHdr.weatherParticleSystemUpdate(0, mapOvlId, NO_VALUE);
 
         GameBoot_NpcClear();
 

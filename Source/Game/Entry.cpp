@@ -78,7 +78,7 @@ namespace Silent::Game
             Fs_QueueUpdate();
         }*/
 
-        /*func_80089128();
+        /*Vibration_Update();
         func_8008D78C(); // Camera update?*/
 
         // Handle demo presentation interval.

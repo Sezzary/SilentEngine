@@ -12,7 +12,7 @@
 
 using namespace Silent::Input;
 
-VECTOR3 vcRefPosSt; /** Q19.12 | View camera reference position start. */
+static VECTOR3 vcRefPosSt; /** Q19.12 | View camera reference position start. */
 
 namespace Silent::Game
 {

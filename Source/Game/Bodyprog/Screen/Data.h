@@ -4,6 +4,9 @@
 
 namespace Silent::Game
 {
+    struct VC_WORK;
+    struct VC_ROAD_DATA;
+
     constexpr int    TICKS_PER_SECOND = 60; /** Game has a variable timestep with 60 ticks max. */
     constexpr q19_12 TIMESTEP_30_FPS  = Q12(1.0f / (float)(TICKS_PER_SECOND / 2));
     constexpr q19_12 TIMESTEP_60_FPS  = Q12(1.0f / (float)(TICKS_PER_SECOND));
@@ -41,19 +44,39 @@ namespace Silent::Game
         SyncMode_Wait8     = 8
     };
 
-    // @deprecated This is not an emulator.
-    extern s32  g_ActiveBufferIdx;
+    extern GsOT_TAG g_OtTags0[2][16];
+    extern GsOT_TAG g_OtTags1[2][ORDERING_TABLE_SIZE];
+    extern s32      g_ActiveBufferIdx;
+
+    extern s32 g_VBlanks;
+    extern s32 g_UncappedVBlanks;
+
+    /** Number of ticks since game start. */
+    extern s32 g_TickCount;
+
+    /** Main gameplay timer. Code pauses gameplay by setting this to `Q12(0.0f)`.
+     * Demos override this with the time from a demo file to ensure deos remain in sync.
+     *
+     * Possible original name: `_shDeltaTimePerFrame`
+     */
+    extern q19_12 g_DeltaTime;
+
+    extern q19_12 g_GravitySpeed; /** Gravity speed for this tick. */
+
+    /** @note This is defined in `draw.c` because there's garbage data between this and the previous variable
+     * (`g_Screen_PrevFadeProgressState`). It suggests the variable was defined in a file separate from `fade.c`.
+     */
+    extern q19_12 g_ScreenFadeTimestep;
+
+    extern VC_WORK      vcWork;             /** View camera workspace. */
+    extern VC_ROAD_DATA vcNullRoadArray[2]; /** Default camera paths. */
+
     extern GsOT g_OrderingTable0[2];
     extern GsOT g_OrderingTable1[2];
     extern GsOT g_OrderingTable2[2];
 
-    /** Actual delta time since the previous tick.
-     * Unlike `g_DeltaTime`, this value is never overridden by demos or game code.
-     * Mostly seems used by UI code.
-     */
-    extern q19_12 g_DeltaTimeRaw;
-
-    extern s32 g_IntervalVBlanks;
+    extern q19_12 g_DeltaTimeRaw; /** Actual delta time since the previous tick. Unlike `g_DeltaTime`, this value is never overridden by demos or game code. Mostly seems used by UI code. */
+    extern s32    g_IntervalVBlanks;
 
     extern s_FsImageDesc g_Font16AtlasImg;
     extern s_FsImageDesc g_KonamiLogoImg;
@@ -82,33 +105,9 @@ namespace Silent::Game
 
     extern s_FsImageDesc D_800A9094;
 
+    extern s_FsImageDesc g_Font24AtlasImg;
+
     extern s_FsImageDesc D_800A90A4;
 
     extern s_FsImageDesc D_800A90B4;
-
-    // ====================
-    // GLOBALS (BSS; Hack)
-    // ====================
-    // To match the order of the BSS segment, extern declarations
-    // are required in a predetermined order.
-    // This is done until a way to replicate `common`
-    // segment behavior is found.
-
-    extern s32      g_VBlanks;
-    extern s32      g_UncappedVBlanks;
-    extern GsOT_TAG g_OtTags0[2][16];
-
-    /** Main gameplay timer. Code pauses gameplay by setting this to `Q12(0.0f)`.
-     * Demos override this with the time from a demo file to ensure demos remain in sync. */
-    extern q19_12 g_DeltaTime;
-
-    extern GsOT_TAG g_OtTags1[2][ORDERING_TABLE_SIZE];
-
-    /** Gravity speed for this tick. */
-    extern q19_12 g_GravitySpeed;
-
-    /** Number of ticks since game start. */
-    extern s32 g_TickCount;
-
-    extern s32 g_MainLoop_FrameCount;
 }

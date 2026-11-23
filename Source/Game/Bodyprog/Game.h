@@ -74,7 +74,7 @@ namespace Silent::Game
         SysFlag_CutsceneActive     = 1 << 3,
         SysFlag_NoEnemySpawn       = 1 << 4,
         SysFlag_NoEventWorldFreeze = 1 << 5, /** Prevents map messages and item pickups from freezing the world while enemies are alive and stops the camera from tracking the nearest enemy.
-                                            * Only set by map0_s01 event with the cafe Air Screamer. */
+                                              * Only set by map0_s01 event with the cafe Air Screamer. */
         SysFlag_SetCameraRail      = 1 << 6,
         SysFlag_MenuActive         = 1 << 7,
         SysFlag_DoWarmReset        = 1 << 8,

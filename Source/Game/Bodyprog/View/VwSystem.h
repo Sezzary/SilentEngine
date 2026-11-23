@@ -8,9 +8,7 @@
 #include "Game/Bodyprog/View/VwMain.h"
 
 // TODO:
-// - Split into 4 separate headers.
-// - Add doc comments above func declarations.
-// - Flags below are from SH2, most seem to match with SH but there might be some differences.
+// - Finish docs.
 
 /** @brief GLOSSARY OF ABBREVIATIONS
  *
@@ -73,44 +71,33 @@
 
 namespace Silent::Game
 {
-    extern const VC_ROAD_DATA vcNullRoadArray[2];     /** Default camera paths. */
-    extern VC_NEAR_ROAD_DATA  vcNullNearRoad;         /** Default nearby camera path collision. */
-    extern VC_WATCH_MV_PARAM  deflt_watch_mv_prm;     /** Default look-at move parameters. */
-    extern VC_WATCH_MV_PARAM  self_view_watch_mv_prm; /** First-person look-at move parameters. */
-    extern VC_CAM_MV_PARAM    cam_mv_prm_user;        /** User camera move parameters. */
-    extern q19_12             excl_r_ary[9];          /** Q19.12 | Exclusion radius array. */
-    extern VC_WORK            vcWork;                 /** View camera workspace. */
-    extern VW_VIEW_WORK       vwViewPointInfo;
-    extern MATRIX             VwCrdVwMat;             /** Camera coordinate's world matrix. Its translation is the camera position. */
-    extern MATRIX             VwCrdWsRotMat;          /** World-to-screen rotation, the transpose of `VwCrdVwMat`'s rotation. */
-    extern VC_WATCH_MV_PARAM  vcWatchMvPrmSt;         /** View camera look-at move parameters start. */
-    extern q19_12             vcSelfViewTimer;        /** View camera first-person timer. */
+    extern VC_NEAR_ROAD_DATA vcNullNearRoad;         /** Default nearby camera path collision. */
+    extern VC_WATCH_MV_PARAM deflt_watch_mv_prm;     /** Default look-at move parameters. */
+    extern VC_WATCH_MV_PARAM self_view_watch_mv_prm; /** First-person look-at move parameters. */
+    extern VC_CAM_MV_PARAM   cam_mv_prm_user;        /** User camera move parameters. */
+    extern q19_12            excl_r_ary[9];          /** Q19.12 | Exclusion radius array. */
+    extern VW_VIEW_WORK      vwViewPointInfo;
+    extern MATRIX            VwCrdVwMat;             /** Camera coordinate's world matrix. Its translation is the camera position. */
+    extern MATRIX            VwCrdWsRotMat;          /** World-to-screen rotation, the transpose of `VwCrdVwMat`'s rotation. */
+    extern VC_WATCH_MV_PARAM vcWatchMvPrmSt;         /** View camera look-at move parameters start. */
+    extern q19_12            vcSelfViewTimer;        /** View camera first-person timer. */
 
     /** @brief Sets the active camera path collision.
      *
      * @param work Camera workspace.
      * @param road Camera path collision to set as active.
      */
-    static inline void Vc_CurNearRoadSet(VC_WORK* work, VC_NEAR_ROAD_DATA* road)
-    {
-        memcpy(&work->cur_near_road, road, sizeof(VC_NEAR_ROAD_DATA));
-    }
+    void Vc_CurNearRoadSet(VC_WORK* work, VC_NEAR_ROAD_DATA* road);
 
     /** @brief Clears a set of camera flags.
      *
      * @param flag Camera flags to clear.
      */
-    static inline void Vc_FlagClear(s32 flags)
-    {
-        vcWork.flags &= ~flags;
-    }
+    void Vc_FlagClear(s32 flags);
 
     /** @brief Sets a set of camera flags.
      *
      * @param flag Camera flags to set.
- */
-    static inline void Vc_FlagSet(s32 flags)
-    {
-        vcWork.flags |= flags;
-    }
+     */
+    void Vc_FlagSet(s32 flags);
 }

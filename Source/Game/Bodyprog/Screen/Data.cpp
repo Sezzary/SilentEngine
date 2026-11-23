@@ -4,7 +4,7 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
-#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/View/VwSystem.h"
 
 namespace Silent::Game
 {
@@ -17,10 +17,8 @@ namespace Silent::Game
     q19_12   g_GravitySpeed;
     s32      g_TickCount;
 
-    // SH2 symbols indicate this should be in `vc_main.c`, but the file already has its data segment assigned.
-    // It's possible this is part of another split as there is also some inbetween data in
-    // the bss data segment related to the view camera system.
-    const VC_ROAD_DATA vcNullRoadArray[] =
+    VC_WORK      vcWork;
+    VC_ROAD_DATA vcNullRoadArray[] =
     {
         {
             .lim_sw          = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
@@ -54,8 +52,8 @@ namespace Silent::Game
 
     GsOT g_OrderingTable0[2] =
     {
-        { 11, &g_OtTags1[0][1], 0, 0, 0 },
-        { 11, &g_OtTags1[1][1], 0, 0, 0 }
+        { 11, &g_OtTags1[0][0], 0, 0, 0 },
+        { 11, &g_OtTags1[1][0], 0, 0, 0 }
     };
 
     GsOT g_OrderingTable1[2] =

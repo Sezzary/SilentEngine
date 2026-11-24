@@ -101,7 +101,7 @@ namespace Silent::Game
     /* MonsterCybil1         */ { Q12(0.5f),  Q12(0.0f),  25,       ATTACK_FIGHT(0.0f, 0.0f, 0.0f),       Q12(0.25f), 11,                 3,                      AttackInfoType_Melee1Hit, 1,             0,                0,     &D_800AD4C4 },
     /* MonsterCybilNeckGrab  */ { Q12(0.4f),  Q12(0.0f),  1,        ATTACK_FIGHT(0.4f, 0.4f, 0.4f),       Q12(0.0f),  0,                  HIT_KEYFRAME_COUNT_MAX, AttackInfoType_Enemy1,    5,             0,                0,     &D_800AD4C4 },
     /* Unk67                 */ { Q12(0.0f),  Q12(0.0f),  0,        ATTACK_FIGHT(0.0f, 0.0f, 0.0f),       Q12(0.0f),  0,                  HIT_KEYFRAME_COUNT_MAX, AttackInfoType_Enemy2,    4,             0,                0,     &D_800AD4C4 },
-    /* Unknown23             */ { Q12(0.0f),  Q12(0.0f),  0,        ATTACK_FIGHT(0.0f, 0.0f, 0.0f),       Q12(0.0f),  0,                  HIT_KEYFRAME_COUNT_MAX, AttackInfoType_Enemy2,    1,             0,                0,     &D_800AD4C4 },
+    /* MonsterIncubator             */ { Q12(0.0f),  Q12(0.0f),  0,        ATTACK_FIGHT(0.0f, 0.0f, 0.0f),       Q12(0.0f),  0,                  HIT_KEYFRAME_COUNT_MAX, AttackInfoType_Enemy2,    1,             0,                0,     &D_800AD4C4 },
     /* Bloodsucker           */ { Q12(0.1f),  Q12(0.0f),  6,        ATTACK_FIGHT(0.1f, 0.1f, 0.0f),       Q12(0.0f),  0,                  HIT_KEYFRAME_COUNT_MAX, AttackInfoType_Enemy2,    2,             2,                0,     &D_800AD4C4 },
     };
 }

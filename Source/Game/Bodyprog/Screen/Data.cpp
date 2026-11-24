@@ -4,7 +4,7 @@
 
 #include "Game/Bodyprog/Bodyprog.h"
 
-#include "Game/Bodyprog/Screen/Draw.h"
+#include "Game/Bodyprog/View/VwSystem.h"
 
 namespace Silent::Game
 {
@@ -17,14 +17,12 @@ namespace Silent::Game
     q19_12   g_GravitySpeed;
     s32      g_TickCount;
 
-    // SH2 symbols indicate this should be in `vc_main.c`, but the file already has its data segment assigned.
-    // It's possible this is part of another split as there is also some inbetween data in
-    // the bss data segment related to the view camera system.
-    const VC_ROAD_DATA vcNullRoadArray[] =
+    VC_WORK      vcWork;
+    VC_ROAD_DATA vcNullRoadArray[] =
     {
         {
-            .lim_sw          = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
-            .lim_rd          = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
+            .lim_sw         = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
+            .lim_rd         = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
             .flags          = VC_RD_NOFLAG,
             .area_size_type = VC_AREA_WIDE,
             .rd_type        = VC_RD_TYPE_ROAD,
@@ -37,8 +35,8 @@ namespace Silent::Game
             .fix_ang_y      = Q8_ANGLE(0.0f)
         },
         {
-            .lim_sw          = { Q8(0.0f), Q8(0.0f), Q8(0.0f), Q8(0.0f) },
-            .lim_rd          = { Q8(0.0f), Q8(0.0f), Q8(0.0f), Q8(0.0f) },
+            .lim_sw         = { Q8(0.0f), Q8(0.0f), Q8(0.0f), Q8(0.0f) },
+            .lim_rd         = { Q8(0.0f), Q8(0.0f), Q8(0.0f), Q8(0.0f) },
             .flags          = VC_RD_END_DATA_F,
             .area_size_type = VC_AREA_TINY,
             .rd_type        = VC_RD_TYPE_ROAD,
@@ -54,8 +52,8 @@ namespace Silent::Game
 
     GsOT g_OrderingTable0[2] =
     {
-        { 11, &g_OtTags1[0][1], 0, 0, 0 },
-        { 11, &g_OtTags1[1][1], 0, 0, 0 }
+        { 11, &g_OtTags1[0][0], 0, 0, 0 },
+        { 11, &g_OtTags1[1][0], 0, 0, 0 }
     };
 
     GsOT g_OrderingTable1[2] =

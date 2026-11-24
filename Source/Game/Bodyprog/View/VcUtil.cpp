@@ -7,11 +7,12 @@
 #include "Application.h"
 #include "Game/Bodyprog/Screen/Data.h"
 #include "Game/Bodyprog/View/VwSystem.h"
+#include "Game/Bodyprog/World/Draw.h"
 #include "Input/Input.h"
 
 using namespace Silent::Input;
 
-VECTOR3 vcRefPosSt; /** Q19.12 | View camera reference position start. */
+static VECTOR3 vcRefPosSt; /** Q19.12 | View camera reference position start. */
 
 namespace Silent::Game
 {
@@ -52,8 +53,8 @@ namespace Silent::Game
         cam_pos.vy = chr_pos->vy - HEIGHT;
         cam_pos.vz = chr_pos->vz - Q12_MULT(Math_Cos(chr_ang_y), RADIUS);
 
-        vcSetFirstCamWork(&cam_pos, chr_ang_y, g_SysWork.sysState & SysFlag_OnCameraRail);
-        g_SysWork.sysState &= ~SysFlag_OnCameraRail;
+        vcSetFirstCamWork(&cam_pos, chr_ang_y, g_SysWork.sysState & SysFlag_SetCameraRail);
+        g_SysWork.sysState &= ~SysFlag_SetCameraRail;
     }
 
     s32 vcRetCamMvSmoothF() // 0x80040190

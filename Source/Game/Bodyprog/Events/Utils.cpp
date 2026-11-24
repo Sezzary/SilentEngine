@@ -790,7 +790,7 @@ namespace Silent::Game
 
     void Event_DisplayMapMsgWithSfx(int mapMsgIdx, e_SfxId sfxId, VECTOR3* sfxPos)
     {
-        if (!(g_SysWork.sysFlags & SysFlag_5))
+        if (!(g_SysWork.sysFlags & SysFlag_NoEventWorldFreeze))
         {
             // Run through NPCs.
             for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
@@ -1019,7 +1019,7 @@ namespace Silent::Game
             EventState_DontTakeItem    = 4
         } e_EventState;
 
-        if (!(g_SysWork.sysFlags & SysFlag_5))
+        if (!(g_SysWork.sysFlags & SysFlag_NoEventWorldFreeze))
         {
             // Run through NPCs.
             for (int i = itemId; i < ARRAY_SIZE(g_SysWork.npcs); i++)

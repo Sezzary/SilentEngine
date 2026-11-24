@@ -89,7 +89,7 @@ namespace Silent::Game
             case 1:
                 func_80037154();
                 //Savegame_MapRoomIdxUpdate();
-                //func_800892A4(1);
+                //Vibration_Play(1);
 
                 g_IntervalVBlanks = 2;
                 g_GameWork.gameStateSteps[0]++;
@@ -165,7 +165,7 @@ namespace Silent::Game
 
             if (g_SavegamePtr->mapIdx != MapIdx_MAP7_S03)
             {
-                g_MapOverlayHdr.particleSystemUpdate(0, g_SavegamePtr->mapIdx, 1);
+                g_MapOverlayHdr.weatherParticleSystemUpdate(0, g_SavegamePtr->mapIdx, 1);
             }
 
             Demo_DemoRandSeedRestore();
@@ -200,28 +200,28 @@ namespace Silent::Game
         switch (FP_ROUND_SCALED(player.health, 10, Q12_SHIFT))
         {
             case 0:
-                //func_800892A4(17);
+                //Vibration_Play(17);
                 break;
 
             case 1:
             case 2:
-                //func_800892A4(16);
+                //Vibration_Play(16);
                 break;
 
             case 3:
-                //func_800892A4(15);
+                //Vibration_Play(15);
                 break;
 
             case 4:
-                //func_800892A4(14);
+                //Vibration_Play(14);
                 break;
 
             case 5:
-                //func_800892A4(13);
+                //Vibration_Play(13);
                 break;
 
             case 6:
-                //func_800892A4(12);
+                //Vibration_Play(12);
                 break;
         }
 
@@ -348,35 +348,25 @@ namespace Silent::Game
 
     void func_8003943C() // 0x8003943C
     {
-        s32 roundedVal0;
-        s32 roundedVal1;
-        s32 val0;
-        s32 val1;
+        //Combat_GasWeaponContactSfxUpdate(0);
 
-        bool isRockDrillAttack = g_SysWork.playerCombat.weaponAttack == WEAPON_ATTACK(AttackType_RockDrill, AttackInputType_Tap);
-
-        //func_8008B3E4(0);
-
-        if (g_SysWork.field_275C > Q12(256.0f))
+        bool isRockDrillAttack = PLAYER_COMBAT().weaponAttack == WEAPON_ATTACK(AttackType_RockDrill, AttackInputType_Tap);
+        if (g_SysWork.gasWeaponEngineSfxLevel > Q12(256.0f))
         {
-            val0        = g_SysWork.field_275C - Q12(256.0f);
-            roundedVal0 = FP_ROUND_TO_ZERO(val0, Q12_SHIFT);
-            //func_8008B438(!isRockDrillAttack, roundedVal0, 0);
+            //Combat_GasWeaponEngineSfxUpdate(!isRockDrillAttack, FP_ROUND_TO_ZERO(g_SysWork.gasWeaponEngineSfxLevel - Q12(256.0f), Q12_SHIFT), 0);
 
             if (isRockDrillAttack)
             {
-                val1        = g_SysWork.field_2764 - Q12(256.0f);
-                roundedVal1 = FP_ROUND_TO_ZERO(val1, Q12_SHIFT);
-                //func_8008B40C(roundedVal1, 0);
+                //Combat_RockDrillRunSfxUpdate(FP_ROUND_TO_ZERO(g_SysWork.rockDrillRunSfxLevel - Q12(256.0f), Q12_SHIFT), 0);
             }
         }
         else
         {
-            //func_8008B438(!isRockDrillAttack, 0, 0);
+            //Combat_GasWeaponEngineSfxUpdate(!isRockDrillAttack, 0, 0);
 
             if (isRockDrillAttack)
             {
-                //func_8008B40C(0, 0);
+                //Combat_RockDrillRunSfxUpdate(0, 0);
             }
         }
 
@@ -433,6 +423,8 @@ namespace Silent::Game
                 Sd_SfxStop(Sfx_Unk1358);
                 break;
         }
+
+        #undef isRockDrillAttack
     }
 
     void SysState_StatusMenu_Update() // 0x80039568
@@ -575,8 +567,8 @@ namespace Silent::Game
                     break;
                 }
 
-                //func_800892A4(0);
-                //func_80089128();
+                //Vibration_Play(0);
+                //Vibration_Update();
 
                 SysWork_StateStepIncrement(0);
                 break;
@@ -614,7 +606,7 @@ namespace Silent::Game
                 // Game cutscene exit.
                 else
                 {
-                    //func_800892A4(1);
+                    //Vibration_Play(1);
                     Savegame_EventFlagSet(g_MapEventData->completeFlag);
 
                     Game_StateSetNext(GameState_InGame);
@@ -678,11 +670,11 @@ namespace Silent::Game
 
         if (g_MapEventData->setCameraRail)
         {
-            g_SysWork.sysState |= SysFlag_OnCameraRail;
+            g_SysWork.sysState |= SysFlag_SetCameraRail;
         }
         else
         {
-            g_SysWork.sysState &= ~SysFlag_OnCameraRail;
+            g_SysWork.sysState &= ~SysFlag_SetCameraRail;
         }
 
         g_SysWork.bgmStatusFlags |= BgmStatusFlag_Pause;
@@ -718,7 +710,7 @@ namespace Silent::Game
         // - A specific camera related flag is disabled.
         // - All enemies are dead.
         if (!(g_MapEventData->transitionFlags & AreaTransitionFlag_UnfreezeWorld) &&
-            !(g_SysWork.sysState & SysFlag_5))
+            !(g_SysWork.sysState & SysFlag_NoEventWorldFreeze))
         {
             for (int i = 0; i < ARRAY_SIZE(g_SysWork.npcs); i++)
             {

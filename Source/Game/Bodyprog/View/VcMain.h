@@ -4,6 +4,9 @@
 
 namespace Silent::Game
 {
+    enum   VC_AREA_SIZE_TYPE;
+    enum   VC_CAM_CHK_TYPE;
+    enum   VC_CAM_MV_TYPE;
     struct VC_CAM_MV_PARAM;
     struct VC_LIMIT_AREA;
     struct VC_NEAR_ROAD_DATA;

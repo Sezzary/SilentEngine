@@ -170,12 +170,22 @@ namespace Silent::Math
         return x << (Q12_SHIFT - Q6_SHIFT);
     }
 
+    /** @brief Converts a fixed-point value from Q24.7 to Q19.12.
+     *
+     * @param x Q24.7 fixed-point value to convert.
+     * @return `x` converted to Q19.12 fixed-point.
+     */
+    constexpr q19_12 Q7_TO_Q12(q24_7 x)
+    {
+        return x << (Q12_SHIFT - Q7_SHIFT);
+    }
+
     /** @brief Converts a fixed-point value from Q23.8 to Q19.12.
      *
      * @param x Q23.8 fixed-point value to convert.
      * @return `x` converted to Q19.12 fixed-point.
      */
-    constexpr q23_8 Q8_TO_Q12(q19_12 x)
+    constexpr q19_12 Q8_TO_Q12(q23_8 x)
     {
         return x << (Q12_SHIFT - Q8_SHIFT);
     }

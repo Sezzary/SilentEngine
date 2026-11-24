@@ -9,6 +9,7 @@
 #include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/Sys/CharaFileInfos.h"
 #include "Game/Bodyprog/Sys/Demo.h"
+#include "Game/Bodyprog/Sys/JoyVibration.h"
 #include "Game/Main/FsMem.h"
 
 using namespace Silent::Assets;
@@ -49,10 +50,15 @@ namespace Silent::Game
     {
         const auto& assets = g_App.GetAssets();
 
+        //Vibration_Play(VibScriptIdx_Pause);
+        //Vibration_Update();
+
         while (assets.IsBusy())
         {
             // @todo Blocking behaviours shouldn't occur anymore.
         }
+
+        //Vibration_Play(VibScriptIdx_Resume);
     }
 
     const std::future<void>& Fs_QueueStartSeek(e_FsFile fileIdx)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Bodyprog/Chara/Chara.h"
+#include "Game/Bodyprog/Chara/Collision.h"
 #include "Game/Bodyprog/Collision/Chara.h"
 #include "Game/Bodyprog/Collision/Los.h"
 #include "Game/Bodyprog/Collision/Ray.h"
@@ -96,20 +97,20 @@ namespace Silent::Game
     /** @brief Copied collision polygon or cylinder attributes. */
     typedef union _CollisionShapeAttribs
     {
-                struct
-                {
-                    /* 0x0 */ q7_8 radius;
+                  struct
+                  {
+                      /* 0x0 */ q7_8 radius;
         /* 0x0 */ } cylinder;
-                struct
-                {
-                    /* 0x0 */ u8       surfaceIdx0;
-                    /* 0x1 */ u8       surfaceIdx1;
-                    /* 0x2 */ u8       surfaceCacheIdx0;
-                    /* 0x3 */ u8       surfaceCacheIdx1;
-                    /* 0x4 */ u8       disableSurfaceHeight0; /** `bool` */
-                    /* 0x5 */ u8       disableSurfaceHeight1; /** `bool` */
-                    /* 0x8 */ SVECTOR3 polygonSplitVertex0;   /** Q7.8 | Vertex from `s_IpdCollisionData::polygonSplitVertices`. */
-                    /* 0xE */ SVECTOR3 polygonSplitVertex1;   /** Q7.8 | Vertex from `s_IpdCollisionData::polygonSplitVertices`. */
+                  struct
+                  {
+                      /* 0x0 */ u8       surfaceIdx0;
+                      /* 0x1 */ u8       surfaceIdx1;
+                      /* 0x2 */ u8       surfaceCacheIdx0;
+                      /* 0x3 */ u8       surfaceCacheIdx1;
+                      /* 0x4 */ u8       disableSurfaceHeight0; /** `bool` */
+                      /* 0x5 */ u8       disableSurfaceHeight1; /** `bool` */
+                      /* 0x8 */ SVECTOR3 polygonSplitVertex0;   /** Q7.8 | Vertex from `s_IpdCollisionData::polygonSplitVertices`. */
+                      /* 0xE */ SVECTOR3 polygonSplitVertex1;   /** Q7.8 | Vertex from `s_IpdCollisionData::polygonSplitVertices`. */
         /* 0x0 */ } polygon;
     } s_CollisionShapeAttribs;
 
@@ -147,35 +148,35 @@ namespace Silent::Game
         /* 0x90   */ bool                       disableHeight; /** `bool` | TODO: Does disabled height indicate a wall or pit? */
         /* 0x94   */ s32                        floorType;      /** `e_FloorType` */
 
-                    union
-                    {
-                        DVECTOR_XZ offset; /** Q23.8 */
-                        q23_8      vx;
+                     union
+                     {
+                         DVECTOR_XZ offset; /** Q23.8 */
+                         q23_8      vx;
         /* 0x98   */ } charaPositionFrom;
-                    union
-                    {
-                        DVECTOR_XZ offset; /** Q23.8 */
-                        q23_8      vz;
+                     union
+                     {
+                         DVECTOR_XZ offset; /** Q23.8 */
+                         q23_8      vz;
         /* 0x9C   */ } charaPositionTo;
-                    union
-                    {
-                        struct
-                        {
-                            /* 0x0 */ u8                       closestXCellIdx;
-                            /* 0x1 */ u8                       closestZCellIdx;
-                            /* 0x2 */ u8                       cellSpanX;
-                            /* 0x3 */ u8                       cellSpanZ;
-                            /* 0x4 */ s_IpdShapeRange*         shapeRangePair;
-                            /* 0x8 */ s_CollisionCachedSurface surfaceCache[4];
-                        } s_0;
-                        struct
-                        {
-                            /* 0x0 */ q7_8 bottom; // Set to absolute character bottom height.
-                            /* 0x2 */ q7_8 top;    // Set to absolute character top height.
-                            /* 0x4 */ q7_8 radius;
-                            /* 0x6 */ u8   collisionState; /** `e_CharaCollisionState` */
-                            /* 0x8 */ u8*  passStamp; /** Tracks visited characters per query pass. */
-                        } chara;
+                     union
+                     {
+                         struct
+                         {
+                             /* 0x0 */ u8                       closestXCellIdx;
+                             /* 0x1 */ u8                       closestZCellIdx;
+                             /* 0x2 */ u8                       cellSpanX;
+                             /* 0x3 */ u8                       cellSpanZ;
+                             /* 0x4 */ s_IpdShapeRange*         shapeRangePair;
+                             /* 0x8 */ s_CollisionCachedSurface surfaceCache[4];
+                         } s_0;
+                         struct
+                         {
+                             /* 0x0 */ q7_8 bottom; // Set to absolute character bottom height.
+                             /* 0x2 */ q7_8 top;    // Set to absolute character top height.
+                             /* 0x4 */ q7_8 radius;
+                             /* 0x6 */ u8   collisionState; /** `e_CharaCollisionState` */
+                             /* 0x8 */ u8*  passStamp; /** Tracks visited characters per query pass. */
+                         } chara;
         /* 0xA0   */ } field_A0; // Floor info? Cell info? Cell state?
 
         /* 0xC8   */ u8                    shapeIdx; /** Secondary. Used only if detecting a cell after not finding one. */

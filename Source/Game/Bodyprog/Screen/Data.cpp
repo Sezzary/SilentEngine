@@ -21,8 +21,8 @@ namespace Silent::Game
     VC_ROAD_DATA vcNullRoadArray[] =
     {
         {
-            .lim_sw          = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
-            .lim_rd          = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
+            .lim_sw         = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
+            .lim_rd         = { Q8(-30.0f), Q8(30.0f), Q8(-30.0f), Q8(30.0f) },
             .flags          = VC_RD_NOFLAG,
             .area_size_type = VC_AREA_WIDE,
             .rd_type        = VC_RD_TYPE_ROAD,
@@ -35,8 +35,8 @@ namespace Silent::Game
             .fix_ang_y      = Q8_ANGLE(0.0f)
         },
         {
-            .lim_sw          = { Q8(0.0f), Q8(0.0f), Q8(0.0f), Q8(0.0f) },
-            .lim_rd          = { Q8(0.0f), Q8(0.0f), Q8(0.0f), Q8(0.0f) },
+            .lim_sw         = { Q8(0.0f), Q8(0.0f), Q8(0.0f), Q8(0.0f) },
+            .lim_rd         = { Q8(0.0f), Q8(0.0f), Q8(0.0f), Q8(0.0f) },
             .flags          = VC_RD_END_DATA_F,
             .area_size_type = VC_AREA_TINY,
             .rd_type        = VC_RD_TYPE_ROAD,

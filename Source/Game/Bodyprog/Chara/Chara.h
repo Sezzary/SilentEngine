@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Game/Bodyprog/Chara/Anim.h"
 #include "Game/Bodyprog/Chara/Collision.h"
 #include "Game/Bodyprog/Chara/Combat.h"
 #include "Game/Bodyprog/Chara/Model.h"
@@ -13,11 +12,13 @@ using namespace Silent::Assets;
 
 namespace Silent::Game
 {
+    struct s_AnimInfo;
+    struct s_CharaKeyframe;
+
     constexpr int  NPC_COUNT_MAX        = 6;
     constexpr int  NPC_BONE_COUNT_MAX   = 10 * NPC_COUNT_MAX;
     constexpr int  CHARA_GROUP_COUNT    = 4;                  /** While up to 6 NPCs and a player can exist in the game world, only 4 different character
-                                                               * types (including the player) can be loaded at a time.
-                                                               */
+                                                               * types (including the player) can be loaded at a time. */
     constexpr int  CHARA_FORCE_FREE_ALL = 0xFF;               /** `Chara_Load` can force free already loaded models to make room for new ones. */
 
     /** @brief Returns the `s_SubCharacter` instance for the player character.
@@ -38,7 +39,7 @@ namespace Silent::Game
     #define PLAYER_COMBAT() (g_SysWork.playerCombat)
 
     /** @brief Returns the `s_SubCharacter` instance for a given NPC index. */
-    #define NPC_CHARA(index) (g_SysWork.npcs[(index)])
+    #define NPC_CHARA(index) (g_SysWork.npcs[index])
 
     /** @brief Character flags. Used by `s_SubCharacter::flags`. */
     enum e_CharaFlags
@@ -97,7 +98,7 @@ namespace Silent::Game
         Chara_Twinfeeler       = 20,
         Chara_Bloodsucker      = 21,
         Chara_Incubus          = 22,
-        Chara_MonsterIncubator        = 23,
+        Chara_MonsterIncubator = 23,
         Chara_MonsterCybil     = 24,
         CHARA_LAST_ENEMY_ID    = Chara_MonsterCybil,
 
@@ -187,38 +188,23 @@ namespace Silent::Game
 
     /** @brief Checks if a character has given flags set.
      *
-     * @param chara Character to check (`s_SubCharacter`).
+     * @param chara Character to check.
      * @param flags Flags to check (`e_CharaFlags`).
      * @return `true` if the flags are set, `false` otherwise.
      */
-    static inline bool Chara_HasFlag(const s_SubCharacter* chara, int flags)
-    {
-        return chara->flags & flags;
-    }
+    bool Chara_HasFlag(const s_SubCharacter* chara, int flags);
 
-    /** @brief Clears a character's properties. TODO: Declare `i` here.
+    /** @brief Clears a character's properties.
      *
      * @param chara Character to update.
      */
-    static inline void Chara_PropsClear(s_SubCharacter* chara)
-    {
-        for (int i = 0; i < 16; i++)
-        {
-            chara->properties.dummy.properties_E8[i].val32 = 0;
-        }
-    }
+    void Chara_PropsClear(s_SubCharacter* chara);
 
     /** @brief Clears a character's damage parameters.
      *
      * @param chara Character to update.
      */
-    static inline void Chara_DamageClear(s_SubCharacter* chara)
-    {
-        chara->damage.amount      = Q12(0.0f);
-        chara->damage.position.vz = Q12(0.0f);
-        chara->damage.position.vy = Q12(0.0f);
-        chara->damage.position.vx = Q12(0.0f);
-    }
+    void Chara_DamageClear(s_SubCharacter* chara);
 
     /** @brief Sets a character's received attack type.
      *
@@ -228,19 +214,13 @@ namespace Silent::Game
      * @param chara Character to update.
      * @param attack Packed weapona attack to set. See `WEAPON_ATTACK`.
      */
-    static inline void Chara_AttackReceivedSet(s_SubCharacter* chara, int attack) 
-    {
-        chara->attackReceived = attack;
-    }
+    void Chara_AttackReceivedSet(s_SubCharacter* chara, int attack);
 
     /** @brief Gets a character's received attack type.
      *
      * @param chara Character to update.
      */
-    static inline int Chara_AttackReceivedGet(s_SubCharacter* chara)
-    {
-        return chara->attackReceived;
-    }
+    int Chara_AttackReceivedGet(s_SubCharacter* chara);
 
     /** @brief Updates an NPC's animation if the `freeze` flag isn't currently set.
      *
@@ -250,15 +230,7 @@ namespace Silent::Game
      * @param anmAsset ANM asset.
      * @param animInfos Character animation infos.
      */
-    static inline void Chara_AnimUpdate(s_SubCharacter* chara, const Asset& anmAsset, const s_AnimInfo* animInfos)
-    {
-        if (!(chara)->properties.npc.freeze)
-        {
-            auto& animInfo = animInfos[(chara)->model.anim.status];
-
-            animInfo.playbackFunc(chara->model, anmAsset, animInfo);
-        }
-    }
+    void Chara_AnimUpdate(s_SubCharacter* chara, const Asset& anmAsset, const s_AnimInfo* animInfos);
 
     /** @brief Sets a character's animation.
      *
@@ -266,12 +238,7 @@ namespace Silent::Game
      * @param animStatus Packed anim status. See `s_ModelAnim::status`.
      * @param keyframeIdx Active keyframe index.
      */
-    static inline void Chara_AnimSet(s_SubCharacter* chara, int animStatus, int keyframeIdx)
-    {
-        chara->model.anim.status      = animStatus;
-        chara->model.anim.time        = Q12(keyframeIdx);
-        chara->model.anim.keyframeIdx = keyframeIdx;
-    }
+    void Chara_AnimSet(s_SubCharacter* chara, int animStatus, int keyframeIdx);
 
     /** @brief Resets an NPC's control state to `*_None` if the control subsystem was flagged for a reset.
      *
@@ -279,32 +246,28 @@ namespace Silent::Game
      *
      * @param chara Character to update.
      */
-    static inline void Chara_AnimStateReset(s_SubCharacter* chara)
-    {
-        if (chara->properties.npc.resetControlState)
-        {
-            chara->properties.npc.controlState      = 0;
-            chara->model.stateStep                  = 0;
-            chara->properties.npc.resetControlState = false;
-        }
-    }
+    void Chara_AnimStateReset(s_SubCharacter* chara);
 
     /** @brief Sets the collision shapes of a character from keyframe collision data.
      *
      * @param chara Character to update.
      * @param keyframe Keyframe collision data.
      */
-    static inline void Chara_CollisionSet(s_SubCharacter* chara, const s_CharaKeyframe* keyframe)
-    {
-        chara->collision.box.topExtent            = keyframe->box.topExtent;
-        chara->collision.box.bottomExtent         = keyframe->box.bottomExtent;
-        chara->collision.box.height               = keyframe->box.height;
-        chara->collision.box.offsetY              = keyframe->box.offsetY;
-        chara->collision.shapeOffsets.cylinder.vx = keyframe->shapeOffsets.cylinder.vx;
-        chara->collision.shapeOffsets.cylinder.vz = keyframe->shapeOffsets.cylinder.vz;
-        chara->collision.cylinder.outerRadius     = keyframe->box.field_8;
-        chara->collision.shapeOffsets.box.vx      = keyframe->shapeOffsets.box.vx;
-        chara->collision.shapeOffsets.box.vz      = keyframe->shapeOffsets.box.vz;
-        chara->collision.cylinder.innerRadius     = keyframe->box.field_A;
-    }
+    void Chara_CollisionSet(s_SubCharacter* chara, const s_CharaKeyframe* keyframe);
+
+    /** @brief Reduces a character's move speed toward a target speed without going below it.
+     *
+     * @param chara Character to update.
+     * @param speed Speed change per second.
+     * @param limit Lowest move speed.
+     */
+    void Chara_MoveSpeedDecrease(s_SubCharacter* chara, q19_12 speed, q19_12 limit);
+
+    /** @brief Moves a character's move speed toward a target speed without overshooting.
+     *
+     * @param chara Character to update.
+     * @param speed Speed change per second.
+     * @param limit Target move speed.
+     */
+    void Chara_MoveSpeedUpdate(s_SubCharacter* chara, q19_12 speed, q19_12 limit);
 }

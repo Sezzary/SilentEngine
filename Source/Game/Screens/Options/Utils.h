@@ -10,8 +10,9 @@ using namespace Silent::Services;
 
 namespace Silent::Game
 {
-    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(GUI_PULSE_DELAY_SEC);
+    constexpr int    LINE_HEIGHT           = 16;
     constexpr int    BAR_NOTCH_COUNT       = 16;
+    constexpr q19_12 LINE_CURSOR_TIMER_MAX = Q12(GUI_PULSE_DELAY_SEC);
 
     /** @brief Submenu entry options binding. */
     struct MenuEntrySubmenuBinding
@@ -82,6 +83,7 @@ namespace Silent::Game
     struct MenuEntry
     {
         std::string      EntryStringKey = {};
+        Button           Button         = {};
         MenuEntryBinding Binding        = {};
 
         std::function<void()> OnUpdate  = nullptr;
@@ -110,13 +112,47 @@ namespace Silent::Game
         };
     }
 
+    /** @brief Creates a new menu entry button.
+     *
+     * @todo
+     * @param entry Button menu entry.
+     * @param entryIdx Button entry index.
+     */
+    Button Options_GetEntryButton(int menuState, int entryIdx);
+
+    /** @brief Updates a set of menu entry buttons according to what's visible onscreen.
+     *
+     * @param entries Output menu entries to update.
+     */
+    void Options_UpdateButtons(std::vector<MenuEntry>& entries);
+
+    /** @brief Updates the options configuration according to bound menu entry behaviors.
+     *
+     * @param entries Menu entries.
+     */
     void Options_UpdateConfig(const std::vector<MenuEntry>& entries);
 
-    void Options_UpdateSelection(const std::vector<MenuEntry>& entries);
+    /** @brief Updates an options submenu selection within the context of a given set of entries.
+     *
+     * @param entries Menu entries.
+     */
+    void Options_UpdateSelection(std::vector<MenuEntry>& entries);
 
+    /** @brief Resets the options submenu selection to a default entry.
+     *
+     * @param selectedEntryIdx Index of the default selected entry.
+     */
     void Options_ResetSelection(int selectedEntryIdx = 0);
 
-    void Options_ControlSubmenu(const std::string& headingKey, const std::vector<MenuEntry>& entries, int menuStateStep,
-                                int menuState, int leaveMenuState,
-                                int prevMenuEntryIdx);
+    /** @brief Controls an options submenu.
+     *
+     * @param headingKey String key of the submenu heading.
+     * @param entries Output menu entries to update.
+     * @param menuStateStep Menu state step.
+     * @param menuState Menu state.
+     * @param leaveMenuState Menu state to set when leaving the submenu.
+     * @param prevMenuEntryIdx Index of the selected entry in the parent menu.
+     */
+    void Options_ControlSubmenu(const std::string& headingKey, std::vector<MenuEntry>& entries, int menuStateStep,
+                                int menuState, int leaveMenuState, int prevMenuEntryIdx);
 }

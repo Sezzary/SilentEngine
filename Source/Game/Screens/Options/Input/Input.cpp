@@ -12,7 +12,7 @@ using namespace Silent::Services;
 
 namespace Silent::Game
 {
-    static const auto ENTRIES = std::vector<MenuEntry>
+    static auto Entries = std::vector<MenuEntry>
     {
         MenuEntry
         {
@@ -87,7 +87,7 @@ namespace Silent::Game
 
     void Options_ControlInputMenu()
     {
-        Options_ControlSubmenu(KEY_INPUT_MENU_HEADING, ENTRIES, 1,
+        Options_ControlSubmenu(KEY_INPUT_MENU_HEADING, Entries, 1,
                                OptionsMenuState_Input, OptionsMenuState_LeaveInput,
                                MainOptionsMenuEntry_Input);
     }

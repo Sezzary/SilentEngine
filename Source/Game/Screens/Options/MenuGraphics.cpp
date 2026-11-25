@@ -21,8 +21,6 @@ using namespace Silent::Utils;
 
 namespace Silent::Game
 {
-    constexpr int LINE_HEIGHT = 16;
-
     static void Options_DrawConfigString(const Vector2i& pos, const std::string& str, bool isSelectedEntry)
     {
         constexpr int ARROW_SPACE = 4;
@@ -189,7 +187,6 @@ namespace Silent::Game
         constexpr auto BULLET_OFFSET   = Vector2i(-25, 2);
         constexpr auto CONFIG_OFFSET   = Vector2i(194, 0);
 
-        const auto& input      = g_App.GetInput();
         const auto& translator = g_App.GetTranslator();
 
         // Submit heading string.
@@ -215,7 +212,7 @@ namespace Silent::Game
         int prevWidth = 0;
         for (int i = g_OptionsMenu_VisibleEntriesStartIdx; i < visibleEntriesEndIdx; i++)
         {
-            const auto& entry = entries[i];
+            auto& entry = entries[i];
 
             // Check if entry is enabled.
             if (entry.IsEnabled && !entry.IsEnabled())

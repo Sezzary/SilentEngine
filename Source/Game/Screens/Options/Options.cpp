@@ -38,11 +38,12 @@ namespace Silent::Game
     // @deprecated
     static int g_OptionsMenu_BulletMultMax = 0;
 
-    static const auto ENTRIES = std::vector<MenuEntry>
+    static auto Entries = std::vector<MenuEntry>
     {
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_EXIT,
+            .Button         = Options_GetEntryButton(OptionsMenuState_Leave, 0),
             .Binding        = MenuEntrySubmenuBinding
             {
                 .MenuState = OptionsMenuState_Leave
@@ -51,6 +52,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_GRAPHICS,
+            .Button         = Options_GetEntryButton(OptionsMenuState_EnterGraphics, 1),
             .Binding        = MenuEntrySubmenuBinding
             {
                 .MenuState = OptionsMenuState_EnterGraphics
@@ -59,6 +61,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_GAMEPLAY,
+            .Button         = Options_GetEntryButton(OptionsMenuState_EnterGameplay, 2),
             .Binding        = MenuEntrySubmenuBinding
             {
                 .MenuState = OptionsMenuState_EnterGameplay
@@ -67,6 +70,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_INPUT,
+            .Button         = Options_GetEntryButton(OptionsMenuState_EnterInput, 3),
             .Binding        = MenuEntrySubmenuBinding
             {
                 .MenuState = OptionsMenuState_EnterInput
@@ -75,6 +79,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_ENHANCEMENTS,
+            .Button         = Options_GetEntryButton(OptionsMenuState_EnterEnhancements, 4),
             .Binding        = MenuEntrySubmenuBinding
             {
                 .MenuState = OptionsMenuState_EnterEnhancements
@@ -83,6 +88,7 @@ namespace Silent::Game
         MenuEntry
         {
             .EntryStringKey = KEY_OPTIONS_MENU_SYSTEM,
+            .Button         = Options_GetEntryButton(OptionsMenuState_EnterSystem, 5),
             .Binding        = MenuEntrySubmenuBinding
             {
                 .MenuState = OptionsMenuState_EnterSystem
@@ -95,7 +101,7 @@ namespace Silent::Game
         const auto& input = g_App.GetInput();
 
         // Submit graphics.
-        Options_DrawEntries(KEY_OPTIONS_MENU_HEADING, ENTRIES);
+        Options_DrawEntries(KEY_OPTIONS_MENU_HEADING, Entries);
         Screen_BackgroundImgDraw(&g_ItemInspectionImg);
 
         // Block user input if transitioning to new menu.
@@ -134,7 +140,8 @@ namespace Silent::Game
             return;
         }
 
-        Options_UpdateSelection(ENTRIES);
+        Options_UpdateButtons(Entries);
+        Options_UpdateSelection(Entries);
     }
 
     void GameState_Options_Update()
